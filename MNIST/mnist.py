@@ -12,10 +12,10 @@ class MNIST:
     C: int=1
     LABELS: int=10
 
-    _URL = "https://storage.googleapis.com/tensorflow/tf-keras-datasets/"
+    _URL = "https://storage.googleapis.com/tensorflow/tf-keras-datasets"
 
     class Dataset:
-        def __init__(self, data: dict[str, np.ndarray], seed:int = 99) -> None:
+        def __init__(self, data: dict[str, np.ndarray], shuffle_batches: bool, seed:int = 99) -> None:
             self._data = data
             self._data["images"] = self._data["images"].astype(np.float32) /255
             self._size = len(self._data["images"])
@@ -49,7 +49,7 @@ class MNIST:
     def __init__(self, dataset:str = "mnist") -> None:
         path = "{}.npz".format(dataset)
         if not os.path.exists(path):
-            print("Downloading Mnist")
+            print("Downloading Dataset... {}".format(dataset))
             urllib.request.urlretrieve("{}/{}".format(self._URL, path), filename=path)
 
         mnist = np.load(path)
