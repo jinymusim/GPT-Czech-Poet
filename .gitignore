@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# TF Data logs
+logs
+
+# numpy Datasets
+*.npz
+*.npy

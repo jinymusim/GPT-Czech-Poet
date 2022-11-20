@@ -1,7 +1,7 @@
 import os
 import sys
 import urllib.request
-from typing import Iterator, Optional
+from typing import Iterator, Optional, Dict
 
 import tensorflow as tf
 import numpy as np
@@ -17,8 +17,8 @@ class MNIST:
     class Dataset:
         def __init__(self, data: dict[str, np.ndarray], shuffle_batches: bool, seed:int = 99) -> None:
             self._data = data
-            self._data["images"] = self._data["images"].astype(np.float32) /255
-            self._size = len(self._data["images"])
+            self._data["x"] = self._data["x"].astype(np.float32) /255
+            self._size = len(self._data["x"])
 
         @property
         def data(self) -> dict[str, np.ndarray]:
@@ -46,16 +46,13 @@ class MNIST:
         def dataset(self) -> tf.data.Dataset:
             return tf.data.Dataset.from_tensor_slices(self._data)
 
-    def __init__(self, dataset:str = "mnist") -> None:
+    def __init__(self, dataset:str = "mnist", size: Dict[str, int] = {}) -> None:
         path = "{}.npz".format(dataset)
         if not os.path.exists(path):
             print("Downloading Dataset... {}".format(dataset))
             urllib.request.urlretrieve("{}/{}".format(self._URL, path), filename=path)
 
         mnist = np.load(path)
-        for dataset in ["train", "dev", "test"]:
-            data = dict((key[len(dataset) + 1:], mnist[key][:size.get(dataset, None)]) for key in mnist if key.startswith(dataset))
+        for dataset in ["train", "test"]:
+            data = dict((key[:-(len(dataset) + 1)], mnist[key][:size.get(dataset, None)]) for key in mnist if key.endswith(dataset))
             setattr(self, dataset, self.Dataset(data, shuffle_batches=dataset == "train"))
-
-
-

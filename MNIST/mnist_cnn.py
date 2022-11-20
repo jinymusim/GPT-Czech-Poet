@@ -16,17 +16,18 @@ parser.add_argument("--batch_size", default=32, type=int, help="Batch size.")
 parser.add_argument("--epochs", default=10, type=int, help="Number of epochs to run.")
 parser.add_argument("--seed", default=99, type=int, help="Random seed")
 parser.add_argument("--threads", default=1, type=int, help="Maximum number of threads to use.")
+parser.add_argument("--num_filters", default=32, type=int, help="Number of filters in convolution layer")
 
 class Model(tf.keras.Model):
     def __init__(self, args: argparse.Namespace) -> None:
 
         inputs = tf.keras.layers.Input(shape=[MNIST.H, MNIST.W, MNIST.C])
-        convolution = tf.keras.layers.Conv2D(32, 3, padding='valid', use_bias=False)(input)
+        convolution = tf.keras.layers.Conv2D(args.num_filters, 3, padding='valid', use_bias=False)(inputs)
         batch_norm = tf.keras.layers.BatchNormalization()(convolution)
         relu = tf.keras.layers.ReLU()(batch_norm)
 
         flatten = tf.keras.layers.Flatten()(relu)
-        dense = tf.keras.layers.Dense(200, activation="relu")(flatten)
+        dense = tf.keras.layers.Dense(64, activation="relu")(flatten)
 
         outputs = tf.keras.layers.Dense(MNIST.LABELS, activation=tf.nn.softmax)(dense)
 
@@ -49,7 +50,7 @@ def main(args: argparse.Namespace) -> Dict[str, float]:
     # Create logdir name
     args.logdir = os.path.join("logs", "{}-{}-{}".format(
         os.path.basename(globals().get("__file__", "notebook")),
-        datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S"),
+        datetime.datetime.now().strftime("%Y-%m-%Sd_%H%M%S"),
         ",".join(("{}={}".format(re.sub("(.)[^_]*_?", r"\1", k), v) for k, v in sorted(vars(args).items())))
     ))
 
@@ -59,15 +60,20 @@ def main(args: argparse.Namespace) -> Dict[str, float]:
     # Create the model and train it
     model = Model(args)
 
-    logs = model.fit(
-        mnist.train.data["images"], mnist.train.data["labels"],
+    train_logs = model.fit(
+        mnist.train.data["x"], mnist.train.data["y"],
         batch_size=args.batch_size, epochs=args.epochs,
-        validation_data=(mnist.dev.data["images"], mnist.dev.data["labels"]),
-        callbacks=[model.tb_callback],
+        callbacks=[model.tb_callback]
+    )
+    print("Evaluating model...")
+    test_loss, test_accuracy = model.evaluate(
+        mnist.test.data["x"], mnist.test.data["y"],
+        batch_size=args.batch_size,
+        callbacks=[model.tb_callback]    
     )
 
-    # Return development metrics for ReCodEx to validate
-    return {metric: values[-1] for metric, values in logs.history.items() if metric.startswith("val_")}
+    # Return Logs on Test Data
+    return {metric: values[-1] for metric, values in train_logs.history.items()}, {'test_accuracy': test_accuracy, 'test_loss': test_loss}
 
 
 if __name__ == "__main__":
