@@ -17,6 +17,7 @@ parser.add_argument("--epochs", default=10, type=int, help="Number of epochs to 
 parser.add_argument("--seed", default=99, type=int, help="Random seed")
 parser.add_argument("--threads", default=1, type=int, help="Maximum number of threads to use.")
 parser.add_argument("--num_filters", default=32, type=int, help="Number of filters in convolution layer")
+parser.add_argument("--dense_layer", default=128, type=int, help="Size of the dense layer")
 
 class Model(tf.keras.Model):
     def __init__(self, args: argparse.Namespace) -> None:
@@ -27,7 +28,7 @@ class Model(tf.keras.Model):
         relu = tf.keras.layers.ReLU()(batch_norm)
 
         flatten = tf.keras.layers.Flatten()(relu)
-        dense = tf.keras.layers.Dense(64, activation="relu")(flatten)
+        dense = tf.keras.layers.Dense(args.dense_layer, activation="relu")(flatten)
 
         outputs = tf.keras.layers.Dense(MNIST.LABELS, activation=tf.nn.softmax)(dense)
 
