@@ -134,3 +134,7 @@ logs
 # numpy Datasets
 *.npz
 *.npy
+
+
+# TF venv
+TF/
