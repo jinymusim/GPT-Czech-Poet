@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import numpy as np
-from typing import Any
+from transformers import GPT2Tokenizer
 import tensorflow as tf
 
 class CorpusDataLoad:
@@ -10,8 +10,9 @@ class CorpusDataLoad:
     
     class Dataset:
         
-        def __init__(self, data_file_paths, shuffle_bool:bool= True, seed:int= 42):
+        def __init__(self, data_file_paths, tokenizer ,shuffle_bool:bool= True, seed:int= 42):
             self._data_file_paths = data_file_paths
+            self._tokenizer = tokenizer
             self._size = len(self._data_file_paths)
             
         @property
@@ -33,7 +34,8 @@ class CorpusDataLoad:
                 for data_line in datum:
                     for part_line in data_line['body']:
                         for text_line in part_line:
-                            yield text_line['text']
+                            yield self._tokenizer.encode(text_line['text'], return_tensors="tf")
+                            
         @property
         def data_part_gen(self):
             for filename in self._data_file_paths:
@@ -46,7 +48,8 @@ class CorpusDataLoad:
                         for text_line in part_line:
                             body.append(text_line['text'])
                         part.append("\n".join(body))
-                    yield "\n".join(part)
+                    yield self._tokenizer.encode("\n".join(part), return_tensors="tf")
+                    
         @property
         def data_body_gen(self):
             for filename in self._data_file_paths:
@@ -57,7 +60,7 @@ class CorpusDataLoad:
                         body = []
                         for text_line in part_line:
                             body.append(text_line['text'])
-                        yield "\n".join(body)
+                        yield self._tokenizer.encode("\n".join(body), return_tensors="tf")
             
             
     def load_json_filenames(self):
@@ -66,16 +69,18 @@ class CorpusDataLoad:
         for filename in data_filenames:
             file_path = os.path.join(self.data_dir, filename)
             data_by_files.append(file_path)
-        self.dataset = CorpusDataLoad.Dataset(data_by_files)
+        self.dataset = CorpusDataLoad.Dataset(data_by_files, self.tokenizer)
     
-    def __init__(self, data_dir = "GPT2\corpusCzechVerse-master\ccv"):
+    def __init__(self,tokenizer,  data_dir = "GPT2\corpusCzechVerse-master\ccv"):
+        self.tokenizer = tokenizer
         self.data_dir = data_dir
         self.load_json_filenames()
         
         
         
-if __name__ == "__main__":   
-    train_dat = CorpusDataLoad()
+if __name__ == "__main__":
+    tokenizer = GPT2Tokenizer.from_pretrained("lchaloupsky/czech-gpt2-oscar")
+    train_dat = CorpusDataLoad(tokenizer)
     i = 0
     for datum in train_dat.dataset.data_body_gen:
         if i >= 100:
