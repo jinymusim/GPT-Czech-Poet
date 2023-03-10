@@ -138,3 +138,6 @@ logs
 
 # TF venv
 TF/
+
+# GPT2 Corpus Data 
+GPT2/corpusCzechVerse-master/
