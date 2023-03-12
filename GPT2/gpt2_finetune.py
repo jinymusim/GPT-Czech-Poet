@@ -15,8 +15,11 @@ model.compile(
     loss= tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True, reduction=tf.keras.losses.Reduction.NONE),
     metrics=['accuracy']
 )
-#tf_dataset_text = train_data.dataset.dataset_text.shuffle(128).padded_batch(4, padded_shapes=([None],[None]))
-tf_dataset_body = train_data.dataset.dataset_body.shuffle(64).padded_batch(4, padded_shapes=([None],[None]))
+tf_dataset_text = train_data.dataset.dataset_text.shuffle(128).padded_batch(4, padded_shapes=([None],[None]))
+
+model.fit(tf_dataset_text, epochs=1)
+
+tf_dataset_body = train_data.dataset.dataset_body.shuffle(128).padded_batch(4, padded_shapes=([None],[None]))
 
 model.fit(tf_dataset_body, epochs=1)
 

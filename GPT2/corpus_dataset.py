@@ -32,7 +32,7 @@ class CorpusDataLoad:
                 for data_line in datum:
                     for part_line in data_line['body']:
                         for text_line in part_line:
-                            tokenized = self._tokenizer.encode(text_line['text'], return_tensors="tf")[0]
+                            tokenized = self._tokenizer.encode(text_line['text'], return_tensors="tf", truncation=True)[0]
                             yield tokenized, tokenized
                             
         def data_part_gen(self):
@@ -46,7 +46,7 @@ class CorpusDataLoad:
                         for text_line in part_line:
                             body.append(text_line['text'])
                         part.append("\n".join(body))
-                    tokenized = self._tokenizer.encode("\n".join(part), return_tensors="tf")[0]
+                    tokenized = self._tokenizer.encode("\n".join(part), return_tensors="tf", truncation=True)[0]
                     yield tokenized, tokenized
                     
         def data_body_gen(self):
@@ -58,7 +58,7 @@ class CorpusDataLoad:
                         body = []
                         for text_line in part_line:
                             body.append(text_line['text'])
-                        tokenized = self._tokenizer.encode("\n".join(body), return_tensors="tf")[0]
+                        tokenized = self._tokenizer.encode("\n".join(body), return_tensors="tf", truncation=True)[0]
                         yield tokenized,tokenized
         
         @property
