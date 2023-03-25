@@ -13,6 +13,7 @@ parser.add_argument("--threads", default=2, type=int, help="Maximum number of th
 parser.add_argument("--data_path",  default="GPT2/corpusCzechVerse-master/ccv", type=str, help="Path to Data")
 parser.add_argument("--model_path", default="./gpt2-cz-poetry",  type=str, help="Path to Model")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
+parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 
 
 def main(args: argparse.Namespace):
@@ -22,8 +23,8 @@ def main(args: argparse.Namespace):
     tf.config.threading.set_intra_op_parallelism_threads(args.threads)
     
     if args.use_default_model:
-        tokenizer = GPT2Tokenizer.from_pretrained("lchaloupsky/czech-gpt2-oscar")
-        model = TFGPT2LMHeadModel.from_pretrained("lchaloupsky/czech-gpt2-oscar")
+        tokenizer = GPT2Tokenizer.from_pretrained(args.default_hf_model)
+        model = TFGPT2LMHeadModel.from_pretrained(args.default_hf_model)
     else:
         tokenizer = GPT2Tokenizer.from_pretrained(args.model_path)
         model = TFGPT2LMHeadModel.from_pretrained(args.model_path)
