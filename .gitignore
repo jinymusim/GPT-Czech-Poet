@@ -139,5 +139,8 @@ logs
 # TF venv
 TF/
 
+# PYTORCH venv
+PYTORCH/
+
 # GPT2 Corpus Data 
 GPT2/corpusCzechVerse-master/
