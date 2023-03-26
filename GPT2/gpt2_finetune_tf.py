@@ -1,5 +1,5 @@
 from transformers import GPT2Tokenizer, TFGPT2LMHeadModel
-from corpus_dataset import CorpusDataLoad
+from corpus_dataset_tf import CorpusDataLoad
 import tensorflow as tf
 import argparse
 

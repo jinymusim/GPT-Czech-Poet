@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from torch.optim import Optimizer, lr_scheduler
 import torch.nn as nn
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class Trainer:
     
     def __init__(self, model: PreTrainedModel, epochs: int, optimizer: Optimizer, scheduler: lr_scheduler._LRScheduler, dataloader: DataLoader) -> None:
@@ -23,9 +23,9 @@ class Trainer:
             self.model.train()
             
             for batch in self.dataloader:
-                
+                labels = batch.type(torch.LongTensor)
                 self.optimizer.zero_grad() 
-                out = self.model(input_ids=batch.to(device), labels=batch.to(device))
+                out = self.model(input_ids=batch.to(device), labels=labels.to(device))
                 out.loss.backward()
                 self.optimizer.step()
                 

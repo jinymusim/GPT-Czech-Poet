@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import numpy as np
+import torch
 from transformers import GPT2Tokenizer
 from torch.utils import data
 
@@ -54,8 +55,8 @@ class CorpusDatasetPytorch:
                 for data_line in datum:
                     for part_line in data_line['body']:
                         for text_line in part_line:
-                            tokenized = self._tokenizer.encode(text_line['text'], return_tensors="tf", truncation=True)[0]
-                            yield tokenized, tokenized
+                            tokenized = self._tokenizer.encode(text_line['text'], return_tensors="np", truncation=True)[0]
+                            yield tokenized
                             
         def data_part_gen(self):
             for filename in self._data_file_paths:
@@ -68,8 +69,8 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             body.append(text_line['text'])
                         part.append("\n".join(body))
-                    tokenized = self._tokenizer.encode("\n".join(part), return_tensors="tf", truncation=True)[0]
-                    yield tokenized, tokenized
+                    tokenized = self._tokenizer.encode("\n".join(part), return_tensors="np", truncation=True)[0]
+                    yield tokenized
                     
         def data_body_gen(self):
             for filename in self._data_file_paths:
@@ -80,8 +81,8 @@ class CorpusDatasetPytorch:
                         body = []
                         for text_line in part_line:
                             body.append(text_line['text'])
-                        tokenized = self._tokenizer.encode("\n".join(body), return_tensors="tf", truncation=True)[0]
-                        yield tokenized,tokenized
+                        tokenized = self._tokenizer.encode("\n".join(body), return_tensors="np", truncation=True)[0]
+                        yield tokenized
     
     def load_json_filenames(self):
         data_filenames = os.listdir(self.data_dir)
@@ -93,6 +94,12 @@ class CorpusDatasetPytorch:
         self.pytorch_dataset_part = CorpusDatasetPytorch.DatasetPart(self.dataset.data_part_gen)
         self.pytorch_dataset_body = CorpusDatasetPytorch.DatasetBody(self.dataset.data_body_gen)
         self.pytorch_dataset_text = CorpusDatasetPytorch.DatasetText(self.dataset.data_text_line_gen)
+        
+    @staticmethod
+    def collate(batch):
+        max_len = np.max([len(text) for text in batch])
+        padded_batch = np.asarray([np.append(text, [-100] *(max_len - len(text)))  for text in batch], dtype=np.int32)
+        return torch.tensor(padded_batch,  dtype=torch.int32)
     
     def __init__(self,tokenizer,  data_dir = "GPT2\corpusCzechVerse-master\ccv"):
         self.tokenizer = tokenizer
