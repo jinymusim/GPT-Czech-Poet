@@ -1,5 +1,8 @@
-from transformers import PreTrainedModel, PreTrainedTokenizer
+from transformers import  AutoTokenizer, AutoModelForCausalLM
+from torch.utils.data import DataLoader
 from corpus_dataset_pytorch import CorpusDatasetPytorch
+from trainer_torch import Trainer
+import transformers
 import torch
 import argparse
 
@@ -12,20 +15,37 @@ parser.add_argument("--seed", default=99, type=int, help="Random seed")
 parser.add_argument("--data_path",  default="GPT2/corpusCzechVerse-master/ccv", type=str, help="Path to Data")
 parser.add_argument("--model_path", default="./gpt2-cz-poetry",  type=str, help="Path to Model")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
-parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default="decapoda-research/llama-7b-hf", type=str, help="Default Model from HF to use")
 
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def main(args: argparse.Namespace):
     
     
     if args.use_default_model:
-        tokenizer = PreTrainedTokenizer.from_pretrained(args.default_hf_model)
-        model = PreTrainedModel.from_pretrained(args.default_hf_model)
+        tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
+        model = AutoModelForCausalLM.from_pretrained(args.default_hf_model)
     else:
-        tokenizer = PreTrainedTokenizer.from_pretrained(args.model_path)
-        model = PreTrainedModel.from_pretrained(args.model_path)
+        tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+        model = AutoModelForCausalLM.from_pretrained(args.model_path)
+
         
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path)
+    dataloader = DataLoader(train_data.pytorch_dataset_body, batch_size=args.batch_size, shuffle=True)
+    
+    
+    model = model.to(device)
+    optimizer = torch.optim.AdamW(model.parameters(),lr=args.learning_rate)
+    scheduler = transformers.get_cosine_schedule_with_warmup(optimizer, 
+                                                         (len(train_data.dataset.size)//args.batch_size),
+                                                         (len(train_data.dataset.size)//args.batch_size) *args.epochs)
+    
+    trainer = Trainer(model, args.epochs, optimizer, scheduler, dataloader)
+    trainer.train()
+    
+    model.save_pretrained(args.model_path)
+    
 
 
 if __name__ == "__main__":

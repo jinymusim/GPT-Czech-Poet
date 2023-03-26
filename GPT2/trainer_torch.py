@@ -3,27 +3,29 @@ import math
 import torch
 from transformers import PreTrainedModel, PreTrainedTokenizer
 from transformers.utils import ModelOutput
+from torch.utils.data import DataLoader
 from torch.optim import Optimizer, lr_scheduler
 import torch.nn as nn
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class Trainer:
     
-    def __init__(self, model: PreTrainedModel, epochs: int, optimizer: Optimizer, scheduler: lr_scheduler._LRScheduler) -> None:
+    def __init__(self, model: PreTrainedModel, epochs: int, optimizer: Optimizer, scheduler: lr_scheduler._LRScheduler, dataloader: DataLoader) -> None:
         self.model = model
         self.device = model.device
         self.epochs = epochs
-        self.optimezer = optimizer
+        self.optimizer = optimizer
         self.scheduler = scheduler
+        self.dataloader = dataloader
         
     def train(self):
         for epoch in range(self.epochs):
             self.model.train()
             
-            for step, batch in ...:
+            for batch in self.dataloader:
                 
                 self.optimizer.zero_grad() 
-                out = self.model(input_ids=batch['input_ids'].to(device),  attention_mask=batch['attention_mask'].to(device), labels=labels.to(device))
+                out = self.model(input_ids=batch.to(device), labels=batch.to(device))
                 out.loss.backward()
                 self.optimizer.step()
                 
