@@ -1,6 +1,7 @@
 import os
 import math
 import torch
+import logging
 from transformers import PreTrainedModel, PreTrainedTokenizer
 from transformers.utils import ModelOutput
 from torch.utils.data import DataLoader
@@ -22,7 +23,7 @@ class Trainer:
         for epoch in range(self.epochs):
             self.model.train()
             
-            for batch in self.dataloader:
+            for step, batch in enumerate(self.dataloader):
                 labels = batch.type(torch.LongTensor)
                 self.optimizer.zero_grad() 
                 out = self.model(input_ids=batch.to(device), labels=labels.to(device))
@@ -31,4 +32,10 @@ class Trainer:
                 
                 # Move inside so the warmup is more smoothed
                 self.scheduler.step()
+                
+                output = {'loss' : out.loss.item()}
+                if step % 500 == 0:
+                    print(f'Step {step},  loss : {output["loss"]}')
+                
+                
 

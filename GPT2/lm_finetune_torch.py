@@ -15,7 +15,8 @@ parser.add_argument("--seed", default=99, type=int, help="Random seed")
 parser.add_argument("--data_path",  default="GPT2/corpusCzechVerse-master/ccv", type=str, help="Path to Data")
 parser.add_argument("--model_path", default="./gpt2-cz-poetry",  type=str, help="Path to Model")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
-parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default="Seznam/small-e-czech", type=str, help="Default Model from HF to use")
+parser.add_argument("--max_len", default=512, type=int, help="Max length for tokenizer")
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -29,6 +30,9 @@ def main(args: argparse.Namespace):
     else:
         tokenizer = AutoTokenizer.from_pretrained(args.model_path)
         model = AutoModelForCausalLM.from_pretrained(args.model_path)
+    
+    if args.max_len != 0:
+        tokenizer.model_max_length = args.max_len
 
         
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path)
