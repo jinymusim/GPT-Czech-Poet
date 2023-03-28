@@ -17,7 +17,7 @@ parser.add_argument("--model_path", default="./gpt2-cz-poetry",  type=str, help=
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 parser.add_argument("--default_hf_model", default="Seznam/small-e-czech", type=str, help="Default Model from HF to use")
 parser.add_argument("--max_len", default=512, type=int, help="Max length for tokenizer")
-parser.add_argument("--half_precision", default=False, type=bool, help="Use half precision on model")
+parser.add_argument("--half_precision", default=True, type=bool, help="Use half precision on model")
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -38,7 +38,6 @@ def main(args: argparse.Namespace):
         
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path)
     dataloader = DataLoader(train_data.pytorch_dataset_body, batch_size=args.batch_size, collate_fn=CorpusDatasetPytorch.collate)
-    
     
     model = model.to(device)
     optimizer = torch.optim.AdamW(model.parameters(),lr=args.learning_rate)

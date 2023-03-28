@@ -19,23 +19,27 @@ class Trainer:
         self.dataloader = dataloader
         self.half_precision = half_precision
         if self.half_precision:
-            self.model.cpu().half().to(self.device)
+            self.scaler = torch.cuda.amp.grad_scaler.GradScaler()
         
     def train(self):
         for epoch in range(self.epochs):
             self.model.train()
             
             for step, batch in enumerate(self.dataloader):
-                if self.half_precision:
-                    batch.half()
                 labels = batch.type(torch.LongTensor)
                 self.optimizer.zero_grad() 
-                out = self.model(input_ids=batch.to(self.device), labels=labels.to(self.device))
-                out.loss.backward()
-                self.optimizer.step()
-                
-                # Move inside so the warmup is more smoothed
-                self.scheduler.step()
+                if self.half_precision:
+                    with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
+                        out = self.model(input_ids=batch.to(self.device), labels=labels.to(self.device))
+                    self.scaler.scale(out.loss).backward()
+                    self.scaler.step(self.optimizer)
+                    self.scaler.update()
+                else:
+                    out = self.model(input_ids=batch.to(self.device), labels=labels.to(self.device))
+                    out.loss.backward()
+                    self.optimizer.step()
+                    
+                    self.scheduler.step()
                 
                 output = {'loss' : out.loss.item()}
                 if step % 500 == 0:
