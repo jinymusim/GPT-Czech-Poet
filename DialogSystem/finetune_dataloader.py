@@ -23,4 +23,16 @@ class DialogDataset:
         self.data = data
                 
     def parse(self, dialogue):
-        pass
+        
+        dialog_data = []
+        context = []
+        
+        for act in dialogue['dialog']:
+            current_act = {
+                "utterance" : act,
+                "context": context[:]
+            }
+            dialog_data.append(current_act)
+            context.append(act)
+            
+        return dialog_data
