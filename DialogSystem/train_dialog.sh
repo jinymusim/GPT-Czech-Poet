@@ -5,7 +5,7 @@ module add py-pip/py-pip-19.3-intel-19.0.4-hudzomi
 export TMPDIR=$SCRATCHDIR
 singularity shell --nv /cvmfs/singularity.metacentrum.cz/NGC/PyTorch:22.10-py3.SIF
 cd $SCRATCHDIR
-pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/DialogSystemrequirements.txt
+pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/DialogSystem/requirements.txt
 export PYTHONPATH="${PYTHONPATH}:${TMPDIR}"
 cd /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/DialogSystem
 python3 finetune_torch.py 
