@@ -29,7 +29,7 @@ class Trainer:
                 labels = batch['label']
                 
                 self.optimizer.zero_grad()
-                out = self.model(input_ids=inputs.to(self.device), labels=labels.to(self.device))
+                out = self.model(input_ids=inputs.to(self.device), labels=labels.to(self.device), attention_mask=batch['attention_mask'].to(self.device))
                 out.loss.backward()
                 self.optimizer.step()
                     

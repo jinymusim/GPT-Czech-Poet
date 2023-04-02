@@ -1,6 +1,8 @@
 import transformers
 from transformers import  AutoTokenizer, AutoModelForCausalLM
 from finetune_dataloader import DialogDataset
+from trainer_torch import Trainer
+from torch.utils.data import DataLoader
 import torch
 import os
 import argparse
@@ -35,10 +37,18 @@ def main(args: argparse.Namespace):
     tokenizer.model_max_length = args.max_token_len
     # Move Model to desired Device
     model = model.to(device)
-    optimizer = torch.optim.AdamW(model.params(), lr=args.learning_rate)
-    scheduler = transformers.get_cosine_schedule_with_warmup(optimizer, 1000//args.batch_size, 1000 * args.epochs // args.batch_size)
-    train_dat, validation_dat = DialogDataset(args.dataset, 'train'), DialogDataset(args.dataset, 'validation')
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
     
+    train_dat, validation_dat = DialogDataset(args.dataset, 'train', tokenizer), DialogDataset(args.dataset, 'validation', tokenizer)
+    
+    scheduler = transformers.get_cosine_schedule_with_warmup(optimizer, len(train_dat.data)//args.batch_size, len(train_dat.data) * args.epochs // args.batch_size)
+    
+    
+    train_loader = DataLoader(train_dat.data,batch_size=args.batch_size, collate_fn=DialogDataset.collate)
+    val_loader = DataLoader(validation_dat.data,batch_size=args.batch_size, collate_fn=DialogDataset.collate)
+    
+    trainer = Trainer(model, args.epochs, optimizer, scheduler, train_loader)
+    trainer.train()
     
     # Save Model
     model.save_pretrained(args.model_path)
