@@ -12,7 +12,7 @@ parser.add_argument("--epochs", default=10, type=int, help="Number of Epochs to 
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning rate for finetune")
 parser.add_argument("--max_token_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--use_default_model", default=True, type=bool, help="Bool if default huggingface model used")
-parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default huggingface model path")
+parser.add_argument("--default_hf_model", default="gpt2", type=str, help="Default huggingface model path")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname("__file__"), "dialog.model")), type=str, help="Model path")
 parser.add_argument("--half_precision", default=True, type=bool, help="Use half precision on model")
 parser.add_argument("--use_gpu_if_available", default=False, type=bool, help="If GPU should be used")
