@@ -17,7 +17,7 @@ parser.add_argument("--max_token_len", default=1024, type=int, help="Max length 
 parser.add_argument("--use_default_model", default=True, type=bool, help="Bool if default huggingface model used")
 parser.add_argument("--default_hf_model", default="gpt2", type=str, help="Default huggingface model path")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname("__file__"), "dialog.model")), type=str, help="Model path")
-parser.add_argument("--use_gpu_if_available", default=False, type=bool, help="If GPU should be used")
+parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 parser.add_argument("--dataset", default="daily_dialog", type=str, help="Dialog Dataset to use for finetune")
 
 def main(args: argparse.Namespace):
