@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--max_token_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--tokenizer_hf_model", default="gpt2", type=str, help="Default huggingface model path")
-parser.add_argument("--lm_model_path", default="dialogmodel", type=str, help="Model path")
+parser.add_argument("--lm_model_path", default="jinymusim/dialogmodel", type=str, help="Model path")
 parser.add_argument("--voice_preprocess_path", default="microsoft/speecht5_tts", type=str, help="Model path")
 parser.add_argument("--voice_model_path", default="microsoft/speecht5_tts", type=str, help="Model path")
 parser.add_argument("--voice_vocoder_path", default="microsoft/speecht5_hifigan", type=str, help="Model path")
