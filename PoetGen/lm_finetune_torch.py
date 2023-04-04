@@ -4,26 +4,27 @@ from corpus_dataset_torch import CorpusDatasetPytorch
 from trainer_torch import Trainer
 import transformers
 import torch
+import os
 import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size", default=1, type=int, help="Batch size.")
-parser.add_argument("--epochs", default=1, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size", default=2, type=int, help="Batch size.")
+parser.add_argument("--epochs", default=4, type=int, help="Number of epochs to run.")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
-parser.add_argument("--seed", default=99, type=int, help="Random seed")
-parser.add_argument("--data_path",  default="GPT2_test/corpusCzechVerse-master/ccv", type=str, help="Path to Data")
-parser.add_argument("--model_path", default="./gpt2-cz-poetry",  type=str, help="Path to Model")
+parser.add_argument("--data_path",  default="./corpusCzechVerse-master/ccv", type=str, help="Path to Data")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname("__file__"), "gpt-cz-poetry")),  type=str, help="Path to Model")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
-parser.add_argument("--default_hf_model", default="Seznam/small-e-czech", type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--max_len", default=512, type=int, help="Max length for tokenizer")
-parser.add_argument("--half_precision", default=True, type=bool, help="Use half precision on model")
-
-
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 
 def main(args: argparse.Namespace):
-    
+    # Base Device is CPU
+    device = torch.device('cpu')
+    # If Wanted and GPU is available, use it
+    if args.use_gpu_if_available:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     if args.use_default_model:
         tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
@@ -32,8 +33,7 @@ def main(args: argparse.Namespace):
         tokenizer = AutoTokenizer.from_pretrained(args.model_path)
         model = AutoModelForCausalLM.from_pretrained(args.model_path)
     
-    if args.max_len != 0:
-        tokenizer.model_max_length = args.max_len
+    tokenizer.model_max_length = args.max_len
 
         
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path)
@@ -42,13 +42,14 @@ def main(args: argparse.Namespace):
     model = model.to(device)
     optimizer = torch.optim.AdamW(model.parameters(),lr=args.learning_rate)
     scheduler = transformers.get_cosine_schedule_with_warmup(optimizer, 
-                                                         train_data.dataset.size//args.batch_size,
-                                                         train_data.dataset.size//args.batch_size *args.epochs)
+                                                         len(train_data.pytorch_dataset_body)//args.batch_size,
+                                                         len(train_data.pytorch_dataset_body)//args.batch_size *args.epochs)
     
-    trainer = Trainer(model, args.epochs, optimizer, scheduler, dataloader, args.half_precision)
+    trainer = Trainer(model, args.epochs, optimizer, scheduler, dataloader)
     trainer.train()
     
     model.save_pretrained(args.model_path)
+    tokenizer.save_pretrained(args.model_path)
     
 
 

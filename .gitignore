@@ -143,7 +143,7 @@ TF/
 PYTORCH/
 
 # GPT2 Corpus Data 
-GPT2_test/corpusCzechVerse-master/
+*/corpusCzechVerse-master/
 
 # Data
 *.json
