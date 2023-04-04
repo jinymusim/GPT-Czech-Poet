@@ -43,7 +43,7 @@ class DialogDataset:
                     "utterance" : self.tokenizer.encode(act, return_tensors='np', truncation=True)[0],
                     "context": self.tokenizer.encode(" ".join(context), return_tensors='np', truncation=True)[0],
                 }
-            dialog_data.append(current_act)
+                dialog_data.append(current_act)
             
             
         return dialog_data
