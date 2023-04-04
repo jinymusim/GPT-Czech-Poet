@@ -3,12 +3,11 @@ import datasets
 import torch
 import argparse
 import soundfile as sf
-from special_tokens import SPECIAL_TOKENS
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--max_token_len", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--tokenizer_hf_model", default="gpt2", type=str, help="Default huggingface model path")
+parser.add_argument("--tokenizer_hf_model", default="jinymusim/dialogmodel", type=str, help="Default huggingface model path")
 parser.add_argument("--lm_model_path", default="jinymusim/dialogmodel", type=str, help="Model path")
 parser.add_argument("--voice_preprocess_path", default="microsoft/speecht5_tts", type=str, help="Model path")
 parser.add_argument("--voice_model_path", default="microsoft/speecht5_tts", type=str, help="Model path")
@@ -64,8 +63,6 @@ class DialogSystem:
 def main(args: argparse.Namespace):
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_hf_model)
     tokenizer.model_max_length = args.max_token_len
-    tokenizer.add_special_tokens(
-            {"additional_special_tokens": SPECIAL_TOKENS})
     lm_model = AutoModelForCausalLM.from_pretrained(args.lm_model_path)
     voice_pre =  SpeechT5Processor.from_pretrained(args.voice_preprocess_path)
     voice_model =  SpeechT5ForTextToSpeech.from_pretrained(args.voice_model_path)
