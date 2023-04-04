@@ -4,7 +4,7 @@ import numpy as np
 import datasets
 import pickle
 import torch
-
+from special_tokens import SPECIAL_TOKENS
 class DialogDataset:
     
     def __init__(self, dataset, split: str,tokenizer: PreTrainedTokenizer, cache_dir='./') -> None:
@@ -29,14 +29,20 @@ class DialogDataset:
         dialog_data = []
         context = []
         
+        self.tokenizer.add_special_tokens(
+            {"additional_special_tokens": SPECIAL_TOKENS})
+
         
         
-        for act in dialogue['dialog']:
-            context.append(act)
-            current_act = {
-                "utterance" : self.tokenizer.encode(act, return_tensors='np', truncation=True)[0],
-                "context": self.tokenizer.encode(" ".join(context), return_tensors='np', truncation=True)[0],
-            }
+        for part,act in enumerate(dialogue['dialog']):
+            if part % 2 == 0:
+                context.append("<|user|> " + act)
+            else:
+                context.append("<|system|> " + act)
+                current_act = {
+                    "utterance" : self.tokenizer.encode(act, return_tensors='np', truncation=True)[0],
+                    "context": self.tokenizer.encode(" ".join(context), return_tensors='np', truncation=True)[0],
+                }
             dialog_data.append(current_act)
             
             
