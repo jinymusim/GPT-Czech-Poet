@@ -45,11 +45,13 @@ class DialogSystem:
     def generate(self, prompts):
         tokenized_context = self.tokenizer.encode(" ".join(prompts), return_tensors='pt', truncation=True)
         out_response = self.lm_model.generate(tokenized_context, 
-                                              max_length=50,
+                                              max_length=20,
                                               num_beams=2,
                                               no_repeat_ngram_size=2,
                                               early_stopping=True)
-        decoded_response = self.tokenizer.decode(out_response[0])
+        # Truncate User Input
+        decoded_response = self.tokenizer.decode(out_response[0])[len(" ".join(prompts)):]
+        
         
         input_voc = self.voice_preprocess(text=decoded_response, return_tensors='pt')
         speech = self.voice_model.generate_speech(input_voc["input_ids"],self.speaker_embed, vocoder=self.voice_vocoder)
