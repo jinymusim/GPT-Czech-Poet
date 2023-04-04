@@ -1,11 +1,9 @@
 import os
-import sys
 import json
 import numpy as np
 import torch
 import pickle
 from transformers import GPT2Tokenizer
-from torch.utils import data
 
 
 class CorpusDatasetPytorch:
