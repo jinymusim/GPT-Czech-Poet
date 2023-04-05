@@ -33,11 +33,11 @@ class DialogSystem:
                 continue
             if user_utterance.lower() in ['stop', 'end', 'break']:
                 break
-            ctx.append( user_utterance)
+            ctx.append(" <|user|> " + user_utterance)
             response = self.generate(ctx)
             print(f'SYSTEM> {response}')
             
-            ctx.append(response)
+            ctx.append(" <|system|> " + response)
 
         
         
