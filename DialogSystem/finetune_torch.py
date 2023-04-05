@@ -46,6 +46,8 @@ def main(args: argparse.Namespace):
     
     scheduler = transformers.get_cosine_schedule_with_warmup(optimizer, len(train_dat.data)//args.batch_size, len(train_dat.data) * args.epochs // args.batch_size)
     
+    tokenizer.pad_token = tokenizer.eos_token
+    model.config.pad_token_id = model.config.eos_token_id
     
     train_loader = DataLoader(train_dat.data,batch_size=args.batch_size, collate_fn=DialogDataset.collate)
     val_loader = DataLoader(validation_dat.data,batch_size=args.batch_size, collate_fn=DialogDataset.collate)
