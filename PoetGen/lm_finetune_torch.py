@@ -9,13 +9,13 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size", default=4, type=int, help="Batch size.")
-parser.add_argument("--epochs", default=2, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size", default=2, type=int, help="Batch size.")
+parser.add_argument("--epochs", default=4, type=int, help="Number of epochs to run.")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default="./corpusCzechVerse/ccv", type=str, help="Path to Data")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname("__file__"), "gpt-cz-poetry")),  type=str, help="Path to Model")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
-parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default="jinymusim/gpt-czech-poet", type=str, help="Default Model from HF to use")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 
@@ -37,13 +37,14 @@ def main(args: argparse.Namespace):
 
         
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path)
-    dataloader = DataLoader(train_data.pytorch_dataset_body, batch_size=args.batch_size, collate_fn=CorpusDatasetPytorch.collate)
+    complete_list = train_data.pytorch_dataset_text + train_data.pytorch_dataset_body + train_data.pytorch_dataset_part
+    dataloader = DataLoader(complete_list , batch_size=args.batch_size, collate_fn=CorpusDatasetPytorch.collate)
     
     model = model.to(device)
     optimizer = torch.optim.AdamW(model.parameters(),lr=args.learning_rate)
     scheduler = transformers.get_cosine_schedule_with_warmup(optimizer, 
-                                                         len(train_data.pytorch_dataset_body)//args.batch_size,
-                                                         len(train_data.pytorch_dataset_body)//args.batch_size *args.epochs)
+                                                         len(complete_list)//args.batch_size,
+                                                         len(complete_list)//args.batch_size *args.epochs)
     
     trainer = Trainer(model, args.epochs, optimizer, scheduler, dataloader)
     trainer.train()
