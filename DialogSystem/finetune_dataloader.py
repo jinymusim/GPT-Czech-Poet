@@ -11,7 +11,7 @@ class DialogDataset:
         self.dataset = dataset
         self.split = split
         self.tokenizer = tokenizer
-        self.file_name = os.path.join(cache_dir, f"{split}_data.json")
+        self.file_name = os.path.join(cache_dir, f"{dataset}_{split}_data.json")
         if os.path.isfile(self.file_name):
             data = pickle.load(open(self.file_name, 'rb'))
         else:
@@ -20,11 +20,35 @@ class DialogDataset:
             for idx, dialogue in enumerate(dataset):
                 if idx % 500 == 0:
                     print(f'Processing dialogue {idx + 1}')
-                data.extend(self.parse(dialogue))
+                if self.dataset == "daily_dialog":
+                    data.extend(self.parse_daily(dialogue))
+                elif self.dataset == "multi_woz_v22":
+                    data.extend(self.parse_multi(dialogue))
             pickle.dump(data, open(self.file_name, 'wb+'))
         self.data = data
+        
+        
+    def parse_multi(self,dialogue):
+        dialog_data = []
+        context = []
+        
+        self.tokenizer.add_special_tokens(
+            {"additional_special_tokens": SPECIAL_TOKENS})
+        for speaker, utt in zip(dialogue['turns']['speaker'],dialogue['turns']['utterance']):
+            if speaker == 1:
+                current_act = {
+                    "utterance" : self.tokenizer.encode(utt + " <|endoftext|>", return_tensors='np', truncation=True)[0],
+                    "context": self.tokenizer.encode(" ".join(context) +  " <|endoftext|> <|system|> "  + utt + " <|endoftext|>", return_tensors='np', truncation=True)[0],
+                }
+                dialog_data.append(current_act)
                 
-    def parse(self, dialogue):
+                context.append("<|system|> " + utt)
+            else:
+                context.append("<|user|> " + utt)
+        
+        return dialog_data
+                
+    def parse_daily(self, dialogue):
         
         dialog_data = []
         context = []
@@ -38,7 +62,7 @@ class DialogDataset:
             else:              
                 current_act = {
                     "utterance" : self.tokenizer.encode(act + " <|endoftext|>", return_tensors='np', truncation=True)[0],
-                    "context": self.tokenizer.encode(" ".join(context) +  " <|endoftext|> "  + act + " <|endoftext|>", return_tensors='np', truncation=True)[0],
+                    "context": self.tokenizer.encode(" ".join(context) +  " <|endoftext|> <|system|> "  + act + " <|endoftext|>", return_tensors='np', truncation=True)[0],
                 }
                 dialog_data.append(current_act)
                 
