@@ -9,8 +9,8 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size", default=4, type=int, help="Batch size.")
-parser.add_argument("--epochs", default=2, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size", default=6, type=int, help="Batch size.")
+parser.add_argument("--epochs", default=4, type=int, help="Number of epochs to run.")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default="./corpusCzechVerse/ccv", type=str, help="Path to Data")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname("__file__"), "gpt-cz-poetry")),  type=str, help="Path to Model")
