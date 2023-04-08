@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--seed", default=42, type=int, help="Seed to set for Torch")
 parser.add_argument("--batch_size", default=4,  type=int, help="Batch size")
-parser.add_argument("--epochs", default=10, type=int, help="Number of Epochs to finetune")
+parser.add_argument("--epochs", default=30, type=int, help="Number of Epochs to finetune")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning rate for finetune")
 parser.add_argument("--max_token_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--use_default_model", default=True, type=bool, help="Bool if default huggingface model used")
