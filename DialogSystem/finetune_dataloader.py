@@ -36,15 +36,16 @@ class DialogDataset:
             {"additional_special_tokens": SPECIAL_TOKENS})
         for speaker, utt, state in zip(dialogue['turns']['speaker'],dialogue['turns']['utterance'],dialogue['turns']['frames']):
             if speaker == 1:
-                if len(state) >= 1:
-                    state = state[0]["state"]
-                    if len(state) >= 1:
-                        state = state[0]
+                belief_state = state
+                if len(belief_state) >= 1:
+                    belief_state = belief_state[0]["state"]
+                    if len(belief_state) >= 1:
+                        belief_state = belief_state[0]
                     else:
-                        state = '\{\}'
+                        belief_state = '\{\}'
                 else:
-                    state = '\{\}'
-                current_state = "<|belive|> " + str(state) + " <|endoftext|> "
+                    belief_state = '\{\}'
+                current_state = "<|belive|> " + str(belief_state) + " <|endoftext|> "
                 current_act = {
                     "utterance" : self.tokenizer.encode(current_state + utt + " <|endoftext|>", return_tensors='np', truncation=True)[0],
                     "context": self.tokenizer.encode(" ".join(context) +  " <|endoftext|> "  + current_state + utt + " <|endoftext|>" + current_state, return_tensors='np', truncation=True)[0],
