@@ -40,6 +40,10 @@ class DialogDataset:
                     state = state[0]["state"]
                     if len(state) >= 1:
                         state = state[0]
+                    else:
+                        state = '\{\}'
+                else:
+                    state = '\{\}'
                 current_state = "<|belive|> " + str(state) + " <|endoftext|> "
                 current_act = {
                     "utterance" : self.tokenizer.encode(current_state + utt + " <|endoftext|>", return_tensors='np', truncation=True)[0],
