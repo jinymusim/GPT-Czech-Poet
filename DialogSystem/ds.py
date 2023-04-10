@@ -22,7 +22,7 @@ class DialogSystem:
         self.voice_preprocess = voice_preprocess
         self.voice_model = voice_model
         self.voice_vocoder = voice_vocoder
-        self.dialog_state = '{}'
+        self.dialog_state = ''
         
     def interact(self):
         while True:
@@ -34,11 +34,11 @@ class DialogSystem:
                 continue
             if user_utterance.lower() in ['stop', 'end', 'break']:
                 break
-            ctx.append(" <|user|> " + user_utterance)
+            ctx.append(user_utterance)
             response = self.generate(ctx)
             print(f'SYSTEM> {response}')
             
-            ctx.append(" <|system|> " + response)
+            ctx.append(response)
 
         
         
