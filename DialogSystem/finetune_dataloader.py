@@ -36,13 +36,9 @@ class DialogDataset:
             {"additional_special_tokens": SPECIAL_TOKENS})
         for speaker, utt, state in zip(dialogue['turns']['speaker'],dialogue['turns']['utterance'],dialogue['turns']['frames']):
             if speaker == 1:
-                belief_state = state
+                belief_state = state["state"]
                 if len(belief_state) >= 1:
-                    belief_state = belief_state[0]["state"]
-                    if len(belief_state) >= 1:
-                        belief_state = belief_state[0]
-                    else:
-                        belief_state = '\{\}'
+                    belief_state = belief_state[0]
                 else:
                     belief_state = '\{\}'
                 current_state = "<|belive|> " + str(belief_state) + " <|endoftext|> "
