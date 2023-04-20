@@ -9,6 +9,8 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 import numpy as np
 import gym_super_mario_bros as mario
+from nes_py.wrappers import JoypadSpace
+from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 
 import wrappers
 
@@ -19,7 +21,7 @@ parser.add_argument("--seed", default=None, type=int, help="Random seed.")
 parser.add_argument("--threads", default=0, type=int, help="Maximum number of threads to use.")
 # For these and any other arguments you add, ReCodEx will keep your default value.
 parser.add_argument("--entropy_regularization", default=0.01, type=float, help="Entropy regularization weight.")
-parser.add_argument("--env", default="SuperMarioBros-v2", type=str, help="Environment.")
+parser.add_argument("--env", default="SuperMarioBros-v3", type=str, help="Environment.")
 parser.add_argument("--evaluate_each", default=10, type=int, help="Evaluate each number of batches.")
 parser.add_argument("--evaluate_for", default=1, type=int, help="Evaluate the given number of episodes.")
 parser.add_argument("--gamma", default=1, type=float, help="Discounting factor.")
@@ -27,7 +29,7 @@ parser.add_argument("--convlotuions", default=2, type=int, help="Number of Convo
 parser.add_argument("--filters", default=4, type=int, help="Number of filters in convolutions.")
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning rate.")
 parser.add_argument("--replay_buffer_size", default=100_000, type=int, help="Replay buffer size.")
-parser.add_argument("--batch_size", default=2, type=int, help="Batch size.")
+parser.add_argument("--batch_size", default=4, type=int, help="Batch size.")
 parser.add_argument("--model_path", default="mario_model", type=str, help="Output file for model.")
 
 
@@ -115,29 +117,32 @@ def main(env: wrappers.EvaluationEnv, args: argparse.Namespace) -> None:
     network = Network(env, args)
 
     def evaluate_episode(start_evaluation: bool = False, logging: bool = True) -> float:
-        rewards, state, done = 0, env.reset(start_evaluation=start_evaluation, logging=logging)[0], False
-        while not done:
+        rewards, state, done = 0, env.reset(start_evaluation=start_evaluation, logging=logging), False
+        i=0
+        while not done and i<1000:
             # TODO: Predict the action using the greedy policy.
                                 # Changed to work with batch dimension
-            action = np.argmax(network.predict_actions([state])[0,:])
-            state, reward, terminated, truncated, _ = env.step(action)
-            done = terminated or truncated
+            action = np.argmax(network.predict_actions([state])[0])
+            state, reward, done ,_ = env.step(action)
             rewards += reward
+            i+=1
+        print(f"Episode Evaluated to {rewards}")
         return rewards
 
     # Create the mario environment
     
-    best_performance = 0
+    best_performance = 10
 
     replay_buffer = collections.deque(maxlen=args.replay_buffer_size)
     Transition = collections.namedtuple("Transition", ["state", "action", "reward", "done", "next_state"])
     while True:
         # Training
         for _ in range(args.evaluate_each):
-            mario_env =  mario.make(args.env)
-            state, done = mario_env.reset(seed=args.seed), False
+            mario_env = mario.make(args.env)
+            mario_env = JoypadSpace(mario_env, SIMPLE_MOVEMENT)
+            state, done = mario_env.reset(), False
             i=0
-            while not done and i<5000:
+            while not done and i<1000:
                 # Choose actions using `network.predict_actions`.
                 # TODO: this is weird, why is there supposed to be a log?
                 action = np.argmax(network.predict_actions([state])[0])
@@ -169,7 +174,9 @@ if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
     # Create the environment
-    env = wrappers.EvaluationEnv(mario.make(args.env), args.seed, args.render_each)
+    mario_env = mario.make(args.env)
+    mario_env = JoypadSpace(mario_env, SIMPLE_MOVEMENT)
+    env = wrappers.EvaluationEnv(mario_env, args.seed, args.render_each)
 
     # TODO: args.learning_rate/=(args.evaluate_each*args.workers)?
     main(env, args)

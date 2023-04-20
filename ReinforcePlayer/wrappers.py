@@ -44,7 +44,7 @@ class EvaluationEnv(gym.Wrapper):
             self.unwrapped.render_mode = self._original_render_mode
         self._episode_running = True
         self._episode_return = 0 if logging or self._evaluating_from is not None else None
-        return super().reset(options=options)
+        return super().reset()
 
     def step(self, action):
         if not self._episode_running:
