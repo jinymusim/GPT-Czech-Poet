@@ -13,11 +13,14 @@ parser.add_argument("--lm_model_path", default="jinymusim/dialogmodel", type=str
 parser.add_argument("--voice_preprocess_path", default="microsoft/speecht5_tts", type=str, help="Model path")
 parser.add_argument("--voice_model_path", default="microsoft/speecht5_tts", type=str, help="Model path")
 parser.add_argument("--voice_vocoder_path", default="microsoft/speecht5_hifigan", type=str, help="Model path")
+parser.add_argument("--use_voice", default=True, type=bool, help="If to use voice output")
 parser.add_argument("--stable_diff_model", default='runwayml/stable-diffusion-v1-5', type=str, help="Stable diffusion Model")
+parser.add_argument("--use_image", default=False, type=bool, help="If to use image output")
 
 class DialogSystem:
     
-    def __init__(self, tokenizer: PreTrainedTokenizer, lm_model: PreTrainedModel, voice_preprocess, voice_model, voice_vocoder, speaker_embed, diff_model) -> None:
+    def __init__(self, tokenizer: PreTrainedTokenizer, lm_model: PreTrainedModel, voice_preprocess = None, voice_model = None, voice_vocoder = None, 
+                 speaker_embed = None, diff_model = None) -> None:
         self.tokenizer = tokenizer
         self.lm_model = lm_model
         self.speaker_embed = speaker_embed
@@ -56,13 +59,15 @@ class DialogSystem:
         # Truncate User Input
         decoded_response = self.tokenizer.decode(out_response[0], skip_special_tokens=True)[len(" ".join(prompts)):]
         
-        input_voc = self.voice_preprocess(text=decoded_response, return_tensors='pt')
-        speech = self.voice_model.generate_speech(input_voc["input_ids"],self.speaker_embed, vocoder=self.voice_vocoder)
+        if self.voice_model != None:
+            input_voc = self.voice_preprocess(text=decoded_response, return_tensors='pt')
+            speech = self.voice_model.generate_speech(input_voc["input_ids"],self.speaker_embed, vocoder=self.voice_vocoder)
         
-        sf.write("ds_test.wav", speech.numpy(), samplerate=16000)
-        
-        image = self.diff_model(decoded_response).images[0]
-        image.save("ds_test.png")
+            sf.write("ds_test.wav", speech.numpy(), samplerate=16000)
+            
+        if self.diff_model != None:
+            image = self.diff_model(decoded_response).images[0]
+            image.save("ds_test.png")
         
         return decoded_response
     
@@ -70,13 +75,17 @@ def main(args: argparse.Namespace):
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_hf_model)
     tokenizer.model_max_length = args.max_token_len
     lm_model = AutoModelForCausalLM.from_pretrained(args.lm_model_path)
-    voice_pre =  SpeechT5Processor.from_pretrained(args.voice_preprocess_path)
-    voice_model =  SpeechT5ForTextToSpeech.from_pretrained(args.voice_model_path)
-    voice_vocoder = SpeechT5HifiGan.from_pretrained(args.voice_vocoder_path)
+    voice_pre, voice_model, voice_vocoder,speaker_embeddings = None, None, None, None
+    if args.use_voice:
+        voice_pre =  SpeechT5Processor.from_pretrained(args.voice_preprocess_path)
+        voice_model =  SpeechT5ForTextToSpeech.from_pretrained(args.voice_model_path)
+        voice_vocoder = SpeechT5HifiGan.from_pretrained(args.voice_vocoder_path)
     
-    embeddings_dataset = datasets.load_dataset("Matthijs/cmu-arctic-xvectors", split="validation")
-    speaker_embeddings = torch.tensor(embeddings_dataset[3000]["xvector"]).unsqueeze(0)
-    stable_diff = StableDiffusionPipeline.from_pretrained(args.stable_diff_model, torch_dtype=torch.float16)
+        embeddings_dataset = datasets.load_dataset("Matthijs/cmu-arctic-xvectors", split="validation")
+        speaker_embeddings = torch.tensor(embeddings_dataset[3000]["xvector"]).unsqueeze(0)
+    stable_diff  = None
+    if args.use_image: 
+        stable_diff = StableDiffusionPipeline.from_pretrained(args.stable_diff_model, torch_dtype=torch.float16)
     
     DS = DialogSystem(tokenizer, lm_model, voice_pre, voice_model, voice_vocoder,speaker_embeddings,stable_diff)
     DS.interact()
