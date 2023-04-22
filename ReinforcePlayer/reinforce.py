@@ -24,9 +24,9 @@ parser.add_argument("--entropy_regularization", default=0.01, type=float, help="
 parser.add_argument("--env", default="SuperMarioBros-v3", type=str, help="Environment.")
 parser.add_argument("--evaluate_each", default=10, type=int, help="Evaluate each number of batches.")
 parser.add_argument("--evaluate_for", default=1, type=int, help="Evaluate the given number of episodes.")
-parser.add_argument("--gamma", default=1, type=float, help="Discounting factor.")
-parser.add_argument("--convlotuions", default=2, type=int, help="Number of Convolutions.")
-parser.add_argument("--filters", default=4, type=int, help="Number of filters in convolutions.")
+parser.add_argument("--gamma", default=0.98, type=float, help="Discounting factor.")
+parser.add_argument("--convlotuions", default=3, type=int, help="Number of Convolutions.")
+parser.add_argument("--filters", default=8, type=int, help="Number of filters in convolutions.")
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning rate.")
 parser.add_argument("--replay_buffer_size", default=100_000, type=int, help="Replay buffer size.")
 parser.add_argument("--batch_size", default=4, type=int, help="Batch size.")
@@ -118,14 +118,12 @@ def main(env: wrappers.EvaluationEnv, args: argparse.Namespace) -> None:
 
     def evaluate_episode(start_evaluation: bool = False, logging: bool = True) -> float:
         rewards, state, done = 0, env.reset(start_evaluation=start_evaluation, logging=logging), False
-        i=0
-        while not done and i<1000:
+        while not done:
             # TODO: Predict the action using the greedy policy.
                                 # Changed to work with batch dimension
             action = np.argmax(network.predict_actions([state])[0])
             state, reward, done ,_ = env.step(action)
             rewards += reward
-            i+=1
         print(f"Episode Evaluated to {rewards}")
         return rewards
 
@@ -141,8 +139,7 @@ def main(env: wrappers.EvaluationEnv, args: argparse.Namespace) -> None:
             mario_env = mario.make(args.env)
             mario_env = JoypadSpace(mario_env, SIMPLE_MOVEMENT)
             state, done = mario_env.reset(), False
-            i=0
-            while not done and i<1000:
+            while not done:
                 # Choose actions using `network.predict_actions`.
                 # TODO: this is weird, why is there supposed to be a log?
                 action = np.argmax(network.predict_actions([state])[0])
@@ -150,7 +147,6 @@ def main(env: wrappers.EvaluationEnv, args: argparse.Namespace) -> None:
                 next_state, reward, done, _ = mario_env.step(action)
                 replay_buffer.append(Transition(state, action,reward, done, next_state))
                 state = next_state
-                i+=1
                 # Training
                 if len(replay_buffer) >= 4 * args.batch_size:
                     # Note that until now we used `np.random.choice` with `replace=False` to generate
