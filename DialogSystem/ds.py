@@ -1,4 +1,5 @@
 from transformers import  AutoTokenizer, AutoModelForCausalLM, SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan, PreTrainedTokenizer, PreTrainedModel
+from diffusers import StableDiffusionPipeline
 import datasets
 import torch
 import argparse
@@ -12,16 +13,18 @@ parser.add_argument("--lm_model_path", default="jinymusim/dialogmodel", type=str
 parser.add_argument("--voice_preprocess_path", default="microsoft/speecht5_tts", type=str, help="Model path")
 parser.add_argument("--voice_model_path", default="microsoft/speecht5_tts", type=str, help="Model path")
 parser.add_argument("--voice_vocoder_path", default="microsoft/speecht5_hifigan", type=str, help="Model path")
+parser.add_argument("--stable_diff_model", default='runwayml/stable-diffusion-v1-5', type=str, help="Stable diffusion Model")
 
 class DialogSystem:
     
-    def __init__(self, tokenizer: PreTrainedTokenizer, lm_model: PreTrainedModel, voice_preprocess, voice_model, voice_vocoder, speaker_embed) -> None:
+    def __init__(self, tokenizer: PreTrainedTokenizer, lm_model: PreTrainedModel, voice_preprocess, voice_model, voice_vocoder, speaker_embed, diff_model) -> None:
         self.tokenizer = tokenizer
         self.lm_model = lm_model
         self.speaker_embed = speaker_embed
         self.voice_preprocess = voice_preprocess
         self.voice_model = voice_model
         self.voice_vocoder = voice_vocoder
+        self.diff_model = diff_model
         self.dialog_state = ''
         
     def interact(self):
@@ -52,20 +55,14 @@ class DialogSystem:
                                               pad_token_id=self.tokenizer.eos_token_id)
         # Truncate User Input
         decoded_response = self.tokenizer.decode(out_response[0], skip_special_tokens=True)[len(" ".join(prompts)):]
-        #if '<|belive|>' in decoded_response:
-        #    belive_idx = decoded_response.index('<|belive|>') + len('<|belive|>')
-        #    if "<|endoftext|>" in decoded_response[belive_idx:]:
-        #        to_end = decoded_response[belive_idx:].index("<|endoftext|>")
-        #        self.dialog_state = decoded_response[belive_idx:belive_idx + to_end]
-        #        decoded_response = decoded_response[belive_idx + to_end + len("<|endoftext|>"):]
-        #    decoded_response = decoded_response[belive_idx:]
-        #else:
-        #    decoded_response = decoded_response[len(" ".join(prompts)):]
         
         input_voc = self.voice_preprocess(text=decoded_response, return_tensors='pt')
         speech = self.voice_model.generate_speech(input_voc["input_ids"],self.speaker_embed, vocoder=self.voice_vocoder)
         
         sf.write("ds_test.wav", speech.numpy(), samplerate=16000)
+        
+        image = self.diff_model(decoded_response).images[0]
+        image.save("ds_test.png")
         
         return decoded_response
     
@@ -79,8 +76,9 @@ def main(args: argparse.Namespace):
     
     embeddings_dataset = datasets.load_dataset("Matthijs/cmu-arctic-xvectors", split="validation")
     speaker_embeddings = torch.tensor(embeddings_dataset[3000]["xvector"]).unsqueeze(0)
+    stable_diff = StableDiffusionPipeline.from_pretrained(args.stable_diff_model, torch_dtype=torch.float16)
     
-    DS = DialogSystem(tokenizer, lm_model, voice_pre, voice_model, voice_vocoder,speaker_embeddings)
+    DS = DialogSystem(tokenizer, lm_model, voice_pre, voice_model, voice_vocoder,speaker_embeddings,stable_diff)
     DS.interact()
     
 
