@@ -4,6 +4,7 @@ import datasets
 import torch
 import argparse
 import soundfile as sf
+import re
 
 parser = argparse.ArgumentParser()
 
@@ -58,6 +59,7 @@ class DialogSystem:
                                               pad_token_id=self.tokenizer.eos_token_id)
         # Truncate User Input
         decoded_response = self.tokenizer.decode(out_response[0], skip_special_tokens=True)[len(" ".join(prompts)):]
+        decoded_response =re.split(r"[.?!]+", decoded_response)[0] + "."
         
         if self.voice_model != None:
             input_voc = self.voice_preprocess(text=decoded_response, return_tensors='pt')
