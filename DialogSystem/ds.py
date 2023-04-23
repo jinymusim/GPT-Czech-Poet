@@ -52,14 +52,18 @@ class DialogSystem:
     def generate(self, prompts):
         tokenized_context = self.tokenizer.encode(" ".join(prompts), return_tensors='pt', truncation=True)
         out_response = self.lm_model.generate(tokenized_context, 
-                                              max_length=30,
-                                              num_beams=2,
-                                              no_repeat_ngram_size=2,
+                                              max_length=20,
+                                              num_beams=4,
+                                              no_repeat_ngram_size=1,
                                               early_stopping=True,
                                               pad_token_id=self.tokenizer.eos_token_id)
+        
+        
+        decoded_response = self.tokenizer.decode(out_response[0], skip_special_tokens=True)
+        print("LOG OUT>", decoded_response)
         # Truncate User Input
-        decoded_response = self.tokenizer.decode(out_response[0], skip_special_tokens=True)[len(" ".join(prompts)):]
-        decoded_response =re.split(r"[.?!]+", decoded_response)[0] + "."
+        decoded_response = decoded_response[len(" ".join(prompts)):]
+        decoded_response = re.split(r"[.?!]+", decoded_response)[0] + re.findall(r"[.?!]+|$", decoded_response)[0]
         
         if self.voice_model != None:
             input_voc = self.voice_preprocess(text=decoded_response, return_tensors='pt')
