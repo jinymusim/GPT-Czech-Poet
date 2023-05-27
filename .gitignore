@@ -152,3 +152,7 @@ PYTORCH/
 # Model
 *.bin
 merges.txt
+
+# Generated images
+*.png
+moediff.py
