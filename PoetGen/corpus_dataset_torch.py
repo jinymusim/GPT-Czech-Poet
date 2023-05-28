@@ -41,7 +41,9 @@ class CorpusDatasetPytorch:
                     for part_line in data_line['body']:
                         for text_line in part_line:
                             tokenized = self._tokenizer.encode(text_line['text'], return_tensors="np", truncation=True)[0]
-                            data.append({"input_ids" : tokenized})
+                            last_words =self._tokenizer.encode(text_line['text'].split()[-1], return_tensors="np", truncation=True)[0]
+                            data.append({"input_ids" : tokenized,
+                                     "last": last_words})
             return data
                             
         def data_part_gen(self):
@@ -52,13 +54,17 @@ class CorpusDatasetPytorch:
                 datum = json.load(file)
                 for data_line in datum:
                     part = []
+                    last_words = []
                     for part_line in data_line['body']:
                         body = []
                         for text_line in part_line:
                             body.append(text_line['text'])
+                            last_words.append(text_line['text'].split()[-1])
                         part.append("\n".join(body))
                     tokenized = self._tokenizer.encode("\n".join(part), return_tensors="np", truncation=True)[0]
-                    data.append({"input_ids" : tokenized})
+                    last_words =self._tokenizer.encode(" ".join(last_words), return_tensors="np", truncation=True)[0]
+                    data.append({"input_ids" : tokenized,
+                                     "last": last_words})
             return data
                     
         def data_body_gen(self):
@@ -73,7 +79,9 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             body.append(text_line['text'])
                         tokenized = self._tokenizer.encode("\n".join(body), return_tensors="np", truncation=True)[0]
-                        data.append({"input_ids" : tokenized})
+                        last_words = self._tokenizer.encode(" ".join([words.split()[-1] for words in body]), return_tensors="np", truncation=True)[0]
+                        data.append({"input_ids" : tokenized,
+                                     "last": last_words})
             return data
     
     def load_json_filenames(self):
@@ -94,9 +102,17 @@ class CorpusDatasetPytorch:
         for pos, text in enumerate(batch):
             attention[pos,:len(text['input_ids'])] = 1
         padded_batch = np.asarray([np.append(text['input_ids'], [0] *(max_len - len(text['input_ids'])))  for text in batch], dtype=np.int32)
+        
+        max_len_words = np.max([len(text['last']) for text in batch])
+        attention_words = np.zeros((len(batch), max_len_words), dtype=np.uint8)
+        for pos, text in enumerate(batch):
+            attention_words[pos,:len(text['last'])] = 1
+        padded_batch_words = np.asarray([np.append(text['last'], [0] *(max_len_words - len(text['last'])))  for text in batch], dtype=np.int32)
         return {
             "input_ids": torch.tensor(padded_batch,  dtype=torch.int32),
-            "attention": torch.tensor(attention, dtype=torch.bool)
+            "attention": torch.tensor(attention, dtype=torch.bool),
+            "last": torch.tensor(padded_batch_words, dtype=torch.int32),
+            "attention_last" : torch.tensor(attention_words, dtype=torch.bool)
             }
     
     

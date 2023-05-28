@@ -30,6 +30,11 @@ class Trainer:
                 out = self.model(input_ids=inputs_masked.to(self.device), labels=label.to(self.device), 
                                  attention_mask=batch['attention'].to(self.device))
                 out.loss.backward()
+                if self.consistency_task:
+                    label_words = batch["last"].type(torch.LongTensor)
+                    out_consistency = self.model(input_ids=batch["last"].to(self.device), labels=label_words.to(self.device), 
+                                 attention_mask=batch['attention_last'].to(self.device))
+                    out_consistency.loss.backward()
                 self.optimizer.step()
                     
                 self.scheduler.step()
