@@ -10,7 +10,7 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size", default=6, type=int, help="Batch size.")
-parser.add_argument("--epochs", default=4, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs", default=1, type=int, help="Number of epochs to run.")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry")),  type=str, help="Path to Model")
@@ -38,7 +38,8 @@ def main(args: argparse.Namespace):
     tokenizer.model_max_length = args.max_len
         
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path)
-    complete_list = train_data.pytorch_dataset_text + train_data.pytorch_dataset_body + train_data.pytorch_dataset_part
+    # Full Parts were too large 
+    complete_list = train_data.pytorch_dataset_text + train_data.pytorch_dataset_body # + train_data.pytorch_dataset_part
     dataloader = DataLoader(complete_list , batch_size=args.batch_size, collate_fn=CorpusDatasetPytorch.collate)
     
     model = model.to(device)
