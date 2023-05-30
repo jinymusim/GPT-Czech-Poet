@@ -8,4 +8,4 @@ cd $SCRATCHDIR
 pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/requirements.txt
 export PYTHONPATH="${PYTHONPATH}:${TMPDIR}"
 cd /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen
-python3 lm_finetune_torch.py 
+python3 lm_finetune_torch.py --use_gpu_if_available=True
