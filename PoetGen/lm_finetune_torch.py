@@ -38,8 +38,7 @@ def main(args: argparse.Namespace):
     tokenizer.model_max_length = args.max_len
         
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path)
-    # Full Parts were too large 
-    complete_list = train_data.pytorch_dataset_text + train_data.pytorch_dataset_body # + train_data.pytorch_dataset_part
+    complete_list = train_data.pytorch_dataset_body # + train_data.pytorch_dataset_part
     dataloader = DataLoader(complete_list , batch_size=args.batch_size, collate_fn=CorpusDatasetPytorch.collate)
     
     model = model.to(device)
