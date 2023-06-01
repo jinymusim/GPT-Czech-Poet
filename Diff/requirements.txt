@@ -4,3 +4,4 @@ torchvision
 torchaudio
 transformers
 diffusers
+opencv-python
