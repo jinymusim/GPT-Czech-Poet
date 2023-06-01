@@ -10,13 +10,13 @@ pipe.enable_vae_slicing()
 
 
 i= 0
-possible_prompts = ["1girl, walking, boobs, colorful, sweat, high quality, highest quality, masterpiece",
-                    "1girl, ass, colorful, high quality, highest quality, masterpiece",]
+possible_prompts = ["1girl, walking, boobs, colorful, sweat",
+                    "1girl, ass, colorful",]
 
 while i < 10:  
     prompt = random.choice(possible_prompts)
     
-    video_frames = pipe(prompt, num_inference_steps=50, num_frames=200).frames
+    video_frames = pipe(prompt, num_inference_steps=25, num_frames=200).frames
     video_path = export_to_video(video_frames,  prompt + f'{i}.mp4')
     
     i+=1
