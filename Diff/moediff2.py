@@ -32,17 +32,17 @@ i= 0
 # "1girl, boobs, boob armor, six pack, battle scars, sweat, some colors, more colors, high quality, highest quality, masterpiece"
 # "1girl, boobs, boob armor, six pack, blood, sweat, some colors, more colors, high quality, highest quality, masterpiece"
 possible_prompts = [
-                    "1woman, underwear, underboob, colorful, dim lighting, dim light, realistic, highest quality, masterpiece",
+                    "1woman, underwear, underboob, colorful, realistic, highest quality, masterpiece",
                     "1woman, boobs, boob armor, six pack, sweat, high quality, highest quality, masterpiece",
                     "1woman, six pack, sweat, high quality, highest quality, masterpiece",]
 
-while i< 25:  
+while i< 100:  
     prompt = random.choice(possible_prompts)
     
     image = pipe(prompt, negative_prompt="""simple background, retro style, low quality, lowest quality, 
                  1980s, 1990s, 2000s, bad anatomy, bad proportions, lowres, username, artist name, 
                  error, duplicate, watermark, signature, text, extra digit, fewer digits, worst quality, jpeg artifacts, blurry""",
-                 num_inference_steps=999).images[0]
+                 num_inference_steps=100).images[0]
     image.save(prompt + f"{i}.png")
     
     i+=1
