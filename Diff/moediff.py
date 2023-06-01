@@ -8,7 +8,7 @@ import torch
 # "Ojimi/anime-kawai-diffusion"
 # "dreamlike-art/dreamlike-anime-1.0"
 # "FredZhang7/anime-anything-promptgen-v2"
-pipe = StableDiffusionPipeline.from_pretrained("Ojimi/anime-kawai-diffusion", safety_checker=None, torch_dtype=torch.float16)
+pipe = StableDiffusionPipeline.from_pretrained("dreamlike-art/dreamlike-anime-1.0", safety_checker=None, torch_dtype=torch.float16)
 pipe.enable_model_cpu_offload()
 i= 0
 
@@ -31,10 +31,10 @@ i= 0
 # More Fantasy Like
 # "1girl, boobs, boob armor, six pack, battle scars, sweat, some colors, more colors, high quality, highest quality, masterpiece"
 # "1girl, boobs, boob armor, six pack, blood, sweat, some colors, more colors, high quality, highest quality, masterpiece"
-possible_prompts = ["1girl, garter belt, dim lighting, dim light, realistic, highest quality, masterpiece",
-                    "1girl, underwear, underboob, colorful, realistic, highest quality, masterpiece",
-                    "1girl, boobs, boob armor, six pack, blood, sweat, some colors, more colors, high quality, highest quality, masterpiece",
-                    "1girl, six pack, blood, colorful, high quality, highest quality, masterpiece",]
+possible_prompts = ["1woman, garter belt, dim lighting, dim light, realistic, highest quality, masterpiece",
+                    "1woman, underwear, underboob, colorful, realistic, highest quality, masterpiece",
+                    "1woman, boobs, boob armor, six pack, blood, sweat, some colors, more colors, high quality, highest quality, masterpiece",
+                    "1woman, six pack, blood, colorful, high quality, highest quality, masterpiece",]
 
 while i< 50:  
     prompt = random.choice(possible_prompts)
