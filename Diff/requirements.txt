@@ -1,6 +1,6 @@
+accelerate
 torch 
 torchvision 
 torchaudio
 transformers
-accelerate
-diffusers["torch"]
+diffusers
