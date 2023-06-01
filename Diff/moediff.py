@@ -31,7 +31,7 @@ i= 0
 # More Fantasy Like
 # "1girl, boobs, boob armor, six pack, battle scars, sweat, some colors, more colors, high quality, highest quality, masterpiece"
 # "1girl, boobs, boob armor, six pack, blood, sweat, some colors, more colors, high quality, highest quality, masterpiece"
-possible_prompts = ["1woman, garter belt, dim lighting, dim light, realistic, highest quality, masterpiece",
+possible_prompts = [
                     "1woman, underwear, underboob, colorful, dim lighting, dim light, realistic, highest quality, masterpiece",
                     "1woman, boobs, boob armor, six pack, blood, sweat, some colors,dim lighting, dim light, high quality, highest quality, masterpiece",
                     "1woman, six pack, blood, dim lighting, dim light, high quality, highest quality, masterpiece",]
