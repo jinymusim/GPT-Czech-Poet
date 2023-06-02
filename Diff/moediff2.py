@@ -8,7 +8,7 @@ import torch
 # "Ojimi/anime-kawai-diffusion"
 # "dreamlike-art/dreamlike-anime-1.0"
 # "FredZhang7/anime-anything-promptgen-v2"
-pipe = StableDiffusionPipeline.from_pretrained("dreamlike-art/dreamlike-anime-1.0", safety_checker=None, torch_dtype=torch.float16)
+pipe = StableDiffusionPipeline.from_pretrained("Ojimi/anime-kawai-diffusion", safety_checker=None, torch_dtype=torch.float16)
 pipe.enable_model_cpu_offload()
 i= 0
 
