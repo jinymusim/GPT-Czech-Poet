@@ -8,4 +8,4 @@ cd $SCRATCHDIR
 pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/Diff/requirements.txt
 export PYTHONPATH="${PYTHONPATH}:${TMPDIR}"
 cd /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/Diff
-python3 moediff2.py
+python3 moediff_esp.py
