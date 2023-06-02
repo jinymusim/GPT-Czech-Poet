@@ -31,18 +31,19 @@ i= 0
 # More Fantasy Like
 # "1girl, boobs, boob armor, six pack, battle scars, sweat, some colors, more colors, high quality, highest quality, masterpiece"
 # "1girl, boobs, boob armor, six pack, blood, sweat, some colors, more colors, high quality, highest quality, masterpiece"
-possible_prompts = [
+possible_prompts = ["1girl, ass, lingerie, colorful, realistic, highest quality, masterpiece",
+                    "1girl, underwear, underboob, colorful, vampire, dim lighting, dim light, realistic, highest quality, masterpiece",
                     "1woman, underwear, underboob, colorful, dim lighting, dim light, realistic, highest quality, masterpiece",
                     "1woman, boobs, boob armor, six pack, blood, sweat, some colors,dim lighting, dim light, high quality, highest quality, masterpiece",
                     "1woman, six pack, blood, dim lighting, dim light, high quality, highest quality, masterpiece",]
 
-while i< 100:  
+while i< 1000:  
     prompt = random.choice(possible_prompts)
     
     image = pipe(prompt, negative_prompt="""simple background, retro style, low quality, lowest quality, 
                  1980s, 1990s, 2000s, bad anatomy, bad proportions, lowres, username, artist name, 
                  error, duplicate, watermark, signature, text, extra digit, fewer digits, worst quality, jpeg artifacts, blurry""",
-                 num_inference_steps=100).images[0]
+                 num_inference_steps=200).images[0]
     image.save(prompt + f"{i}.png")
     
     i+=1
