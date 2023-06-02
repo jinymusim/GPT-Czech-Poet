@@ -31,10 +31,7 @@ i= 0
 # More Fantasy Like
 # "1girl, boobs, boob armor, six pack, battle scars, sweat, some colors, more colors, high quality, highest quality, masterpiece"
 # "1girl, boobs, boob armor, six pack, blood, sweat, some colors, more colors, high quality, highest quality, masterpiece"
-possible_prompts = [
-                    "1woman, underwear, underboob, colorful, realistic, highest quality, masterpiece",
-                    "1woman, boobs, boob armor, six pack, sweat, high quality, highest quality, masterpiece",
-                    "1woman, six pack, sweat, high quality, highest quality, masterpiece",]
+possible_prompts = ["women, wide hips, big hips, lingerie, garter belt, dim lighting, ass"]
 
 while i< 100:  
     prompt = random.choice(possible_prompts)
