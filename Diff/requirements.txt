@@ -5,8 +5,3 @@ torchaudio
 transformers
 diffusers
 opencv-python
-espnet
-espnet-model-zoo
-espnet-tts-frontend
-pyopenjtalk
-soundfile
