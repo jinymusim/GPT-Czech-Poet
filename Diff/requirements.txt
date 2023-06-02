@@ -9,3 +9,4 @@ espnet
 espnet-model-zoo
 espnet-tts-frontend
 pyopenjtalk
+soundfile
