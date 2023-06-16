@@ -2,6 +2,7 @@ import os
 import json
 import numpy as np
 import torch
+import re
 import pickle
 from transformers import GPT2Tokenizer
 
@@ -41,9 +42,10 @@ class CorpusDatasetPytorch:
                     for part_line in data_line['body']:
                         for text_line in part_line:
                             tokenized = self._tokenizer.encode(text_line['text'], return_tensors="np", truncation=True)[0]
-                            last_words =self._tokenizer.encode(text_line['text'].split()[-1], return_tensors="np", truncation=True)[0]
+                            last_words =self._tokenizer.encode(re.sub(r"[,.?!-]", "", text_line['text']).split()[-1], return_tensors="np", truncation=True)[0]
                             data.append({"input_ids" : tokenized,
-                                     "last": last_words})
+                                     "last": last_words,
+                                     "num_vowels": [len(re.findall("a|e|i|o|u", text_line['text']))]})
             return data
                             
         def data_part_gen(self):
@@ -54,17 +56,20 @@ class CorpusDatasetPytorch:
                 datum = json.load(file)
                 for data_line in datum:
                     part = []
+                    num_vowels = []
                     last_words = []
                     for part_line in data_line['body']:
                         body = []
                         for text_line in part_line:
                             body.append(text_line['text'])
-                            last_words.append(text_line['text'].split()[-1])
+                            last_words.append(re.sub(r"[,.?!-]", "", text_line['text']).split()[-1])
+                            num_vowels.append(len(re.findall("a|e|i|o|u", text_line['text'])))
                         part.append("\n".join(body))
                     tokenized = self._tokenizer.encode("\n".join(part), return_tensors="np", truncation=True)[0]
                     last_words =self._tokenizer.encode(" ".join(last_words), return_tensors="np", truncation=True)[0]
                     data.append({"input_ids" : tokenized,
-                                     "last": last_words})
+                                     "last": last_words,
+                                     "num_vowels": [sum(num_vowels)]})
             return data
                     
         def data_body_gen(self):
@@ -79,9 +84,10 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             body.append(text_line['text'])
                         tokenized = self._tokenizer.encode("\n".join(body), return_tensors="np", truncation=True)[0]
-                        last_words = self._tokenizer.encode(" ".join([words.split()[-1] for words in body]), return_tensors="np", truncation=True)[0]
+                        last_words = self._tokenizer.encode(" ".join([re.sub(r"[,.?!-]", "", words).split()[-1] for words in body]), return_tensors="np", truncation=True)[0]
                         data.append({"input_ids" : tokenized,
-                                     "last": last_words})
+                                     "last": last_words,
+                                     "num_vowels": [sum([len(re.findall("a|e|i|o|u",words)) for words in body])]})
             return data
     
     def load_json_filenames(self):
@@ -108,11 +114,16 @@ class CorpusDatasetPytorch:
         for pos, text in enumerate(batch):
             attention_words[pos,:len(text['last'])] = 1
         padded_batch_words = np.asarray([np.append(text['last'], [0] *(max_len_words - len(text['last'])))  for text in batch], dtype=np.int32)
+        
+
+        nums = np.asarray([text['num_vowels']for text in batch], dtype=np.int32)
+        
         return {
             "input_ids": torch.tensor(padded_batch,  dtype=torch.int32),
             "attention": torch.tensor(attention, dtype=torch.bool),
             "last": torch.tensor(padded_batch_words, dtype=torch.int32),
-            "attention_last" : torch.tensor(attention_words, dtype=torch.bool)
+            "attention_last" : torch.tensor(attention_words, dtype=torch.bool),
+            "nums" :  torch.tensor(nums, dtype=torch.int32)
             }
     
     
