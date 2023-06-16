@@ -51,9 +51,9 @@ def main(args: argparse.Namespace):
     trainer = Trainer(model, device ,args.epochs, optimizer, scheduler, dataloader, args.train_for_consistency, args.input_mask_rate)
     trainer.train()
     
-    model.save(model.state_dict(), args.model_path)
     model.save_LM(f"{args.model_path}_LM")
-    
+    model.save(model.state_dict(), args.model_path)
+      
 
 
 if __name__ == "__main__":
