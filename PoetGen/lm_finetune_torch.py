@@ -11,14 +11,14 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size", default=6, type=int, help="Batch size.")
-parser.add_argument("--epochs", default=2, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs", default=4, type=int, help="Number of epochs to run.")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry")),  type=str, help="Path to Model")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 parser.add_argument("--default_hf_model", default="jinymusim/gpt-czech-poet", type=str, help="Default Model from HF to use")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--use_gpu_if_available", default=False, type=bool, help="If GPU should be used")
+parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 parser.add_argument("--train_for_consistency", default=True, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.05, type=float, help="Rate of input masking")
 
