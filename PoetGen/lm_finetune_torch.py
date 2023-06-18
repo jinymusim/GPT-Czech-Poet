@@ -52,7 +52,7 @@ def main(args: argparse.Namespace):
     trainer.train()
     
     model.save_LM(f"{args.model_path}_LM")
-    model.save(model.state_dict(), args.model_path)
+    torch.save(model.state_dict(), args.model_path)
       
 
 
