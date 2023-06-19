@@ -10,17 +10,24 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size", default=8, type=int, help="Batch size.")
+parser.add_argument("--batch_size", default=4, type=int, help="Batch size.")
 parser.add_argument("--epochs", default=2, type=int, help="Number of epochs to run.")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry")),  type=str, help="Path to Model")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
-parser.add_argument("--default_hf_model", default="jinymusim/gpt-czech-poet", type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
+parser.add_argument("--use_gpu_if_available", default=False, type=bool, help="If GPU should be used")
 parser.add_argument("--train_for_consistency", default=True, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.05, type=float, help="Rate of input masking")
+
+parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is prompted into training data")
+parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
+parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
+#TODO: Rhyme Prompting
+#TODO: Tokenizer Analysis
+#TODO: 
 
 def main(args: argparse.Namespace):
     # Base Device is CPU
@@ -36,20 +43,30 @@ def main(args: argparse.Namespace):
         tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
         model = PoetModel(args.default_hf_model).load_state_dict(torch.load(args.model_path))
     
+    model = model.to(device) 
     tokenizer.model_max_length = args.max_len
-        
-    train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path)
-    complete_list = train_data.pytorch_dataset_body  + train_data.pytorch_dataset_text  # + train_data.pytorch_dataset_part 
-    dataloader = DataLoader(complete_list , batch_size=args.batch_size, collate_fn=CorpusDatasetPytorch.collate)
+    train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path, prompt_ending=args.prompt_ending, prompt_length=args.prompt_length)
     
-    model = model.to(device)
-    optimizer = torch.optim.AdamW(model.parameters(),lr=args.learning_rate)
-    scheduler = transformers.get_cosine_schedule_with_warmup(optimizer, 
-                                                         len(complete_list)//args.batch_size,
-                                                         len(complete_list)//args.batch_size *args.epochs)
+    ### Basic Text Learning
+    dataloader_text = DataLoader(train_data.pytorch_dataset_text , batch_size=args.batch_size, collate_fn=CorpusDatasetPytorch.collate)
+    optimizer_text = torch.optim.AdamW(model.parameters(),lr=args.learning_rate)
+    scheduler_text = transformers.get_cosine_schedule_with_warmup(optimizer_text, 
+                                                         len(dataloader_text)//args.batch_size,
+                                                         len(dataloader_text)//args.batch_size *args.epochs)
+    trainer_text = Trainer(model, device ,args.epochs, optimizer_text, scheduler_text, dataloader_text, args.train_for_consistency, args.input_mask_rate)
+    trainer_text.train()
     
-    trainer = Trainer(model, device ,args.epochs, optimizer, scheduler, dataloader, args.train_for_consistency, args.input_mask_rate)
-    trainer.train()
+    
+    ### Part based learning
+    dataloader_body = DataLoader(train_data.pytorch_dataset_body , batch_size=args.batch_size, collate_fn=CorpusDatasetPytorch.collate)
+    optimizer_body= torch.optim.AdamW(model.parameters(),lr=args.learning_rate)
+    scheduler_body= transformers.get_cosine_schedule_with_warmup(optimizer_body, 
+                                                         len(dataloader_body)//args.batch_size,
+                                                         len(dataloader_body)//args.batch_size *args.epochs)
+    
+    trainer_body = Trainer(model, device ,args.epochs, optimizer_body, scheduler_body, dataloader_body, args.train_for_consistency, args.input_mask_rate)
+    trainer_body.train()
+    
     
     model.save_LM(f"{args.model_path}_LM")
     torch.save(model.state_dict(), args.model_path)
