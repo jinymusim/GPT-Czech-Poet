@@ -55,15 +55,18 @@ class CorpusDatasetPytorch:
                     print(f"Processing file {step}")
                 datum = json.load(file)
                 for data_line in datum:
+                    
                     part = []
                     num_vowels = []
-                    last_words = []
+                    
                     for part_line in data_line['body']:
+                        
                         body = []
+                        
                         for text_line in part_line:
                             
                             num_str = f"{len(re.findall('a|e|i|o|u|y', text_line['text']))} " if self.prompt_length else ""
-                            verse_ending = f"{re.sub(r'[,.?!-„“’]+', '', text_line['text'])[-3:] } # " if self.prompt_ending else ""
+                            verse_ending = f"{re.sub(r'[,.?!-„“’]+', '', text_line['text']).strip()[-3:]} # " if self.prompt_ending else ""
                         
                             body.append(num_str +  verse_ending + text_line['text'])
                             
@@ -71,7 +74,7 @@ class CorpusDatasetPytorch:
                         part.append("\n".join(body))
                     tokenized = self._tokenizer.encode("\n".join(part), return_tensors="np", truncation=True)[0]
                     data.append({"input_ids" : tokenized,
-                                    "num_vowels": [sum(num_vowels)]})
+                                "num_vowels": [sum(num_vowels)]})
             return data
                     
         def data_body_gen(self):
@@ -82,11 +85,13 @@ class CorpusDatasetPytorch:
                 datum = json.load(file)
                 for data_line in datum:
                     for part_line in data_line['body']:
+                        
                         body = []
+                        
                         for text_line in part_line:
                             
                             num_str = f"{len(re.findall('a|e|i|o|u|y', text_line['text']))} " if self.prompt_length else ""
-                            verse_ending = f"{re.sub(r'[,.?!-„“’]+', '', text_line['text'])[-3:] } # " if self.prompt_ending else ""
+                            verse_ending = f"{re.sub(r'[,.?!-„“’]+', '', text_line['text']).strip()[-3:]} # " if self.prompt_ending else ""
                             
                             body.append( num_str + verse_ending  + text_line['text'])
                             
