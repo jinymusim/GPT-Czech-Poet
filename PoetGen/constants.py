@@ -1,0 +1,1 @@
+rhyme_schemes = ["abab", "abba", "xaxa", "abcb", "aabb", "aaba", "aaaa", ]
