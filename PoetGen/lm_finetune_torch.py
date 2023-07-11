@@ -10,8 +10,11 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size", default=8, type=int, help="Batch size.")
-parser.add_argument("--epochs", default=2, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_LM", default=8, type=int, help="Batch size.")
+parser.add_argument("--epochs_LM", default=2, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_poet", default=4, type=int, help="Batch size.")
+parser.add_argument("--epochs_poet", default=6, type=int, help="Number of epochs for poet gen")
+
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry")),  type=str, help="Path to Model")
@@ -48,23 +51,23 @@ def main(args: argparse.Namespace):
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path, prompt_ending=args.prompt_ending, prompt_length=args.prompt_length)
     
     ### Basic Text Learning
-    dataloader_text = DataLoader(train_data.pytorch_dataset_text , batch_size=args.batch_size, collate_fn=CorpusDatasetPytorch.collate)
+    dataloader_text = DataLoader(train_data.pytorch_dataset_text , batch_size=args.batch_size_LM, collate_fn=CorpusDatasetPytorch.collate)
     optimizer_text = torch.optim.AdamW(model.parameters(),lr=args.learning_rate)
     scheduler_text = transformers.get_cosine_schedule_with_warmup(optimizer_text, 
-                                                         len(dataloader_text)//args.batch_size,
-                                                         len(dataloader_text)//args.batch_size *args.epochs)
-    trainer_text = Trainer(model, device ,args.epochs, optimizer_text, scheduler_text, dataloader_text, args.train_for_consistency, args.input_mask_rate)
+                                                         len(dataloader_text)//args.batch_size_LM,
+                                                         len(dataloader_text)//args.batch_size_LM *args.epochs_LM)
+    trainer_text = Trainer(model, device ,args.epochs_LM, optimizer_text, scheduler_text, dataloader_text, args.train_for_consistency, args.input_mask_rate)
     trainer_text.train()
     
     
     ### Part based learning
-    dataloader_body = DataLoader(train_data.pytorch_dataset_body , batch_size=args.batch_size, collate_fn=CorpusDatasetPytorch.collate)
+    dataloader_body = DataLoader(train_data.pytorch_dataset_body , batch_size=args.batch_size_poet, collate_fn=CorpusDatasetPytorch.collate)
     optimizer_body= torch.optim.AdamW(model.parameters(),lr=args.learning_rate)
     scheduler_body= transformers.get_cosine_schedule_with_warmup(optimizer_body, 
-                                                         len(dataloader_body)//args.batch_size,
-                                                         len(dataloader_body)//args.batch_size *args.epochs)
+                                                         len(dataloader_body)//args.batch_size_poet,
+                                                         len(dataloader_body)//args.batch_size_poet *args.epochs_poet)
     
-    trainer_body = Trainer(model, device ,args.epochs, optimizer_body, scheduler_body, dataloader_body, args.train_for_consistency, args.input_mask_rate)
+    trainer_body = Trainer(model, device ,args.epochs_poet, optimizer_body, scheduler_body, dataloader_body, args.train_for_consistency, args.input_mask_rate)
     trainer_body.train()
     
     
