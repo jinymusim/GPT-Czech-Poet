@@ -19,7 +19,7 @@ tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
 #model = PoetModel(args.default_hf_model).load_state_dict(torch.load(args.model_path_full))
 model_LM = AutoModelForCausalLM.from_pretrained(args.model_path_LM)
 
-tokenized_poet_start = tokenizer.encode("8 dne # ", return_tensors='pt')
+tokenized_poet_start = tokenizer.encode("ABBA\n", return_tensors='pt')
 
 out = model_LM.generate(tokenized_poet_start, 
                                 max_length=1000,

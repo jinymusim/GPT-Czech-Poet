@@ -30,9 +30,10 @@ class Trainer:
                 
                 out = self.model(input_ids=inputs.to(self.device), labels=label.to(self.device), 
                                  attention_mask=batch['attention'].to(self.device), vowel_count=(batch['nums'].type(torch.FloatTensor)).to(self.device))
-                out['model_output'].loss.backward(retain_graph=True)
-                out['vowel_regression_loss'].backward()
-                
+                out['model_output'].loss.backward(retain_graph=True)             
+                if self.consistency_task:
+                    out['vowel_regression_loss'].backward()
+                    
                 self.optimizer.step()
                     
                 self.scheduler.step()
