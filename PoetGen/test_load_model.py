@@ -22,7 +22,7 @@ model_LM = AutoModelForCausalLM.from_pretrained(args.model_path_LM)
 tokenized_poet_start = tokenizer.encode("ABBA\n", return_tensors='pt')
 
 out = model_LM.generate(tokenized_poet_start, 
-                                max_length=1000,
+                                max_length=256,
                                 num_beams=2,
                                 no_repeat_ngram_size=2,
                                 early_stopping=True,

@@ -48,7 +48,7 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             tokenized = self._tokenizer.encode(text_line['text'], return_tensors="np", truncation=True)[0]
                             data.append({"input_ids" : tokenized,
-                                     "num_vowels": [len(re.findall("a|e|i|o|u", text_line['text']))]})
+                                     "num_vowels": [len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý", text_line['text']))]})
             return data
                             
         def data_part_gen(self):
@@ -68,13 +68,16 @@ class CorpusDatasetPytorch:
                         
                         for text_line in part_line:
                             
-                            num_str = f"{len(re.findall('a|e|i|o|u', text_line['text']))} " if self.prompt_length else ""
-                            verse_ending = f"{re.sub(r'[,.?!-„“’]+', '', text_line['text']).strip()[-3:]} # " if self.prompt_ending else ""
+                            num_str = f"{len(re.findall('a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý', text_line['text']))} " if self.prompt_length else ""
+                            sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:]+', '', text_line['text'])
+                            verse_ending = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
                         
                             body.append(num_str +  verse_ending + text_line['text'])
                             
-                            num_vowels.append(len(re.findall("a|e|i|o|u", text_line['text'])))
+                            num_vowels.append(len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý", text_line['text'])))
+                            
                         part.append("\n".join(body))
+                        
                     tokenized = self._tokenizer.encode("\n".join(part), return_tensors="np", truncation=True)[0]
                     data.append({"input_ids" : tokenized,
                                 "num_vowels": [sum(num_vowels)]})
@@ -91,14 +94,17 @@ class CorpusDatasetPytorch:
                         
                         body = []
                         rhyme= ""
+                        rhyme_sequence = -1
                         i = 0
                         for text_line in part_line:
+                            if rhyme_sequence == -1 and text_line["rhyme"] != None:
+                                rhyme_sequence = text_line["rhyme"]
+                            rhyme += "X" if text_line["rhyme"] == None else ( "A" if  text_line["rhyme"]  == rhyme_sequence else ("B" if text_line["rhyme"] == rhyme_sequence + 1 else "C"))
                             
-                            rhyme += "A" if  text_line["rhyme"] == 1 else ("B" if text_line["rhyme"] == 2 else "C")
-                            
-                            num_str = f"{len(re.findall('a|e|i|o|u', text_line['text']))} " if self.prompt_length else ""
-                            verse_ending = f"{re.sub(r'[,.?!-„“’]+', '', text_line['text']).strip()[-3:]} # " if self.prompt_ending else ""
-                            
+                            num_str = f"{len(re.findall('a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý', text_line['text']))} " if self.prompt_length else ""
+                            sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:]+', '', text_line['text'])
+                            verse_ending = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
+                        
                             body.append( num_str + verse_ending  + text_line['text'])
                             
                             i+=1
@@ -110,7 +116,7 @@ class CorpusDatasetPytorch:
                             
                         tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body), return_tensors="np", truncation=True)[0]
                         data.append({"input_ids" : tokenized,                                    
-                                     "num_vowels": [sum([len(re.findall("a|e|i|o|u",words)) for words in body])]})
+                                     "num_vowels": [sum([len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý",words)) for words in body])]})
             return data
     
     def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=4):
@@ -121,8 +127,11 @@ class CorpusDatasetPytorch:
             data_by_files.append(file_path)
         self.dataset = CorpusDatasetPytorch.Dataset(data_by_files, self.tokenizer, prompt_ending=prompt_ending, 
                                                     prompt_length=prompt_length, prompt_verse=prompt_verse, verse_len=verse_len)
-        self.pytorch_dataset_part = self.dataset.data_part_gen()    
+        
         self.pytorch_dataset_body = self.dataset.data_body_gen()
+        
+        self.pytorch_dataset_part = self.dataset.data_part_gen()   
+        
         self.pytorch_dataset_text = self.dataset.data_text_line_gen()
         
     @staticmethod
