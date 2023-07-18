@@ -114,7 +114,7 @@ class CorpusDatasetPytorch:
                             
                         
                             
-                        tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n", return_tensors="np", truncation=True)[0]
+                        tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
                         data.append({"input_ids" : tokenized,                                    
                                      "num_vowels": [sum([len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý",words)) for words in body])]})
             return data
