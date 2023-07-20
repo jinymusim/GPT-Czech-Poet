@@ -72,6 +72,7 @@ def main(args: argparse.Namespace):
     
     
     model.save_LM(f"{args.model_path}_LM")
+    tokenizer.save_pretrained(f"{args.model_path}_LM")
     torch.save(model.state_dict(), args.model_path)
       
 
