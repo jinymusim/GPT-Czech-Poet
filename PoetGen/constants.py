@@ -1,1 +1,1 @@
-rhyme_schemes = ["abab", "abba", "xaxa", "abcb", "aabb", "aaba", "aaaa", ]
+rhyme_schemes = ["ABAB", "ABBA", "XAXA", "ABCB", "AABB", "AABA", "AAAA", ]
