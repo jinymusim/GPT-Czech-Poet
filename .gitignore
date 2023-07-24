@@ -160,3 +160,6 @@ merges.txt
 *.png
 *.mp4
 *.wav
+
+#Possible keys
+*.key
