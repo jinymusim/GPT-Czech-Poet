@@ -11,9 +11,9 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_LM", default=8, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=2, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_LM", default=8, type=int, help="Number of epochs to run.")
 parser.add_argument("--batch_size_poet", default=4, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=8, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
 
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
@@ -23,7 +23,7 @@ parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar"
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 parser.add_argument("--train_for_consistency", default=True, type=bool, help="Train for consistency secondary training")
-parser.add_argument("--input_mask_rate", default=0.01, type=float, help="Rate of input masking")
+parser.add_argument("--input_mask_rate", default=0.05, type=float, help="Rate of input masking")
 
 parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is prompted into training data")
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")

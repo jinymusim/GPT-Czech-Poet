@@ -37,10 +37,16 @@ class PoetModel(torch.nn.Module):
             "included_scheme" : False,
             "type_1_len" : 0,
             "included_1_len" : False,
+            "type_1_end" : "",
+            "included_1_end" : False,
             "type_2_len" : 0,
             "included_2_len" : False,
+            "type_2_end" : "",
+            "included_2_end" : False,
             "type_3_len" : 0,
             "included_3_len" : False,
+            "type_3_end" : "",
+            "included_3_end" : False,
                       
         }
         
@@ -55,22 +61,22 @@ class PoetModel(torch.nn.Module):
         if len(lines) == 0:
             raise Exception("Empty Prompt!")
         elif len(lines) == 1:
-            if lines[0].lower() in constants.rhyme_schemes:
+            if lines[0].upper() in constants.rhyme_schemes:
                 features_dict["rhyme_scheme"] = lines[0].upper()
                 features_dict["included_scheme"] = True
-            elif lines[0][0].isdigit():
-                features_dict["type_1_len"] = int(lines[0][0])
+            elif lines[0].split()[0].isdigit():
+                features_dict["type_1_len"] = int(lines[0].split()[0])
                 features_dict["included_1_len"] = True
         elif len(lines) > 1:
-            if lines[0].lower() in constants.rhyme_schemes:
+            if lines[0].upper() in constants.rhyme_schemes:
                 features_dict["rhyme_scheme"] = lines[0].upper()
                 features_dict["included_scheme"] = True
-            elif lines[0][0].isdigit():
-                features_dict["type_1_len"] = int(lines[0][0])
+            elif lines[0].split()[0].isdigit():
+                features_dict["type_1_len"] = int(lines[0].split()[0])
                 features_dict["included_1_len"] = True
             for i in range(1, min(lines, 3)):
-                if lines[i][0].isdigit():
-                    features_dict[f"type_{i}_len"] = int(lines[i][0])
+                if lines[i].split()[0].isdigit():
+                    features_dict[f"type_{i}_len"] = int(lines[i].split()[0])
                     features_dict[f"included_{i}_len"] = True
                 else:
                     features_dict[f"type_{i}_len"] = len(re.findall("a|e|i|o|u|y", lines[i]))
@@ -78,11 +84,11 @@ class PoetModel(torch.nn.Module):
         if features_dict["rhyme_scheme"] == "":
             features_dict["rhyme_scheme"] = random.choice(constants.rhyme_schemes)
         if features_dict["type_1_len"] == 0:
-            features_dict["type_1_len"] = random.randint(6,12)
+            features_dict["type_1_len"] = random.randint(6,14)
         if features_dict["type_2_len"] == 0:
-            features_dict["type_2_len"] = random.randint(6,12)
+            features_dict["type_2_len"] = random.randint(6,14)
         if features_dict["type_3_len"] == 0:
-            features_dict["type_3_len"] = random.randint(6,12)
+            features_dict["type_3_len"] = random.randint(6,14)
         return features_dict
                    
     
@@ -94,29 +100,30 @@ class PoetModel(torch.nn.Module):
             prompt_list.insert(0, features_dict["rhyme_scheme"])
         for i in range(1, len(prompt_list)):
             j = 1
-            if features_dict["included_scheme"][(i - 1) % len(features_dict["included_scheme"])] == "B":
+            if features_dict["rhyme_scheme"][(i - 1) % len(features_dict["rhyme_scheme"])] == "B":
                 j = 2
-            elif features_dict["included_scheme"][(i - 1) % len(features_dict["included_scheme"])] == "C":
+            elif features_dict["rhyme_scheme"][(i - 1) % len(features_dict["rhyme_scheme"])] == "C":
                 j = 3
             if not features_dict[f'included_{j}_len']:  
                 prompt_list[i] = features_dict[f"type_{j}_len"] + " " + prompt_list[i]
         # Generating 4 verse rhymes
         while len(prompt_list) < 5:
             j = 1
-            if features_dict["included_scheme"][(len(prompt_list) - 1) % len(features_dict["included_scheme"])] == "B":
+            if features_dict["rhyme_scheme"][(len(prompt_list) - 1) % len(features_dict["rhyme_scheme"])] == "B":
                 j = 2
-            elif features_dict["included_scheme"][(len(prompt_list) - 1) % len(features_dict["included_scheme"])] == "C":
+            elif features_dict["rhyme_scheme"][(len(prompt_list) - 1) % len(features_dict["rhyme_scheme"])] == "C":
                 j = 3
-            line_start = features_dict[f"type_{j}_len"]
+            line_start = str(features_dict[f"type_{j}_len"]) + (f" {features_dict[f'type_{j}_end'] } #" if features_dict[f'type_{j}_end'] != "" else "")
             tokenized_poet_start = tokenizer.encode("\n".join(prompt_list) + "\n" + line_start, return_tensors='pt')
             out_line =  self.model.generate(tokenized_poet_start, 
-                                max_length=1000,
                                 max_new_tokens= 100,
                                 num_beams=2,
                                 no_repeat_ngram_size=2,
                                 early_stopping=True,
                                 pad_token_id=tokenizer.eos_token_id)
-            decoded_line = tokenizer.decode(out_line[0], skip_special_tokens=True).splitlines()[len(prompt_list)]
+            decoded_line: str = tokenizer.decode(out_line[0], skip_special_tokens=True).splitlines()[len(prompt_list)]
+            if features_dict[f'type_{j}_end'] == "":
+                features_dict[f'type_{j}_end'] = decoded_line.split()[1]
             prompt_list.append(decoded_line)
         
         return "\n".join(prompt_list)

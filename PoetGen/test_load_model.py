@@ -16,7 +16,7 @@ if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
 tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
-model = torch.load(args.model_path_full)
+model: PoetModel = (torch.load(args.model_path_full)).cpu()
 model_LM = AutoModelForCausalLM.from_pretrained(args.model_path_LM)
 
 tokenized_poet_start = tokenizer.encode("ABBA\n", return_tensors='pt')
@@ -31,4 +31,8 @@ out = model_LM.generate(tokenized_poet_start,
 
 decoded_cont = tokenizer.decode(out[0], skip_special_tokens=True)
 
-print(decoded_cont)
+print("### Basic Decoding! ###\n", decoded_cont)
+
+out_forced = model.generate_forced("ABCB\n", tokenizer)
+
+print("### Forced Decoding! ###\n", out_forced)
