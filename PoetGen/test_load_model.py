@@ -19,7 +19,7 @@ tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
 model: PoetModel = (torch.load(args.model_path_full)).cpu()
 model_LM = AutoModelForCausalLM.from_pretrained(args.model_path_LM)
 
-tokenized_poet_start = tokenizer.encode("ABBA\n", return_tensors='pt')
+tokenized_poet_start = tokenizer.encode("ABCB\n", return_tensors='pt')
 
 out = model_LM.generate(tokenized_poet_start, 
                                 max_length=256,
@@ -33,6 +33,6 @@ decoded_cont = tokenizer.decode(out[0], skip_special_tokens=True)
 
 print("### Basic Decoding! ###\n", decoded_cont)
 
-out_forced = model.generate_forced("ABCB\n", tokenizer)
+out_forced = model.generate_forced("ABCA\n", tokenizer)
 
 print("### Forced Decoding! ###\n", out_forced)

@@ -31,6 +31,10 @@ class PoetModel(torch.nn.Module):
     def save_LM(self, LM_path):
         self.model.save_pretrained(LM_path)
         
+    @staticmethod
+    def rhyme_like(rhyme:str):
+        return rhyme.isupper() and len(rhyme) == 4
+        
     def analyze_prompt(self, prompt:str):
         features_dict = {
             "rhyme_scheme" : "",
@@ -61,14 +65,14 @@ class PoetModel(torch.nn.Module):
         if len(lines) == 0:
             raise Exception("Empty Prompt!")
         elif len(lines) == 1:
-            if lines[0].upper() in constants.rhyme_schemes:
+            if (lines[0].upper() in constants.rhyme_schemes) or PoetModel.rhyme_like(lines[0]):
                 features_dict["rhyme_scheme"] = lines[0].upper()
                 features_dict["included_scheme"] = True
             elif lines[0].split()[0].isdigit():
                 features_dict["type_1_len"] = int(lines[0].split()[0])
                 features_dict["included_1_len"] = True
         elif len(lines) > 1:
-            if lines[0].upper() in constants.rhyme_schemes:
+            if (lines[0].upper() in constants.rhyme_schemes) or PoetModel.rhyme_like(lines[0]):
                 features_dict["rhyme_scheme"] = lines[0].upper()
                 features_dict["included_scheme"] = True
             elif lines[0].split()[0].isdigit():
@@ -105,7 +109,7 @@ class PoetModel(torch.nn.Module):
             elif features_dict["rhyme_scheme"][(i - 1) % len(features_dict["rhyme_scheme"])] == "C":
                 j = 3
             if not features_dict[f'included_{j}_len']:  
-                prompt_list[i] = features_dict[f"type_{j}_len"] + " " + prompt_list[i]
+                prompt_list[i] = str(features_dict[f"type_{j}_len"]) + " " + prompt_list[i]
         # Generating 4 verse rhymes
         while len(prompt_list) < 5:
             j = 1

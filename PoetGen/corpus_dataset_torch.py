@@ -69,7 +69,7 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             
                             num_str = f"{len(re.findall('a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý', text_line['text']))} " if self.prompt_length else ""
-                            sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:]+', '', text_line['text'])
+                            sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:()]+', '', text_line['text'])
                             verse_ending = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
                         
                             body.append(num_str +  verse_ending + text_line['text'])
@@ -102,7 +102,7 @@ class CorpusDatasetPytorch:
                             rhyme += "X" if text_line["rhyme"] == None else ( "A" if  text_line["rhyme"]  == rhyme_sequence else ("B" if text_line["rhyme"] == rhyme_sequence + 1 else "C"))
                             
                             num_str = f"{len(re.findall('a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý', text_line['text']))} " if self.prompt_length else ""
-                            sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:]+', '', text_line['text'])
+                            sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:()]+', '', text_line['text'])
                             verse_ending = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
                         
                             body.append( num_str + verse_ending  + text_line['text'])
