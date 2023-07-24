@@ -15,6 +15,7 @@ parser.add_argument("--data_path_base", default="cs_restaurants", type=str, help
 parser.add_argument("--base_part", default="unshuffled_deduplicated_cs", type=str, help="Which part of base dataset to consider")
 parser.add_argument("--num_samples", default=1000, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=100, type=int, help="Number of runs on datasets")
+parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "tokenizer_analysis.txt")), type=str, help="Result of Analysis File")
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
@@ -73,6 +74,13 @@ for j in range(args.num_runs):
     print("##############################\n")
     poet_runs.append(sum(poet_chars_per_token)/len(poet_chars_per_token))
     base_runs.append(sum(base_chars_per_token)/len(base_chars_per_token))
+
+# Write to STD   
 print("All Runs Results")
 print(f"Chars per token Poet data: {numpy.mean(poet_runs)} +- {numpy.std(poet_runs,ddof=1)}")
 print(f"Chars per token Base data: {numpy.mean(base_runs)} +- {numpy.std(base_runs,ddof=1)}")
+# Write to file
+with open(args.result_file, 'a') as file:
+    print("All Runs Results", file=file)
+    print(f"Chars per token Poet data: {numpy.mean(poet_runs)} +- {numpy.std(poet_runs,ddof=1)}", file=file)
+    print(f"Chars per token Base data: {numpy.mean(base_runs)} +- {numpy.std(base_runs,ddof=1)}", file=file)

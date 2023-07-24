@@ -1,0 +1,9 @@
+All Runs Results
+Chars per token Poet data: 3.3674761059926954 +- 0.1213281452466315
+Chars per token Base data: 4.268059379052815 +- 0.025563419184582086
+All Runs Results
+Chars per token Poet data: 3.3527174971750373 +- 0.10976033495845891
+Chars per token Base data: 4.266587949966806 +- 0.02289110048051689
+All Runs Results
+Chars per token Poet data: 3.3737365770702397 +- 0.08508490747223248
+Chars per token Base data: 4.26745283043716 +- 4.749154240660069e-15
