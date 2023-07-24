@@ -19,6 +19,8 @@ parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry")),  type=str, help="Path to Model")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
+# huggyllama/llama-7b 4096
+# lchaloupsky/czech-gpt2-oscar 1024
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
