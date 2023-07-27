@@ -12,13 +12,22 @@ class PoetModel(torch.nn.Module):
     def __init__(self, pretrainedModel, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         
+        
+        
         self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, output_hidden_states=True)
-        self.vowels_regressor = torch.nn.Linear(768,1) # Number of Emmbedings of gpt2 is 768, we want 1 num out
+        model_config = self.model.config
+        self.model_size = 1
+        # Check for Hidden layer size by Attribute Name
+        if hasattr(model_config, "n_embd"):
+            self.model_size = model_config.n_embd
+        elif hasattr(model_config, "hidden_size"):
+            self.model_size = model_config.hidden_size
+        self.vowels_regressor = torch.nn.Linear(self.model_size,1) # Number of Emmbedings taken from config
         
     def forward(self, input_ids=None, labels=None, attention_mask=None, vowel_count=None, rhyme=None):
         outputs = self.model(input_ids=input_ids, labels=labels, attention_mask=attention_mask)
         last_hidden = outputs['hidden_states'][-1]
-        vowel_regression = self.vowels_regressor(last_hidden[:,0,:].view(-1, 768))
+        vowel_regression = self.vowels_regressor(last_hidden[:,0,:].view(-1, self.model_size))
         
         vowel_loss = None
         if vowel_count is not None:
