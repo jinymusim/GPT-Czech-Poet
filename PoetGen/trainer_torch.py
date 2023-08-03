@@ -6,7 +6,7 @@ from torch.optim import Optimizer, lr_scheduler
 class Trainer:
     
     def __init__(self, model: PoetModel, device,epochs: int, optimizer: Optimizer, scheduler: lr_scheduler._LRScheduler, 
-                 dataloader: DataLoader, consistency_task: bool, masking_rate: float) -> None:
+                 dataloader: DataLoader, consistency_task: bool, masking_rate: float, multi_gpu: bool) -> None:
         self.model = model
         self.device = device
         self.epochs = epochs
@@ -15,10 +15,14 @@ class Trainer:
         self.dataloader = dataloader
         self.consistency_task = consistency_task
         self.mask_rate = masking_rate
+        self.multi_gpu = multi_gpu
         
     def train(self):
         for epoch in range(self.epochs):
             self.model.train()
+            
+            if self.multi_gpu:
+                self.dataloader.sampler.set_epoch(self.epochs)
             
             for step, batch in enumerate(self.dataloader):
                 self.optimizer.zero_grad()
