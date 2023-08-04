@@ -12,9 +12,11 @@ class PoetModel(torch.nn.Module):
     def __init__(self, pretrainedModel, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         
-        
-        
-        self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, output_hidden_states=True, device_map="auto")
+        if "llama" in pretrainedModel:
+            self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, output_hidden_states=True, device_map="auto", torch_dtype=torch.float16)
+        else:
+            self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, output_hidden_states=True, device_map="auto")
+            
         model_config = self.model.config
         self.model_size = 1
         # Check for Hidden layer size by Attribute Name

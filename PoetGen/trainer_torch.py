@@ -21,8 +21,8 @@ class Trainer:
         for epoch in range(self.epochs):
             self.model.train()
             
-            if self.multi_gpu:
-                self.dataloader.sampler.set_epoch(self.epochs)
+            #if self.multi_gpu:
+            #    self.dataloader.sampler.set_epoch(self.epochs)
             
             for step, batch in enumerate(self.dataloader):
                 self.optimizer.zero_grad()
