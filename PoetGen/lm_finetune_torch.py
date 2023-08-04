@@ -11,9 +11,9 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=8, type=int, help="Batch size.")
+parser.add_argument("--batch_size_LM", default=2, type=int, help="Batch size.")
 parser.add_argument("--epochs_LM", default=4, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=8, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=2, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=8, type=int, help="Number of epochs for poet gen")
 
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
@@ -41,7 +41,7 @@ def main(args: argparse.Namespace):
     multi_gpu = False
     # If Wanted and GPU is available, use it
     if args.use_gpu_if_available:
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     
     if args.use_default_model:
         tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
@@ -50,8 +50,10 @@ def main(args: argparse.Namespace):
         tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
         model = PoetModel(args.default_hf_model).load_state_dict(torch.load(args.model_path))
     
-    model = torch.nn.DataParallel(model)
-    model = model.to(device)
+    if args.use_gpu_if_available and torch.cuda.is_available():
+        model = torch.nn.DataParallel(model, device_ids=list(range(torch.cuda.device_count())))
+    else:
+        model = model.to(device)
     
     tokenizer.model_max_length = args.max_len
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path, prompt_ending=args.prompt_ending, prompt_length=args.prompt_length)
