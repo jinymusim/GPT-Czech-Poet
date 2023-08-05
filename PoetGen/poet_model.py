@@ -38,7 +38,7 @@ class PoetModel(torch.nn.Module):
             self.model_size = model_config.n_embd
         elif hasattr(model_config, "hidden_size"):
             self.model_size = model_config.hidden_size
-        self.vowels_regressor = torch.nn.Linear(self.model_size,1) # Number of Emmbedings taken from config
+        self.vowels_regressor = torch.nn.Linear(self.model_size,1, dtype=torch.float16) # Number of Emmbedings taken from config
         
         
     def forward(self, input_ids=None, labels=None, attention_mask=None, vowel_count=None, rhyme=None):
