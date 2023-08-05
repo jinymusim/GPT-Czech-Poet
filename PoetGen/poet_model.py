@@ -12,15 +12,23 @@ class PoetModel(torch.nn.Module):
     def __init__(self, pretrainedModel, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         
+        #if "llama" in pretrainedModel:
+        #    self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
+        #                                                      output_hidden_states=True, 
+        #                                                      max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
+        #                                                      torch_dtype=torch.float16)
+        #else:
+        #    self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
+        #                                                      output_hidden_states=True,
+        #                                                      max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
+        #
         if "llama" in pretrainedModel:
             self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
                                                               output_hidden_states=True, 
-                                                              max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
                                                               torch_dtype=torch.float16)
         else:
             self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
                                                               output_hidden_states=True,
-                                                              max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
                                                               torch_dtype=torch.float16)
             
         model_config = self.model.config
@@ -36,7 +44,7 @@ class PoetModel(torch.nn.Module):
     def forward(self, input_ids=None, labels=None, attention_mask=None, vowel_count=None, rhyme=None):
         outputs = self.model(input_ids=input_ids, labels=labels, attention_mask=attention_mask)
         last_hidden = outputs['hidden_states'][-1]
-        vowel_regression = self.vowels_regressor((last_hidden[:,0,:].view(-1, self.model_size)).cpu())
+        vowel_regression = self.vowels_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
         
         vowel_loss = None
         if vowel_count is not None:
