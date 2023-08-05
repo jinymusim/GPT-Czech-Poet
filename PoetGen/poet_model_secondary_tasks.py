@@ -1,14 +1,12 @@
 from transformers import  AutoModelForCausalLM, AutoTokenizer
-import transformers
+from poet_model_interface import PoetModelInterface
 import torch
-import os
-import argparse
-import constants
+from poet_constants import rhyme_schemes
 import re
 import random
 
 
-class PoetModel(torch.nn.Module):
+class PoetModelSecondaryTasks(PoetModelInterface):
     def __init__(self, pretrainedModel, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         
@@ -22,44 +20,54 @@ class PoetModel(torch.nn.Module):
         #                                                      output_hidden_states=True,
         #                                                      max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
         #
-        if "llama" in pretrainedModel:
-            self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
-                                                              output_hidden_states=True, 
-                                                              torch_dtype=torch.float16)
-        else:
-            self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
-                                                              output_hidden_states=True,
-                                                              torch_dtype=torch.float16)
+        self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
+                                                            output_hidden_states=True)
             
         model_config = self.model.config
-        self.model_size = 1
+        self.model_size = -1
         # Check for Hidden layer size by Attribute Name
         if hasattr(model_config, "n_embd"):
             self.model_size = model_config.n_embd
         elif hasattr(model_config, "hidden_size"):
-            self.model_size = model_config.hidden_size
-        self.vowels_regressor = torch.nn.Linear(self.model_size,1, dtype=torch.float16) # Number of Emmbedings taken from config
+            self.model_size = model_config.hidden_size  # Number of Emmbedings taken from config
+        self.vowels_regressor = torch.nn.Linear(self.model_size,1) # Vowel count
+        self.rhyme_regressor = torch.nn.Linear(self.model_size, len(rhyme_schemes)) # Rhyme Type
         
         
-    def forward(self, input_ids=None, labels=None, attention_mask=None, vowel_count=None, rhyme=None):
+    def forward(self, input_ids=None, labels=None, attention_mask=None, vowel_count=None, rhyme=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, labels=labels, attention_mask=attention_mask)
         last_hidden = outputs['hidden_states'][-1]
         vowel_regression = self.vowels_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
+        
+        rhyme_regression = self.rhyme_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
+        
+        full_loss = outputs.loss
         
         vowel_loss = None
         if vowel_count is not None:
             loss_fct = torch.nn.MSELoss()
             vowel_loss = loss_fct(vowel_regression.view(-1, 1), vowel_count.view(-1, 1))
+            full_loss = full_loss + vowel_loss
+            
+        rhyme_loss = None
+        if rhyme is not None:
+            softmaxed = torch.softmax(rhyme_regression, dim=1)
+            loss_fct = torch.nn.CrossEntropyLoss()
+            rhyme_loss = loss_fct(softmaxed, rhyme)
+            full_loss = full_loss + rhyme_loss
+            
         
-        return {"model_output" : outputs, 
-                "vowel_regression_output": vowel_regression, "vowel_regression_loss": vowel_loss,}
+        return {"model_output" : outputs,
+                "vowel_regression_output": vowel_regression, 
+                "vowel_regression_loss": vowel_loss,
+                "rhyme_regression_output": rhyme_regression,
+                "rhyme_regression_loss": rhyme_loss,
+                "full_loss": full_loss}
     
     def save_LM(self, LM_path):
         self.model.save_pretrained(LM_path)
         
-    @staticmethod
-    def rhyme_like(rhyme:str):
-        return rhyme.isupper() and len(rhyme) == 4
+
         
     def analyze_prompt(self, prompt:str):
         features_dict = {
@@ -91,14 +99,14 @@ class PoetModel(torch.nn.Module):
         if len(lines) == 0:
             raise Exception("Empty Prompt!")
         elif len(lines) == 1:
-            if (lines[0].upper() in constants.rhyme_schemes) or PoetModel.rhyme_like(lines[0]):
+            if (lines[0].upper() in rhyme_schemes) or PoetModelInterface.rhyme_like(lines[0]):
                 features_dict["rhyme_scheme"] = lines[0].upper()
                 features_dict["included_scheme"] = True
             elif lines[0].split()[0].isdigit():
                 features_dict["type_1_len"] = int(lines[0].split()[0])
                 features_dict["included_1_len"] = True
         elif len(lines) > 1:
-            if (lines[0].upper() in constants.rhyme_schemes) or PoetModel.rhyme_like(lines[0]):
+            if (lines[0].upper() in rhyme_schemes) or PoetModelInterface.rhyme_like(lines[0]):
                 features_dict["rhyme_scheme"] = lines[0].upper()
                 features_dict["included_scheme"] = True
             elif lines[0].split()[0].isdigit():
@@ -112,7 +120,7 @@ class PoetModel(torch.nn.Module):
                     features_dict[f"type_{i}_len"] = len(re.findall("a|e|i|o|u|y", lines[i]))
         
         if features_dict["rhyme_scheme"] == "":
-            features_dict["rhyme_scheme"] = random.choice(constants.rhyme_schemes)
+            features_dict["rhyme_scheme"] = random.choice(rhyme_schemes)
         if features_dict["type_1_len"] == 0:
             features_dict["type_1_len"] = random.randint(6,14)
         if features_dict["type_2_len"] == 0:

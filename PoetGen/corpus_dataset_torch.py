@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import re
 import pickle
-import constants
+from poet_constants import rhyme_schemes
 from transformers import GPT2Tokenizer
 
 
@@ -79,8 +79,8 @@ class CorpusDatasetPytorch:
                         part.append("\n".join(body))
                         
                     tokenized = self._tokenizer.encode("\n".join(part), return_tensors="np", truncation=True)[0]
-                    data.append({"input_ids" : tokenized,
-                                "num_vowels": [sum(num_vowels)]})
+                    data.append({"input_ids" : tokenized})
+                    
             return data
                     
         def data_body_gen(self):
@@ -115,8 +115,8 @@ class CorpusDatasetPytorch:
                         
                             
                         tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
-                        data.append({"input_ids" : tokenized,                                    
-                                     "num_vowels": [sum([len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý",words)) for words in body])]})
+                        data.append({"input_ids" : tokenized,
+                                     "rhyme": [1 if rhyme == rhyme_schemes[i] else 0 for i in range(len(rhyme_schemes)) ]})
             return data
     
     def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=4):
@@ -142,14 +142,19 @@ class CorpusDatasetPytorch:
             attention[pos,:len(text['input_ids'])] = 1
         padded_batch = np.asarray([np.append(text['input_ids'], [0] *(max_len - len(text['input_ids'])))  for text in batch], dtype=np.int32)
         
-        
-
-        nums = np.asarray([text['num_vowels']for text in batch], dtype=np.int32)
+        nums = None
+        if "num_vowels" in batch[0].keys():
+            nums = torch.tensor(np.asarray([text['num_vowels'] for text in batch], dtype=np.int32), dtype=torch.int32)
+            
+        rhyme=None
+        if "rhyme" in batch[0].keys():
+            rhyme = torch.tensor(np.asarray([text["rhyme"] for text in batch], dtype=np.int32), dtype=torch.int32)
         
         return {
             "input_ids": torch.tensor(padded_batch,  dtype=torch.int32),
             "attention": torch.tensor(attention, dtype=torch.bool),
-            "nums" :  torch.tensor(nums, dtype=torch.int32)
+            "nums" :  nums,
+            "rhyme": rhyme
             }
     
     #TODO: Finish Rhyme Prompting

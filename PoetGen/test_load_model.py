@@ -1,4 +1,4 @@
-from poet_model import PoetModel
+from poet_model_interface import PoetModelInterface
 from transformers import  AutoModelForCausalLM, AutoTokenizer
 import transformers
 import torch
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
 tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
-model: PoetModel = (torch.load(args.model_path_full, map_location=torch.device('cpu')))
+model: PoetModelInterface = (torch.load(args.model_path_full, map_location=torch.device('cpu')))
 model_LM = AutoModelForCausalLM.from_pretrained(args.model_path_LM)
 
 tokenized_poet_start = tokenizer.encode("ABCB\n", return_tensors='pt')

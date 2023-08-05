@@ -1,5 +1,4 @@
 from transformers import  AutoTokenizer
-from poet_model import PoetModel
 from torch.utils.data import DataLoader
 from corpus_dataset_torch import CorpusDatasetPytorch
 from trainer_torch import Trainer
@@ -8,32 +7,40 @@ import torch
 import os
 import argparse
 
+from poet_model_base_lm import PoetModelBase
+from poet_model_secondary_tasks import PoetModelSecondaryTasks
+
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_LM", default=1, type=int, help="Batch size.")
 parser.add_argument("--epochs_LM", default=4, type=int, help="Number of epochs to run.")
 parser.add_argument("--batch_size_poet", default=1, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=8, type=int, help="Number of epochs for poet gen")
-
+parser.add_argument("--epochs_poet", default=4, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
+parser.add_argument("--train_masked", default=True, type=bool, help="Train for consistency secondary training")
+parser.add_argument("--input_mask_rate", default=0.05, type=float, help="Rate of input masking")
+
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "lamma-cz-poetry")),  type=str, help="Path to Model")
-parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
+
 # huggyllama/llama-7b 4096
 # lchaloupsky/czech-gpt2-oscar 1024
-parser.add_argument("--default_hf_model", default="huggyllama/llama-7b", type=str, help="Default Model from HF to use")
-parser.add_argument("--max_len", default=4096, type=int, help="Max length for tokenizer")
-parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
-parser.add_argument("--train_for_consistency", default=True, type=bool, help="Train for consistency secondary training")
-parser.add_argument("--input_mask_rate", default=0.05, type=float, help="Rate of input masking")
+
+parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
+parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
+parser.add_argument("--model_type",  default="secondary_tasks", type=str, choices=["base", "secondary_tasks"], help="What type of Model is to be constructed")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-secondary-tasks")),  type=str, help="Path to Model")
+parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
+
 
 parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is prompted into training data")
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
-#TODO: Rhyme Prompting
-#TODO: Tokenizer Analysis
-#TODO: 
+
+
+
+
 
 def main(args: argparse.Namespace):
     # Base Device is CPU
@@ -45,10 +52,15 @@ def main(args: argparse.Namespace):
     
     if args.use_default_model:
         tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
-        model = PoetModel(args.default_hf_model)
+        if args.model_type == "base":         
+            model = PoetModelBase(args.default_hf_model)
+        elif args.model_type == "secondary_tasks":
+            model = PoetModelSecondaryTasks(args.default_hf_model)
+        else:
+            model = None
     else:
         tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
-        model = PoetModel(args.default_hf_model).load_state_dict(torch.load(args.model_path))
+        model = torch.load(args.model_path_full, map_location=torch.device('cpu'))
     
     #if args.use_gpu_if_available and torch.cuda.is_available():
     #    model = torch.nn.DataParallel(model, device_ids=list(range(torch.cuda.device_count())))
@@ -64,7 +76,9 @@ def main(args: argparse.Namespace):
     scheduler_text = transformers.get_cosine_schedule_with_warmup(optimizer_text, 
                                                          len(dataloader_text)//args.batch_size_LM,
                                                          len(dataloader_text)//args.batch_size_LM *args.epochs_LM)
-    trainer_text = Trainer(model, device ,args.epochs_LM, optimizer_text, scheduler_text, dataloader_text, args.train_for_consistency, args.input_mask_rate, multi_gpu)
+    trainer_text = Trainer(model=model, device=device ,epochs=args.epochs_LM, optimizer=optimizer_text, 
+                           scheduler=scheduler_text, dataloader=dataloader_text, train_masked=args.train_masked, 
+                           masking_rate=args.input_mask_rate, multi_gpu=multi_gpu)
     trainer_text.train()
     
     
@@ -75,7 +89,9 @@ def main(args: argparse.Namespace):
     scheduler_body= transformers.get_constant_schedule_with_warmup(optimizer_body, 
                                                          len(dataloader_body)//args.batch_size_poet)
     
-    trainer_body = Trainer(model, device ,args.epochs_poet, optimizer_body, scheduler_body, dataloader_body, args.train_for_consistency, args.input_mask_rate, multi_gpu)
+    trainer_body = Trainer(model=model,device=device,epochs=args.epochs_poet,optimizer=optimizer_body, 
+                           scheduler=scheduler_body, dataloader=dataloader_body, train_masked=args.train_masked, 
+                           masking_rate=args.input_mask_rate, multi_gpu=multi_gpu)
     trainer_body.train()
     
     
