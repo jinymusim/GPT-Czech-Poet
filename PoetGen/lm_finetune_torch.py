@@ -53,7 +53,7 @@ def main(args: argparse.Namespace):
     #if args.use_gpu_if_available and torch.cuda.is_available():
     #    model = torch.nn.DataParallel(model, device_ids=list(range(torch.cuda.device_count())))
     #else:
-    model = model.to(device)
+    #model = model.to(device)
     
     tokenizer.model_max_length = args.max_len
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path, prompt_ending=args.prompt_ending, prompt_length=args.prompt_length)

@@ -18,7 +18,10 @@ class PoetModel(torch.nn.Module):
                                                               max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
                                                               torch_dtype=torch.float16)
         else:
-            self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, output_hidden_states=True)
+            self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
+                                                              output_hidden_states=True,
+                                                              max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
+                                                              torch_dtype=torch.float16)
             
         model_config = self.model.config
         self.model_size = 1
@@ -29,10 +32,11 @@ class PoetModel(torch.nn.Module):
             self.model_size = model_config.hidden_size
         self.vowels_regressor = torch.nn.Linear(self.model_size,1) # Number of Emmbedings taken from config
         
+        
     def forward(self, input_ids=None, labels=None, attention_mask=None, vowel_count=None, rhyme=None):
         outputs = self.model(input_ids=input_ids, labels=labels, attention_mask=attention_mask)
         last_hidden = outputs['hidden_states'][-1]
-        vowel_regression = self.vowels_regressor(last_hidden[:,0,:].view(-1, self.model_size))
+        vowel_regression = self.vowels_regressor((last_hidden[:,0,:].view(-1, self.model_size)).cpu())
         
         vowel_loss = None
         if vowel_count is not None:
