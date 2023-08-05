@@ -16,8 +16,7 @@ class PoetModel(torch.nn.Module):
             self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
                                                               output_hidden_states=True, 
                                                               device_map= "balanced",
-                                                              max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())},
-                                                              no_split_module_classes=['Block'],  
+                                                              max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
                                                               torch_dtype=torch.float16)
         else:
             self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, output_hidden_states=True)
