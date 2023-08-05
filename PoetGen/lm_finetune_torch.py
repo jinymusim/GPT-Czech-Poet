@@ -13,9 +13,9 @@ from poet_model_secondary_tasks import PoetModelSecondaryTasks
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=1, type=int, help="Batch size.")
+parser.add_argument("--batch_size_LM", default=8, type=int, help="Batch size.")
 parser.add_argument("--epochs_LM", default=4, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=1, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=4, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=4, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
