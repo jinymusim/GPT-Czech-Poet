@@ -15,7 +15,7 @@ class PoetModel(torch.nn.Module):
         if "llama" in pretrainedModel:
             self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
                                                               output_hidden_states=True, 
-                                                              device_map= "balanced",
+                                                              device_map={'': 0},
                                                               max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
                                                               torch_dtype=torch.float16)
         else:
