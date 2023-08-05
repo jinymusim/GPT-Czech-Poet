@@ -13,16 +13,11 @@ class PoetModel(torch.nn.Module):
         super().__init__(*args, **kwargs)
         
         if "llama" in pretrainedModel:
-            if torch.cuda.device_count() > 1:
-                self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
+            self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
                                                               output_hidden_states=True, 
                                                               device_map= "balanced",
                                                               max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())},
                                                               no_split_module_classes=['Block'],  
-                                                              torch_dtype=torch.float16)
-            else:
-                self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
-                                                              output_hidden_states=True, 
                                                               torch_dtype=torch.float16)
         else:
             self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, output_hidden_states=True)
