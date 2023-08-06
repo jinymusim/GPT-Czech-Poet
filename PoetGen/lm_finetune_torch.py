@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 # Project Packages
 from poet_model_base_lm import PoetModelBase
 from poet_model_secondary_tasks import PoetModelSecondaryTasks
+from poet_model_half_precision import PoetModelHalfBase
 
 from trainer_torch import Trainer
 
@@ -36,7 +37,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 
 parser.add_argument("--default_hf_model", default="huggyllama/llama-7b", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
-parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks"], help="What type of Model is to be constructed")
+parser.add_argument("--model_type",  default="half", type=str, choices=["base", "secondary_tasks", "half"], help="What type of Model is to be constructed")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "llama-cz-poetry-base")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=4096, type=int, help="Max length for tokenizer")
 
@@ -61,6 +62,8 @@ def main(args: argparse.Namespace):
             model = PoetModelBase(args.default_hf_model)
         elif args.model_type == "secondary_tasks":
             model = PoetModelSecondaryTasks(args.default_hf_model)
+        elif args.model_type == "half":
+            model = PoetModelHalfBase(args.default_hf_model)
         else:
             model = None
     else:
