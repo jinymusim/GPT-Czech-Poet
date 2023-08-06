@@ -76,6 +76,7 @@ def main(rank, world_size, args: argparse.Namespace):
         tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
         model = torch.load(args.model_path_full, map_location=torch.device('cpu'))
 
+    model = model.to(rank)
     model = DDP(model, device_ids=[rank])
     
     tokenizer.model_max_length = args.max_len
@@ -84,7 +85,8 @@ def main(rank, world_size, args: argparse.Namespace):
     ### Basic Text Learning
     dataloader_text = DataLoader(train_data.pytorch_dataset_text, 
                                  batch_size=args.batch_size_LM, 
-                                 collate_fn=CorpusDatasetPytorch.collate, 
+                                 collate_fn=CorpusDatasetPytorch.collate,
+                                 pin_memory=True,
                                  shuffle=False,
                                  sampler = DistributedSampler(train_data.pytorch_dataset_text))
     
