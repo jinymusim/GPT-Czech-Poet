@@ -4,6 +4,9 @@ import torch
 import os
 import argparse
 
+
+from accelerate import Accelerator
+
 from transformers import  AutoTokenizer, TrainingArguments, Trainer
 from torch.utils.data import DataLoader
 #from torch.distributed.tensor.parallel import parallelize_module, PairwiseParallel
@@ -69,7 +72,8 @@ def main(args: argparse.Namespace):
         tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
         model = torch.load(args.model_path_full, map_location=torch.device('cpu'))
     
-    model = model.to(device)
+    accelerator =  Accelerator() 
+    model = accelerator.prepare(model)
     
     
     # Data Loading
@@ -87,6 +91,7 @@ def main(args: argparse.Namespace):
                                   learning_rate = args.learning_rate,
                                   fp16 = True,
                                   fsdp = ["full_shard", "offload"],
+                                  ddp_backend = "nccl",
                                   lr_scheduler_type="cosine",
                                   logging_dir = './logs',
                                   output_dir = './results',
@@ -108,6 +113,7 @@ def main(args: argparse.Namespace):
                                   learning_rate = args.learning_rate,
                                   fp16 = True,
                                   fsdp = ["full_shard", "offload"],
+                                  ddp_backend = "nccl",
                                   lr_scheduler_type="constant_with_warmup",
                                   logging_dir = './logs',
                                   output_dir = './results',
