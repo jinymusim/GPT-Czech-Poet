@@ -69,7 +69,7 @@ def main(args: argparse.Namespace):
     
     if args.use_multiple_gpu_if_available and torch.cuda.is_available():
         model = model.to(device)
-        model = torch.nn.DataParallel(model, device_ids=list(range(torch.cuda.device_count())))
+        model = torch.nn.DataParallel(model)
     #else:
     #if args.use_multiple_gpu_if_available and torch.cuda.device_count() > 1:
     #    model = parallelize_module(model, PairwiseParallel())
