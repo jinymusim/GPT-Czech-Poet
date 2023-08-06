@@ -1,3 +1,4 @@
+dill
 torch 
 torchvision 
 torchaudio
