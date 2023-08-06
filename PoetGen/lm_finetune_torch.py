@@ -67,9 +67,9 @@ def main(args: argparse.Namespace):
         tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
         model = torch.load(args.model_path_full, map_location=torch.device('cpu'))
     
-    if args.use_multiple_gpu_if_available and torch.cuda.is_available():
-        model = model.to(device)
-        model = torch.nn.DataParallel(model)
+    #if args.use_multiple_gpu_if_available and torch.cuda.is_available():
+    #    model = model.to(device)
+    #    model = torch.nn.DataParallel(model)
     #else:
     #if args.use_multiple_gpu_if_available and torch.cuda.device_count() > 1:
     #    model = parallelize_module(model, PairwiseParallel())
