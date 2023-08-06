@@ -1,14 +1,20 @@
-from transformers import  AutoTokenizer
-from torch.utils.data import DataLoader
-from corpus_dataset_torch import CorpusDatasetPytorch
-from trainer_torch import Trainer
+# Outide Packages
 import transformers
 import torch
 import os
 import argparse
 
+from transformers import  AutoTokenizer
+from torch.utils.data import DataLoader
+#from torch.distributed.tensor.parallel import parallelize_module, PairwiseParallel
+
+# Project Packages
 from poet_model_base_lm import PoetModelBase
 from poet_model_secondary_tasks import PoetModelSecondaryTasks
+
+from trainer_torch import Trainer
+
+from corpus_dataset_torch import CorpusDatasetPytorch
 
 
 parser = argparse.ArgumentParser()
@@ -19,6 +25,7 @@ parser.add_argument("--batch_size_poet", default=4, type=int, help="Batch size."
 parser.add_argument("--epochs_poet", default=2, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
+parser.add_argument("--use_multiple_gpu_if_available", default=True, type=bool, help="If to use multiple gpus")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.05, type=float, help="Rate of input masking")
 
@@ -62,6 +69,9 @@ def main(args: argparse.Namespace):
     
     #if args.use_gpu_if_available and torch.cuda.is_available():
     #    model = torch.nn.DataParallel(model, device_ids=list(range(torch.cuda.device_count())))
+    #else:
+    #if args.use_multiple_gpu_if_available and torch.cuda.device_count() > 1:
+    #    model = parallelize_module(model, PairwiseParallel())
     #else:
     model = model.to(device)
     

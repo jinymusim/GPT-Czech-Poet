@@ -110,13 +110,18 @@ class CorpusDatasetPytorch:
                             i+=1
                             
                             if i == self.verse_len:
-                                break
+                                tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
+                                data.append({"input_ids" : tokenized,
+                                     "rhyme": [1 if rhyme == rhyme_schemes[i] else 0 for i in range(len(rhyme_schemes)) ]})
+                                
+                                body = []
+                                rhyme = ""
+                                rhyme_sequence = -1
+                                i=0
                             
                         
                             
-                        tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
-                        data.append({"input_ids" : tokenized,
-                                     "rhyme": [1 if rhyme == rhyme_schemes[i] else 0 for i in range(len(rhyme_schemes)) ]})
+                        
             return data
     
     def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=4):
