@@ -20,9 +20,9 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=1, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=2, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=1, type=int, help="Batch size.")
+parser.add_argument("--batch_size_LM", default=2, type=int, help="Batch size.")
+parser.add_argument("--epochs_LM", default=1, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_poet", default=2, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=2, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
@@ -85,6 +85,7 @@ def main(args: argparse.Namespace):
                                   weight_decay = 0.05,
                                   num_train_epochs = args.epochs_LM,
                                   learning_rate = args.learning_rate,
+                                  fp16 = True,
                                   lr_scheduler_type="cosine",
                                   logging_dir = './logs',
                                   output_dir = './results',
@@ -104,6 +105,7 @@ def main(args: argparse.Namespace):
                                   weight_decay = 0.05,
                                   num_train_epochs = args.epochs_poet,
                                   learning_rate = args.learning_rate,
+                                  fp16 = True,
                                   lr_scheduler_type="constant_with_warmup",
                                   logging_dir = './logs',
                                   output_dir = './results',
