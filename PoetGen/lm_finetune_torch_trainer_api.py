@@ -72,7 +72,15 @@ def main(args: argparse.Namespace):
         model = torch.load(args.model_path_full, map_location=torch.device('cpu'))
     
     
-    accelerator =  Accelerator() 
+    from accelerate import FullyShardedDataParallelPlugin
+    from torch.distributed.fsdp.fully_sharded_data_parallel import FullOptimStateDictConfig, FullStateDictConfig
+
+    fsdp_plugin = FullyShardedDataParallelPlugin(
+        state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
+        optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
+        )
+
+    accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
     model = accelerator.prepare(model)
     
     # Data Loading
@@ -90,6 +98,7 @@ def main(args: argparse.Namespace):
                                   learning_rate = args.learning_rate,
                                   fp16 = True,
                                   ddp_backend = "nccl",
+                                  fsdp = ["full_shard", "offload"],
                                   lr_scheduler_type="cosine",
                                   logging_dir = './logs',
                                   output_dir = './results',
