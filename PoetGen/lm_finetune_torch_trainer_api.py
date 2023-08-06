@@ -5,7 +5,6 @@ import os
 import argparse
 
 
-from accelerate import Accelerator
 
 from transformers import  AutoTokenizer, TrainingArguments, Trainer
 from torch.utils.data import DataLoader
@@ -15,6 +14,7 @@ from torch.utils.data import DataLoader
 from poet_model_base_lm import PoetModelBase
 from poet_model_secondary_tasks import PoetModelSecondaryTasks
 from poet_model_half_precision import PoetModelHalfBase
+from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
@@ -72,8 +72,7 @@ def main(args: argparse.Namespace):
         tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
         model = torch.load(args.model_path_full, map_location=torch.device('cpu'))
     
-    accelerator =  Accelerator() 
-    model = accelerator.prepare(model)
+    model = FSDP(model)
     
     
     # Data Loading
