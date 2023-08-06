@@ -62,7 +62,7 @@ class PoetModelSecondaryTasks(PoetModelInterface):
                 "vowel_regression_loss": vowel_loss,
                 "rhyme_regression_output": rhyme_regression,
                 "rhyme_regression_loss": rhyme_loss,
-                "full_loss": full_loss}
+                "loss": full_loss}
     
     def save_LM(self, LM_path):
         self.model.save_pretrained(LM_path)

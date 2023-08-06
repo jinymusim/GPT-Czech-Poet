@@ -37,7 +37,7 @@ class PoetModelBase(PoetModelInterface):
         outputs = self.model(input_ids=input_ids, labels=labels, attention_mask=attention_mask)
         
         return {"model_output" : outputs,
-                "full_loss" : outputs.loss}
+                "loss" : outputs.loss}
     
     def save_LM(self, LM_path):
         self.model.save_pretrained(LM_path)
