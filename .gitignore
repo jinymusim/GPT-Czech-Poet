@@ -146,8 +146,8 @@ PYTORCH/
 # GPT2 Corpus Data 
 */corpusCzechVerse-master/
 # Models
-*/gpt-cz-poetry
-*/gpt-cz-poetry_LM
+*/gpt-cz-poetry*
+*/gpt-cz-poetry*_LM
 
 # Data
 *.json

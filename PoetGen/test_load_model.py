@@ -8,8 +8,8 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry")),  type=str, help="Path to Model")
-parser.add_argument("--model_path_LM", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-secondary-tasks")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_LM", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-secondary-tasks_LM")),  type=str, help="Path to Model")
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 
 if __name__ == "__main__":
