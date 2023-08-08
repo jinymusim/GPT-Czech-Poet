@@ -4,17 +4,13 @@ import torch
 import os
 import argparse
 
-
 from accelerate import Accelerator
 from transformers import  AutoTokenizer, TrainingArguments, Trainer
-from torch.utils.data import DataLoader
-#from torch.distributed.tensor.parallel import parallelize_module, PairwiseParallel
 
 # Project Packages
 from poet_model_base_lm import PoetModelBase
 from poet_model_secondary_tasks import PoetModelSecondaryTasks
 from poet_model_half_precision import PoetModelHalfBase
-
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
@@ -22,10 +18,10 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=8, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=2, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=8, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=4, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--batch_size_LM", default=16, type=int, help="Batch size.")
+parser.add_argument("--epochs_LM", default=4, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_poet", default=16, type=int, help="Batch size.")
+parser.add_argument("--epochs_poet", default=8, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 parser.add_argument("--use_multiple_gpu_if_available", default=True, type=bool, help="If to use multiple gpus")
@@ -40,7 +36,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 parser.add_argument("--model_type",  default="secondary_tasks", type=str, choices=["base", "secondary_tasks", "half"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-secondary_e2_e4_verse_len_4_6")),  type=str, help="Path to Model")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-secondary_e4_e8_verse_len_4_6")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 
 
@@ -71,7 +67,7 @@ def main(args: argparse.Namespace):
         tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
         model = torch.load(args.model_path_full, map_location=torch.device('cpu'))
     
-    
+    # Parallel Plugin
     from accelerate import FullyShardedDataParallelPlugin
     from torch.distributed.fsdp.fully_sharded_data_parallel import FullOptimStateDictConfig, FullStateDictConfig
 
@@ -96,7 +92,7 @@ def main(args: argparse.Namespace):
                                   weight_decay = 0.05,
                                   num_train_epochs = args.epochs_LM,
                                   learning_rate = args.learning_rate,
-                                  fp16 = True,
+                                  fp16 = True if torch.cuda.is_available() else False,
                                   ddp_backend = "nccl",
                                   lr_scheduler_type="cosine",
                                   logging_dir = './logs',
@@ -117,7 +113,7 @@ def main(args: argparse.Namespace):
                                   weight_decay = 0.05,
                                   num_train_epochs = args.epochs_poet,
                                   learning_rate = args.learning_rate,
-                                  fp16 = True,
+                                  fp16 =  True if torch.cuda.is_available() else False,
                                   ddp_backend = "nccl",
                                   lr_scheduler_type="constant_with_warmup",
                                   logging_dir = './logs',

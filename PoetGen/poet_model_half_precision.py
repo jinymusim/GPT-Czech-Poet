@@ -42,10 +42,6 @@ class PoetModelHalfBase(PoetModelInterface):
     def save_LM(self, LM_path):
         self.model.save_pretrained(LM_path)
         
-    @staticmethod
-    def rhyme_like(rhyme:str):
-        return rhyme.isupper() and len(rhyme) == 4
-        
     def analyze_prompt(self, prompt:str):
         features_dict = {
             "rhyme_scheme" : "",

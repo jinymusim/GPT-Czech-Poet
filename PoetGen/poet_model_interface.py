@@ -1,5 +1,6 @@
 
 from transformers import AutoTokenizer
+from poet_constants import rhyme_schemes
 import torch
 
 class PoetModelInterface(torch.nn.Module):
@@ -15,7 +16,7 @@ class PoetModelInterface(torch.nn.Module):
 
     @staticmethod
     def rhyme_like(rhyme:str):
-        return rhyme.isupper() and len(rhyme) == 4
+        return rhyme.isupper() and len(rhyme) in [4,6]
     
     def save_LM(self, LM_path):
         raise NotImplementedError()
