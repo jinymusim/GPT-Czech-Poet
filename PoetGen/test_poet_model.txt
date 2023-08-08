@@ -1,0 +1,19 @@
+--- Model gpt-cz-poetry-secondary_e2_e4_verse_len_4_6 ---
+### Basic Decoding! ###
+ ABCB
+10 ání # A v tom, jak by se smála v zadumání,
+11 ála # jakby se mu v očích jiskra kmitla, vzplála. –
+12 ena # „Co se stalo?“ – „Já jsem, pane, uražena!“
+9 ala # a ona mlčela, jen šeptala:
+
+ – – “ –“ „Ne, ne, to není, paní, zvala!“ ––
+ – - “ „„Ne!““ – A ona vzdychla, „ “ “ne, není! –”“
+
+### Forced Decoding! ###
+ AABBCC
+6 ání # A když se k němu sklání,
+6 ání # On se na něj dívá.
+13 ívá # „Co se děje?“ – „„To, co se stalo?““ „To se ptává
+13 ívá # a na to: „Aj, jak se to stalo!“ „Tak se dívá.“
+6 aví # Tak se o něm praví, –
+6 aví # Jak se mu to praví! – –“
