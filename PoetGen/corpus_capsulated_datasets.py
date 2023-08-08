@@ -48,7 +48,7 @@ class CorpusDatasetPytorch:
             return self.data[index]
         
     class BodyDataset(Dataset):
-        def __init__(self, data_file_paths, tokenizer , shuffle_bool:bool= True, seed:int= 42, prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=4):
+        def __init__(self, data_file_paths, tokenizer , shuffle_bool:bool= True, seed:int= 42, prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6]):
             self._data_file_paths = data_file_paths
             self._tokenizer = tokenizer
             self.prompt_length = prompt_length
@@ -61,6 +61,11 @@ class CorpusDatasetPytorch:
         def gen_files(self):
             for filename in self._data_file_paths:
                  yield open(filename, 'r')
+        
+        @staticmethod
+        def rhyme_sec(rhyme_ref, current_rhyme):
+            rhyme_pos = ["A", "B", "C", "D", "E", "F", "G", "H"]
+            return "X" if current_rhyme == None or current_rhyme < rhyme_ref or current_rhyme >= rhyme_ref + len(rhyme_pos) else rhyme_pos[current_rhyme - rhyme_ref]
                                                            
         def data_body_gen(self):
             data = []
@@ -78,7 +83,7 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             if rhyme_sequence == -1 and text_line["rhyme"] != None:
                                 rhyme_sequence = text_line["rhyme"]
-                            rhyme += "X" if text_line["rhyme"] == None else ( "A" if  text_line["rhyme"]  == rhyme_sequence else ("B" if text_line["rhyme"] == rhyme_sequence + 1 else "C"))
+                            rhyme += self.rhyme_sec(rhyme_sequence, text_line["rhyme"])
                             
                             num_str = f"{len(re.findall('a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý', text_line['text']))} " if self.prompt_length else ""
                             sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:()]+', '', text_line['text'])
@@ -88,15 +93,22 @@ class CorpusDatasetPytorch:
                             
                             i+=1
                             
-                            if i == self.verse_len:
+                            if i in self.verse_len:
                                 tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
                                 data.append({"input_ids" : tokenized,
                                      "rhyme": [1 if rhyme == rhyme_schemes[i] else 0 for i in range(len(rhyme_schemes)) ]})
                                 
-                                body = []
-                                rhyme = ""
-                                rhyme_sequence = -1
-                                i=0                                 
+                                if i == max(self.verse_len):
+                                    body = []
+                                    rhyme = ""
+                                    rhyme_sequence = -1
+                                    i=0
+                        if len(body) > 0 and i not in self.verse_len:
+                            tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
+                            data.append({"input_ids" : tokenized,
+                                "rhyme": [1 if (rhyme not in rhyme_schemes and rhyme_schemes[i] == None) or rhyme == rhyme_schemes[i] else 0 for i in range(len(rhyme_schemes)) ]})
+                                
+                                                    
             return data
         
         def __len__(self):
@@ -105,7 +117,7 @@ class CorpusDatasetPytorch:
         def __getitem__(self, index):
             return self.data[index]
     
-    def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=4):
+    def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=[4,6]):
         data_filenames = os.listdir(self.data_dir)
         data_by_files = []
         for filename in data_filenames:

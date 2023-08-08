@@ -107,7 +107,7 @@ class PoetModelHalfBase(PoetModelInterface):
         return features_dict
                    
     
-    def generate_forced(self, prompt:str, tokenizer: AutoTokenizer):
+    def generate_forced(self, prompt:str, tokenizer: AutoTokenizer, verse_len:int = 4):
         
         features_dict = self.analyze_prompt(prompt)
         prompt_list = prompt.splitlines()
@@ -122,7 +122,7 @@ class PoetModelHalfBase(PoetModelInterface):
             if not features_dict[f'included_{j}_len']:  
                 prompt_list[i] = str(features_dict[f"type_{j}_len"]) + " " + prompt_list[i]
         # Generating 4 verse rhymes
-        while len(prompt_list) < 5:
+        while len(prompt_list) <= verse_len:
             j = 1
             if features_dict["rhyme_scheme"][(len(prompt_list) - 1) % len(features_dict["rhyme_scheme"])] == "B":
                 j = 2

@@ -33,6 +33,6 @@ decoded_cont = tokenizer.decode(out[0], skip_special_tokens=True)
 
 print("### Basic Decoding! ###\n", decoded_cont)
 
-out_forced = model.generate_forced("ABCA\n", tokenizer)
+out_forced = model.generate_forced("AABBCC\n", tokenizer, verse_len=6)
 
 print("### Forced Decoding! ###\n", out_forced)
