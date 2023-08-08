@@ -134,7 +134,7 @@ class CorpusDatasetPytorch:
             
         rhyme=None
         if "rhyme" in batch[0].keys():
-            rhyme = torch.tensor(np.asarray([text["rhyme"] for text in batch], dtype=np.int32), dtype=torch.int32)
+            rhyme = torch.tensor(np.asarray([text["rhyme"] for text in batch], dtype=np.int32), dtype=torch.float32)
         
         return {
             "input_ids": padded_batch,
