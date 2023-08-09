@@ -19,7 +19,7 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_LM", default=16, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=4, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_LM", default=8, type=int, help="Number of epochs to run.")
 parser.add_argument("--batch_size_poet", default=16, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
@@ -36,7 +36,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 parser.add_argument("--model_type",  default="secondary_tasks", type=str, choices=["base", "secondary_tasks", "half"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-secondary_e4_e16_verse_len_4_6")),  type=str, help="Path to Model")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-secondary_e8_e16_verse_len_4_6")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 
 

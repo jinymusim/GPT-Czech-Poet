@@ -151,7 +151,7 @@ class CorpusDatasetPytorch:
         return {
             "input_ids": padded_batch,
             "labels": padded_batch.type(torch.LongTensor),
-            "attention": torch.tensor(attention, dtype=torch.bool),
+            "attention_mask": torch.tensor(attention, dtype=torch.bool),
             "nums" :  nums,
             "rhyme": rhyme
             }
