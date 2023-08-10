@@ -17,3 +17,22 @@
 13 ívá # a na to: „Aj, jak se to stalo!“ „Tak se dívá.“
 6 aví # Tak se o něm praví, –
 6 aví # Jak se mu to praví! – –“
+--- Model gpt-cz-poetry-secondary_e8_e16_verse_len_4_6 ---
+### Basic Decoding! ###
+ AABBCC
+11 ady # a v duchu zřel, jak pusto, temno všady,
+12 adý # jak v koutech všech se zvedá pavouk mladý
+10 ají # i krtkové a sovy otvírají
+9 aji # mu krzno, v němž on spí i po taji.
+13 nou # Tak v duši mou se vkrádá noc ta temnou, –
+14 nou‘ # v ní snové blouzniví jak ptáci hynou.‘
+
+ # „Nuž pojď, synu můj, a já jsem s Bohem!“
+### Forced Decoding! ###
+ AABBCC
+6 ání # Dozvání klekání.
+6 ání # Slunko se přiklání,
+14 ívá # ospalý den se do červánků jasně odívá
+14 ívá # a v modru nebeském se zlatá hvězda zaskvívá. –
+6 ení # A v tichém ozáření
+6 ení # slavík v tom znamení
