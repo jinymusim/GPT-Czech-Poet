@@ -11,6 +11,7 @@ from transformers import  AutoTokenizer, TrainingArguments, Trainer
 from poet_model_base_lm import PoetModelBase
 from poet_model_secondary_tasks import PoetModelSecondaryTasks
 from poet_model_half_precision import PoetModelHalfBase
+from poet_model_verse_end import PoetModelVerseEnd
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
@@ -35,8 +36,8 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
-parser.add_argument("--model_type",  default="secondary_tasks", type=str, choices=["base", "secondary_tasks", "half"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-secondary_e8_e16_verse_len_4_6")),  type=str, help="Path to Model")
+parser.add_argument("--model_type",  default="verse", type=str, choices=["base", "secondary_tasks", "half", "verse"], help="What type of Model is to be constructed")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-secondary_e8_e16_endings")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 
 
@@ -61,6 +62,8 @@ def main(args: argparse.Namespace):
             model = PoetModelSecondaryTasks(args.default_hf_model)
         elif args.model_type == "half":
             model = PoetModelHalfBase(args.default_hf_model)
+        elif args.model_type == "verse":
+            model =  PoetModelVerseEnd(args.default_hf_model)
         else:
             model = None
     else:

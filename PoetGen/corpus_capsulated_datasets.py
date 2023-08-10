@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import re
 import pickle
-from poet_constants import rhyme_schemes
+from poet_constants import rhyme_schemes, verse_ending
 from transformers import GPT2Tokenizer
 from torch.utils.data import Dataset
 
@@ -37,8 +37,11 @@ class CorpusDatasetPytorch:
                     for part_line in data_line['body']:
                         for text_line in part_line:
                             tokenized = self._tokenizer.encode(text_line['text'], return_tensors="np", truncation=True)[0]
+                            sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:()\[\]\*\_]+', '', text_line['text'])
+                            ending = sub.strip()[-2:].lower()
                             data.append({"input_ids" : tokenized,
-                                     "num_vowels": [len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý", text_line['text']))]})
+                                     "num_vowels": [len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý", text_line['text']))],
+                                     "verse_end": [1 if ending == verse_ending[i] or (verse_ending[i] == None and ending not in verse_ending) else 0 for i in range(len(verse_ending)) ]})
             return data
             
         def __len__(self):
@@ -86,9 +89,9 @@ class CorpusDatasetPytorch:
                             rhyme += self.rhyme_sec(rhyme_sequence, text_line["rhyme"])
                             
                             num_str = f"{len(re.findall('a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý', text_line['text']))} " if self.prompt_length else ""
-                            sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:()]+', '', text_line['text'])
+                            sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:()\[\]\*\_]+', '', text_line['text'])
                             verse_ending = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
-                        
+
                             body.append( num_str + verse_ending  + text_line['text'])
                             
                             i+=1
@@ -96,7 +99,7 @@ class CorpusDatasetPytorch:
                             if i in self.verse_len:
                                 tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
                                 data.append({"input_ids" : tokenized,
-                                     "rhyme": [1 if rhyme == rhyme_schemes[i] else 0 for i in range(len(rhyme_schemes)) ]})
+                                     "rhyme":  [1 if rhyme == rhyme_schemes[i] or (rhyme_schemes[i] == None and rhyme not in rhyme_schemes )  else 0 for i in range(len(rhyme_schemes)) ]})
                                 
                                 if i == max(self.verse_len):
                                     body = []
@@ -106,7 +109,7 @@ class CorpusDatasetPytorch:
                         if len(body) > 0 and i not in self.verse_len:
                             tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
                             data.append({"input_ids" : tokenized,
-                                "rhyme": [1 if (rhyme not in rhyme_schemes and rhyme_schemes[i] == None) or rhyme == rhyme_schemes[i] else 0 for i in range(len(rhyme_schemes)) ]})
+                                "rhyme": [1 if  rhyme == rhyme_schemes[i] or (rhyme_schemes[i] == None and rhyme not in rhyme_schemes )  else 0 for i in range(len(rhyme_schemes)) ]})
                                 
                                                     
             return data
@@ -148,12 +151,17 @@ class CorpusDatasetPytorch:
         if "rhyme" in batch[0].keys():
             rhyme = torch.tensor(np.asarray([text["rhyme"] for text in batch], dtype=np.int32), dtype=torch.float32)
         
+        verse_end = None
+        if "verse_end" in batch[0].keys():
+            verse_end = torch.tensor(np.asarray([text["verse_end"] for text in batch], dtype=np.int32), dtype=torch.float32)
+        
         return {
             "input_ids": padded_batch,
             "labels": padded_batch.type(torch.LongTensor),
             "attention_mask": torch.tensor(attention, dtype=torch.bool),
             "nums" :  nums,
-            "rhyme": rhyme
+            "rhyme": rhyme,
+            "verse_end" : verse_end
             }
     
     #TODO: Finish Rhyme Prompting
