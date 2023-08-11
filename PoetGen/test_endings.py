@@ -27,7 +27,7 @@ def poet_samples(args):
             for data_line in datum:
                 for part_line in data_line['body']:
                     for text_line in part_line:
-                        sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:()\]\[\_\*]+', '', text_line['text'])
+                        sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:()\]\[\_\*\‘\”\'0-9\-\—\"]+', '', text_line['text'])
                         text_lines_poet.append(sub.strip()[-2:].lower())
         i += 1
         if i % 500 == 0:
