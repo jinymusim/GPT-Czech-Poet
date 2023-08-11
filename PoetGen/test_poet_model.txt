@@ -36,3 +36,23 @@
 14 ívá # a v modru nebeském se zlatá hvězda zaskvívá. –
 6 ení # A v tichém ozáření
 6 ení # slavík v tom znamení
+--- Model gpt-cz-poetry-secondary_e8_e16_endings ---
+### Basic Decoding! ###
+ AABBCC
+11 ady # a v duchu zřel, jak pusto, temno všady,
+12 adý # jak v koutech všech se leskne život mladý, –
+10 ání # však v srdci bylo jako v umírání.
+9 ani # A srdce neví, co si říci ani. – – 
+13 nou # V tom zazvučela chodbou kroky temnou
+14 noucí # ozvěna táhlou, dlouhou, stlumenější....
+
+ # „Vy, paní vzácná paní, vzácní páni!...“ –...
+ #...„Kdož jste,
+### Forced Decoding! ###
+ AABBCC
+14 ých # a v středu jablek jabloňových, těžkých, červených,
+14 ých # voskovic, lilií, třesličí, tulipánů, –
+6  je # vše štědré tady je;
+6 je # jen dobro klade je
+11 ají # do klína země, v němž se zrnka tají
+11 ají # jak zrna hrachovina, jež se vyhřívají
