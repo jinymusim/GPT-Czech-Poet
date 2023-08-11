@@ -4,14 +4,17 @@ import re
 import argparse
 import json
 from collections import Counter
-import random
 
+# r'[\,\.\?\!–\„\“\’\;\:()\]\[\_\*\‘\”\'0-9\-\—\"]+'
+# r'[^a-zA-Z\s]+'
+# r'[^\w\s"]+'
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "endings.txt")), type=str, help="Result of Analysis File")
-parser.add_argument("--top", default=200, type=int, help="Amount of top endings")
+parser.add_argument("--top", default=None, type=int, help="Amount of top endings (None for all)")
+parser.add_argument("--regex", default=r'[\,\.\?\!–\„\“\’\;\:()\]\[\_\*\‘\”\'0-9\-\—\"]+', type=str, help="Tested Regex")
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
@@ -27,7 +30,9 @@ def poet_samples(args):
             for data_line in datum:
                 for part_line in data_line['body']:
                     for text_line in part_line:
-                        sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:()\]\[\_\*\‘\”\'0-9\-\—\"]+', '', text_line['text'])
+                        # r'[^a-zA-Z\s]+' Will also match í,ě and others, so not usable
+                        # r'[^\w\s"]+' Doesn't work better than current regex                
+                        sub = re.sub(args.regex, '', text_line['text'])
                         text_lines_poet.append(sub.strip()[-2:].lower())
         i += 1
         if i % 500 == 0:
@@ -39,5 +44,6 @@ def poet_samples(args):
 poet_endings = poet_samples(args)
 endings = Counter(poet_endings)
 print(endings.most_common(args.top))
-with open(args.result_file, 'w+', encoding="utf8") as file:
+with open(args.result_file, 'a', encoding="utf8") as file:
+    print(f"--- Tested Regex {args.regex} --- Top {'All' if args.top == None else args.top}", file=file)
     print( [i[0] for i in endings.most_common(args.top)] , file=file)
