@@ -5,7 +5,6 @@ import torch
 import re
 import pickle
 from poet_constants import rhyme_schemes, verse_ending
-from transformers import GPT2Tokenizer
 from torch.utils.data import Dataset
 
 
@@ -37,7 +36,7 @@ class CorpusDatasetPytorch:
                     for part_line in data_line['body']:
                         for text_line in part_line:
                             tokenized = self._tokenizer.encode(text_line['text'], return_tensors="np", truncation=True)[0]
-                            sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:()\]\[\_\*\‘\”\'0-9\-\—\"]+', '', text_line['text'])
+                            sub = re.sub(r'([^\w\s]+|[0-9]+)', '', text_line['text'])
                             ending = sub.strip()[-2:].lower()
                             data.append({"input_ids" : tokenized,
                                      "num_vowels": [len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý", text_line['text']))],
@@ -89,7 +88,7 @@ class CorpusDatasetPytorch:
                             rhyme += self.rhyme_sec(rhyme_sequence, text_line["rhyme"])
                             
                             num_str = f"{len(re.findall('a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý', text_line['text']))} " if self.prompt_length else ""
-                            sub = re.sub(r'[\,\.\?\!–\„\“\’\;\:()\]\[\_\*\‘\”\'0-9\-\—\"]+', '', text_line['text'])
+                            sub = re.sub(r'([^\w\s]+|[0-9]+)', '', text_line['text'])
                             verse_ending = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
 
                             body.append( num_str + verse_ending  + text_line['text'])

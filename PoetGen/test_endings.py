@@ -7,14 +7,15 @@ from collections import Counter
 
 # r'[\,\.\?\!–\„\“\’\;\:()\]\[\_\*\‘\”\'0-9\-\—\"]+'
 # r'[^a-zA-Z\s]+'
-# r'[^\w\s"]+'
+# r'[^\w\s]+'
+# r'([^\w\s]+|[0-9]+)'
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "endings.txt")), type=str, help="Result of Analysis File")
-parser.add_argument("--top", default=None, type=int, help="Amount of top endings (None for all)")
-parser.add_argument("--regex", default=r'[\,\.\?\!–\„\“\’\;\:()\]\[\_\*\‘\”\'0-9\-\—\"]+', type=str, help="Tested Regex")
+parser.add_argument("--top", default=400, type=int, help="Amount of top endings (None for all)")
+parser.add_argument("--regex", default=r'([^\w\s]+|[0-9]+)', type=str, help="Tested Regex")
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
