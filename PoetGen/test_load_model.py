@@ -8,9 +8,9 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-secondary_e8_e16_endings")),  type=str, help="Path to Model")
-parser.add_argument("--model_path_LM", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-secondary_e8_e16_endings_LM")),  type=str, help="Path to Model")
-parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "bloom-cz-poetry-secondary_e8_e16_endings")),  type=str, help="Path to Model")
+# bigscience/bloom-560m
+parser.add_argument("--default_hf_model", default="bigscience/bloom-560m", type=str, help="Default Model from HF to use")
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__), "test_poet_model.txt")), type=str, help="Where to store the decoding efforts")
 
 if __name__ == "__main__":
@@ -18,12 +18,11 @@ if __name__ == "__main__":
 
 tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
 model: PoetModelInterface= (torch.load(args.model_path_full, map_location=torch.device('cpu')))
-model_LM = AutoModelForCausalLM.from_pretrained(args.model_path_LM)
 
 tokenized_poet_start = tokenizer.encode("AABBCC\n", return_tensors='pt')
 
-out = model_LM.generate(tokenized_poet_start, 
-                                max_length=128,
+out = model.model.generate(tokenized_poet_start, 
+                                max_length=192,
                                 num_beams=2,
                                 no_repeat_ngram_size=2,
                                 early_stopping=True,

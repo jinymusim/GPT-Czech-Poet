@@ -148,6 +148,7 @@ PYTORCH/
 # Models
 */gpt-cz-poetry*
 */gpt-cz-poetry*_LM
+*/bloom-cz-poetry*
 
 # Data
 *.json

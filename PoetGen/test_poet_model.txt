@@ -56,3 +56,81 @@
 6 je # jen dobro klade je
 11 ají # do klína země, v němž se zrnka tají
 11 ají # jak zrna hrachovina, jež se vyhřívají
+--- Model gpt-cz-poetry-secondary_e8_e16_endings ---
+### Basic Decoding! ###
+ AABBCC
+11 ady # a v duchu zřím, jak slétají se všady,
+10 adý # jak vlní se ten věnec mnohohladý
+12 asu # kol kulatého, skvoucího tam pasu.
+9 asů # Ach, bože, jaká směs to mrtvých vlasů
+13 ase # se šinoucích se po dlouhém již čase!
+14  se # Jak dlouho, dlouho s touhou ptáme se! –
+
+ # „„Nuž, pane, slyš mne, jsem-li já zde, –““
+ # dí paní, a pan
+### Forced Decoding! ###
+ AABBCC
+14 ání # A v tichu osamělé jizby, v tichém zadumání,
+14 ání # kde vítr šepce neznámé, kde praští klasy v trní
+9 ích # a v šklebných, těžkých obličejích
+9 ích # zní přitlumené vzdechy, kletby, smích.
+7 íná # I zdá se mi, že usíná
+7 íná # má duše, jež se spíná, –
+--- Model gpt-cz-poetry-endings_e4_e8 ---
+### Basic Decoding! ###
+ AABBCC
+11 ání # „„Ne, ne, má milá, není to zdání,
+10  ni # že jsem se bál, že bych se propadl v ni. –
+12  mi # Však já ti rozumím, ty’s věrnou mi.
+9 ými # A ty jsi mojí ženou zhrdavými.‘“
+8  se # – „I ty se divíš?“ – A mlčky usmál se, – – “
+13  si #,Nu, tak!‘ řekla,,tak, jak se to líbí ti!’
+
+ a # Tak
+### Forced Decoding! ###
+ AABBCC
+14 ání # „Zdráva buď, královno, zdráva, slyš naše volání!
+14 ání # Zdrávas nám, ó Královno nebes, při svém skonání!“
+8 ého # A hle, z lůžka nebeského
+8 ého # Vystupují knížata svého,
+11 ové # Všickni, jak se na obloze hvězdové
+11 ové # Usmívají, a jak zlatí andílkové
+--- Model bloom-cz-poetry-secondary_e8_e16_endings ---
+### Basic Decoding! ###
+ AABBCC
+11 ěží # Vše přikryj mlčením: ať po kamenech běže
+13 eži # zas tryskne píseň, slavný letní mudřec, leži;
+12 íce # na čistých polích srbské vody chladné mlhy líce,
+17 ice # nechť sloučí se kdy svatebčanů sbor, jich pluky, žebřice,
+13 rým # však ne
+### Forced Decoding! ###
+ AABBCC
+8 ěla # Kámen by mi na krk přivětrněla,
+8 ěla # A můj zeť. Poruč, abych měl,
+11 ého # Zapomíná, že již není hodného,
+11 ého # Do postele bych šel hned do štého.“
+9 dil # V tom se ke mně pěšky vchodil,
+9 dil # Praví: „Na to jsem se vsadil!
+--- Model bloom-cz-poetry-secondary_e8_e16_endings ---
+### Basic Decoding! ###
+ AABBCC
+11 ěží # Vše přikryj mlčením: ať po kamenech běže
+13 eži # zas tryskne píseň, slavný letní mudřec, leži;
+12 íce # na čistých polích srbské vody chladné mlhy líce,
+17 ice # nechť sloučí se kdy svatebčanů sbor, jich pluky, žebřice,
+13 rým # však nejvíce mě bolí srdcí svazky a vzdech mistrný;
+14 hýr # až k útlaku tě bude bodat slovo buchty štír.
+
+. No maj si, rej!
+
+ –
+
+I #
+### Forced Decoding! ###
+ AABBCC
+9 ění # V tom polopustém chrámu Umění
+9 ění # vždy trpím žal a všecko, co mi ctností,
+10 říž # a každý den mi olovem je kříž;
+10 říž # den Kristův přešel jako pohřben Říj,
+12 stí # jenž s nebes stoupá na vše země klestí
+12 stí # se zvednout k němu s blýskavicí zlostní,
