@@ -159,6 +159,7 @@ merges.txt
 
 # Generated images
 *.png
+!PoetGen/*.png
 *.mp4
 *.wav
 
