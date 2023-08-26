@@ -36,11 +36,28 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # bigscience/bloom-560m 2048
 # TheBloke/Llama-2-7B-fp16 4096
 
-parser.add_argument("--default_hf_model", default="TheBloke/Llama-2-7B-fp16", type=str, help="Default Model from HF to use")
+#TODO: Introduce Layered Model, Best done by modifiing 
+# self.h = nn.ModuleList([GPT2Block(config) for _ in range(config.num_hidden_layers)])
+
+# This gives Model only 5 blocks
+# model.base_model.h = torch.nn.ModuleList([transformers.models.gpt2.modeling_gpt2.GPT2Block(model.base_model.config) for _ in range(5)])
+
+# Adding Custom Modules to model is possible
+# model.base_model.h = torch.nn.ModuleList(
+    # [transformers.models.gpt2.modeling_gpt2.GPT2Block(model.base_model.config) for _ in range(5)] + \
+    # [torch.nn.Linear(model.base_model.config.hidden_size, model.base_model.config.hidden_size) for _ in range(2)]
+    # )
+
+# Extending Appending and Inserting Modules Also Possible
+# model.base_model.h.extend([torch.nn.Linear(768,1)])
+# model.base_model.h.append(torch.nn.Linear(1,768))
+# model.base_model.h.insert(7,torch.nn.Linear(768,768))
+
+parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
-parser.add_argument("--model_type",  default="half", type=str, choices=["base", "secondary_tasks", "half", "verse"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "llama2-cz-poetry_e1_e2")),  type=str, help="Path to Model")
-parser.add_argument("--max_len", default=4096, type=int, help="Max length for tokenizer")
+parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse"], help="What type of Model is to be constructed")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry_e1_e2")),  type=str, help="Path to Model")
+parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 
 
 parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is prompted into training data")
