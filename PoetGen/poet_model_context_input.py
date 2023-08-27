@@ -30,11 +30,12 @@ class PoetModelContextInput(PoetModelInterface):
         
         
     def forward(self, input_ids=None, labels=None, attention_mask=None, rhyme=None, context_ids=None, context_attention_mask=None,*args, **kwargs):
+        # Inject Context to bypass GPT2Blocks (Can't Forward it)
+        self.model.base_model.h[3].context_ids = context_ids
+        self.model.base_model.h[3].context_attention_mask = context_attention_mask
         outputs = self.model(input_ids=input_ids, 
                              labels=labels, 
-                             attention_mask=attention_mask, 
-                             context_ids=context_ids, 
-                             context_attention_mask=context_attention_mask)
+                             attention_mask=attention_mask)
         
         last_hidden = outputs['hidden_states'][-1]
         
@@ -47,7 +48,10 @@ class PoetModelContextInput(PoetModelInterface):
             softmaxed = torch.softmax(rhyme_regression, dim=1)
             loss_fct = torch.nn.CrossEntropyLoss()
             rhyme_loss = loss_fct(softmaxed, rhyme)
-            full_loss = full_loss + rhyme_loss         
+            full_loss = full_loss + rhyme_loss
+        # Delete the Injection to prevent Dataloss
+        self.model.base_model.h[3].context_ids = None
+        self.model.base_model.h[3].context_attention_mask = None
         
         return {"model_output" : outputs,
                 "rhyme_regression_output": rhyme_regression,
