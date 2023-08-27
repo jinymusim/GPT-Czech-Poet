@@ -79,7 +79,7 @@ class CorpusDatasetPytorch:
                     print(f"Processing file {step}")
                 datum = json.load(file)
                 for data_line in datum:
-                    context = []
+                    context = ["Context ##"]
                     for part_line in data_line['body']:
                         
                         body = []
@@ -107,7 +107,7 @@ class CorpusDatasetPytorch:
                                      "rhyme":  [1 if rhyme == rhyme_schemes[i] or (rhyme_schemes[i] == None and rhyme not in rhyme_schemes )  else 0 for i in range(len(rhyme_schemes)) ]})
                                 
                                 if i == max(self.verse_len):
-                                    context = body
+                                    context = ["Context ##"]  + body
                                     body = []
                                     rhyme = ""
                                     rhyme_sequence = -1
