@@ -24,7 +24,9 @@ class PoetModelContextInput(PoetModelInterface):
         self.context_size = context_input_size
             
             
-        self.model.base_model.h.insert(3, ContextModule(block_count, context_input_size, self.model_size))    
+        self.model.base_model.h.insert(3, ContextModule(block_count, context_input_size, self.model_size))
+        # Because of Inserted Layer, Head Masks don't match => Add 1 more
+        self.model.base_model.head_mask = self.model.base_model.head_mask[:4] + self.model.base_model.head_mask[3:]
         
         self.rhyme_regressor = torch.nn.Linear(self.model_size, len(rhyme_schemes)) # Rhyme Type
         
