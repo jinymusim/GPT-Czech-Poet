@@ -181,7 +181,7 @@ class CorpusDatasetPytorch:
             "labels": padded_batch.type(torch.LongTensor),
             "attention_mask": torch.tensor(attention, dtype=torch.bool),
             "context_ids" : context_ids,
-            "context_attention_mask" : context_attention_mask,
+            "context_attention_mask" :torch.tensor(context_attention_mask,dtype=torch.bool),
             "nums" :  nums,
             "rhyme": rhyme,
             "verse_end" : verse_end
