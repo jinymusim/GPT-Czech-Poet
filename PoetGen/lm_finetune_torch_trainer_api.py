@@ -57,7 +57,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 parser.add_argument("--model_type",  default="context", type=str, choices=["base", "secondary_tasks", "half", "verse", "context"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry_e0_e8")),  type=str, help="Path to Model")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry-context_e0_e8")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=2048, type=int, help="Max length for tokenizer")
 
@@ -154,10 +154,9 @@ def main(args: argparse.Namespace):
     
     
     
-    
+    torch.save(model, args.model_path)
     model.save_LM(f"{args.model_path}_LM")
     tokenizer.save_pretrained(f"{args.model_path}_LM")
-    torch.save(model, args.model_path)
       
 
 
