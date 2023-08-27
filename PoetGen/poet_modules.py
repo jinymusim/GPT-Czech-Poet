@@ -11,8 +11,11 @@ class ContextModule(torch.nn.Module):
         self.linear_downscale = torch.nn.Linear(input_size, output_size)
         
     def forward(self, hidden_states, context_ids=None, context_attention_mask=None,*args, **kwargs):
-        model_output = self.context_model.forward(input_ids=context_ids, attention_mask=context_attention_mask)
-        down = self.linear_downscale.forward(model_output["hidden_states"][-1])
+        down = torch.zeros_like(hidden_states)
+        if context_ids != None:
+            model_output = self.context_model.forward(input_ids=context_ids, attention_mask=context_attention_mask)
+            print("Has Pasted")
+            down = self.linear_downscale.forward(model_output["hidden_states"][-1])
         return  hidden_states + down
         
 class PoetTypeMoldule(torch.nn.Module):
