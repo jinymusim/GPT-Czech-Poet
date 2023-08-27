@@ -134,3 +134,26 @@ I #
 10 říž # den Kristův přešel jako pohřben Říj,
 12 stí # jenž s nebes stoupá na vše země klestí
 12 stí # se zvednout k němu s blýskavicí zlostní,
+--- Model bloom-cz-poetry-secondary_e8_e16_endings ---
+### Basic Decoding! ###
+ AABBCC
+11 ěží # Vše přikryj mlčením: ať po kamenech běže
+13 eži # zas tryskne píseň, slavný letní mudřec, leži;
+12 íce # na čistých polích srbské vody chladné mlhy líce,
+17 ice # nechť sloučí se kdy svatebčanů sbor, jich pluky, žebřice,
+13 rým # však nejvíce mě bolí srdcí svazky a vzdech mistrný;
+14 hýr # až k útlaku tě bude bodat slovo buchty štír.
+
+. No maj si, rej!
+
+ –
+
+I #
+### Forced Decoding! ###
+ AABBCC
+6 čka # Růže a rosička –
+6 čka # Pole a hájčí mlíčka.
+14 ice # Na zlaté míse ti visí korouhvičky;
+14 ice # Ve vzduchu chladně to víří, chví se to v korunce,
+9 ená # Podzimní slunce v okna třená
+9 ená # Teskněji kvílí kosův nota.

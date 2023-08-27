@@ -12,6 +12,7 @@ from poet_model_base_lm import PoetModelBase
 from poet_model_secondary_tasks import PoetModelSecondaryTasks
 from poet_model_half_precision import PoetModelHalfBase
 from poet_model_verse_end import PoetModelVerseEnd
+from poet_model_context_input import PoetModelContextInput
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
@@ -20,9 +21,9 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_LM", default=4, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=1, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=4, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=2, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--epochs_LM", default=0, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_poet", default=16, type=int, help="Batch size.")
+parser.add_argument("--epochs_poet", default=8, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 parser.add_argument("--use_multiple_gpu_if_available", default=True, type=bool, help="If to use multiple gpus")
@@ -55,9 +56,10 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
-parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry_e1_e2")),  type=str, help="Path to Model")
+parser.add_argument("--model_type",  default="context", type=str, choices=["base", "secondary_tasks", "half", "verse", "context"], help="What type of Model is to be constructed")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry_e0_e8")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
+parser.add_argument("--context_max_len", default=2048, type=int, help="Max length for tokenizer")
 
 
 parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is prompted into training data")
@@ -83,6 +85,8 @@ def main(args: argparse.Namespace):
             model = PoetModelHalfBase(args.default_hf_model)
         elif args.model_type == "verse":
             model =  PoetModelVerseEnd(args.default_hf_model)
+        elif args.model_type == "context":
+            model = PoetModelContextInput(args.default_hf_model, args.context_max_len)
         else:
             model = None
     else:

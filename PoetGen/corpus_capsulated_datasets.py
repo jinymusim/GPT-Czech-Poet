@@ -50,13 +50,16 @@ class CorpusDatasetPytorch:
             return self.data[index]
         
     class BodyDataset(Dataset):
-        def __init__(self, data_file_paths, tokenizer , shuffle_bool:bool= True, seed:int= 42, prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6]):
+        def __init__(self, data_file_paths, tokenizer , shuffle_bool:bool= True, seed:int= 42, 
+                     prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6],
+                     context_size:int = 2048):
             self._data_file_paths = data_file_paths
             self._tokenizer = tokenizer
             self.prompt_length = prompt_length
             self.prompt_ending = prompt_ending
             self.prompt_verse = prompt_verse
             self.verse_len = verse_len
+            self.context_size = context_size
             
             self.data = self.data_body_gen()       
         
@@ -76,6 +79,7 @@ class CorpusDatasetPytorch:
                     print(f"Processing file {step}")
                 datum = json.load(file)
                 for data_line in datum:
+                    context = []
                     for part_line in data_line['body']:
                         
                         body = []
@@ -97,18 +101,24 @@ class CorpusDatasetPytorch:
                             
                             if i in self.verse_len:
                                 tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
+                                context_tokenized = self._tokenizer.encode("\n".join(context), return_tensors="np")[0][:self.context_size]
                                 data.append({"input_ids" : tokenized,
+                                             "context_ids" : context_tokenized,
                                      "rhyme":  [1 if rhyme == rhyme_schemes[i] or (rhyme_schemes[i] == None and rhyme not in rhyme_schemes )  else 0 for i in range(len(rhyme_schemes)) ]})
                                 
                                 if i == max(self.verse_len):
+                                    context = body
                                     body = []
                                     rhyme = ""
                                     rhyme_sequence = -1
                                     i=0
                         if len(body) > 0 and i not in self.verse_len:
                             tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
+                            context_tokenized = self._tokenizer.encode("\n".join(context), return_tensors="np")[0][:self.context_size]
                             data.append({"input_ids" : tokenized,
-                                "rhyme": [1 if  rhyme == rhyme_schemes[i] or (rhyme_schemes[i] == None and rhyme not in rhyme_schemes )  else 0 for i in range(len(rhyme_schemes)) ]})
+                                         "context_ids" : context_tokenized,
+                                "rhyme": [1 if  rhyme == rhyme_schemes[i] or (rhyme_schemes[i] == None and rhyme not in rhyme_schemes )  else 0 for i in range(len(rhyme_schemes)) ]
+                                })
                                 
                                                     
             return data
@@ -154,10 +164,24 @@ class CorpusDatasetPytorch:
         if "verse_end" in batch[0].keys():
             verse_end = torch.tensor(np.asarray([text["verse_end"] for text in batch], dtype=np.int32), dtype=torch.float32)
         
+        context_ids = None
+        context_attention_mask = None
+        if "context_ids" in batch[0].keys():
+            max_len = np.max([len(text['context_ids']) for text in batch])
+            context_attention_mask = np.zeros((len(batch), max_len), dtype=np.uint8)
+            for pos, text in enumerate(batch):
+                context_attention_mask[pos,:len(text['context_ids'])] = 1
+            context_ids = np.asarray([np.append(text['context_ids'], [0] *(max_len - len(text['context_ids'])))  for text in batch], dtype=np.int32)
+            context_ids = torch.tensor(context_ids,  dtype=torch.int32)
+            
+            
+        
         return {
             "input_ids": padded_batch,
             "labels": padded_batch.type(torch.LongTensor),
             "attention_mask": torch.tensor(attention, dtype=torch.bool),
+            "context_ids" : context_ids,
+            "context_attention_mask" : context_attention_mask,
             "nums" :  nums,
             "rhyme": rhyme,
             "verse_end" : verse_end

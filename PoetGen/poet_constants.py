@@ -23,5 +23,7 @@ verse_ending = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'c
                 'iz', 'ib', 'ki', 'éd', 'év', 'rd', 'yb', 'oz', 'oř', 'ét', 'ož', 'ga', 'yň', 'rp', 'nd', 'of', 'rť', 'iď', 'ýv', 
                 'yz', None]
 
+poet_types = ["",None]
+
 
 

@@ -11,7 +11,7 @@ class PoetModelInterface(torch.nn.Module):
     def forward(self, input_ids=None, labels=None, attention_mask=None, *args, **kwargs):
         raise NotImplementedError()
     
-    def generate_forced(self, prompt:str, tokenizer: AutoTokenizer, verse_len:int = 4):
+    def generate_forced(self,  *args, **kwargs):
         raise NotImplementedError()
 
     @staticmethod
