@@ -22,7 +22,7 @@ class ContextModule(torch.nn.Module):
         if self.context_ids != None:
             model_output = self.context_model.forward(input_ids=self.context_ids, attention_mask=self.context_attention_mask)
             down = self.linear_downscale.forward(model_output["hidden_states"][-1][:,0,:].view(-1, self.input_size))
-        return  (hidden_states + down,layer_past (None if model_output == None else model_output["attentions"], 
+        return  (hidden_states + down,layer_past, (None if model_output == None else model_output["attentions"], 
                                                  None if model_output == None else model_output["cross_attentions"]))
         
 class PoetTypeMoldule(torch.nn.Module):
@@ -52,7 +52,7 @@ class PoetTypeMoldule(torch.nn.Module):
         if self.type_labels != None:
             type_prob = self.type_labels.type(torch.FloatTensor)
         linear_up = self.linear_scale.forward(type_prob)
-        return (hidden_states + linear_up,layer_past (None if model_output == None else model_output["attentions"], 
+        return (hidden_states + linear_up,layer_past, (None if model_output == None else model_output["attentions"], 
                                                       None if model_output == None else model_output["cross_attentions"]))
             
         
