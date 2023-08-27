@@ -129,7 +129,7 @@ class CorpusDatasetPytorch:
         def __getitem__(self, index):
             return self.data[index]
     
-    def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=[4,6]):
+    def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=[4,6], context_len=2048):
         data_filenames = os.listdir(self.data_dir)
         data_by_files = []
         for filename in data_filenames:
@@ -137,7 +137,7 @@ class CorpusDatasetPytorch:
             data_by_files.append(file_path)
         
         self.pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset(data_by_files, self.tokenizer, prompt_ending=prompt_ending, 
-                                                    prompt_length=prompt_length, prompt_verse=prompt_verse, verse_len=verse_len)
+                                                    prompt_length=prompt_length, prompt_verse=prompt_verse, verse_len=verse_len, context_size=context_len)
          
         
         self.pytorch_dataset_text = CorpusDatasetPytorch.TextDataset(data_by_files, self.tokenizer, prompt_ending=prompt_ending, 
@@ -188,14 +188,14 @@ class CorpusDatasetPytorch:
             }
     
     #TODO: Finish Rhyme Prompting
-    def __init__(self,tokenizer,  data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir='./', prompt_length=True, prompt_ending=True, prompt_verse=True):
+    def __init__(self,tokenizer,  data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir='./', prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6] ,context_len=2048):
         self.tokenizer = tokenizer
         self.data_dir = data_dir
         if  os.path.isfile(os.path.join(cache_dir, "body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "text_poet_data.json")):
             self.pytorch_dataset_body = pickle.load( open( os.path.join(cache_dir, "body_poet_data.json"), 'rb'))
             self.pytorch_dataset_text = pickle.load( open( os.path.join(cache_dir, "text_poet_data.json"), 'rb'))
         else:
-            self.load_json_filenames(prompt_length, prompt_ending, prompt_verse)
+            self.load_json_filenames(prompt_length, prompt_ending, prompt_verse, verse_len=verse_len, context_len=context_len)
             pickle.dump(self.pytorch_dataset_body, open( os.path.join(cache_dir, "body_poet_data.json"), 'wb+'))
             pickle.dump(self.pytorch_dataset_text, open( os.path.join(cache_dir, "text_poet_data.json"), 'wb+'))
         

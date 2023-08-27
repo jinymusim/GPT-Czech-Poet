@@ -58,7 +58,8 @@ parser.add_argument("--use_default_model",  default=True, type=bool, help="Use D
 parser.add_argument("--model_type",  default="context", type=str, choices=["base", "secondary_tasks", "half", "verse", "context"], help="What type of Model is to be constructed")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry-context_e0_e8")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--context_max_len", default=2048, type=int, help="Max length for tokenizer")
+parser.add_argument("--context_max_len", default=2048, type=int, help="Max length of context for tokenizer")
+parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
 
 parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is prompted into training data")
@@ -107,7 +108,8 @@ def main(args: argparse.Namespace):
     # Data Loading
     tokenizer.model_max_length = args.max_len
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path, 
-                                      prompt_ending=args.prompt_ending, prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme)
+                                      prompt_ending=args.prompt_ending, prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
+                                      verse_len=args.verse_len, context_len=args.context_max_len)
     
     # Text Line Training
     training_args = TrainingArguments(
