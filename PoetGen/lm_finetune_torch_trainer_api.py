@@ -1,5 +1,4 @@
 # Outide Packages
-import transformers
 import torch
 import os
 import argparse
