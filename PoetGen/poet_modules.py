@@ -18,10 +18,12 @@ class ContextModule(torch.nn.Module):
     # Context is getting injected from Top
     def forward(self, hidden_states,layer_past=None,*args, **kwargs):
         down = torch.zeros_like(hidden_states)
+        model_output = None
         if self.context_ids != None:
             model_output = self.context_model.forward(input_ids=self.context_ids, attention_mask=self.context_attention_mask)
             down = self.linear_downscale.forward(model_output["hidden_states"][-1][:,0,:].view(-1, self.input_size))
-        return  (hidden_states + down,layer_past (model_output["attentions"], model_output["cross_attentions"]))
+        return  (hidden_states + down,layer_past (None if model_output == None else model_output["attentions"], 
+                                                 None if model_output == None else model_output["cross_attentions"]))
         
 class PoetTypeMoldule(torch.nn.Module):
     
@@ -42,6 +44,7 @@ class PoetTypeMoldule(torch.nn.Module):
     # Context And type labels are to be injected to bypass GPT2Blocks 
     def forward(self, hidden_states,layer_past=None,*args, **kwargs):
         type_prob = torch.zeros_like(hidden_states)
+        model_output = None
         if self.context_ids != None:
             model_output = self.type_model.forward(input_ids=self.context_ids, attention_mask=self.context_attention_mask)
             poet_type = self.type_predict.forward(model_output["hidden_states"][-1][:,0,:].view(-1, self.input_size))
@@ -49,7 +52,8 @@ class PoetTypeMoldule(torch.nn.Module):
         if self.type_labels != None:
             type_prob = self.type_labels.type(torch.FloatTensor)
         linear_up = self.linear_scale.forward(type_prob)
-        return (hidden_states + linear_up,layer_past (model_output["attentions"], model_output["cross_attentions"]))
+        return (hidden_states + linear_up,layer_past (None if model_output == None else model_output["attentions"], 
+                                                      None if model_output == None else model_output["cross_attentions"]))
             
         
         
