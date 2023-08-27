@@ -173,6 +173,7 @@ class CorpusDatasetPytorch:
                 context_attention_mask[pos,:len(text['context_ids'])] = 1
             context_ids = np.asarray([np.append(text['context_ids'], [0] *(max_len - len(text['context_ids'])))  for text in batch], dtype=np.int32)
             context_ids = torch.tensor(context_ids,  dtype=torch.int32)
+            context_attention_mask =  torch.tensor(context_attention_mask,dtype=torch.bool)
             
             
         
@@ -181,7 +182,7 @@ class CorpusDatasetPytorch:
             "labels": padded_batch.type(torch.LongTensor),
             "attention_mask": torch.tensor(attention, dtype=torch.bool),
             "context_ids" : context_ids,
-            "context_attention_mask" :torch.tensor(context_attention_mask,dtype=torch.bool),
+            "context_attention_mask" : context_attention_mask,
             "nums" :  nums,
             "rhyme": rhyme,
             "verse_end" : verse_end
