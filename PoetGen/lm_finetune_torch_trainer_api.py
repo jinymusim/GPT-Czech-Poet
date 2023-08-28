@@ -3,8 +3,10 @@ import torch
 import os
 import argparse
 
+
 from accelerate import Accelerator
 from transformers import  AutoTokenizer, TrainingArguments, Trainer
+from functools import partial
 
 # Project Packages
 from poet_model_base_lm import PoetModelBase
@@ -20,14 +22,14 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_LM", default=16, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=1, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_LM", default=4, type=int, help="Number of epochs to run.")
 parser.add_argument("--batch_size_poet", default=16, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=8, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 parser.add_argument("--use_multiple_gpu_if_available", default=True, type=bool, help="If to use multiple gpus")
 parser.add_argument("--train_masked", default=True, type=bool, help="Train for consistency secondary training")
-parser.add_argument("--input_mask_rate", default=0.05, type=float, help="Rate of input masking")
+parser.add_argument("--input_mask_rate", default=0.1, type=float, help="Rate of input masking")
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
@@ -56,7 +58,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 parser.add_argument("--model_type",  default="context", type=str, choices=["base", "secondary_tasks", "half", "verse", "context"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry-context_e0_e8")),  type=str, help="Path to Model")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry-context_e4_e16")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=2048, type=int, help="Max length of context for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
@@ -105,6 +107,9 @@ def main(args: argparse.Namespace):
     accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
     model = accelerator.prepare(model)
     
+    # Partial Function to use as data collection with input masking
+    collate = partial(CorpusDatasetPytorch.collate, mask_rate=args.input_mask_rate)
+    
     # Data Loading
     tokenizer.model_max_length = args.max_len
     train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path, 
@@ -130,7 +135,7 @@ def main(args: argparse.Namespace):
     trainer = Trainer(model = model,
                            args = training_args,
                            train_dataset= train_data.pytorch_dataset_text,
-                           data_collator= CorpusDatasetPytorch.collate).train()
+                           data_collator=collate).train()
     
     # Verse Training
     training_args = TrainingArguments(
@@ -151,7 +156,7 @@ def main(args: argparse.Namespace):
     trainer = Trainer(model = model,
                            args = training_args,
                            train_dataset= train_data.pytorch_dataset_body,
-                           data_collator= CorpusDatasetPytorch.collate).train()
+                           data_collator=collate).train()
     
     
     

@@ -144,13 +144,16 @@ class CorpusDatasetPytorch:
                                                     prompt_length=prompt_length)
         
     @staticmethod
-    def collate(batch):
+    def collate(batch, mask_rate = 0.0):
         max_len = np.max([len(text['input_ids']) for text in batch])
         attention = np.zeros((len(batch), max_len), dtype=np.uint8)
         for pos, text in enumerate(batch):
             attention[pos,:len(text['input_ids'])] = 1
         padded_batch = np.asarray([np.append(text['input_ids'], [0] *(max_len - len(text['input_ids'])))  for text in batch], dtype=np.int32)
         padded_batch = torch.tensor(padded_batch,  dtype=torch.int32)
+        # Input Masking
+        mask = torch.rand(padded_batch.shape) < 1 - mask_rate
+        padded_batch = padded_batch * mask.int()
         
         nums = None
         if "num_vowels" in batch[0].keys():
