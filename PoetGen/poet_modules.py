@@ -4,13 +4,14 @@ from poet_constants import poet_types
 
 class ContextModule(torch.nn.Module):
     
-    def __init__(self, block_count, input_size, output_size,*args, **kwargs) -> None:
+    def __init__(self, block_count, input_size, n_embd ,output_size,*args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.config = GPT2Config(n_positions=input_size, n_head=(input_size//(768//12)),n_embd=input_size, 
+        self.config = GPT2Config(n_positions=input_size, n_head=(n_embd//(768//12)),n_embd=n_embd, 
                                  n_layer=block_count, output_hidden_states=True,  output_attentions =True)
         self.context_model = GPT2Model(self.config)
-        self.linear_downscale = torch.nn.Linear(input_size, output_size)
+        self.linear_downscale = torch.nn.Linear(n_embd, output_size)
         self.input_size = input_size
+        self.n_embd = n_embd
         self.output_size = output_size
         self.context_ids = None
         self.context_attention_mask = None
@@ -21,8 +22,8 @@ class ContextModule(torch.nn.Module):
         model_output = None
         if self.context_ids != None:
             model_output = self.context_model.forward(input_ids=self.context_ids, attention_mask=self.context_attention_mask)
-            down = self.linear_downscale.forward(model_output["hidden_states"][-1][:,0,:].view(-1, self.input_size))[:, None, :]
-        return  (hidden_states + down,layer_past, (None if model_output == None else model_output["attentions"], 
+            down = self.linear_downscale.forward(model_output["hidden_states"][-1][:,0,:].view(-1, self.n_embd))[:, None, :]
+        return  (hidden_states + down,down, (None if model_output == None else model_output["attentions"], 
                                                   None))
         
 class PoetTypeMoldule(torch.nn.Module):

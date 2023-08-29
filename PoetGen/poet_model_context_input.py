@@ -24,7 +24,7 @@ class PoetModelContextInput(PoetModelInterface):
         self.context_size = context_input_size
             
             
-        self.model.base_model.h.insert(3, ContextModule(block_count, context_input_size, self.model_size))
+        self.model.base_model.h.insert(3, ContextModule(block_count, context_input_size, self.model_size, self.model_size))
         # Because of Inserted Layer, Head Masks don't match => Add 1 more
         self.model.base_model.config.n_layer += 1 
         
