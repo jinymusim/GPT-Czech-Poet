@@ -157,3 +157,27 @@ I #
 14 ice # Ve vzduchu chladně to víří, chví se to v korunce,
 9 ená # Podzimní slunce v okna třená
 9 ená # Teskněji kvílí kosův nota.
+--- Model gpt-cz-poetry-context_e8_e32 ---
+### Basic Decoding! ###
+ AABBCC
+11 #,! – se mi, že
+12ti # se v. – Co mám dáti?
+10 eny # Jen šaty. A pak trochu staré ženy.
+9 ený # A nákrčník. Princky v koutě skrčený.11  se # Kdo chytne v něm, ten ihnedkne se:
+ ese # „Toť on, to on!“ – a jako list se třese
+
+ # Vok # a v duchu směje: „Kde můj Peko?“ – „ok!“
+ –
+ k # – A v tom se ozval smích a křik křik a kvik! – –“
+13uk # (Pan soused vykřik’ – soused – vykřiknul a prask’!..
+!
+)
+!! V chvíli za’ výkřik
+### Forced Decoding! ###
+ AABBCC
+13 # a, že v němém bolu, s na rtech,
+13 # # se, co v nejsladším tuší.
+8 # A v jeho ňadrech, v každém tluku
+8 # # že světa duch dmul,11 # on, velký, slavný, silný jako bůh
+8 # v svém objímání
+8 # # cítil, jak byl velký bůh,
