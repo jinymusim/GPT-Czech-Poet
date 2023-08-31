@@ -181,3 +181,25 @@ I #
 8 # # že světa duch dmul,11 # on, velký, slavný, silný jako bůh
 8 # v svém objímání
 8 # # cítil, jak byl velký bůh,
+--- Model gpt-cz-poetry-context_e8_e32 ---
+### Basic Decoding! ###
+ AABBCC
+11 #, se! – – V tom vešel starý
+12 ady # a v cestu navá mne svojí vnady.
+10 ály # Ó, byl jsem rád, že přišla skály!
+ alý # Však čtveráctvím jsem poznal příliš zralý,
+13 aly # jež v mou se s tajnou slastí dívaly. –
+9l # A já se divil, smál se, usmíval, –
+8 rál však jsem se smál a hrál! – 
+
+ – Ave # To bylo. „Ano!“ – „To je A!““
+14la # (Studentova řeč mu dlouhou chvílimála. „Ave!“, –“ –)
+15ce # „ to bylo, trvalo dlouho trvalo to, ale trvalo jen v upomínce
+### Forced Decoding! ###
+ AABBCC
+9 #,! se
+9 #,! #,!
+9 ají # Jak se přitom pomlouvají
+9 ají # Muci, co na mne chtějí,
+6 # Ještě opakuji:
+6 # # Já jim

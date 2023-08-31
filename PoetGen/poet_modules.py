@@ -25,7 +25,7 @@ class ContextModule(torch.nn.Module):
             down = self.linear_downscale.forward(model_output["hidden_states"][-1][:,0,:].view(-1, self.n_embd))[:, None, :]
         # torch.zeros( base n_head ,  ,base n_embd // base n_head))
         return  (hidden_states + down,
-                 torch.zeros((hidden_states.shape[0],12,8,64)),
+                 down[None, :, :, :],
                  (None if model_output == None else model_output["attentions"], 
                 None))
         
@@ -57,7 +57,7 @@ class PoetTypeMoldule(torch.nn.Module):
             type_prob = self.type_labels.type(torch.FloatTensor)
         linear_up = self.linear_scale.forward(type_prob)
         return (hidden_states + linear_up[:, None, :],
-                torch.zeros((hidden_states.shape[0],12,8,64)), 
+                linear_up[None, :, None, :], 
                 (None if model_output == None else model_output["attentions"], 
                 None))
             
