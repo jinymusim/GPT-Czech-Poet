@@ -21,9 +21,9 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=16, type=int, help="Batch size.")
+parser.add_argument("--batch_size_LM", default=8, type=int, help="Batch size.")
 parser.add_argument("--epochs_LM", default=32, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=16, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=8, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=64, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
@@ -60,7 +60,7 @@ parser.add_argument("--use_default_model",  default=True, type=bool, help="Use D
 parser.add_argument("--model_type",  default="context", type=str, choices=["base", "secondary_tasks", "half", "verse", "context"], help="What type of Model is to be constructed")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry-context_e32_e64")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--context_max_len", default=2048, type=int, help="Max length of context for tokenizer")
+parser.add_argument("--context_max_len", default=1024, type=int, help="Max length of context for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
 
