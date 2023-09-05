@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import re
 import pickle
-from poet_constants import rhyme_schemes, verse_ending
+from poet_constants import rhyme_schemes, verse_ending, poet_year
 from torch.utils.data import Dataset
 
 
@@ -80,6 +80,12 @@ class CorpusDatasetPytorch:
                 datum = json.load(file)
                 for data_line in datum:
                     context = ["Context ##"]
+                    publish_year = None if not data_line["biblio"]["year"].isdigit() else int(data_line["biblio"]["year"])
+                    publish_vector = np.zeros(len(poet_year))
+                    if publish_year == None:
+                        publish_vector[-1] = 1
+                    else:
+                        publish_vector[np.argmin( abs(np.asarray(poet_year[:-1]) - publish_year))] = 1
                     for part_line in data_line['body']:
                         
                         body = []
@@ -104,6 +110,7 @@ class CorpusDatasetPytorch:
                                 context_tokenized = self._tokenizer.encode("\n".join(context), return_tensors="np")[0][:self.context_size]
                                 data.append({"input_ids" : tokenized,
                                              "context_ids" : context_tokenized,
+                                             "year": publish_vector[:],
                                      "rhyme":  [1 if rhyme == rhyme_schemes[i] or (rhyme_schemes[i] == None and rhyme not in rhyme_schemes )  else 0 for i in range(len(rhyme_schemes)) ]})
                                 
                                 if i == max(self.verse_len):
@@ -117,6 +124,7 @@ class CorpusDatasetPytorch:
                             context_tokenized = self._tokenizer.encode("\n".join(context), return_tensors="np")[0][:self.context_size]
                             data.append({"input_ids" : tokenized,
                                          "context_ids" : context_tokenized,
+                                         "year": publish_vector[:],
                                 "rhyme": [1 if  rhyme == rhyme_schemes[i] or (rhyme_schemes[i] == None and rhyme not in rhyme_schemes )  else 0 for i in range(len(rhyme_schemes)) ]
                                 })
                                 
@@ -167,6 +175,10 @@ class CorpusDatasetPytorch:
         if "verse_end" in batch[0].keys():
             verse_end = torch.tensor(np.asarray([text["verse_end"] for text in batch], dtype=np.int32), dtype=torch.float32)
         
+        year = None
+        if "year" in batch[0].keys():
+            year = torch.tensor(np.asarray([text["year"] for text in batch], dtype=np.int32), dtype=torch.float32)
+        
         context_ids = None
         context_attention_mask = None
         if "context_ids" in batch[0].keys():
@@ -188,7 +200,8 @@ class CorpusDatasetPytorch:
             "context_attention_mask" : context_attention_mask,
             "nums" :  nums,
             "rhyme": rhyme,
-            "verse_end" : verse_end
+            "verse_end" : verse_end,
+            "year": year
             }
     
     #TODO: Finish Rhyme Prompting

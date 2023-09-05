@@ -1,6 +1,6 @@
 import torch 
 from transformers import GPT2Config, GPT2Model
-from poet_constants import poet_types
+from poet_constants import poet_year
 
 class ContextModule(torch.nn.Module):
     
@@ -29,16 +29,16 @@ class ContextModule(torch.nn.Module):
                  (None if model_output == None else model_output["attentions"], 
                 None))
         
-class PoetTypeMoldule(torch.nn.Module):
+class PoetTypeModule(torch.nn.Module):
     
-    def __init__(self, block_count, input_size, output_size,*args, **kwargs) -> None:
+    def __init__(self, block_count, input_size, n_embd,output_size,*args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.config = GPT2Config(n_positions=input_size,n_head=(input_size//(768//12)), n_embd=input_size, 
-                                 n_layer=block_count, output_hidden_states=True, output_attentions =True)
+        self.config = GPT2Config(n_positions=input_size, n_head=(n_embd//(768//12)),n_embd=n_embd, 
+                                 n_layer=block_count, output_hidden_states=True,  output_attentions =True)
         self.type_model = GPT2Model(self.config)
-        self.type_predict = torch.nn.Linear(input_size, len(poet_types))
+        self.type_predict = torch.nn.Linear(input_size, len(poet_year))
         self.softmax = torch.nn.Softmax()
-        self.linear_scale = torch.nn.Linear(len(poet_types), output_size)
+        self.linear_scale = torch.nn.Linear(len(poet_year), output_size)
         self.input_size = input_size
         self.output_size = output_size
         self.context_ids = None
@@ -47,7 +47,7 @@ class PoetTypeMoldule(torch.nn.Module):
     
     # Context And type labels are to be injected to bypass GPT2Blocks 
     def forward(self, hidden_states,layer_past=None,*args, **kwargs):
-        type_prob = torch.zeros((hidden_states.size[0], len(poet_types)))
+        type_prob = torch.zeros((hidden_states.shape[0], len(poet_year)))
         model_output = None
         if self.context_ids != None:
             model_output = self.type_model.forward(input_ids=self.context_ids, attention_mask=self.context_attention_mask)

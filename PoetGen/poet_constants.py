@@ -23,7 +23,7 @@ verse_ending = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'c
                 'iz', 'ib', 'ki', 'éd', 'év', 'rd', 'yb', 'oz', 'oř', 'ét', 'ož', 'ga', 'yň', 'rp', 'nd', 'of', 'rť', 'iď', 'ýv', 
                 'yz', None]
 
-poet_types = ["",None]
+poet_year = [1800, 1830, 1860, 1890, 1920, 1950, None]
 
 
 
