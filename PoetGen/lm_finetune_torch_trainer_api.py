@@ -29,7 +29,7 @@ parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning 
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 parser.add_argument("--use_multiple_gpu_if_available", default=True, type=bool, help="If to use multiple gpus")
 parser.add_argument("--train_masked", default=True, type=bool, help="Train for consistency secondary training")
-parser.add_argument("--input_mask_rate", default=0.1, type=float, help="Rate of input masking")
+parser.add_argument("--input_mask_rate", default=0.05, type=float, help="Rate of input masking")
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
@@ -61,7 +61,7 @@ parser.add_argument("--model_type",  default="context", type=str, choices=["base
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry-context-long_e64_e128")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=2048, type=int, help="Max length of context for tokenizer")
-parser.add_argument("--verse_len", default=[4,6,8], type=list, help="Lengths of verses")
+parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
 
 parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is prompted into training data")
