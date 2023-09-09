@@ -36,7 +36,7 @@ class PoetTypeModule(torch.nn.Module):
         self.config = GPT2Config(n_positions=input_size, n_head=(n_embd//(768//12)),n_embd=n_embd, 
                                  n_layer=block_count, output_hidden_states=True,  output_attentions =True)
         self.type_model = GPT2Model(self.config)
-        self.type_predict = torch.nn.Linear(input_size, len(poet_year))
+        self.type_predict = torch.nn.Linear(n_embd, len(poet_year))
         self.softmax = torch.nn.Softmax()
         self.linear_scale = torch.nn.Linear(len(poet_year), output_size)
         self.input_size = input_size
