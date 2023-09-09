@@ -49,7 +49,7 @@ class PoetTypeModule(torch.nn.Module):
     
     # Context And type labels are to be injected to bypass GPT2Blocks 
     def forward(self, hidden_states,layer_past=None,*args, **kwargs):
-        type_prob = torch.zeros((hidden_states.shape[0], len(poet_year)))
+        type_prob = torch.zeros((hidden_states.shape[0], len(poet_year))).to("cuda" if torch.cuda.is_available() else "cpu")
         model_output = None
         if self.context_ids != None:
             model_output = self.type_model.forward(input_ids=self.context_ids, attention_mask=self.context_attention_mask)
