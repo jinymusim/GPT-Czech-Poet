@@ -44,6 +44,8 @@ class PoetTypeModule(torch.nn.Module):
         self.context_ids = None
         self.context_attention_mask = None
         self.type_labels=None
+        # Store for loss for model itself
+        self.indiv_loss=None
     
     # Context And type labels are to be injected to bypass GPT2Blocks 
     def forward(self, hidden_states,layer_past=None,*args, **kwargs):
@@ -54,6 +56,8 @@ class PoetTypeModule(torch.nn.Module):
             poet_type = self.type_predict.forward(model_output["hidden_states"][-1][:,0,:].view(-1, self.input_size))
             type_prob = self.softmax.forward(poet_type)
         if self.type_labels != None:
+            loss_fct = torch.nn.CrossEntropyLoss()
+            self.indiv_loss = loss_fct(type_prob, self.type_labels)
             type_prob = self.type_labels.type(torch.FloatTensor)
         linear_up = self.linear_scale.forward(type_prob)
         return (hidden_states + linear_up[:, None, :],

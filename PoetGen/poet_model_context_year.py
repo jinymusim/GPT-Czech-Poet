@@ -66,12 +66,14 @@ class PoetModelContextYear(PoetModelInterface):
             softmaxed = torch.softmax(year_regression, dim=1)
             loss_fct = torch.nn.CrossEntropyLoss()
             year_loss = loss_fct(softmaxed, rhyme)
-            full_loss = full_loss + year_loss
+            full_loss = full_loss + year_loss +  self.model.base_model.h[3].indiv_loss
         
         # Delete the Injection to prevent Dataloss
         self.model.base_model.h[3].context_ids = None
         self.model.base_model.h[3].context_attention_mask = None
         self.model.base_model.h[3].type_labels = None
+        # Delete Loss 
+        self.model.base_model.h[3].indiv_loss = None
         
         self.model.base_model.h[4].context_ids = None
         self.model.base_model.h[4].context_attention_mask = None
