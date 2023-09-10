@@ -23,9 +23,9 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_LM", default=16, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=64, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_LM", default=2, type=int, help="Number of epochs to run.")
 parser.add_argument("--batch_size_poet", default=16, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=64, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--epochs_poet", default=2, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 parser.add_argument("--use_multiple_gpu_if_available", default=True, type=bool, help="If to use multiple gpus")
