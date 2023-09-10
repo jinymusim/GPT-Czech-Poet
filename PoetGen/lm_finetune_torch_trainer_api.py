@@ -22,8 +22,8 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=32, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=16, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_LM", default=64, type=int, help="Batch size.")
+parser.add_argument("--epochs_LM", default=64, type=int, help="Number of epochs to run.")
 parser.add_argument("--batch_size_poet", default=32, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=64, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
@@ -59,7 +59,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 parser.add_argument("--model_type",  default="year", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry-year_e16_e64")),  type=str, help="Path to Model")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt2-cz-poetry-year_e64_e64")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1024, type=int, help="Max length of context for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
