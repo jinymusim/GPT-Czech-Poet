@@ -55,11 +55,11 @@ class PoetTypeModule(torch.nn.Module):
         if self.context_ids != None:
             model_output = self.type_model.forward(input_ids=self.context_ids, attention_mask=self.context_attention_mask)
             poet_type = self.type_predict.forward(model_output["hidden_states"][-1][:,0,:].view(-1, self.n_embd))
-            type_prob = self.softmax.forward(poet_type)
+            type_prob = self.softmax.forward(poet_type) 
         if self.type_labels != None:
             loss_fct = torch.nn.CrossEntropyLoss()
             self.indiv_loss = loss_fct(type_prob, self.type_labels)
-            type_prob = self.type_labels.type(torch.FloatTensor)
+            type_prob = (self.type_labels.type(torch.FloatTensor)).to("cuda" if torch.cuda.is_available() else "cpu")
         linear_up = self.linear_scale.forward(type_prob)
         return (hidden_states + linear_up[:, None, :],
                 linear_up[None, :, None, :], 
