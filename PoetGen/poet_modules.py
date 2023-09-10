@@ -40,6 +40,7 @@ class PoetTypeModule(torch.nn.Module):
         self.softmax = torch.nn.Softmax()
         self.linear_scale = torch.nn.Linear(len(poet_year), output_size)
         self.input_size = input_size
+        self.n_embd = n_embd
         self.output_size = output_size
         self.context_ids = None
         self.context_attention_mask = None
@@ -53,7 +54,7 @@ class PoetTypeModule(torch.nn.Module):
         model_output = None
         if self.context_ids != None:
             model_output = self.type_model.forward(input_ids=self.context_ids, attention_mask=self.context_attention_mask)
-            poet_type = self.type_predict.forward(model_output["hidden_states"][-1][:,0,:].view(-1, self.input_size))
+            poet_type = self.type_predict.forward(model_output["hidden_states"][-1][:,0,:].view(-1, self.n_embd))
             type_prob = self.softmax.forward(poet_type)
         if self.type_labels != None:
             loss_fct = torch.nn.CrossEntropyLoss()
