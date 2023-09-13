@@ -203,3 +203,46 @@ I #
 9 ají # Muci, co na mne chtějí,
 6 # Ještě opakuji:
 6 # # Já jim
+--- Model gpt-cz-poetry-verse_e64_e128 ---
+### Basic Decoding! ###
+ AABBCC
+11 ání # a vzpíná se jak jemné, bílérání.
+10  # Ó stůj, mně pomoz! Rychle k oknu shání
+12 uče # mne divý let, mráz probíhá mnou tluče:
+13 uče Již stojím, skoro svírám dlaň mi líbám ruče,
+14 ítí # chci volat, hlas, jenž v hloubi duše svítí,13 íti # já slyším jeho hlas: „Pojď, pojď se mnou jíti!“
+
+ „„Stůj!““ – „Rád na vždy nechvěju se díti, –“ – –
+) – “ “ –
+ „Jen ukažjuju v rozpak rozpaků rozpak zraněného aju. –:něj’ # „JJškem, však třeba vracet se ke stolu, rychle rychle, co pomyslete! –CD
+### Forced Decoding! ###
+ AABBCC
+13 ání # a vzpíná hřbet – oh, je ten pušek k nepoznání! –
+13 ání # „Vidíte-li, jak sám si brání!“ hoch se brání.
+14 sti # V tom vykřik zoufalý a v těžké bolesti
+14 sti # se kouřem zahaliv po těžké zoufalosti.13 a #, se na zem shýb’, však ihned na
+7 aní # vzkřik’: „I ty, ty svůdná paní!“
+7 aní # A z mráčku vytřeštil si maní,
+--- Model gpt-cz-poetry-context_e32_e64 ---
+### Basic Decoding! ###
+ AABBCC
+10 ání # A v chvíli té – sám nevěděl už,,
+11  # zda noc to den či den, sám kupecání;
+12 irá # v své jizbě seděl, celé noc a širá
+13 írá # a cítil, že se tmí a nitro svírá;11 áře # leč v každém oku plála mu dvě záře, –
+ á a v každé chatě slyšel křiku, káře, řka
+
+“s # v komnatě se ozývá již hlas:
+ –... – – „
+...“ – :–! –“... – a HynekA, vyšeltě.
+ kráčel jako Hynek ti, však,–
+8hod“ před zpátečníků # však před krá jel; vynáší zřelnám
+.8, vždycky zraňuje
+### Forced Decoding! ###
+ AABBCC
+7 a # A když ráno slunce vstává,
+7 a # Aj tu slyším kohos hlá:
+14 ený # Kohosi už leží v mrákotě sen v poupěti
+14 ený # O zemi, matku, rájskou bo posvěcený.
+14 ení #, že tono, to svaté okamžení
+14 ení #, co je? –
