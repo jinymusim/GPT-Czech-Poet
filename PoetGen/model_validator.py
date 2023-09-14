@@ -81,7 +81,7 @@ class ModelValidator:
                         sylab_pos += 1
             end_accuracy.append(end_pos/end_all)
             sylab_accuracy.append(sylab_pos/sylab_all)
-        with open(os.path.abspath(os.path.join(self.result_dict), self.model_rel_name), 'a') as file:
+        with open(os.path.abspath(os.path.join(self.result_dir), self.model_rel_name), 'a') as file:
              print(f"{type} Decoding Validation: Epochs: {self.epochs}, Runs per epoch: {self.runs_per_epoch}", file=file)
              print(f"Num Sylabs Accuracy: {np.mean(sylab_accuracy)} +- {np.std(sylab_accuracy, ddof=1)}", file=file)
              print(f"Endings Accuracy: {np.mean(end_accuracy)} +- {np.std(end_accuracy, ddof=1)}", file=file)
@@ -100,7 +100,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--default_tokenizer_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
-parser.add_argument("--num_runs", default=20, type=int, help="Number of runs on datasets")
+parser.add_argument("--num_runs", default=5, type=int, help="Number of runs on datasets")
 parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-secondary_e4_e8_verse_len_4_6")),  type=str, help="Path to Model")
 
 def main(args):
