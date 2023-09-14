@@ -4,9 +4,9 @@ import numpy as np
 import torch
 import re
 import pickle
+
 from poet_constants import rhyme_schemes, verse_ending, poet_year
 from torch.utils.data import Dataset
-
 
 class CorpusDatasetPytorch:
     

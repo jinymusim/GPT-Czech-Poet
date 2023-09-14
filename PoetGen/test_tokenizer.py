@@ -1,11 +1,11 @@
-from transformers import AutoTokenizer
-from datasets import load_dataset
 import os
 import argparse
 import json
 import random
 import numpy
 
+from transformers import AutoTokenizer
+from datasets import load_dataset
 
 parser = argparse.ArgumentParser()
 

@@ -19,7 +19,6 @@ from poet_model_context_year import PoetModelContextYear
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 
-
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_LM", default=32, type=int, help="Batch size.")

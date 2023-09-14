@@ -1,10 +1,11 @@
+import torch
+import re
+import random
+
 from transformers import  AutoModelForCausalLM, AutoTokenizer
 from poet_model_interface import PoetModelInterface
 from poet_modules import ContextModule
-import torch
-from poet_constants import rhyme_schemes, verse_ending
-import re
-import random
+from poet_constants import rhyme_schemes
 
 class PoetModelContextInput(PoetModelInterface):
     def __init__(self, pretrainedModel, context_input_size:int = 2048, block_count:int=3, *args, **kwargs) -> None:

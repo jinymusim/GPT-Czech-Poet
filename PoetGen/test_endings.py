@@ -1,8 +1,8 @@
-
 import os
 import re
 import argparse
 import json
+
 from collections import Counter
 
 # r'[\,\.\?\!–\„\“\’\;\:()\]\[\_\*\‘\”\'0-9\-\—\"]+'

@@ -1,10 +1,11 @@
+import torch
+import re
+import random
+
 from transformers import  AutoModelForCausalLM, AutoTokenizer
 from poet_model_interface import PoetModelInterface
 from poet_modules import ContextModule, PoetTypeModule
-import torch
-from poet_constants import rhyme_schemes, verse_ending, poet_year
-import re
-import random
+from poet_constants import rhyme_schemes, poet_year
 
 class PoetModelContextYear(PoetModelInterface):
     def __init__(self, pretrainedModel, context_input_size:int = 2048, block_count:int=3, *args, **kwargs) -> None:

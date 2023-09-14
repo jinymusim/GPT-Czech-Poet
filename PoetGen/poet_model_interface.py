@@ -1,6 +1,3 @@
-
-from transformers import AutoTokenizer
-from poet_constants import rhyme_schemes
 import torch
 
 class PoetModelInterface(torch.nn.Module):

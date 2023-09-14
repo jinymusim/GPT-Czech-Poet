@@ -1,10 +1,9 @@
-from transformers import  AutoModelForCausalLM, AutoTokenizer
-from poet_model_interface import PoetModelInterface
-import torch
-from poet_constants import rhyme_schemes
 import re
 import random
 
+from transformers import  AutoModelForCausalLM, AutoTokenizer
+from poet_model_interface import PoetModelInterface
+from poet_constants import rhyme_schemes
 
 class PoetModelBase(PoetModelInterface):
     def __init__(self, pretrainedModel, *args, **kwargs) -> None:
