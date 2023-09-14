@@ -13,7 +13,7 @@ from collections import Counter
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
-parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "endings.txt")), type=str, help="Result of Analysis File")
+parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "endings.txt")), type=str, help="Result of Analysis File")
 parser.add_argument("--top", default=400, type=int, help="Amount of top endings (None for all)")
 parser.add_argument("--regex", default=r'([^\w\s]+|[0-9]+)', type=str, help="Tested Regex")
 

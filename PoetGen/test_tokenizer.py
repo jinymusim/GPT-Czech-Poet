@@ -15,7 +15,7 @@ parser.add_argument("--data_path_base", default="cs_restaurants", type=str, help
 parser.add_argument("--base_part", default="unshuffled_deduplicated_cs", type=str, help="Which part of base dataset to consider")
 parser.add_argument("--num_samples", default=1000, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=100, type=int, help="Number of runs on datasets")
-parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "tokenizer_analysis.txt")), type=str, help="Result of Analysis File")
+parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "tokenizer_analysis.txt")), type=str, help="Result of Analysis File")
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
