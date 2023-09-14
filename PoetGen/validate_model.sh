@@ -8,4 +8,4 @@ pip install --target=$SCRATCHDIR torch torchvision torchaudio --index-url https:
 pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/requirements.txt
 export PYTHONPATH="${PYTHONPATH}:${TMPDIR}"
 cd /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen
-python3 model_validator.py --num_runs=100 --num_samples=100 
+python3 model_validator.py --num_runs=10 --num_samples=200 
