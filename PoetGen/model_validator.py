@@ -81,7 +81,7 @@ class ModelValidator:
                         sylab_pos += 1
             end_accuracy.append(end_pos/end_all)
             sylab_accuracy.append(sylab_pos/sylab_all)
-        with open(os.path.abspath(os.path.join(self.result_dir), self.model_rel_name), 'a') as file:
+        with open(os.path.abspath(os.path.join(self.result_dir, self.model_rel_name)), 'a') as file:
              print(f"{type} Decoding Validation: Epochs: {self.epochs}, Runs per epoch: {self.runs_per_epoch}", file=file)
              print(f"Num Sylabs Accuracy: {np.mean(sylab_accuracy)} +- {np.std(sylab_accuracy, ddof=1)}", file=file)
              print(f"Endings Accuracy: {np.mean(end_accuracy)} +- {np.std(end_accuracy, ddof=1)}", file=file)
