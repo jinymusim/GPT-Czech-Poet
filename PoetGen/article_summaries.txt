@@ -1,0 +1,15 @@
+Revisiting Neural Language Modelling with Syllable
+link: https://arxiv.org/pdf/2010.12881.pdf
+    - ! RNN (LSTM) based work
+
+    - Syllables allow open vocab, like word-subword-char setup
+    - Syllables => Speech units, subwords => language units
+    - Syllables extraction: " “A syl-la-ble con-tains a sin-gle vow-el u-nit” " or Dictionary-based
+    - Previous failed to beat char based at word-level (closed-vocab == can't add words)
+    - New tests: 1. open-vocab, 2. 20 languages from 6, 3. rule-based and hyphenation tools syllabification
+    - Measure perplexity given character-tokenizer
+    - Data: WikiText-2-raw
+    - For Czech syllables grow more than morphemes using Dictionary = Difficult to determine syllables boundaries
+    - Low overlap of morphemes and syllables (under 5 %), compared to Byte Pair Encoding with over (15-75 %)
+    - Little more overlap if morphemes are unsupervised
+    - Syllables have better (smaller) perplexity
