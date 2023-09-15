@@ -62,10 +62,12 @@ class ModelValidator:
                     # May struggle
                     try:
                         expected_sylab = int(line_split[0])
+                        expected_end = line_split[1].strip()
                     except:
                         sylab_all += 1
+                        end_all += 1
                         continue
-                    expected_end = line_split[1].strip()
+                    
                     
                     raw_line = " ".join(line_split[3:])  
                                
@@ -101,7 +103,7 @@ parser.add_argument("--default_tokenizer_model", default="lchaloupsky/czech-gpt2
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=5, type=int, help="Number of runs on datasets")
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt2-cz-poetry-verse_e64_e128")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-endings_e4_e8")),  type=str, help="Path to Model")
 
 def main(args):
     val = ModelValidator(args.model_path_full, args.default_tokenizer_model, args.num_runs, args.num_samples)
