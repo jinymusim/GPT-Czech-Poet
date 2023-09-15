@@ -4,8 +4,9 @@ import numpy as np
 import torch
 import re
 import pickle
+import random
 
-from poet_constants import rhyme_schemes, verse_ending, poet_year
+from poet_constants import rhyme_schemes, verse_ending, poet_year, rhyme_prompts, poet_year_prompts
 from torch.utils.data import Dataset
 
 class CorpusDatasetPytorch:
@@ -106,7 +107,7 @@ class CorpusDatasetPytorch:
                             i+=1
                             
                             if i in self.verse_len:
-                                tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
+                                tokenized = self._tokenizer.encode(f"{random.choice(rhyme_prompts)} {rhyme}, {random.choice(poet_year_prompts)} {publish_year}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
                                 context_tokenized = self._tokenizer.encode("\n".join(context), return_tensors="np")[0][:self.context_size]
                                 data.append({"input_ids" : tokenized,
                                              "context_ids" : context_tokenized,
@@ -120,7 +121,7 @@ class CorpusDatasetPytorch:
                                     rhyme_sequence = -1
                                     i=0
                         if len(body) > 0 and i not in self.verse_len:
-                            tokenized = self._tokenizer.encode(f"{rhyme}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
+                            tokenized = self._tokenizer.encode(f"{random.choice(rhyme_prompts)} {rhyme}, {random.choice(poet_year_prompts)} {publish_year}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
                             context_tokenized = self._tokenizer.encode("\n".join(context), return_tensors="np")[0][:self.context_size]
                             data.append({"input_ids" : tokenized,
                                          "context_ids" : context_tokenized,
