@@ -25,5 +25,5 @@ verse_ending = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'c
 
 poet_year = [1800, 1830, 1860, 1890, 1920, 1950, None]
 
-rhyme_prompts = ["Rýmové schéma je", "Schéma je", "Rým má schéma", "Rým typu", "Rým jako", "Schéma typu", "Schéma:", "Rým:" ]
-poet_year_prompts = ["Kniha z roku", "Kniha z období", "Báseň z roku", "Báseň z období", "Rok:"]
+rhyme_prompts = ["Rýmové schéma je", "Schéma je", "Rým má schéma", "Rým typu", "Rým jako", "Schéma typu", "Schéma:", "Rým:", "" ]
+poet_year_prompts = ["Kniha z roku", "Kniha z období", "Báseň z roku", "Báseň z období", "Rok:", ""]
