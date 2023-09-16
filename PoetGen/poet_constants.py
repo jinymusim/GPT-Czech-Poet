@@ -1,4 +1,5 @@
-rhyme_schemes = ["ABAB", "ABBA", "XAXA", "ABCB", "AABB", "AABA", "AAAA", "AABBCC", "AABCCB", "ABABCC", "AABCCB", "AAABAB", None]
+rhyme_schemes = ["ABAB", "ABBA", "XAXA", "ABCB", "AABB", "AABA", "AAAA", "AABBCC", "AABCCB", "ABABCC", "AABCCB", "AAABAB", 
+                 "ABABCD", "ABABAB", "ABABBC", "ABABCB","ABBAAB","AABABB","ABCBBB", None]
 # First 200 Most common endings
 verse_ending = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'ce', 'ky', 'ku', 'ně', 'jí', 'ly', 'il', 'en', 'né', 
                 'lo', 'ne', 'vá', 'ny', 'se', 'na', 'ím', 'st', 'le', 'ný', 'ci', 'mi', 'ka', 'ná', 'lí', 'cí', 'ží', 'čí', 'ám', 
@@ -23,7 +24,5 @@ verse_ending = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'c
                 'iz', 'ib', 'ki', 'éd', 'év', 'rd', 'yb', 'oz', 'oř', 'ét', 'ož', 'ga', 'yň', 'rp', 'nd', 'of', 'rť', 'iď', 'ýv', 
                 'yz', None]
 
-poet_year = [1800, 1830, 1860, 1890, 1920, 1950, None]
-
-rhyme_prompts = ["Rýmové schéma je", "Schéma je", "Rým má schéma", "Rým typu", "Rým jako", "Schéma typu", "Schéma:", "Rým:", "" ]
-poet_year_prompts = ["Kniha z roku", "Kniha z období", "Báseň z roku", "Báseň z období", "Rok:", ""]
+poet_year = [1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, None]
+meter_type = ["J","T","D","A","X","Y","N", None]

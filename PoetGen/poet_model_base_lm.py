@@ -8,17 +8,6 @@ from poet_constants import rhyme_schemes
 class PoetModelBase(PoetModelInterface):
     def __init__(self, pretrainedModel, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        
-        #if "llama" in pretrainedModel:
-        #    self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
-        #                                                      output_hidden_states=True, 
-        #                                                      max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
-        #                                                      torch_dtype=torch.float16)
-        #else:
-        #    self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
-        #                                                      output_hidden_states=True,
-        #                                                      max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
-        #
 
         self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
                                                         output_hidden_states=True)

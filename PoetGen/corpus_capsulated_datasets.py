@@ -6,7 +6,7 @@ import re
 import pickle
 import random
 
-from poet_constants import rhyme_schemes, verse_ending, poet_year, rhyme_prompts, poet_year_prompts
+from poet_constants import rhyme_schemes, verse_ending, poet_year, meter_type
 from torch.utils.data import Dataset
 
 class CorpusDatasetPytorch:
@@ -24,7 +24,20 @@ class CorpusDatasetPytorch:
          
         def gen_files(self):
             for filename in self._data_file_paths:
-                 yield open(filename, 'r')    
+                 yield open(filename, 'r') 
+                 
+        @staticmethod
+        def _vowels_and_endings_vector(raw_text):
+            vowels = len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý", raw_text.lower()))
+            sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_text)
+            ending = sub.strip()[-2:].lower()
+            verse_end_vector = np.zeros(len(verse_ending))
+            if ending in verse_ending:
+                verse_end_vector[verse_ending.index(ending)] = 1
+            else:
+                verse_end_vector[-1] = 1
+            return vowels, verse_end_vector
+            
             
             
         def data_text_line_gen(self):
@@ -37,11 +50,12 @@ class CorpusDatasetPytorch:
                     for part_line in data_line['body']:
                         for text_line in part_line:
                             tokenized = self._tokenizer.encode(text_line['text'], return_tensors="np", truncation=True)[0]
-                            sub = re.sub(r'([^\w\s]+|[0-9]+)', '', text_line['text'])
-                            ending = sub.strip()[-2:].lower()
-                            data.append({"input_ids" : tokenized,
-                                     "num_vowels": [len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý", text_line['text']))],
-                                     "verse_end": [1 if ending == verse_ending[i] or (verse_ending[i] == None and ending not in verse_ending) else 0 for i in range(len(verse_ending)) ]})
+                            num_vowels, verse_end_vector = self._vowels_and_endings_vector(text_line['text'])
+                            data.append({
+                                "input_ids" : tokenized,
+                                "num_vowels": [num_vowels],
+                                "verse_end": verse_end_vector
+                                     })
             return data
             
         def __len__(self):
@@ -72,6 +86,51 @@ class CorpusDatasetPytorch:
         def rhyme_sec(rhyme_ref, current_rhyme):
             rhyme_pos = ["A", "B", "C", "D", "E", "F", "G", "H"]
             return "X" if current_rhyme == None or current_rhyme < rhyme_ref or current_rhyme >= rhyme_ref + len(rhyme_pos) else rhyme_pos[current_rhyme - rhyme_ref]
+        
+        @staticmethod
+        def _rhyme_string_and_vector(curr_rhyme_list):
+            reference = None
+            
+            for num in curr_rhyme_list:
+                if num != None:
+                    reference = num
+                    break
+            rhyme_str = ""
+            for num in curr_rhyme_list:
+               rhyme_str += CorpusDatasetPytorch.BodyDataset.rhyme_sec(reference, num)
+            rhyme_vector = np.zeros(len(rhyme_schemes))
+            if rhyme_str in rhyme_schemes:
+                rhyme_vector[rhyme_schemes.index(rhyme_str)] = 1
+            else:
+                rhyme_vector[-1] = 1
+            return rhyme_str, rhyme_vector
+        
+        @staticmethod
+        def _publish_year_and_vector(year_string):
+            publish_year = None if not year_string.isdigit() else int(year_string)
+            publish_vector = np.zeros(len(poet_year))
+            if publish_year == None:
+                publish_vector[-1] = 1
+            else:
+                publish_vector[np.argmin( abs(np.asarray(poet_year[:-1]) - publish_year))] = 1
+            return publish_year, publish_vector
+        
+        @staticmethod
+        def _metre_and_vector(meter_string):
+            meter_str = meter_string
+            meter_vector = np.zeros(len(meter_type))
+            if meter_str in meter_type:          
+                meter_vector[meter_type.index(meter_str)] = 1
+            else:
+                meter_vector[-1] = 1
+            return meter_str, meter_vector
+        
+        def _construct_line(self, raw_text):
+            num_str = f"{len(re.findall('a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý', raw_text.lower()))} " if self.prompt_length else ""
+            sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_text)
+            verse_end = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
+            return num_str + verse_end + raw_text
+            
                                                            
         def data_body_gen(self):
             data = []
@@ -79,54 +138,59 @@ class CorpusDatasetPytorch:
                 if step % 500 == 0:
                     print(f"Processing file {step}")
                 datum = json.load(file)
+                
                 for data_line in datum:
-                    context = ["Context ##"]
-                    publish_year = None if not data_line["biblio"]["year"].isdigit() else int(data_line["biblio"]["year"])
-                    publish_vector = np.zeros(len(poet_year))
-                    if publish_year == None:
-                        publish_vector[-1] = 1
-                    else:
-                        publish_vector[np.argmin( abs(np.asarray(poet_year[:-1]) - publish_year))] = 1
-                    for part_line in data_line['body']:
-                        
+                    publish_year, publish_vector = self._publish_year_and_vector(data_line["biblio"]["year"])
+                    context = []
+
+                    for part_line in data_line['body']:                                                        
                         body = []
-                        rhyme= ""
-                        rhyme_sequence = -1
+                        rhyme= []
                         i = 0
                         for text_line in part_line:
-                            if rhyme_sequence == -1 and text_line["rhyme"] != None:
-                                rhyme_sequence = text_line["rhyme"]
-                            rhyme += self.rhyme_sec(rhyme_sequence, text_line["rhyme"])
                             
-                            num_str = f"{len(re.findall('a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý', text_line['text']))} " if self.prompt_length else ""
-                            sub = re.sub(r'([^\w\s]+|[0-9]+)', '', text_line['text'])
-                            verse_ending = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
+                            # In rare cases multiple, but from searching only 1 metre per line
+                            metre, metre_vector = self._metre_and_vector(text_line["metre"][0]["type"])
 
-                            body.append( num_str + verse_ending  + text_line['text'])
+                            rhyme.append(text_line["rhyme"])  
+
+                            body.append(self._construct_line(text_line["text"]))
                             
                             i+=1
                             
                             if i in self.verse_len:
-                                tokenized = self._tokenizer.encode(f"{random.choice(rhyme_prompts)} {rhyme}, {random.choice(poet_year_prompts)} {publish_year}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
-                                context_tokenized = self._tokenizer.encode("\n".join(context), return_tensors="np")[0][:self.context_size]
-                                data.append({"input_ids" : tokenized,
-                                             "context_ids" : context_tokenized,
-                                             "year": publish_vector[:],
-                                     "rhyme":  [1 if rhyme == rhyme_schemes[i] or (rhyme_schemes[i] == None and rhyme not in rhyme_schemes )  else 0 for i in range(len(rhyme_schemes)) ]})
+                                rhyme_str, rhyme_vector = self._rhyme_string_and_vector(rhyme)
+                                
+                                tokenized = self._tokenizer.encode(f" {rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + self._tokenizer.eos_token , 
+                                                                   return_tensors="np", truncation=True)[0]
+                                context_tokenized = self._tokenizer.encode("\n".join(context) + self._tokenizer.eos_token, 
+                                                                   return_tensors="np", truncation=True)[0][:self.context_size]
+                                data.append({
+                                    "input_ids" : tokenized,
+                                    "context_ids" : context_tokenized,
+                                    "year": publish_vector,
+                                    "rhyme":  rhyme_vector,
+                                    "metre" : metre_vector
+                                     })
                                 
                                 if i == max(self.verse_len):
-                                    context = ["Context ##"]  + body
+                                    context = body
                                     body = []
-                                    rhyme = ""
-                                    rhyme_sequence = -1
+                                    rhyme = []
                                     i=0
                         if len(body) > 0 and i not in self.verse_len:
-                            tokenized = self._tokenizer.encode(f"{random.choice(rhyme_prompts)} {rhyme}, {random.choice(poet_year_prompts)} {publish_year}\n" +  "\n".join(body) + "\n\n", return_tensors="np", truncation=True)[0]
-                            context_tokenized = self._tokenizer.encode("\n".join(context), return_tensors="np")[0][:self.context_size]
-                            data.append({"input_ids" : tokenized,
-                                         "context_ids" : context_tokenized,
-                                         "year": publish_vector[:],
-                                "rhyme": [1 if  rhyme == rhyme_schemes[i] or (rhyme_schemes[i] == None and rhyme not in rhyme_schemes )  else 0 for i in range(len(rhyme_schemes)) ]
+                            rhyme_str, rhyme_vector = self._rhyme_string_and_vector(rhyme)
+                            
+                            tokenized = self._tokenizer.encode(f"{rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + self._tokenizer.eos_token, 
+                                                               return_tensors="np", truncation=True)[0]
+                            context_tokenized = self._tokenizer.encode("\n".join(context) + self._tokenizer.eos_token, 
+                                                                   return_tensors="np", truncation=True)[0][:self.context_size]
+                            data.append({
+                                "input_ids" : tokenized,
+                                "context_ids" : context_tokenized,
+                                "year": publish_vector,
+                                "rhyme":  rhyme_vector,
+                                "metre" : metre_vector
                                 })
                                 
                                                     
@@ -179,6 +243,10 @@ class CorpusDatasetPytorch:
         year = None
         if "year" in batch[0].keys():
             year = torch.tensor(np.asarray([text["year"] for text in batch], dtype=np.int32), dtype=torch.float32)
+            
+        metre = None
+        if "metre" in batch[0].keys():
+            metre = torch.tensor(np.asarray([text["metre"] for text in batch], dtype=np.int32), dtype=torch.float32)
         
         context_ids = None
         context_attention_mask = None
@@ -189,9 +257,7 @@ class CorpusDatasetPytorch:
                 context_attention_mask[pos,:len(text['context_ids'])] = 1
             context_ids = np.asarray([np.append(text['context_ids'], [0] *(max_len - len(text['context_ids'])))  for text in batch], dtype=np.int32)
             context_ids = torch.tensor(context_ids,  dtype=torch.int32)
-            context_attention_mask =  torch.tensor(context_attention_mask,dtype=torch.bool)
-            
-            
+            context_attention_mask =  torch.tensor(context_attention_mask,dtype=torch.bool)          
         
         return {
             "input_ids": padded_batch,
@@ -202,10 +268,10 @@ class CorpusDatasetPytorch:
             "nums" :  nums,
             "rhyme": rhyme,
             "verse_end" : verse_end,
-            "year": year
+            "year": year,
+            "metre" : metre
             }
-    
-    #TODO: Finish Rhyme Prompting
+        
     def __init__(self,tokenizer,  data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir='./', prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6] ,context_len=2048):
         self.tokenizer = tokenizer
         self.data_dir = data_dir
