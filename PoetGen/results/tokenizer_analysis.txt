@@ -1,9 +1,21 @@
-All Runs Results
-Chars per token Poet data: 3.3674761059926954 +- 0.1213281452466315
-Chars per token Base data: 4.268059379052815 +- 0.025563419184582086
-All Runs Results
-Chars per token Poet data: 3.3527174971750373 +- 0.10976033495845891
-Chars per token Base data: 4.266587949966806 +- 0.02289110048051689
-All Runs Results
+All Runs Results: lchaloupsky/czech-gpt2-oscar # Runs: 100 # Samples: 1000
 Chars per token Poet data: 3.3737365770702397 +- 0.08508490747223248
 Chars per token Base data: 4.26745283043716 +- 4.749154240660069e-15
+All Runs Results: bigscience/bloom-560m # Runs: 100 # Samples: 100
+Chars per token Poet data: 2.103622806600103 +- 0.05876504331474683
+Chars per token Base data: 2.4303725088036376 +- 0.03490366294594056
+All Runs Results: huggyllama/llama-7b # Runs: 100 # Samples: 100
+Chars per token Poet data: 1.995397259297714 +- 0.057784291847850375
+Chars per token Base data: 2.224823579528575 +- 0.033535667500591365
+All Runs Results: lchaloupsky/czech-gpt2-oscar # Runs: 100 # Samples: 100
+Chars per token Poet data: 3.378722000752648 +- 0.18046377959028967
+Chars per token Base data: 4.272032104944646 +- 0.08819196457860504
+All Runs Results: TheBloke/Llama-2-7B-fp16 # Runs: 100 # Samples: 100
+Chars per token Poet data: 2.006011148571405 +- 0.06255614064204791
+Chars per token Base data: 2.230111313573201 +- 0.03304025599165536
+All Runs Results: huggyllama/llama-7b # Runs: 100 # Samples: 100
+Chars per token Poet data: 1.9889094516089543 +- 0.05665709759544217
+Chars per token Base data: 2.2357250859691775 +- 0.03118787784576438
+All Runs Results: gpt2 # Runs: 100 # Samples: 100
+Chars per token Poet data: 1.671656687866959 +- 0.04134872925774038
+Chars per token Base data: 1.9874006437198843 +- 0.038271281560156065
