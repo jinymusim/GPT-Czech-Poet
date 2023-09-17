@@ -122,7 +122,7 @@ class PoetModelBase(PoetModelInterface):
                                 early_stopping=True,
                                 pad_token_id=tokenizer.eos_token_id)
             decoded_line: str = tokenizer.decode(out_line[0], skip_special_tokens=True).splitlines()[len(prompt_list)]
-            if features_dict[f'type_{j}_end'] == "":
+            if features_dict[f'type_{j}_end'] == "" and len(decoded_line.split()) > 1:
                 features_dict[f'type_{j}_end'] = decoded_line.split()[1]
             prompt_list.append(decoded_line)
         
