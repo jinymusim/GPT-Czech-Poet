@@ -7,7 +7,7 @@ from poet_model_interface import PoetModelInterface
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'past_models', "gpt-cz-poetry-context_e32_e64")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-base_e4_e16")),  type=str, help="Path to Model")
 # bigscience/bloom-560m
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "test_poet_model.txt")), type=str, help="Where to store the decoding efforts")
@@ -18,7 +18,7 @@ if __name__ == "__main__":
 tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
 model: PoetModelInterface= (torch.load(args.model_path_full, map_location=torch.device('cpu')))
 
-tokenized_poet_start = tokenizer.encode("AABBCC\n", return_tensors='pt')
+tokenized_poet_start = tokenizer.encode("A", return_tensors='pt')
 
 out = model.model.generate(tokenized_poet_start, 
                                 max_length=192,
@@ -32,7 +32,7 @@ decoded_cont = tokenizer.decode(out[0], skip_special_tokens=True)
 
 print("### Basic Decoding! ###\n", decoded_cont)
 
-out_forced = model.generate_forced("AABBCC\n", tokenizer, verse_len=6)
+out_forced = model.generate_forced("ABBA", tokenizer, verse_len=4)
 
 print("### Forced Decoding! ###\n", out_forced)
 

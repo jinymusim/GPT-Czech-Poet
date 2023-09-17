@@ -246,3 +246,48 @@ I #
 14 ený # O zemi, matku, rájskou bo posvěcený.
 14 ení #, že tono, to svaté okamžení
 14 ení #, co je? –
+--- Model gpt-cz-poetry-base_e4_e16 ---
+### Basic Decoding! ###
+ AABBCC
+11 ání # A když se večer k spánku uklání,
+10 aní # tu srdce mé se budí a srdce raní. –
+12  ni # Ó, Bože můj, jak toužím pohledět na ni!
+9  ní # Jak bych se mohl vyplakat od ní? – – – “ – „Vždyť jsem tak šťastni!““ –“... „„Vždyť jsme oba mřeli!“ – - –. -'-.**) –,Ó, Pane, –‘‘ –: „Buď nám nebe s Bohem!“... –.. – "..‘“.. - “. „..‘ “„.,. ““‘.““ „.““ “.“ – ”“. ”. ‘.’“,„‘„Budiž Vám požehnánaní!“‘.“‘.“
+### Forced Decoding! ###
+ AABBCC
+6 ích # v těch našich srdcích, v srdcích,
+6 ích # ve všech našich duších. –
+11 ání # A když pak přijde naše umírání, – –“ Nuž, co pak? – ‘ – „„s Bohem!‘“ – – “ –‘ –– „– –,–“‘–, –’s bohem?‘-,„Ano!“‘‘...‘,Ano! – ‚– ‘‘.‘ -,.,‘( –.,’–‘,‘’ –(,((‘) –
+11 ání # –,,Soumraku,’’‘,–(“–,“,, –.,,‘-, -,.’,(‘:‘ “, ‚, ‘,(,’,‚)‘ ‚((:–’““,„– “(-,:,-‘ ‘. „. ‘“ ‚‘ „(– A, ‘( ““’: ‘’(’. ‚“( ‚„„‘.“
+9 ova #,““,,,‘,,.’)’,(,’ „,“,0.:“�“ a,0: ‚.,– ‚’ ‚((. A,3:/‘;‘A‘
+9 ova #.,““,,. Ale,,‘).‘ A,–.“.,,. *.. I‘, „A“ Bylo. Bylo: „s. Ano. To bylo:,0. Tedy: –,(. Ba. Také bylo. Zkrátka:. Vše. Přec. Tak. Běda. Ne. Nic. Nyní. Prostě.
+--- Model gpt-cz-poetry-base_e4_e16 ---
+### Basic Decoding! ###
+ AABBCC ## 1899 # T
+10 adu # „„Aj, vy páni, vítejte mi v hradu,
+11 adů # na dvoře jsou hody našich sadů.
+9 ady # Pojďte sem, zde máte zahrady, –
+8 adí # zde je trávník, trávník chladí, -
+7 ádi # buďte zdrávi, kamarádi!““ –“ – „Tak se máte rádi?“ – – “„„ rádi.““... ““ - “ – ”“ „Adé, “ “. –““ “...„Buďte rádi! – ‘“ ” –”“ A. “ ” ”” “Budiž!“ “”...” ” “A. ”?” “.”” „.”.” ”.” “?” ” „?””?” „.” „ “Ach, ano!” “ „“. ““. ”.?”“” " ” A “
+### Forced Decoding! ###
+ AABBCC
+13 ání # „„Ne, ne, to není žert a pouhé zdání!“““
+13 ání # A v tom se zabouřil hrom do klekání. – „Zvlekání!“ –
+13 aní # Zahřmělo na poplach, – a v půlnoční se hraní. – – A kmetové – ““ – Kmet –: „A paní?“ –
+13 aní # Vykřikla. A s pláčem, s děsným křikem, beze zbraní. –– Nevzbudí se z mdloby,
+14 aví # Neslyší, co se dělo, a hrůzou se znaví. – : –“ „Co praví? –?“– –,– „Nikdy! –‘ – Nepoví.‘“– „– ““- –? –? „Nevzkřikrál!“–,Nikdy!! –’ –.. –.. „?, – Aniž!‘–?–?‘-? Ne, nikdy!... –
+14 aví # –? – V tom zaburácel se a zaúpěl, jak bouře jekotem se drala. –.....–**) –( –. –....,. „Burácí se nenaří!?!“‘...‘. Smích se neuzří –!“‘(.().“.–( (). – Smícha – žena – nepoznala –! –?! –,
+--- Model gpt-cz-poetry-base_e4_e16 ---
+### Basic Decoding! ###
+ ABBAX ## 1889 # T
+8 ání # „Slyš, ó slyš mé žalné lkání!
+9 áli # Slyš mne, slyšte, bratři, v dáli,
+10 ály # jak se bouře s nebes sřítí v skály
+7  ni # a hrom udeří v ni.
+4 ože # Bože, Bože!“ – – „Bože!“ – “ –“ –„Boží!“–“– –. –? –: – : –! –! –!! –. –!““– „Bůh můj!“-“..“ „Zdaž tož?“ –.“ –,Bůh!? –?‘ –) –( –‘“...“ (–) „„Toť je k smíchu!‘‘– ““ -““,Zůstaneš-„“...“‘ „.‘.
+### Forced Decoding! ###
+ ABBA
+9 ají # A když se v bouři tají,
+10 nou # když bouře s vichrem v jedno splynou, – –“ – „Kdož jste, ó kdo jste?
+10 nou # Já jsem ten, jenž s myslí rozbořenou – Stín – toť můj stín. – “ – A hled – tam – hle! –
+9 ají # tam v dálce – a hle, již se kmitají. –...–.. – Bože, bože!“-. – Blaze, že jste – blaze!... –  –..‘ –, –‘“ „Nikdy!‘‘–‘- – ‚–,Nikdy!!‘,– “‘.,‘...‘ -,.‘( – ‘‘ „Buďtež, pane,‘ “, -

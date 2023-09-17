@@ -161,7 +161,7 @@ class CorpusDatasetPytorch:
                             if i in self.verse_len:
                                 rhyme_str, rhyme_vector = self._rhyme_string_and_vector(rhyme)
                                 
-                                tokenized = self._tokenizer.encode(f" {rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + self._tokenizer.eos_token , 
+                                tokenized = self._tokenizer.encode(f" {rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + "\n" + self._tokenizer.eos_token , 
                                                                    return_tensors="np", truncation=True)[0]
                                 context_tokenized = self._tokenizer.encode("\n".join(context) + self._tokenizer.eos_token, 
                                                                    return_tensors="np", truncation=True)[0][:self.context_size]
@@ -181,7 +181,7 @@ class CorpusDatasetPytorch:
                         if len(body) > 0 and i not in self.verse_len:
                             rhyme_str, rhyme_vector = self._rhyme_string_and_vector(rhyme)
                             
-                            tokenized = self._tokenizer.encode(f"{rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + self._tokenizer.eos_token, 
+                            tokenized = self._tokenizer.encode(f"{rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + "\n" + self._tokenizer.eos_token, 
                                                                return_tensors="np", truncation=True)[0]
                             context_tokenized = self._tokenizer.encode("\n".join(context) + self._tokenizer.eos_token, 
                                                                    return_tensors="np", truncation=True)[0][:self.context_size]
