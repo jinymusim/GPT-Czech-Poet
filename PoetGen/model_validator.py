@@ -52,11 +52,12 @@ class ModelValidator:
                 decoded_cont:str = self.decode_helper(type)
                 
                 for line in decoded_cont.splitlines():
+                    if line.strip() == "": 
+                        break
                     if PoetModelInterface.rhyme_like(line.split()[0]):
                         continue
                     # Ended Verse
-                    if line.strip() == "": 
-                        break
+
                     line_split = line.split()
                     # 0 = sylab count, 1 = ending, 2 = #, 3: line itself
                     # May struggle
