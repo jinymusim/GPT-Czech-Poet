@@ -52,7 +52,7 @@ class ModelValidator:
                 decoded_cont:str = self.decode_helper(type)
                 
                 for line in decoded_cont.splitlines():
-                    if PoetModelInterface.rhyme_like(line):
+                    if PoetModelInterface.rhyme_like(line.split()[0]):
                         continue
                     # Ended Verse
                     if line.strip() == "": 
