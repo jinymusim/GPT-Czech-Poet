@@ -22,14 +22,14 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_LM", default=32, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=2, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_LM", default=4, type=int, help="Number of epochs to run.")
 parser.add_argument("--batch_size_poet", default=32, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=8, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 parser.add_argument("--use_multiple_gpu_if_available", default=True, type=bool, help="If to use multiple gpus")
-parser.add_argument("--train_masked", default=True, type=bool, help="Train for consistency secondary training")
-parser.add_argument("--input_mask_rate", default=0.05, type=float, help="Rate of input masking")
+parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
+parser.add_argument("--input_mask_rate", default=0.0, type=float, help="Rate of input masking")
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
@@ -58,7 +58,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-base_newline_e2_e8")),  type=str, help="Path to Model")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-base_newline_e4_e16")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1024, type=int, help="Max length of context for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
