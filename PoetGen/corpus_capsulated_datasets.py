@@ -37,8 +37,12 @@ class CorpusDatasetPytorch:
             else:
                 verse_end_vector[-1] = 1
             return vowels, verse_end_vector
-            
-            
+        
+        @staticmethod
+        def _remove_most_nonchar(raw_text):
+            text = re.sub(r'[–\„\“\’\;\:()\]\[\_\*\‘\”\'\-\—\"]+', "", raw_text)
+            return text
+                     
             
         def data_text_line_gen(self):
             data = []
@@ -49,8 +53,9 @@ class CorpusDatasetPytorch:
                 for data_line in datum:
                     for part_line in data_line['body']:
                         for text_line in part_line:
-                            tokenized = self._tokenizer.encode(text_line['text'], return_tensors="np", truncation=True)[0]
-                            num_vowels, verse_end_vector = self._vowels_and_endings_vector(text_line['text'])
+                            scanned_text = self._remove_most_nonchar(text_line['text'])
+                            tokenized = self._tokenizer.encode(scanned_text, return_tensors="np", truncation=True)[0]
+                            num_vowels, verse_end_vector = self._vowels_and_endings_vector(scanned_text)
                             data.append({
                                 "input_ids" : tokenized,
                                 "num_vowels": [num_vowels],
@@ -130,6 +135,11 @@ class CorpusDatasetPytorch:
             sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_text)
             verse_end = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
             return num_str + verse_end + raw_text
+        
+        @staticmethod
+        def _remove_most_nonchar(raw_text):
+            text = re.sub(r'[–\„\“\’\;\:()\]\[\_\*\‘\”\'\-\—\"]+', "", raw_text)
+            return text
             
                                                            
         def data_body_gen(self):
@@ -153,18 +163,20 @@ class CorpusDatasetPytorch:
                             metre, metre_vector = self._metre_and_vector(text_line["metre"][0]["type"])
 
                             rhyme.append(text_line["rhyme"])  
+                            
+                            scanned_text = self._remove_most_nonchar(text_line["text"])
 
-                            body.append(self._construct_line(text_line["text"]))
+                            body.append(self._construct_line(scanned_text))
                             
                             i+=1
                             
                             if i in self.verse_len:
                                 rhyme_str, rhyme_vector = self._rhyme_string_and_vector(rhyme)
                                 
-                                tokenized = self._tokenizer.encode(f" {rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + "\n" + self._tokenizer.eos_token , 
+                                tokenized = self._tokenizer.encode(f"{rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + "\n" + self._tokenizer.eos_token , 
                                                                    return_tensors="np", truncation=True)[0]
                                 context_tokenized = self._tokenizer.encode("\n".join(context) + self._tokenizer.eos_token, 
-                                                                   return_tensors="np", truncation=True)[0][:self.context_size]
+                                                                   return_tensors="np", truncation=False)[0][:self.context_size]
                                 data.append({
                                     "input_ids" : tokenized,
                                     "context_ids" : context_tokenized,
@@ -184,7 +196,7 @@ class CorpusDatasetPytorch:
                             tokenized = self._tokenizer.encode(f"{rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + "\n" + self._tokenizer.eos_token, 
                                                                return_tensors="np", truncation=True)[0]
                             context_tokenized = self._tokenizer.encode("\n".join(context) + self._tokenizer.eos_token, 
-                                                                   return_tensors="np", truncation=True)[0][:self.context_size]
+                                                                   return_tensors="np", truncation=False)[0][:self.context_size]
                             data.append({
                                 "input_ids" : tokenized,
                                 "context_ids" : context_tokenized,
