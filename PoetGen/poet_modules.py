@@ -1,7 +1,7 @@
 import torch 
 
 from transformers import GPT2Config, GPT2Model
-from poet_constants import poet_year
+from poet_utils import POET_YEARS_BUCKETS
 
 class ContextModule(torch.nn.Module):
     
@@ -37,9 +37,9 @@ class PoetTypeModule(torch.nn.Module):
         self.config = GPT2Config(n_positions=input_size, n_head=(n_embd//(768//12)),n_embd=n_embd, 
                                  n_layer=block_count, output_hidden_states=True,  output_attentions =True)
         self.type_model = GPT2Model(self.config)
-        self.type_predict = torch.nn.Linear(n_embd, len(poet_year))
+        self.type_predict = torch.nn.Linear(n_embd, len(POET_YEARS_BUCKETS))
         self.softmax = torch.nn.Softmax()
-        self.linear_scale = torch.nn.Linear(len(poet_year), output_size)
+        self.linear_scale = torch.nn.Linear(len(POET_YEARS_BUCKETS), output_size)
         self.input_size = input_size
         self.n_embd = n_embd
         self.output_size = output_size
@@ -51,7 +51,7 @@ class PoetTypeModule(torch.nn.Module):
     
     # Context And type labels are to be injected to bypass GPT2Blocks 
     def forward(self, hidden_states,layer_past=None,*args, **kwargs):
-        type_prob = torch.zeros((hidden_states.shape[0], len(poet_year))).to("cuda" if torch.cuda.is_available() else "cpu")
+        type_prob = torch.zeros((hidden_states.shape[0], len(POET_YEARS_BUCKETS))).to("cuda" if torch.cuda.is_available() else "cpu")
         model_output = None
         if self.context_ids != None:
             model_output = self.type_model.forward(input_ids=self.context_ids, attention_mask=self.context_attention_mask)

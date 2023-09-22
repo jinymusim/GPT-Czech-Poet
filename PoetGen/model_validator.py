@@ -5,8 +5,8 @@ import re
 import numpy as np
 
 from tqdm import tqdm
-from transformers import   AutoTokenizer
-from poet_constants import rhyme_schemes
+from transformers import  AutoTokenizer
+from poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation
 from poet_model_interface import PoetModelInterface
 
 class ModelValidator:
@@ -24,7 +24,7 @@ class ModelValidator:
             
     def decode_helper(self, type:str):
         if type  == "basic":
-            tokenized_poet_start = self.tokenizer.encode(random.choice(rhyme_schemes[:-1]) + "\n", return_tensors='pt')
+            tokenized_poet_start = self.tokenizer.encode(random.choice(RHYME_SCHEMES[:-1]), return_tensors='pt')
         
             out = self.model.model.generate(tokenized_poet_start, 
                                         max_length=192,
@@ -34,8 +34,8 @@ class ModelValidator:
                                         pad_token_id=self.tokenizer.eos_token_id)
             return self.tokenizer.decode(out[0], skip_special_tokens=True)
         if type == "forced":
-            rhyme = random.choice(rhyme_schemes[:-1])
-            return self.model.generate_forced(rhyme + "\n", self.tokenizer, verse_len= len(rhyme))
+            rhyme = random.choice(RHYME_SCHEMES[:-1])
+            return self.model.generate_forced(rhyme, self.tokenizer, verse_len= len(rhyme))
             
             
             
@@ -52,9 +52,11 @@ class ModelValidator:
                 decoded_cont:str = self.decode_helper(type)
                 
                 for line in decoded_cont.splitlines():
-                    if line.strip() == "": 
+                    if not line.strip(): 
                         break
-                    if PoetModelInterface.rhyme_like(line.split()[0]):
+                    if not (TextManipulation._remove_most_nonchar(line)).strip():
+                        break
+                    if TextAnalysis._is_param_line(line):
                         continue
                     # Ended Verse
 
@@ -104,7 +106,7 @@ parser.add_argument("--default_tokenizer_model", default="lchaloupsky/czech-gpt2
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=5, type=int, help="Number of runs on datasets")
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-base_newline_e4_e16")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-base_newline_e8_e32")),  type=str, help="Path to Model")
 
 def main(args):
     val = ModelValidator(args.model_path_full, args.default_tokenizer_model, args.num_runs, args.num_samples)

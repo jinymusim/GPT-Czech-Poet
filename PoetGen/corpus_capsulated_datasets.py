@@ -4,9 +4,8 @@ import numpy as np
 import torch
 import re
 import pickle
-import random
 
-from poet_constants import rhyme_schemes, verse_ending, poet_year, meter_type
+from poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES
 from torch.utils.data import Dataset
 
 class CorpusDatasetPytorch:
@@ -31,9 +30,9 @@ class CorpusDatasetPytorch:
             vowels = len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý", raw_text.lower()))
             sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_text)
             ending = sub.strip()[-2:].lower()
-            verse_end_vector = np.zeros(len(verse_ending))
-            if ending in verse_ending:
-                verse_end_vector[verse_ending.index(ending)] = 1
+            verse_end_vector = np.zeros(len(VERSE_ENDS))
+            if ending in VERSE_ENDS:
+                verse_end_vector[VERSE_ENDS.index(ending)] = 1
             else:
                 verse_end_vector[-1] = 1
             return vowels, verse_end_vector
@@ -103,9 +102,9 @@ class CorpusDatasetPytorch:
             rhyme_str = ""
             for num in curr_rhyme_list:
                rhyme_str += CorpusDatasetPytorch.BodyDataset.rhyme_sec(reference, num)
-            rhyme_vector = np.zeros(len(rhyme_schemes))
-            if rhyme_str in rhyme_schemes:
-                rhyme_vector[rhyme_schemes.index(rhyme_str)] = 1
+            rhyme_vector = np.zeros(len(RHYME_SCHEMES))
+            if rhyme_str in RHYME_SCHEMES:
+                rhyme_vector[RHYME_SCHEMES.index(rhyme_str)] = 1
             else:
                 rhyme_vector[-1] = 1
             return rhyme_str, rhyme_vector
@@ -113,19 +112,19 @@ class CorpusDatasetPytorch:
         @staticmethod
         def _publish_year_and_vector(year_string):
             publish_year = None if not year_string.isdigit() else int(year_string)
-            publish_vector = np.zeros(len(poet_year))
+            publish_vector = np.zeros(len(POET_YEARS_BUCKETS))
             if publish_year == None:
                 publish_vector[-1] = 1
             else:
-                publish_vector[np.argmin( abs(np.asarray(poet_year[:-1]) - publish_year))] = 1
+                publish_vector[np.argmin( abs(np.asarray(POET_YEARS_BUCKETS[:-1]) - publish_year))] = 1
             return publish_year, publish_vector
         
         @staticmethod
         def _metre_and_vector(meter_string):
             meter_str = meter_string
-            meter_vector = np.zeros(len(meter_type))
-            if meter_str in meter_type:          
-                meter_vector[meter_type.index(meter_str)] = 1
+            meter_vector = np.zeros(len(METER_TYPES))
+            if meter_str in METER_TYPES:          
+                meter_vector[METER_TYPES.index(meter_str)] = 1
             else:
                 meter_vector[-1] = 1
             return meter_str, meter_vector

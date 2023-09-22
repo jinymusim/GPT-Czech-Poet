@@ -1,7 +1,7 @@
-rhyme_schemes = ["ABAB", "ABBA", "XAXA", "ABCB", "AABB", "AABA", "AAAA", "AABBCC", "AABCCB", "ABABCC", "AABCCB", "AAABAB", 
+RHYME_SCHEMES = ["ABAB", "ABBA", "XAXA", "ABCB", "AABB", "AABA", "AAAA", "AABBCC", "AABCCB", "ABABCC", "AABCCB", "AAABAB", 
                  "ABABCD", "ABABAB", "ABABBC", "ABABCB","ABBAAB","AABABB","ABCBBB", None]
 # First 200 Most common endings
-verse_ending = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'ce', 'ky', 'ku', 'ně', 'jí', 'ly', 'il', 'en', 'né', 
+VERSE_ENDS = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'ce', 'ky', 'ku', 'ně', 'jí', 'ly', 'il', 'en', 'né', 
                 'lo', 'ne', 'vá', 'ny', 'se', 'na', 'ím', 'st', 'le', 'ný', 'ci', 'mi', 'ka', 'ná', 'lí', 'cí', 'ží', 'čí', 'ám', 
                 'hu', 'ho', 'ří', 'dí', 'nu', 'dy', 'ší', 'ví', 'du', 'ta', 'as', 'tě', 'ře', 'ru', 'vé', 'ým', 'at', 'ek', 'el', 
                 'te', 'tu', 'ká', 'ji', 'ět', 'ni', 'še', 'vy', 'dá', 'it', 'tá', 'ty', 'lý', 'lá', 'mu', 'va', 'ém', 'ěl', 'no', 
@@ -24,5 +24,73 @@ verse_ending = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'c
                 'iz', 'ib', 'ki', 'éd', 'év', 'rd', 'yb', 'oz', 'oř', 'ét', 'ož', 'ga', 'yň', 'rp', 'nd', 'of', 'rť', 'iď', 'ýv', 
                 'yz', None]
 
-poet_year = [1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, None]
-meter_type = ["J","T","D","A","X","Y","N", None]
+POET_YEARS_BUCKETS = [1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, None]
+METER_TYPES = ["J","T","D","A","X","Y","N", None]
+
+import re
+
+class TextManipulation:
+        
+    @staticmethod
+    def _remove_most_nonchar(raw_text):
+        text = re.sub(r'[–\„\“\’\;\:()\]\[\_\*\‘\”\'\-\—\"]+', "", raw_text)
+        return text
+
+class TextAnalysis:
+    
+    POET_PARAM_LIST = ["RHYME", "YEAR", "METER", "LENGTH", "END"]
+    
+    @staticmethod
+    def _is_meter(meter:str):
+        return meter in METER_TYPES[:-1]
+    
+    @staticmethod
+    def _is_year(year:str):
+        return year.isdigit() and int(year) > 1_000 and int(year) < 10_000
+    
+    @staticmethod
+    def _rhyme_like(rhyme:str):
+        return rhyme.isupper() and len(rhyme) >= 3
+    
+    @staticmethod
+    def _first_line_analysis(text:str):
+        line_striped = text.strip()
+        if not line_striped:
+            return {}
+        poet_params = {}
+        for param in line_striped.split():
+            if TextAnalysis._is_meter(param):
+                poet_params["METER"] = param
+            elif TextAnalysis._is_year(param):
+                poet_params["YEAR"] = param
+            elif TextAnalysis._rhyme_like(param):
+                poet_params["RHYME"] = param
+        return poet_params
+    
+    @staticmethod
+    def _is_line_length(length:str):
+        return length.isdigit() and int(length) > 1 and int(length) < 100
+    
+    @staticmethod
+    def _is_line_end(end:str):
+        return end.isalpha()  and len(end) <= 3 
+    
+    @staticmethod
+    def _continuos_line_analysis(text:str):
+        line_striped = text.strip()
+        if not line_striped:
+            return {}
+        line_params = {}
+        if TextAnalysis._is_line_length(line_striped.split()[0]):
+            line_params["LENGTH"] = line_striped.split()[0]
+        if len(line_striped.split()) > 1 and TextAnalysis._is_line_end(line_striped.split()[1]):
+            line_params["END"] = line_striped.split()[1]
+        return line_params
+    
+    @staticmethod
+    def _is_param_line(text:str):
+        line_striped = text.strip()
+        if not line_striped:
+            return False
+        return TextAnalysis._rhyme_like(line_striped.split()[0])
+        

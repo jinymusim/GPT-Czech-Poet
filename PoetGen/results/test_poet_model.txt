@@ -291,3 +291,41 @@ I #
 10 nou # když bouře s vichrem v jedno splynou, – –“ – „Kdož jste, ó kdo jste?
 10 nou # Já jsem ten, jenž s myslí rozbořenou – Stín – toť můj stín. – “ – A hled – tam – hle! –
 9 ají # tam v dálce – a hle, již se kmitají. –...–.. – Bože, bože!“-. – Blaze, že jste – blaze!... –  –..‘ –, –‘“ „Nikdy!‘‘–‘- – ‚–,Nikdy!!‘,– “‘.,‘...‘ -,.‘( – ‘‘ „Buďtež, pane,‘ “, -
+--- Model gpt-cz-poetry-base ---
+### Basic Decoding! ###
+ AABB
+11 ání # A v tom se zjeví, jak se v tichém plání
+12  ní # a v té noci, kdy se hvězdy rozplynou v ní,
+13 ají # jak hvězdy, jež se k nebi pnou a ptají, –
+14 aji # tak v tu noc, když se měsíc s nebes snáší na kraji.
+
+ Umlknul jsem se, a já se rozsmutnil. – A já umlknul....
+ – „„ „Aj, pane!“ – –“ „Ne, já mlčel jsem. Já mlčky řekl. „Ano, mlčím.“ –,A já.‘ – Já.,„ – “
+ „Nám.“ „Mlčím. Jsem. Ne, jsem.“,. Ale já! –.“ A on se usmál. Ano, „a. A co? – já.“
+)
+
+### Forced Decoding! ###
+ ABBA
+11 ání # V tom, co se v dáli na obzoru sklání,
+10 ívá # se slunce v mlhách, jež se zvolna stmívá, –
+10 ívá # jak se to v duši mé tak sladce zpívá, 
+11 ání # že v srdci mém se náhle v sladkém plání
+--- Model gpt-cz-poetry-base ---
+### Basic Decoding! ###
+ AABB
+8 ání # A když se večer k zemi sklání,
+9  ni # tu slyším, jak volá na ni:
+7  má # „Ó, matko, matičko má! – ó, má
+6 ímá # máti, co mne jímá!
+
+ # Ó, pojď sem, můj milý, do komůrky!...“
+ – „Ne, ne, já, ty ne! Já jsem hořel, –“ – – dí kmotr.
+ () – A tak jsem se usmál. –
+ # – Já, hoch se smál – a já jsem smál se. A já smál. (). – Co to? – tak to bylo? A co já? Já smál? To je?
+ „Ano, to je. Já to?“ – to jsem? „A já! To jsem?“ „Já.“ – (– „Nuž jsem
+### Forced Decoding! ###
+ ABBA
+10 ání # A v tom se ozval pláč a naříkání,
+11 ané # a v té chvíli, kdy vše se chvělo plané
+11 ané # jak v polibků polibky roztoužené, –
+10 ání # já viděl, jak se k zemi sklání

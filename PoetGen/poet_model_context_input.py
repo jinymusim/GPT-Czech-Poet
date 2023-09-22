@@ -1,11 +1,9 @@
 import torch
-import re
-import random
 
 from transformers import  AutoModelForCausalLM, AutoTokenizer
 from poet_model_interface import PoetModelInterface
 from poet_modules import ContextModule
-from poet_constants import rhyme_schemes
+from poet_utils import RHYME_SCHEMES, TextAnalysis
 
 class PoetModelContextInput(PoetModelInterface):
     def __init__(self, pretrainedModel, context_input_size:int = 2048, block_count:int=3, *args, **kwargs) -> None:
@@ -29,7 +27,7 @@ class PoetModelContextInput(PoetModelInterface):
         # Because of Inserted Layer, Head Masks don't match => Add 1 more
         self.model.base_model.config.n_layer += 1 
         
-        self.rhyme_regressor = torch.nn.Linear(self.model_size, len(rhyme_schemes)) # Rhyme Type
+        self.rhyme_regressor = torch.nn.Linear(self.model_size, len(RHYME_SCHEMES)) # Rhyme Type
         
         
     def forward(self, input_ids=None, labels=None, attention_mask=None, rhyme=None, context_ids=None, context_attention_mask=None,*args, **kwargs):
@@ -67,24 +65,7 @@ class PoetModelContextInput(PoetModelInterface):
 
         
     def analyze_prompt(self, prompt:str):
-        features_dict = {
-            "rhyme_scheme" : "",
-            "included_scheme" : False,
-            "type_1_len" : 0,
-            "included_1_len" : False,
-            "type_1_end" : "",
-            "included_1_end" : False,
-            "type_2_len" : 0,
-            "included_2_len" : False,
-            "type_2_end" : "",
-            "included_2_end" : False,
-            "type_3_len" : 0,
-            "included_3_len" : False,
-            "type_3_end" : "",
-            "included_3_end" : False,
-                      
-        }
-        
+        features_dict = {}  
         lines = prompt.splitlines()
         lines = list(map(str.strip, lines))
         i = 0
@@ -93,63 +74,61 @@ class PoetModelContextInput(PoetModelInterface):
                 lines.pop(i)
                 i-=1
             i+=1
-        if len(lines) == 0:
-            raise Exception("Empty Prompt!")
-        elif len(lines) == 1:
-            if (lines[0].upper() in rhyme_schemes) or PoetModelInterface.rhyme_like(lines[0]):
-                features_dict["rhyme_scheme"] = lines[0].upper()
-                features_dict["included_scheme"] = True
-            elif lines[0].split()[0].isdigit():
-                features_dict["type_1_len"] = int(lines[0].split()[0])
-                features_dict["included_1_len"] = True
-        elif len(lines) > 1:
-            if (lines[0].upper() in rhyme_schemes) or PoetModelInterface.rhyme_like(lines[0]):
-                features_dict["rhyme_scheme"] = lines[0].upper()
-                features_dict["included_scheme"] = True
-            elif lines[0].split()[0].isdigit():
-                features_dict["type_1_len"] = int(lines[0].split()[0])
-                features_dict["included_1_len"] = True
-            for i in range(1, min(lines, 3)):
-                if lines[i].split()[0].isdigit():
-                    features_dict[f"type_{i}_len"] = int(lines[i].split()[0])
-                    features_dict[f"included_{i}_len"] = True
-                else:
-                    features_dict[f"type_{i}_len"] = len(re.findall("a|e|i|o|u|y", lines[i]))
-        
-        if features_dict["rhyme_scheme"] == "":
-            features_dict["rhyme_scheme"] = random.choice(rhyme_schemes)
-        if features_dict["type_1_len"] == 0:
-            features_dict["type_1_len"] = random.randint(6,14)
-        if features_dict["type_2_len"] == 0:
-            features_dict["type_2_len"] = random.randint(6,14)
-        if features_dict["type_3_len"] == 0:
-            features_dict["type_3_len"] = random.randint(6,14)
+        cont_line = 0
+        for line in lines:
+            if TextAnalysis._is_param_line(line):
+                for key, value in TextAnalysis._first_line_analysis(line).items():
+                    features_dict[key] = value
+            else:
+                for key, value in TextAnalysis._continuos_line_analysis(line).items():
+                    features_dict[f"{key}_{cont_line}"]
+                    cont_line += 1
         return features_dict
                    
     
     def generate_forced(self, prompt:str, tokenizer: AutoTokenizer, verse_len:int = 4):
         
-        features_dict = self.analyze_prompt(prompt)
+        features_dict_init = self.analyze_prompt(prompt)
         prompt_list = prompt.splitlines()
-        if not features_dict["included_scheme"]:
-            prompt_list.insert(0, features_dict["rhyme_scheme"])
-        for i in range(1, len(prompt_list)):
-            j = 1
-            if features_dict["rhyme_scheme"][(i - 1) % len(features_dict["rhyme_scheme"])] == "B":
-                j = 2
-            elif features_dict["rhyme_scheme"][(i - 1) % len(features_dict["rhyme_scheme"])] == "C":
-                j = 3
-            if not features_dict[f'included_{j}_len']:  
-                prompt_list[i] = str(features_dict[f"type_{j}_len"]) + " " + prompt_list[i]
+        # GENERATE FOR POSSIBLE MISSING POET PARAM
+        token_gen_rhyme = tokenizer.encode("A", return_tensors='pt')
+        rhyme_line = self.model.generate(token_gen_rhyme, 
+                                max_new_tokens= 100,
+                                num_beams=2,
+                                no_repeat_ngram_size=2,
+                                early_stopping=True,
+                                pad_token_id=tokenizer.eos_token_id)
+        rhyme_dec = tokenizer.decode(rhyme_line[0], skip_special_tokens=True).splitlines()[0]
+        features_dict= self.analyze_prompt(rhyme_dec)
+        for key, value in features_dict_init.items():
+            features_dict[key] = value
+        # CONSTRUCT BEST INPUT LINE
+        poet_param_str = ""
+        if "RHYME" in features_dict.keys():
+            poet_param_str += features_dict["RHYME"]
+        if "YEAR" in features_dict.keys():
+            poet_param_str += f" ## {features_dict['YEAR']}"
+        if "METER" in features_dict.keys():
+            poet_param_str += f" ## {features_dict['METER']}"
+        # REPLACE OR INSERT BASED ON PRESENCE
+        if "RHYME" not in features_dict_init.keys():
+            prompt_list.insert(0, poet_param_str)
+        else:
+            prompt_list[0] = poet_param_str
+        
+        
         # Generating 4 verse rhymes
         while len(prompt_list) <= verse_len:
-            j = 1
-            if features_dict["rhyme_scheme"][(len(prompt_list) - 1) % len(features_dict["rhyme_scheme"])] == "B":
+            j = 0
+            if features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "B":
+                j = 1
+            elif features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "C":
                 j = 2
-            elif features_dict["rhyme_scheme"][(len(prompt_list) - 1) % len(features_dict["rhyme_scheme"])] == "C":
+            elif features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "D":
                 j = 3
-            line_start = str(features_dict[f"type_{j}_len"]) + (f" {features_dict[f'type_{j}_end'] } #" if features_dict[f'type_{j}_end'] != "" else "")
-            tokenized_poet_start = tokenizer.encode("\n".join(prompt_list) + "\n" + line_start, return_tensors='pt')
+            line_start =  (features_dict[f"LENGTH_{j}"] if f"LENGTH_{j}" in features_dict.keys() else "" )  + \
+                (f" {features_dict[f'END_{j}'] } #" if  f"END_{j}" in features_dict.keys() else "")
+            tokenized_poet_start = tokenizer.encode("\n".join(prompt_list) + "\n" + line_start,  return_tensors='pt')
             out_line =  self.model.generate(tokenized_poet_start, 
                                 max_new_tokens= 100,
                                 num_beams=2,
@@ -157,8 +136,9 @@ class PoetModelContextInput(PoetModelInterface):
                                 early_stopping=True,
                                 pad_token_id=tokenizer.eos_token_id)
             decoded_line: str = tokenizer.decode(out_line[0], skip_special_tokens=True).splitlines()[len(prompt_list)]
-            if features_dict[f'type_{j}_end'] == ""  and len(decoded_line.split()) > 1:
-                features_dict[f'type_{j}_end'] = decoded_line.split()[1]
+            if  f"LENGTH_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1:
+                features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
+                features_dict[f'END_{j}'] = decoded_line.split()[1]
             prompt_list.append(decoded_line)
         
         return "\n".join(prompt_list)
