@@ -32,7 +32,7 @@ class PoetModelSecondaryTasks(PoetModelInterface):
         self.rhyme_regressor = torch.nn.Linear(self.model_size, len(RHYME_SCHEMES)) # Rhyme Type
         
         
-    def forward(self, input_ids=None, labels=None, attention_mask=None, vowel_count=None, rhyme=None, *args, **kwargs):
+    def forward(self, input_ids=None, labels=None, attention_mask=None, nums=None, rhyme=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, labels=labels, attention_mask=attention_mask)
         last_hidden = outputs['hidden_states'][-1]
         vowel_regression = self.vowels_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
@@ -42,9 +42,9 @@ class PoetModelSecondaryTasks(PoetModelInterface):
         full_loss = outputs.loss
         
         vowel_loss = None
-        if vowel_count is not None:
+        if nums is not None:
             loss_fct = torch.nn.MSELoss()
-            vowel_loss = loss_fct(vowel_regression.view(-1, 1), vowel_count.view(-1, 1))
+            vowel_loss = loss_fct(vowel_regression.view(-1, 1), nums.view(-1, 1))
             full_loss = full_loss + vowel_loss
             
         rhyme_loss = None
