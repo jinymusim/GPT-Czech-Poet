@@ -329,3 +329,78 @@ I #
 11 ané # a v té chvíli, kdy vše se chvělo plané
 11 ané # jak v polibků polibky roztoužené, –
 10 ání # já viděl, jak se k zemi sklání
+--- Model gpt-cz-poetry-all_tasks_e4_e16 ---
+### Basic Decoding! ###
+ AABBCC ## 1887 # J
+13 ila # a Pavla, jak by se jí byla ulevila,
+14 ilá # se zarděla a řekla,Paničko, má milá! 
+12 íte # Však vy jste hodná, že se nestydíte!
+11  té # A Pavla trhla hlavou, jsemť já v moci té!  
+10 ova #,Ne, ne, já nechci! řekla Pavla.
+9  má # I řekl,Však jsem já to, sestřičko má, !
+  A zasmála se má. ..,A což má? ,
+8 ová #  Toť pěkné! To je, Pavlinová?    ?  Možná!?
+!, To se stává! Ale ková.,Co snová!?
+  Ne, to se nestane!!  ?   A kovář děl.
+### Forced Decoding! ###
+ ABBA ## 1892 ## J
+11 aní # A v tom, co bylo, bylo všecko maní,
+10 ech # co v duši mé se chvělo jako vzdech
+10 ech # a v srdci mém to bušilo jak v strunách
+11 aní # v té chvíli, kdy jsem cítil, že to raní.
+--- Model gpt-cz-poetry-all_tasks_e4_e16 ---
+### Basic Decoding! ###
+ AABBCC ## 1899 # J
+11 ání # a v jeho svitu, v tichém usmívání,
+12 áni # jež v duši jeho splývá jako po skráni
+10 ění # jak paprslek, jenž zbled a zhasne v chvění
+13 eníAFGHH # v té chvíli poslední, kdy v rozloučení
+14 nou # se rozloučí s ním a s bytostí svou jinou, 
+16 nou# v tu chvíli jedinou, jež byla jeho ženou!...
+  Začal mluvit.  V tom se vzpjal
+ řka # hlas jeho chvěl se, jak by třtina,   ,Ne!  řekl.    
+   A již zmizel v dveřích.
+.      Ticho bylo, ticho. Jenom !         Tichým  !   ..        .  ,    
+     A pak
+### Forced Decoding! ###
+ AABBCC ## 1883 ## J
+A
+11 ení # A v tom juž vstala.  Jaké překvapení!
+12 elý # V tom rouchu, jenž byl utkán z běla celý,
+12 elý # v ten dlouhý šat se halil její celý.
+--- Model gpt-cz-poetry-all_tasks_e4_e16 ---
+### Basic Decoding! ###
+ AABBCC ## 1892 # J
+11 ání # A v tom, co bylo, bylo z nenadání,
+10  ni # jak by se paprsk slunce vbodl v srdce na ni.
+12 ila # To byla ona, jež ji v náruč pojala, 
+13 ilá # to byla ta, která byla štěstím spanilá.  
+9  ní # Však srdce její, srdce, které po ní
+14 aní # se chvělo, toužilo, jak bylo její paní,   ..
+  Ne, ne, to není její. ! ? ,...   A.?  ?.  .
+  Toť? To je ona?  Ano, ano??!    !? A? Ne! !!?!!   ,
+   a  to je její?      a?
+
+### Forced Decoding! ###
+ AABBCC ## 1883 ## J
+11 ání # A v tom, co znělo v němém zadumání,
+11 ání # se ozval hlas, jak z dálných lesů vání
+10 ech # by vítr zavál, a v těch zvučných zvucích
+10 ech # zněl nářek, kletby, vzdechy, pláč a vzdech.
+--- Model gpt-cz-poetry-all_tasks_e4_e16 ---
+### Basic Decoding! ###
+ AABB ## 1899 # T
+8 ání # V tom se ozvalo klekání,
+9 áni # v kouři, v dýmu, na té stráni
+7 ech # a v tom tichu, ve stromech
+6 est # srdcelomný výkřik jest.
+ Tísní, bozi, zemští tvísní!   ...?. ,Ne!   ?  Ne! To není smrt!.! !.,. Ne,  to je smrt!!   .  , !!  A,??  ?!?,,. 
+10 ený #,Bůh to není, pane, poražený!
+  Ale, Bože, co to?  Mlčení!?
+     Ale  Co to znamená?   A  ! ?,Božský!..?           
+### Forced Decoding! ###
+ AABB ## 1899 ## T
+8 ání # A když přijde z nenadání,
+8 ání # že se v práci, v radování
+7 edá # na chvilku jen vyhledá
+7 edá # a že práce vyhledá.

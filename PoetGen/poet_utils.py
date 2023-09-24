@@ -50,7 +50,7 @@ class TextAnalysis:
     
     @staticmethod
     def _rhyme_like(rhyme:str):
-        return rhyme.isupper() and len(rhyme) >= 3
+        return rhyme.isupper() and len(rhyme) >= 3 and len(rhyme) <= 8
     
     @staticmethod
     def _first_line_analysis(text:str):

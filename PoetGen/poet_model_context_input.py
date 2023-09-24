@@ -111,10 +111,17 @@ class PoetModelContextInput(PoetModelInterface):
         if "METER" in features_dict.keys():
             poet_param_str += f" ## {features_dict['METER']}"
         # REPLACE OR INSERT BASED ON PRESENCE
-        if "RHYME" not in features_dict_init.keys():
-            prompt_list.insert(0, poet_param_str)
+        if len(features_dict_init.keys()) == 0: # Wierd Input
+            prompt_list = [poet_param_str]
+        elif "RHYME" not in features_dict_init.keys():
+            if "METER" in features_dict_init.keys() or "YEAR" in features_dict_init.keys(): # Replace the Uncomplete first line 
+                prompt_list[0] = poet_param_str
+            else:
+                prompt_list.insert(0, poet_param_str)
         else:
             prompt_list[0] = poet_param_str
+            
+        verse_len = len(features_dict["RHYME"])
         
         
         # Generating 4 verse rhymes
