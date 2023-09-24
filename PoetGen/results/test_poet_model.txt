@@ -404,3 +404,23 @@ A
 8 ání # že se v práci, v radování
 7 edá # na chvilku jen vyhledá
 7 edá # a že práce vyhledá.
+--- Model gpt-cz-poetry-all_tasks_e8_e32 ---
+### Basic Decoding! ###
+ AABBCC ## 1883 # J
+11 ání # a v, v níž se slunce sklání,
+12  # v tom tichu, jež se v hloubirání,11 ění # jak v moři světla, které v stálém chvění
+10 ení se valí v náhlém, velkém vlno.
+13 nou # A v ti tom, kdy hvězdy blednou, hasnou
+14 nou a hvězdy hasnout budou nad Tvou rovinou, 
+  ní # ó, slyš, ó sly!  ó slyšte ji!......!
+    Ne # Ó, nemluv!   Ne,   nemluvte!
+  ne # Ach, odpusť, nikdy! Nikdy! Ne Nikdy, ach, ne!    
+
+!??
+?   Nikdy?  Ach nikdy?
+### Forced Decoding! ###
+ AABB ## 1883 ## J
+11 ání # A v, v němž se chvělo jeho skrání,
+11 ání # v tom, se k zemi uklání, 
+10 ech # a v jeho srdci, vane z něho dech
+10 ech # jak z jara vonný, opojivý dech.
