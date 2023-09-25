@@ -5,7 +5,7 @@ import torch
 import re
 import pickle
 
-from poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES
+from poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, SyllableMaker
 from torch.utils.data import Dataset
 
 class CorpusDatasetPytorch:
@@ -27,7 +27,7 @@ class CorpusDatasetPytorch:
                  
         @staticmethod
         def _vowels_and_endings_vector(raw_text):
-            vowels = len(re.findall("a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý", raw_text.lower()))
+            vowels = len(SyllableMaker.syllabify(raw_text)) #INFO: Now counts the number of syllables
             sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_text)
             ending = sub.strip()[-2:].lower()
             verse_end_vector = np.zeros(len(VERSE_ENDS))

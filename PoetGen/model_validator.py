@@ -6,7 +6,7 @@ import numpy as np
 
 from tqdm import tqdm
 from transformers import  AutoTokenizer
-from poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation
+from poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, SyllableMaker
 from poet_model_interface import PoetModelInterface
 
 class ModelValidator:
@@ -80,7 +80,7 @@ class ModelValidator:
                     if observed_end == expected_end:
                         end_pos += 1
                     
-                    observed_sylab = len(re.findall('a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý', raw_line))
+                    observed_sylab = len(SyllableMaker.syllabify(raw_line)) # INFO: Now properly counts syllables
                     sylab_all += 1
                     if observed_sylab == expected_sylab:
                         sylab_pos += 1
