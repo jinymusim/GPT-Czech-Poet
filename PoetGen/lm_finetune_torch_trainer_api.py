@@ -22,10 +22,10 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=64, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=256, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--batch_size_LM", default=16, type=int, help="Batch size.")
+parser.add_argument("--epochs_LM", default=32, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_poet", default=16, type=int, help="Batch size.")
+parser.add_argument("--epochs_poet", default=32, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
 parser.add_argument("--use_multiple_gpu_if_available", default=True, type=bool, help="If to use multiple gpus")
@@ -56,13 +56,13 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # model.base_model.h.append(torch.nn.Linear(1,768))
 # model.base_model.h.insert(7,torch.nn.Linear(768,768))
 
-parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default="gpt2-xl", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 parser.add_argument("--model_type",  default="all", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-cz-poetry-all_tasks_e64_e256")),  type=str, help="Path to Model")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-xl-poetry-all_tasks_e32_e32")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1024, type=int, help="Max length of context for tokenizer")
-parser.add_argument("--verse_len", default=[3,4,5,6], type=list, help="Lengths of verses")
+parser.add_argument("--verse_len", default=[3,4,5,6,7,8], type=list, help="Lengths of verses")
 
 
 parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is prompted into training data")
@@ -131,7 +131,7 @@ def main(args: argparse.Namespace):
                                   learning_rate = args.learning_rate,
                                   fp16 = True if torch.cuda.is_available() else False,
                                   ddp_backend = "nccl",
-                                  lr_scheduler_type="cosine",
+                                  lr_scheduler_type="constant",
                                   logging_dir = './logs',
                                   output_dir = './results',
                                   per_device_train_batch_size = args.batch_size_LM)
