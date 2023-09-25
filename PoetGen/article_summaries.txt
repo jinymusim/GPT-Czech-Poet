@@ -2,8 +2,8 @@ Revisiting Neural Language Modelling with Syllable
 link: https://arxiv.org/pdf/2010.12881.pdf
     - ! RNN (LSTM) based work
 
-    - Syllables allow open vocab, like word-subword-char setup
-    - Syllables => Speech units, subwords => language units
+    - Syllables allow open vocab, like word-sub-word-char setup
+    - Syllables => Speech units, sub-words => language units
     - Syllables extraction: " “A syl-la-ble con-tains a sin-gle vow-el u-nit” " or Dictionary-based
     - Previous failed to beat char based at word-level (closed-vocab == can't add words)
     - New tests: 1. open-vocab, 2. 20 languages from 6, 3. rule-based and hyphenation tools syllabification
@@ -19,7 +19,7 @@ link: https://arxiv.org/pdf/2212.10474.pdf
     - ! Token-free (tokenized by utf-8 char only)
     - ! decoder-only (GPT style), end-to-end
     - ! only 4-verse (AABB, ABAB, ABBA)
-    - ! Large Tarining Corpus is Important
+    - ! Large Training Corpus is Important
 
     - Emphasis on:  - Rhyme schema (ABBA, AABB, ...)
                     - Alliteration = words in verse with same starting character => 3 levels (low, medium, high)
@@ -28,18 +28,35 @@ link: https://arxiv.org/pdf/2212.10474.pdf
                     - Pipeline with: content planing, rhyme pairs generation, sketch-to-poet generation
                     - Leeds to error accumulation
     - Because of poetry reasons (new words creation), tokenizers may struggle to provide good tokens -> token-free (utf-8) allows character expression
-    -> Obseration: Syllable + Character tokenizer may be good for this
+    -> Observation: Syllable + Character tokenizer may be good for this
     - Evaluation:   - Rhyme Score = Recall of verses that should rhyme and recall of verses that shouldn't, average of these 2
                     - Alliteration Score = Accuracy of correct alliteration
                     - Meter Score = Accuracy of correct meter
                     - Coherence = Trained BERT for next sentence prediction, alignment Accuracy
     - Results:  - Rhyme:    - ByGPT5 and ByT5 (those with utf-8 tokenizer) better
                 - Meter:    - Smaller GPTs better than their medium cunterparts
-                            - mT5 better than ByGPT5 => Subword tokenizer enough for Meter
+                            - mT5 better than ByGPT5 => Sub-word tokenizer enough for Meter
                 - Alliteration: - Bad for all models
     - Humans are food at rhyming
 
     - Encoder-Decoder In Code triple (rhyme, scheme, meter) = style
     - Each style = special token
     - Decoder-only = Style by string prompt 
-    -> Obseration: We already do this.
+    -> Observation: We already do this.
+
+GPoeT-2: A GPT-2 Based Poem Generator
+link: https://arxiv.org/pdf/2205.08847.pdf
+    - ! GPT2 based (Like us for now)
+    - ! 5-verse with fixed rhyme schema AABBA (Limericks)
+    - ! No seeding or posterior constraints
+
+    - Good Poetry:  - Lexical diversity (Type-Token-Ratio = Unique Tokens/Tokens)
+                    - Subject continuity (BERT-based Embedding Distance, WordNet-based Similarity Metric, Content Classification)
+                    - Syntactically correct
+                    - Following rhyme structure
+                    => Allows ranking
+    - Method:   - 2Stage, Forward and Reverse Modelling (For Reverse => reverse token order on each line)
+                - First line by Forward, other 4 lines by Reverse
+                - Postprocessing only for Grammar
+    
+    - Fine-tuning:  Normal GPT => Minimize Negative Log-Likelihood (NLL)
