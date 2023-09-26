@@ -10,7 +10,7 @@ from datasets import load_dataset
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--default_tokenizer_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
+parser.add_argument("--default_tokenizer_model", default="spital/gpt2-small-czech-cs", type=str, help="Default Model from HF to use")
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--data_path_base", default="cs_restaurants", type=str, help="Base dataset")
 parser.add_argument("--base_part", default="unshuffled_deduplicated_cs", type=str, help="Which part of base dataset to consider")

@@ -19,3 +19,6 @@ Chars per token Base data: 2.2357250859691775 +- 0.03118787784576438
 All Runs Results: gpt2 # Runs: 100 # Samples: 100
 Chars per token Poet data: 1.671656687866959 +- 0.04134872925774038
 Chars per token Base data: 1.9874006437198843 +- 0.038271281560156065
+All Runs Results: spital/gpt2-small-czech-cs # Runs: 100 # Samples: 100
+Chars per token Poet data: 3.2280809705585143 +- 0.16293295954023107
+Chars per token Base data: 3.7581932668570204 +- 0.08151683579482344
