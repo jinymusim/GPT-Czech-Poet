@@ -1,8 +1,8 @@
 import torch
 
 from transformers import  AutoModelForCausalLM, AutoTokenizer
-from poet_model_interface import PoetModelInterface
-from poet_utils import RHYME_SCHEMES,TextAnalysis
+from utils.poet_model_interface import PoetModelInterface
+from utils.poet_utils import RHYME_SCHEMES,TextAnalysis
 
 class PoetModelSecondaryTasks(PoetModelInterface):
     def __init__(self, pretrainedModel, *args, **kwargs) -> None:

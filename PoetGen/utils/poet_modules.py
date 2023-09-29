@@ -1,7 +1,7 @@
 import torch 
 
 from transformers import GPT2Config, GPT2Model
-from poet_utils import POET_YEARS_BUCKETS
+from .poet_utils import POET_YEARS_BUCKETS
 
 class ContextModule(torch.nn.Module):
     

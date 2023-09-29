@@ -1,9 +1,9 @@
 import torch
 
 from transformers import  AutoModelForCausalLM, AutoTokenizer
-from poet_model_interface import PoetModelInterface
-from poet_modules import ContextModule, PoetTypeModule
-from poet_utils import RHYME_SCHEMES, POET_YEARS_BUCKETS, TextAnalysis
+from utils.poet_model_interface import PoetModelInterface
+from utils.poet_modules import ContextModule, PoetTypeModule
+from utils.poet_utils import RHYME_SCHEMES, POET_YEARS_BUCKETS, TextAnalysis
 
 class PoetModelContextYear(PoetModelInterface):
     def __init__(self, pretrainedModel, context_input_size:int = 2048, block_count:int=3, *args, **kwargs) -> None:

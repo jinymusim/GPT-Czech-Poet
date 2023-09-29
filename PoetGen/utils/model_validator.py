@@ -5,16 +5,35 @@ import re
 import numpy as np
 
 from tqdm import tqdm
-from transformers import  AutoTokenizer
-from poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, SyllableMaker
-from poet_model_interface import PoetModelInterface
+from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
+from .poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, SyllableMaker
+from .poet_model_interface import PoetModelInterface
+from .validators import ValidatorInterface
 
 class ModelValidator:
-    def __init__(self, model_name: str, tokenizer_name: str, epochs:int = 20, runs_per_epoch: int = 10, result_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "results")) ) -> None:
+    def __init__(self, model_name: str, tokenizer_name: str,
+                 epochs:int = 20, runs_per_epoch: int = 10, 
+                 result_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "results")),
+                 rhyme_model_name: str = "", meter_model_name:str = "", validator_tokenizer_name: str = "") -> None:
         self.model_name = model_name
         _ ,self.model_rel_name =  os.path.split(model_name)
         self.model: PoetModelInterface= (torch.load(model_name, map_location=torch.device('cpu')))
-        self.tokenizer : AutoTokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        
+        self.rhyme_model, self.meter_model: ValidatorInterface = None, None
+        if rhyme_model_name:
+            self.rhyme_model: ValidatorInterface = (torch.load(rhyme_model_name, map_location=torch.device('cpu')))
+        if meter_model_name:
+            self.meter_model: ValidatorInterface = (torch.load(meter_model_name, map_location=torch.device('cpu')))
+            
+        self.validator_tokenizer: AutoTokenizer = None
+        if validator_tokenizer_name:
+                self.validator_tokenizer = AutoTokenizer.from_pretrained(validator_tokenizer_name)
+                
+        try:    
+            self.tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(tokenizer_name)
+        except:
+            self.tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=tokenizer_name)
+            
         self.epochs = epochs
         self.runs_per_epoch = runs_per_epoch
         self.result_dir = result_dir

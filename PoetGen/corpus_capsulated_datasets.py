@@ -5,10 +5,54 @@ import torch
 import re
 import pickle
 
-from poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, SyllableMaker
+from utils.poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, SyllableMaker
 from torch.utils.data import Dataset
 
 class CorpusDatasetPytorch:
+    
+    class RawDataset:
+        def __init__(self, data_file_paths):
+            self._data_file_paths = data_file_paths
+        
+        def gen_files(self):
+            for filename in self._data_file_paths:
+                 yield open(filename, 'r') 
+                 
+        def get_text(self):
+            for step,file in enumerate(self.gen_files()):
+                if step % 500 == 0:
+                    print(f"Processing file {step}")
+                datum = json.load(file)
+                for data_line in datum:
+                    for part_line in data_line['body']:
+                        for text_line in part_line:
+                            yield text_line['text']
+                            
+        def get_part(self):
+             for step,file in enumerate(self.gen_files()):
+                if step % 500 == 0:
+                    print(f"Processing file {step}")
+                datum = json.load(file)
+                for data_line in datum:
+                    for part_line in data_line['body']:
+                        part = []
+                        for text_line in part_line:
+                            part.append(text_line['text'])
+                        yield "\n".join(part)
+        
+        def get_body(self):
+             for step,file in enumerate(self.gen_files()):
+                if step % 500 == 0:
+                    print(f"Processing file {step}")
+                datum = json.load(file)
+                for data_line in datum:
+                    body = []
+                    for part_line in data_line['body']:
+                        
+                        for text_line in part_line:
+                            body.append(text_line['text'])
+                        body.append("\n")
+                    yield "\n".join(body)
     
     class TextDataset(Dataset):
         
@@ -212,20 +256,31 @@ class CorpusDatasetPytorch:
         
         def __getitem__(self, index):
             return self.data[index]
-    
-    def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=[4,6], context_len=2048):
+        
+    def get_filenames(self):
         data_filenames = os.listdir(self.data_dir)
         data_by_files = []
         for filename in data_filenames:
             file_path = os.path.join(self.data_dir, filename)
             data_by_files.append(file_path)
+        return data_by_files
         
-        self.pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset(data_by_files, self.tokenizer, prompt_ending=prompt_ending, 
+    def load_raw_(self):
+        filenames = self.get_filenames()
+            
+        self.raw_dataset = CorpusDatasetPytorch.RawDataset(filenames)
+    
+    def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=[4,6], context_len=2048):
+        filenames = self.get_filenames()
+        
+        self.pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset(filenames, self.tokenizer, prompt_ending=prompt_ending, 
                                                     prompt_length=prompt_length, prompt_verse=prompt_verse, verse_len=verse_len, context_size=context_len)
          
         
-        self.pytorch_dataset_text = CorpusDatasetPytorch.TextDataset(data_by_files, self.tokenizer, prompt_ending=prompt_ending, 
+        self.pytorch_dataset_text = CorpusDatasetPytorch.TextDataset(filenames, self.tokenizer, prompt_ending=prompt_ending, 
                                                     prompt_length=prompt_length)
+        
+        
         
     @staticmethod
     def collate(batch, mask_rate = 0.0):
@@ -293,4 +348,8 @@ class CorpusDatasetPytorch:
             self.load_json_filenames(prompt_length, prompt_ending, prompt_verse, verse_len=verse_len, context_len=context_len)
             pickle.dump(self.pytorch_dataset_body, open( os.path.join(cache_dir, "body_poet_data.json"), 'wb+'))
             pickle.dump(self.pytorch_dataset_text, open( os.path.join(cache_dir, "text_poet_data.json"), 'wb+'))
+            
+        self.load_raw_()
+        
+        
         

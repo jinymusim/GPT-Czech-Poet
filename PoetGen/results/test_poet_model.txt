@@ -424,3 +424,22 @@ A
 11 ání # v tom, se k zemi uklání, 
 10 ech # a v jeho srdci, vane z něho dech
 10 ech # jak z jara vonný, opojivý dech.
+--- Model gpt-cz-poetry-all_tasks_e8_e32 ---
+### Basic Decoding! ###
+ AABBCC ## 1887 # J
+13 a # a Pavla s Honzíkem, jak byli nedočkaví,
+14 aví # se, že Pavla div se neunaví. 
+12 ova # Však Joza mlčel jen, a ona řekla znova
+ á # Pojď, Jozo, pojď už domů!  A zas Pavla hřímá.
+15 aky # Tu Pavlaskočila, až Pavla pla taky.13 aký # A Pavla?  Jozu? ptal se jenom Bendaý, !
+11ky A Bendovi se slza vhrnula v ty brvy taky,  
+
+     Vyšel jsem tedy za ní, šel jsem na hřbitov a na vr...
+??  .
+ . #,A já jsem za jsem šel, já šel?
+### Forced Decoding! ###
+ AABB ## 1883 ## J
+11 ání # A v, kdy se slunce sklání,
+11 ání # v tomném, sladkém usmívání
+10 ech # a v, v němž se tají každý vzdech,10ch v té chvíli, když se v prsou chvěje vz.
+10 ech # Ó,, ó, jak je sladký její dech!

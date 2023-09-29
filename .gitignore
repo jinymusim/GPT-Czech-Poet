@@ -153,6 +153,8 @@ PYTORCH/
 
 # Data
 *.json
+# Tokenizers
+!PoetGen/utils/tokenizers/*/*.json
 
 # Model
 *.bin
@@ -160,7 +162,7 @@ merges.txt
 
 # Generated images
 *.png
-!PoetGen/*.png
+!PoetGen/misc/*.png  
 *.mp4
 *.wav
 

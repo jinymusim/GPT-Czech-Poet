@@ -1,6 +1,6 @@
 from transformers import  AutoModelForCausalLM, AutoTokenizer
-from poet_model_interface import PoetModelInterface
-from poet_utils import TextAnalysis
+from utils.poet_model_interface import PoetModelInterface
+from utils.poet_utils import TextAnalysis
 
 class PoetModelBase(PoetModelInterface):
     def __init__(self, pretrainedModel, *args, **kwargs) -> None:
