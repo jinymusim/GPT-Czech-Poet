@@ -78,7 +78,7 @@ def main(args):
                            train_dataset= train_data.pytorch_dataset_body,
                            data_collator=collate).train()
     
-    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{type(tokenizer).__name__}")) )
+    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator")) )
     
     
     training_args = TrainingArguments(
@@ -101,7 +101,7 @@ def main(args):
                            train_dataset= train_data.pytorch_dataset_body,
                            data_collator=collate).train()
     
-    torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{type(tokenizer).__name__ }")) )
+    torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator")) )
     
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
