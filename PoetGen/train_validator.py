@@ -12,8 +12,8 @@ from utils.validators import MeterValidator, RhymeValidator
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size", default=128, type=int, help="Batch size.")
-parser.add_argument("--epochs", default=4, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size", default=256, type=int, help="Batch size.")
+parser.add_argument("--epochs", default=128, type=int, help="Number of epochs to run.")
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
