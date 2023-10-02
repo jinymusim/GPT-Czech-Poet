@@ -1,5 +1,5 @@
 import torch
-from transformers import  AutoModelForCausalLM
+from transformers import  GPT2Model, GPT2Config
 from .poet_utils import RHYME_SCHEMES, METER_TYPES
 
 class ValidatorInterface(torch.nn.Module):
@@ -17,18 +17,13 @@ class ValidatorInterface(torch.nn.Module):
     
     
 class RhymeValidator(ValidatorInterface):
-    def __init__(self, pretrainedModel, *args, **kwargs) -> None:
+    def __init__(self,block_count, input_size, n_embd , *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
-                                                        output_hidden_states=True)
+        self.config = GPT2Config(n_positions=input_size, n_head=(n_embd//(768//12)),n_embd=n_embd, 
+                                 n_layer=block_count, output_hidden_states=True)
+        self.model = GPT2Model(self.config)
         
-        model_config = self.model.config
-        self.model_size = 1
-        # Check for Hidden layer size by Attribute Name
-        if hasattr(model_config, "n_embd"):
-            self.model_size = model_config.n_embd
-        elif hasattr(model_config, "hidden_size"):
-            self.model_size = model_config.hidden_size
+        self.model_size = n_embd
         
         self.rhyme_regressor = torch.nn.Linear(self.model_size, len(RHYME_SCHEMES)) # Rhyme Type
         
@@ -72,20 +67,15 @@ class RhymeValidator(ValidatorInterface):
     
     
 class MeterValidator(ValidatorInterface):
-    def __init__(self, pretrainedModel, *args, **kwargs) -> None:
+    def __init__(self,block_count, input_size, n_embd , *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
-                                                        output_hidden_states=True)
+        self.config = GPT2Config(n_positions=input_size, n_head=(n_embd//(768//12)),n_embd=n_embd, 
+                                 n_layer=block_count, output_hidden_states=True)
+        self.model = GPT2Model(self.config)
         
-        model_config = self.model.config
-        self.model_size = 1
-        # Check for Hidden layer size by Attribute Name
-        if hasattr(model_config, "n_embd"):
-            self.model_size = model_config.n_embd
-        elif hasattr(model_config, "hidden_size"):
-            self.model_size = model_config.hidden_size
+        self.model_size = n_embd
         
-        self.meter_regressor = torch.nn.Linear(self.model_size, len(METER_TYPES)) # Rhyme Type
+        self.meter_regressor = torch.nn.Linear(self.model_size, len(METER_TYPES)) # Meter Type
         
     def forward(self, input_ids=None, attention_mask=None, metre=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
@@ -96,10 +86,10 @@ class MeterValidator(ValidatorInterface):
             
         softmaxed = torch.softmax(meter_regression, dim=1)
         loss_fct = torch.nn.CrossEntropyLoss()
-        rhyme_loss = loss_fct(softmaxed, metre)
+        meter_loss = loss_fct(softmaxed, metre)
         
         return {"model_output" : softmaxed,
-                "loss": rhyme_loss}
+                "loss": meter_loss}
         
     def predict(self, input_ids=None, *args):
         outputs = self.model(input_ids=input_ids)
