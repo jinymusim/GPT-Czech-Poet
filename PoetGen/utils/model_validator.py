@@ -74,13 +74,10 @@ class ModelValidator:
             
             
     def validate_decoding(self, type:str):
-        end_accuracy = []
-        sylab_accuracy = []
+        end_accuracy, sylab_accuracy, rhyme_accuracy, metre_accuracy = [], [], [],[]
         for _ in tqdm(range(self.epochs), desc=f"Validation {type}"):
-            end_pos = 0
-            end_all = 0
-            sylab_pos = 0
-            sylab_all = 0
+            end_all, sylab_all, rhyme_all, metre_all = 0,0,0,0
+            end_pos, sylab_pos, rhyme_pos, metre_pos = 0,0,0,0
             for _ in range(self.runs_per_epoch):
                 
                 decoded_cont:str = self.decode_helper(type)
@@ -91,7 +88,20 @@ class ModelValidator:
                     if not (TextManipulation._remove_most_nonchar(line)).strip():
                         break
                     if TextAnalysis._is_param_line(line):
-                        continue
+                        values = TextAnalysis._first_line_analysis(line)
+                        metre_all +=1
+                        rhyme_all +=1
+                        if self.rhyme_model != None and "RHYME" in values.keys():
+                            rhyme_vec = TextAnalysis._rhyme_vector(values["RHYME"])
+                            input_ids = self.validator_tokenizer(decoded_cont, return_tensors="np", truncation=True)[0]
+                            rhyme_pos += self.rhyme_model.validate(input_ids=torch.tensor(input_ids.reshape(1,-1)),
+                                                                   rhyme=torch.tensor(rhyme_vec.reshape(1,-1)))
+                        if self.meter_model != None and "METER" in values.keys():
+                            metre_vec = TextAnalysis._metre_vector(values["METER"])
+                            input_ids = self.validator_tokenizer(decoded_cont, return_tensors="np", truncation=True)[0]
+                            metre_pos += self.meter_model.validate(input_ids=torch.tensor(input_ids.reshape(1,-1)),
+                                                                   metre=torch.tensor(metre_vec.reshape(1,-1)))
+                            
                     # Ended Verse
 
                     line_split = line.split()
@@ -120,10 +130,14 @@ class ModelValidator:
                         sylab_pos += 1
             end_accuracy.append(end_pos/end_all)
             sylab_accuracy.append(sylab_pos/sylab_all)
+            rhyme_accuracy.append(rhyme_pos/rhyme_all)
+            metre_accuracy.append(metre_pos/metre_all)
         with open(os.path.abspath(os.path.join(self.result_dir, self.model_rel_name)), 'a') as file:
              print(f"{type} Decoding Validation: Epochs: {self.epochs}, Runs per epoch: {self.runs_per_epoch}", file=file)
              print(f"Num Sylabs Accuracy: {np.mean(sylab_accuracy)} +- {np.std(sylab_accuracy, ddof=1)}", file=file)
              print(f"Endings Accuracy: {np.mean(end_accuracy)} +- {np.std(end_accuracy, ddof=1)}", file=file)
+             print(f"Rhyme Accuracy: {np.mean(rhyme_accuracy)} +- {np.std(rhyme_accuracy, ddof=1)}", file=file)
+             print(f"Metre Accuracy: {np.mean(metre_accuracy)} +- {np.std(metre_accuracy, ddof=1)}", file=file)
                     
             
     def full_validate(self):
@@ -140,10 +154,21 @@ parser.add_argument("--default_tokenizer_model", default="lchaloupsky/czech-gpt2
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=5, type=int, help="Number of runs on datasets")
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-all_tasks_e16_e64")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"..",'backup_LMS', "gpt-cz-poetry-all_tasks_e16_e64")),  type=str, help="Path to Model")
+parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'validators', 'rhyme', 'BPE')),  type=str, help="Path to Model")
+parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "validators", 'meter', 'BPE')),  type=str, help="Path to Model")
+parser.add_argument("--validator_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "tokenizers", "BPE", "tokenizer.json")), type=str, help="Validator tokenizer")
+
+
 
 def main(args):
-    val = ModelValidator(args.model_path_full, args.default_tokenizer_model, args.num_runs, args.num_samples)
+    val = ModelValidator(model_name=args.model_path_full, 
+                         tokenizer_name=args.default_tokenizer_model, 
+                         epochs=args.num_runs, 
+                         runs_per_epoch=args.num_samples,
+                         rhyme_model_name= args.rhyme_model_path_full,
+                         meter_model_name= args.metre_model_path_full,
+                         validator_tokenizer_name=args.validator_tokenizer_model)
     val.full_validate()
 
 if __name__ == "__main__":

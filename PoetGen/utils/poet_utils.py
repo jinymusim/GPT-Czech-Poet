@@ -28,6 +28,7 @@ POET_YEARS_BUCKETS = [1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, None
 METER_TYPES = ["J","T","D","A","X","Y","N", None]
 
 import re
+import numpy as np
 
 class TextManipulation:
         
@@ -51,6 +52,27 @@ class TextAnalysis:
     @staticmethod
     def _rhyme_like(rhyme:str):
         return rhyme.isupper() and len(rhyme) >= 3 and len(rhyme) <= 8
+    
+    @staticmethod
+    def _rhyme_vector(rhyme:str):
+        
+        rhyme_vec = np.zeros(len(RHYME_SCHEMES))
+        if rhyme in RHYME_SCHEMES:
+            rhyme_vec[RHYME_SCHEMES.index(rhyme)] = 1
+        else:
+            rhyme_vec[-1] = 1
+            
+        return rhyme_vec
+
+    @staticmethod
+    def _metre_vector(metre: str):
+        metre_vec = np.zeros(len(METER_TYPES))
+        if metre in METER_TYPES:
+            metre_vec[METER_TYPES.index(metre)] = 1
+        else:
+            metre_vec[-1] = 1
+            
+        return metre_vec
     
     @staticmethod
     def _first_line_analysis(text:str):
