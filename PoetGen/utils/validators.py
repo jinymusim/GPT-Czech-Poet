@@ -9,10 +9,10 @@ class ValidatorInterface(torch.nn.Module):
     def forward(self, input_ids=None, attention_mask=None, *args, **kwargs):
         raise NotImplementedError()
     
-    def predict(self, input_ids=None, *args):
+    def predict(self, input_ids=None, *args, **kwargs):
         raise NotImplementedError()
     
-    def validate(self, input_ids=None, *args):
+    def validate(self, input_ids=None, *args, **kwargs):
         raise NotImplementedError()
     
     
@@ -41,7 +41,7 @@ class RhymeValidator(ValidatorInterface):
         return {"model_output" : softmaxed,
                 "loss": rhyme_loss}
         
-    def predict(self, input_ids=None, *args):
+    def predict(self, input_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
@@ -52,7 +52,7 @@ class RhymeValidator(ValidatorInterface):
         
         return softmaxed
     
-    def validate(self, input_ids=None, rhyme=None,*args):
+    def validate(self, input_ids=None, rhyme=None,*args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
@@ -61,7 +61,7 @@ class RhymeValidator(ValidatorInterface):
             
         softmaxed = torch.softmax(rhyme_regression, dim=1)
         
-        _true_val = (torch.argmax(rhyme, dim=1) == torch.argmax(softmaxed, dim=1)).float().sum().numpy()[0]
+        _true_val = (torch.argmax(rhyme, dim=1) == torch.argmax(softmaxed, dim=1)).float().sum().numpy()
         
         return _true_val
     
@@ -91,7 +91,7 @@ class MeterValidator(ValidatorInterface):
         return {"model_output" : softmaxed,
                 "loss": meter_loss}
         
-    def predict(self, input_ids=None, *args):
+    def predict(self, input_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
@@ -102,7 +102,7 @@ class MeterValidator(ValidatorInterface):
         
         return softmaxed
     
-    def validate(self, input_ids=None, metre=None,*args):
+    def validate(self, input_ids=None, metre=None,*args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
@@ -111,7 +111,7 @@ class MeterValidator(ValidatorInterface):
             
         softmaxed = torch.softmax(meter_regression, dim=1)
         
-        _true_val = (torch.argmax(metre, dim=1) == torch.argmax(softmaxed, dim=1)).float().sum().numpy()[0]
+        _true_val = (torch.argmax(metre, dim=1) == torch.argmax(softmaxed, dim=1)).float().sum().numpy()
         
         return _true_val
     
