@@ -46,14 +46,14 @@ def main(args):
         tokenizer.decoder = ByteDec()
         tokenizer.post_processor = BytePost(trim_offsets=False)
     elif args.tokenizer_type == "WordLevel":
-        tokenizer = Tokenizer(WordLevel(unk_token="[UNK]"))
-        trainer = WordLevelTrainer(special_tokens=tok.all_special_tokens + ["[UNK]"], vocab_size = tok.vocab_size, min_frequency=2)
+        tokenizer = Tokenizer(WordLevel(unk_token=tok.all_special_tokens[0]))
+        trainer = WordLevelTrainer(special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size, min_frequency=2)
         
         tokenizer.normalizer = NFD()
         tokenizer.pre_tokenizer = Whitespace()
     elif args.tokenizer_type == "WordPiece":
-        tokenizer = Tokenizer(WordPiece(unk_token="[UNK]"))
-        trainer = WordPieceTrainer(special_tokens=tok.all_special_tokens + ["[UNK]"] , vocab_size = tok.vocab_size, min_frequency=2)
+        tokenizer = Tokenizer(WordPiece(unk_token=tok.all_special_tokens[0]))
+        trainer = WordPieceTrainer(special_tokens=tok.all_special_tokens , vocab_size = tok.vocab_size, min_frequency=2)
         tokenizer.normalizer = NFD()
         tokenizer.decoder = WordDec()
     else:

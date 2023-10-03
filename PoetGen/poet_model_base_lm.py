@@ -1,5 +1,5 @@
 from transformers import  AutoModelForCausalLM, AutoTokenizer
-from utils.poet_model_interface import PoetModelInterface
+from utils.poet_model_utils import PoetModelInterface
 from utils.poet_utils import TextAnalysis
 
 class PoetModelBase(PoetModelInterface):

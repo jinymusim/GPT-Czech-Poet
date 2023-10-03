@@ -3,7 +3,7 @@ import os
 import argparse
 
 from transformers import  AutoTokenizer
-from utils.poet_model_interface import PoetModelInterface
+from utils.poet_model_utils import PoetModelInterface
 
 parser = argparse.ArgumentParser()
 

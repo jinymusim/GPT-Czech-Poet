@@ -2,7 +2,7 @@ import torch
 
 from utils.poet_utils import  TextAnalysis
 from transformers import  AutoModelForCausalLM, AutoTokenizer
-from utils.poet_model_interface import PoetModelInterface
+from utils.poet_model_utils import PoetModelInterface
 
 class PoetModelHalfBase(PoetModelInterface):
     def __init__(self, pretrainedModel, *args, **kwargs) -> None:

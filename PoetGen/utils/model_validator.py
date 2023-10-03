@@ -7,7 +7,7 @@ import numpy as np
 from tqdm import tqdm
 from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
 from .poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, SyllableMaker
-from .poet_model_interface import PoetModelInterface
+from .poet_model_utils import PoetModelInterface
 from .validators import ValidatorInterface
 
 class ModelValidator:
@@ -25,14 +25,29 @@ class ModelValidator:
         if meter_model_name:
             self.meter_model: ValidatorInterface = (torch.load(meter_model_name, map_location=torch.device('cpu')))
             
-        self.validator_tokenizer: AutoTokenizer = None
+        self.validator_tokenizer: PreTrainedTokenizerBase = None
         if validator_tokenizer_name:
+            try:
                 self.validator_tokenizer = AutoTokenizer.from_pretrained(validator_tokenizer_name)
+            except:
+                self.validator_tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=tokenizer_name)
+                self.validator_tokenizer.eos_token = "<|endoftext|>"
+                self.validator_tokenizer.eos_token_id = 0
+                self.validator_tokenizer.pad_token = '<|endoftext|>'
+                self.validator_tokenizer.pad_token_id = 0
+                self.validator_tokenizer.unk_token = '<|endoftext|>'
+                self.validator_tokenizer.unk_token_id = 0
                 
         try:    
             self.tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(tokenizer_name)
         except:
             self.tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=tokenizer_name)
+            self.tokenizer.eos_token = "<|endoftext|>"
+            self.tokenizer.eos_token_id = 0
+            self.tokenizer.pad_token = '<|endoftext|>'
+            self.tokenizer.pad_token_id = 0
+            self.tokenizer.unk_token = '<|endoftext|>'
+            self.tokenizer.unk_token_id = 0
             
         self.epochs = epochs
         self.runs_per_epoch = runs_per_epoch

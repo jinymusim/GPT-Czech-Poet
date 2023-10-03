@@ -50,6 +50,8 @@ def main(args):
         tokenizer.eos_token_id = 0
         tokenizer.pad_token = '<|endoftext|>'
         tokenizer.pad_token_id = 0
+        tokenizer.unk_token = "<|endoftext|>"
+        tokenizer.unk_token_id = 0
         
     collate = partial(CorpusDatasetPytorch.collate, mask_rate=0.0)
     
