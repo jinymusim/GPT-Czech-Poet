@@ -150,6 +150,8 @@ PYTORCH/
 */gpt-cz-poetry*
 */gpt-cz-poetry*_LM
 */bloom-cz-poetry*
+*/utils/validators/meter/*
+*/utils/validators/rhyme/*
 
 # Data
 *.json

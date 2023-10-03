@@ -30,13 +30,14 @@ class ModelValidator:
             try:
                 self.validator_tokenizer = AutoTokenizer.from_pretrained(validator_tokenizer_name)
             except:
-                self.validator_tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=tokenizer_name)
+                self.validator_tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=validator_tokenizer_name)
                 self.validator_tokenizer.eos_token = "<|endoftext|>"
                 self.validator_tokenizer.eos_token_id = 0
                 self.validator_tokenizer.pad_token = '<|endoftext|>'
                 self.validator_tokenizer.pad_token_id = 0
                 self.validator_tokenizer.unk_token = '<|endoftext|>'
                 self.validator_tokenizer.unk_token_id = 0
+                self.validator_tokenizer.model_max_length = self.meter_model.model.config.n_positions
                 
         try:    
             self.tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(tokenizer_name)
@@ -48,6 +49,7 @@ class ModelValidator:
             self.tokenizer.pad_token_id = 0
             self.tokenizer.unk_token = '<|endoftext|>'
             self.tokenizer.unk_token_id = 0
+            self.validator_tokenizer.model_max_length = self.model.model.config.n_positions
             
         self.epochs = epochs
         self.runs_per_epoch = runs_per_epoch
@@ -93,12 +95,12 @@ class ModelValidator:
                         rhyme_all +=1
                         if self.rhyme_model != None and "RHYME" in values.keys():
                             rhyme_vec = TextAnalysis._rhyme_vector(values["RHYME"])
-                            input_ids = self.validator_tokenizer(decoded_cont, return_tensors="np", truncation=True)[0]
+                            input_ids = self.validator_tokenizer.encode(decoded_cont, return_tensors="np", truncation=True)[0]
                             rhyme_pos += self.rhyme_model.validate(input_ids=torch.tensor(input_ids.reshape(1,-1)),
                                                                    rhyme=torch.tensor(rhyme_vec.reshape(1,-1)))
                         if self.meter_model != None and "METER" in values.keys():
                             metre_vec = TextAnalysis._metre_vector(values["METER"])
-                            input_ids = self.validator_tokenizer(decoded_cont, return_tensors="np", truncation=True)[0]
+                            input_ids = self.validator_tokenizer.encode(decoded_cont, return_tensors="np", truncation=True)[0]
                             metre_pos += self.meter_model.validate(input_ids=torch.tensor(input_ids.reshape(1,-1)),
                                                                    metre=torch.tensor(metre_vec.reshape(1,-1)))
                             
@@ -154,9 +156,9 @@ parser.add_argument("--default_tokenizer_model", default="lchaloupsky/czech-gpt2
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=5, type=int, help="Number of runs on datasets")
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-all_tasks_e16_e64")),  type=str, help="Path to Model")
-parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE')),  type=str, help="Path to Model")
-parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE')),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-base")),  type=str, help="Path to Model")
+parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator')),  type=str, help="Path to Model")
+parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator')),  type=str, help="Path to Model")
 parser.add_argument("--validator_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', "tokenizers", "BPE", "tokenizer.json")), type=str, help="Validator tokenizer")
 
 
