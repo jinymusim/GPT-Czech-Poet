@@ -5,7 +5,7 @@ import argparse
 
 
 from accelerate import Accelerator
-from transformers import  AutoTokenizer, TrainingArguments, Trainer
+from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
 from functools import partial
 
 # Project Packages
@@ -18,17 +18,16 @@ from poet_model_context_year import PoetModelContextYear
 from poet_model_all_tasks import PoetModelAllTasks
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
+from utils.poet_model_utils import ModelManipulation
 
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_LM", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=8, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_LM", default=128, type=int, help="Number of epochs to run.")
 parser.add_argument("--batch_size_poet", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=32, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
-parser.add_argument("--use_gpu_if_available", default=True, type=bool, help="If GPU should be used")
-parser.add_argument("--use_multiple_gpu_if_available", default=True, type=bool, help="If to use multiple gpus")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.00, type=float, help="Rate of input masking")
 
@@ -59,11 +58,12 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
+parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "tokenizer.json")), type=str, help="Tokenizer to use")
 parser.add_argument("--model_type",  default="all", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "spital-alt-gpt-poetry-all_tasks_e8_e32")),  type=str, help="Path to Model")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "custom-tokenizer-gpt-cz-poetry-all_tasks_e128_e16")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1024, type=int, help="Max length of context for tokenizer")
-parser.add_argument("--verse_len", default=[3,4,5,6,7,8], type=list, help="Lengths of verses")
+parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
 
 parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is prompted into training data")
@@ -73,14 +73,9 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 
 
 def main(args: argparse.Namespace):
-    # Base Device is CPU
-    device = torch.device('cpu')
-    # If Wanted and GPU is available, use it
-    if args.use_gpu_if_available:
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
+
     if args.use_default_model:
-        tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
         if args.model_type == "base":         
             model = PoetModelBase(args.default_hf_model)
         elif args.model_type == "secondary_tasks":
@@ -96,10 +91,23 @@ def main(args: argparse.Namespace):
         elif args.model_type == "all":
             model = PoetModelAllTasks(args.default_hf_model)
         else:
-            model = None
+            raise TypeError("Given model type doesn't exists")
+        
+        try:    
+            tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.tokenizer)
+        except: #TODO: Need model to update embedding matrix
+            tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.tokenizer)
+            tokenizer.eos_token = "<|endoftext|>"
+            tokenizer.eos_token_id = 0
+            tokenizer.pad_token = '<|endoftext|>'
+            tokenizer.pad_token_id = 0
+            tokenizer.unk_token = "<|endoftext|>"
+            tokenizer.unk_token_id = 0
+            
+            ModelManipulation.exchange_embedding(model, tokenizer, AutoTokenizer.from_pretrained(args.default_hf_model))
     else:
-        tokenizer = AutoTokenizer.from_pretrained(args.default_hf_model)
-        model = torch.load(args.model_path_full, map_location=torch.device('cpu'))
+        tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+        model = torch.load(args.model_path, map_location=torch.device('cpu'))
     
     # Parallel Plugin
     from accelerate import FullyShardedDataParallelPlugin
@@ -132,7 +140,7 @@ def main(args: argparse.Namespace):
                                   learning_rate = args.learning_rate,
                                   fp16 = True if torch.cuda.is_available() else False,
                                   ddp_backend = "nccl",
-                                  lr_scheduler_type="constant",
+                                  lr_scheduler_type="cosine_with_restarts",
                                   logging_dir = './logs',
                                   output_dir = './results',
                                   per_device_train_batch_size = args.batch_size_LM)

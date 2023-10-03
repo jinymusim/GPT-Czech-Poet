@@ -86,4 +86,35 @@ class PoetTypeModule(torch.nn.Module):
                 (None if model_output == None else model_output["attentions"], 
                 None))
             
+from transformers import PreTrainedTokenizerBase
+
+class ModelManipulation:
+    
+    # Code Inspired by article: Fine-tuning the English GPT-2 in any language with Hugging Face
+    # Link: https://github.com/piegu/fastai-projects/blob/master/finetuning-English-GPT2-any-language-Portuguese-HuggingFace-fastaiv2.ipynb
+     
+    @staticmethod
+    def exchange_embedding(poet_model: PoetModelInterface, new_tokenizer: PreTrainedTokenizerBase, old_tokenizer: PreTrainedTokenizerBase):
+        old_embed = poet_model.model.get_input_embeddings().weight.clone().detach()
+        old_mean = old_embed.mean(0)
+        
+        new_embd = old_embed.new_zeros(new_tokenizer.vocab_size, old_embed.size(1))
+        old_vocab = old_tokenizer.get_vocab()
+        
+        vocab_hit = 0
+        
+        for w, idx_new in new_tokenizer.get_vocab().items():
+            idx_old = old_vocab.get(w, -1)
+            if idx_old >= 0:
+                new_embd[idx_new] = old_embed[idx_old]
+                vocab_hit +=1
+            else:
+                new_embd[idx_new] = old_mean
+                
+        print(f"Vocab hit rate: {vocab_hit}/{new_tokenizer.vocab_size}")
+        
+        new_embd_layer = torch.nn.Embedding(new_tokenizer.vocab_size, old_embed.size(1))
+        new_embd_layer.weight.data = new_embd
+        poet_model.model.transformer.set_input_embeddings(new_embd_layer)
+        poet_model.model.lm_head.weight = poet_model.model.transformer.wte.weight
         
