@@ -10,20 +10,26 @@ from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, Syll
 from utils.poet_model_utils import PoetModelInterface
 from utils.validators import ValidatorInterface
 
+from corpus_capsulated_datasets import CorpusDatasetPytorch
+
 class ModelValidator:
     def __init__(self, model_name: str, tokenizer_name: str,
                  epochs:int = 20, runs_per_epoch: int = 10, 
                  result_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__),"results")),
-                 rhyme_model_name: str = "", meter_model_name:str = "", validator_tokenizer_name: str = "") -> None:
+                 rhyme_model_name: str = "", meter_model_name:str = "", validator_tokenizer_name: str = "",
+                 rhyme_collate_fnc = None, meter_collate_fnc = None) -> None:
         self.model_name = model_name
         _ ,self.model_rel_name =  os.path.split(model_name)
         self.model: PoetModelInterface= (torch.load(model_name, map_location=torch.device('cpu')))
         
         self.rhyme_model, self.meter_model = None, None
         if rhyme_model_name:
-            self.rhyme_model: ValidatorInterface = (torch.load(rhyme_model_name, map_location=torch.device('cpu')))
+            self.rhyme_model: ValidatorInterface = (torch.load(rhyme_model_name, map_location=torch.device('cpu')))    
+        self.rhyme_collate = rhyme_collate_fnc
+        
         if meter_model_name:
             self.meter_model: ValidatorInterface = (torch.load(meter_model_name, map_location=torch.device('cpu')))
+        self.meter_collate = meter_collate_fnc
             
         self.validator_tokenizer: PreTrainedTokenizerBase = None
         if validator_tokenizer_name:
@@ -49,7 +55,7 @@ class ModelValidator:
             self.tokenizer.pad_token_id = 0
             self.tokenizer.unk_token = '<|endoftext|>'
             self.tokenizer.unk_token_id = 0
-            self.validator_tokenizer.model_max_length = self.model.model.config.n_positions
+            self.tokenizer.model_max_length = self.model.model.config.n_positions
             
         self.epochs = epochs
         self.runs_per_epoch = runs_per_epoch
@@ -60,7 +66,7 @@ class ModelValidator:
             
     def decode_helper(self, type:str):
         if type  == "basic":
-            tokenized_poet_start = self.tokenizer.encode(random.choice(RHYME_SCHEMES[:-1]), return_tensors='pt')
+            tokenized_poet_start = self.tokenizer.encode(random.choice(RHYME_SCHEMES[:-1]), return_tensors='pt', truncation=True)
         
             out = self.model.model.generate(tokenized_poet_start, 
                                         max_length=192,
@@ -94,14 +100,20 @@ class ModelValidator:
                         metre_all +=1
                         rhyme_all +=1
                         if self.rhyme_model != None and "RHYME" in values.keys():
+                            self.validator_tokenizer.model_max_length = self.rhyme_model.model.config.n_positions
                             rhyme_vec = TextAnalysis._rhyme_vector(values["RHYME"])
-                            input_ids = self.validator_tokenizer.encode(decoded_cont, return_tensors="np", truncation=True)[0]
-                            rhyme_pos += self.rhyme_model.validate(input_ids=torch.tensor(input_ids.reshape(1,-1)),
+                            input_ids = self.rhyme_collate([{"input_ids" :decoded_cont}],
+                                                          self.validator_tokenizer, 
+                                                          max_len=self.rhyme_model.model.config.n_positions)['input_ids']
+                            rhyme_pos += self.rhyme_model.validate(input_ids=input_ids,
                                                                    rhyme=torch.tensor(rhyme_vec.reshape(1,-1)))
                         if self.meter_model != None and "METER" in values.keys():
                             metre_vec = TextAnalysis._metre_vector(values["METER"])
-                            input_ids = self.validator_tokenizer.encode(decoded_cont, return_tensors="np", truncation=True)[0]
-                            metre_pos += self.meter_model.validate(input_ids=torch.tensor(input_ids.reshape(1,-1)),
+                            
+                            input_ids =self.meter_collate([{"input_ids" :decoded_cont}],
+                                                          self.validator_tokenizer, 
+                                                          max_len=self.meter_model.model.config.n_positions)['input_ids']
+                            metre_pos += self.meter_model.validate(input_ids=input_ids,
                                                                    metre=torch.tensor(metre_vec.reshape(1,-1)))
                             
                     # Ended Verse
@@ -170,7 +182,9 @@ def main(args):
                          runs_per_epoch=args.num_samples,
                          rhyme_model_name= args.rhyme_model_path_full,
                          meter_model_name= args.metre_model_path_full,
-                         validator_tokenizer_name=args.validator_tokenizer_model)
+                         validator_tokenizer_name=args.validator_tokenizer_model,
+                         rhyme_collate_fnc=CorpusDatasetPytorch.collate_rhyme,
+                         meter_collate_fnc=CorpusDatasetPytorch.collate)
     val.full_validate()
 
 if __name__ == "__main__":

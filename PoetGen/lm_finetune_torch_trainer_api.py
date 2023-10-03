@@ -23,10 +23,10 @@ from utils.poet_model_utils import ModelManipulation
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=128, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--batch_size_LM", default=2, type=int, help="Batch size.")
+parser.add_argument("--epochs_LM", default=1, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_poet", default=2, type=int, help="Batch size.")
+parser.add_argument("--epochs_poet", default=1, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.00, type=float, help="Rate of input masking")
@@ -59,10 +59,10 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "tokenizer.json")), type=str, help="Tokenizer to use")
-parser.add_argument("--model_type",  default="all", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "custom-tokenizer-gpt-cz-poetry-all_tasks_e128_e16")),  type=str, help="Path to Model")
+parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all"], help="What type of Model is to be constructed")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "test-new-data-loader")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--context_max_len", default=1024, type=int, help="Max length of context for tokenizer")
+parser.add_argument("--context_max_len", default=256, type=int, help="Max length of context for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
 
@@ -122,13 +122,13 @@ def main(args: argparse.Namespace):
     model = accelerator.prepare(model)
     
     # Partial Function to use as data collection with input masking
-    collate = partial(CorpusDatasetPytorch.collate, mask_rate=args.input_mask_rate)
+    collate = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer,max_len=args.max_len, 
+                      max_context=args.context_max_len, mask_rate=args.input_mask_rate)
     
-    # Data Loading
-    tokenizer.model_max_length = args.max_len
-    train_data = CorpusDatasetPytorch(tokenizer, data_dir=args.data_path, 
-                                      prompt_ending=args.prompt_ending, prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
-                                      verse_len=args.verse_len, context_len=args.context_max_len)
+
+    train_data = CorpusDatasetPytorch(data_dir=args.data_path, prompt_ending=args.prompt_ending, 
+                                      prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
+                                      verse_len=args.verse_len)
     
     # Text Line Training
     training_args = TrainingArguments(
