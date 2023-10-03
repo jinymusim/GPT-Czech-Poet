@@ -6,20 +6,20 @@ import numpy as np
 
 from tqdm import tqdm
 from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
-from .poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, SyllableMaker
-from .poet_model_utils import PoetModelInterface
-from .validators import ValidatorInterface
+from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, SyllableMaker
+from utils.poet_model_utils import PoetModelInterface
+from utils.validators import ValidatorInterface
 
 class ModelValidator:
     def __init__(self, model_name: str, tokenizer_name: str,
                  epochs:int = 20, runs_per_epoch: int = 10, 
-                 result_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "results")),
+                 result_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__),"results")),
                  rhyme_model_name: str = "", meter_model_name:str = "", validator_tokenizer_name: str = "") -> None:
         self.model_name = model_name
         _ ,self.model_rel_name =  os.path.split(model_name)
         self.model: PoetModelInterface= (torch.load(model_name, map_location=torch.device('cpu')))
         
-        self.rhyme_model, self.meter_model: ValidatorInterface = None, None
+        self.rhyme_model, self.meter_model = None, None
         if rhyme_model_name:
             self.rhyme_model: ValidatorInterface = (torch.load(rhyme_model_name, map_location=torch.device('cpu')))
         if meter_model_name:
@@ -154,10 +154,10 @@ parser.add_argument("--default_tokenizer_model", default="lchaloupsky/czech-gpt2
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=5, type=int, help="Number of runs on datasets")
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"..",'backup_LMS', "gpt-cz-poetry-all_tasks_e16_e64")),  type=str, help="Path to Model")
-parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'validators', 'rhyme', 'BPE')),  type=str, help="Path to Model")
-parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "validators", 'meter', 'BPE')),  type=str, help="Path to Model")
-parser.add_argument("--validator_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "tokenizers", "BPE", "tokenizer.json")), type=str, help="Validator tokenizer")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-all_tasks_e16_e64")),  type=str, help="Path to Model")
+parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE')),  type=str, help="Path to Model")
+parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE')),  type=str, help="Path to Model")
+parser.add_argument("--validator_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', "tokenizers", "BPE", "tokenizer.json")), type=str, help="Validator tokenizer")
 
 
 
