@@ -5,12 +5,12 @@ import random
 import numpy
 
 from tqdm import tqdm
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, PreTrainedTokenizerBase, PreTrainedTokenizerFast
 from datasets import load_dataset
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--default_tokenizer_model", default="spital/gpt2-small-czech-cs", type=str, help="Default Model from HF to use")
+parser.add_argument("--default_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "WordPiece", "tokenizer.json")), type=str, help="Tokenizer to use")
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--data_path_base", default="cs_restaurants", type=str, help="Base dataset")
 parser.add_argument("--base_part", default="unshuffled_deduplicated_cs", type=str, help="Which part of base dataset to consider")
@@ -21,7 +21,16 @@ parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.pat
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
-tokenizer = AutoTokenizer.from_pretrained(args.default_tokenizer_model)
+try:    
+    tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.default_tokenizer_model)
+except: #TODO: Need model to update embedding matrix
+    tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.default_tokenizer_model)
+    tokenizer.eos_token = "<|endoftext|>"
+    tokenizer.eos_token_id = 0
+    tokenizer.pad_token = '<|endoftext|>'
+    tokenizer.pad_token_id = 0
+    tokenizer.unk_token = "<|endoftext|>"
+    tokenizer.unk_token_id = 0
 
 def poet_samples(args, shuffle=True):
     data_filenames_poet = os.listdir(args.data_path_poet)

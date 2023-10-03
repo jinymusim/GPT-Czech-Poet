@@ -22,3 +22,12 @@ Chars per token Base data: 1.9874006437198843 +- 0.038271281560156065
 All Runs Results: spital/gpt2-small-czech-cs # Runs: 100 # Samples: 100
 Chars per token Poet data: 3.2280809705585143 +- 0.16293295954023107
 Chars per token Base data: 3.7581932668570204 +- 0.08151683579482344
+All Runs Results: C:\Users\micha\Desktop\Git\Tensorflow-Shorts\PoetGen\utils\tokenizers\BPE\tokenizer.json # Runs: 100 # Samples: 100
+Chars per token Poet data: 4.043868203269542 +- 0.2028980151682649
+Chars per token Base data: 3.773949323152452 +- 0.06814498830800811
+All Runs Results: C:\Users\micha\Desktop\Git\Tensorflow-Shorts\PoetGen\utils\tokenizers\Unigram\tokenizer.json # Runs: 100 # Samples: 100
+Chars per token Poet data: 3.612820671963123 +- 0.1293218132154293
+Chars per token Base data: 2.8652366056491725 +- 0.056068972386957294
+All Runs Results: C:\Users\micha\Desktop\Git\Tensorflow-Shorts\PoetGen\utils\tokenizers\WordPiece\tokenizer.json # Runs: 100 # Samples: 100
+Chars per token Poet data: 3.887376361547298 +- 0.24634564379285215
+Chars per token Base data: 9.737362298630016 +- 2.176732461956991
