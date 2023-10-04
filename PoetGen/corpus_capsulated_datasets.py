@@ -238,18 +238,20 @@ class CorpusDatasetPytorch:
                                     body = []
                                     rhyme = []
                                     i=0
-                        if len(body) > 0 and i not in self.verse_len:
-                            rhyme_str = self._rhyme_string(rhyme)
-                            
-                            text = f"{rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + "\n" + self.end_token
-                            context_text= "\n".join(context) + self.end_token
-                            self.data.append({
-                                    "input_ids" : text,
-                                    "context_ids" : context_text,
-                                    "year": publish_year,
-                                    "rhyme":  rhyme_str,
-                                    "metre" : metre
-                                     })
+                        # The resulting schema throws the model often off
+                        
+                        # if len(body) > 0 and i not in self.verse_len:
+                        #     rhyme_str = self._rhyme_string(rhyme)
+                        #     
+                        #     text = f"{rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + "\n" + self.end_token
+                        #     context_text= "\n".join(context) + self.end_token
+                        #     self.data.append({
+                        #             "input_ids" : text,
+                        #             "context_ids" : context_text,
+                        #             "year": publish_year,
+                        #             "rhyme":  rhyme_str,
+                        #             "metre" : metre
+                        #              })
                                 
         
         def __len__(self):
