@@ -16,13 +16,13 @@ from utils.poet_utils import VALID_CHARS
 parser = argparse.ArgumentParser()
 
 
-parser.add_argument("--epochs", default=16, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs", default=32, type=int, help="Number of epochs to run.")
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
 parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "validators")),  type=str, help="Path to Model")
-parser.add_argument("--max_len_rhyme", default=36, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len_rhyme", default=24, type=int, help="Max length for tokenizer")
 parser.add_argument("--max_len_metre", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
@@ -34,9 +34,9 @@ parser.add_argument("--block_count", default=3, type=int, help="Max length for t
 parser.add_argument("--n_embd_metre", default=512, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_metre", default=32, type=int, help="Batch size.")
 
-parser.add_argument("--hidden_layers", default=4, type=int, help="Max length for tokenizer")
-parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=32, type=int, help="Batch size.")
+parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
+parser.add_argument("--hidden_layer_rhyme", default=512, type=int, help="Max length for tokenizer")
+parser.add_argument("--batch_size_rhyme", default=128, type=int, help="Batch size.")
 
 def validate(model: ValidatorInterface, data, collate_fnc,times: int = 1000):
     true_hits = 0
@@ -78,16 +78,6 @@ def main(args):
                                       verse_len=args.verse_len)
     
     # Parallel Plugin
-    from accelerate import FullyShardedDataParallelPlugin
-    from torch.distributed.fsdp.fully_sharded_data_parallel import FullOptimStateDictConfig, FullStateDictConfig
-
-    fsdp_plugin = FullyShardedDataParallelPlugin(
-        state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
-        optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
-        )
-
-    accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
-    rhyme_model = accelerator.prepare(rhyme_model)
     
     training_args = TrainingArguments(
                                   save_strategy  = "no",
@@ -115,14 +105,6 @@ def main(args):
     
     
     collate  = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer, max_len=args.max_len_metre)
-    
-    fsdp_plugin = FullyShardedDataParallelPlugin(
-        state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
-        optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
-        )
-
-    accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
-    meter_model = accelerator.prepare(meter_model)
     
     training_args = TrainingArguments(
                                   save_strategy  = "no",
