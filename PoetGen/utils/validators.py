@@ -33,6 +33,8 @@ class RhymeValidator(ValidatorInterface):
         
         self.rhyme_regressor = torch.nn.Linear(self.model_size, len(RHYME_SCHEMES)) # Common Rhyme Type
         
+        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.2)
+        
     def forward(self, input_ids=None, attention_mask=None, rhyme=None, *args, **kwargs):
         
         hidden = self.input_layer(input_ids)
@@ -43,8 +45,7 @@ class RhymeValidator(ValidatorInterface):
         rhyme_regression = self.rhyme_regressor(hidden)
             
         softmaxed = torch.softmax(rhyme_regression, dim=1)
-        loss_fct = torch.nn.CrossEntropyLoss(label_smoothing=0.2)
-        rhyme_loss = loss_fct(softmaxed, rhyme)
+        rhyme_loss = self.loss_fnc(softmaxed, rhyme)
         
         return {"model_output" : softmaxed,
                 "loss": rhyme_loss}
@@ -81,6 +82,8 @@ class MeterValidator(ValidatorInterface):
         
         self.meter_regressor = torch.nn.Linear(self.model_size, len(METER_TYPES)) # Meter Type
         
+        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.1)
+        
     def forward(self, input_ids=None, attention_mask=None, metre=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
         
@@ -89,8 +92,7 @@ class MeterValidator(ValidatorInterface):
         meter_regression = self.meter_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
             
         softmaxed = torch.softmax(meter_regression, dim=1)
-        loss_fct = torch.nn.CrossEntropyLoss(label_smoothing=0.1)
-        meter_loss = loss_fct(softmaxed, metre)
+        meter_loss = self.loss_fnc(softmaxed, metre)
         
         return {"model_output" : softmaxed,
                 "loss": meter_loss}
