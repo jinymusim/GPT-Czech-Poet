@@ -32,11 +32,11 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 
 parser.add_argument("--block_count", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--n_embd_metre", default=512, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_metre", default=8, type=int, help="Batch size.")
+parser.add_argument("--batch_size_metre", default=32, type=int, help="Batch size.")
 
 parser.add_argument("--hidden_layers", default=4, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=16, type=int, help="Batch size.")
+parser.add_argument("--batch_size_rhyme", default=32, type=int, help="Batch size.")
 
 def validate(model: ValidatorInterface, data, collate_fnc,times: int = 1000):
     true_hits = 0
