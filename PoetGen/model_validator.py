@@ -6,7 +6,7 @@ import numpy as np
 
 from tqdm import tqdm
 from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
-from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, SyllableMaker
+from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation
 from utils.poet_model_utils import PoetModelInterface
 from utils.validators import ValidatorInterface
 
@@ -115,33 +115,24 @@ class ModelValidator:
                                                           max_len=self.meter_model.model.config.n_positions)['input_ids']
                             metre_pos += self.meter_model.validate(input_ids=input_ids,
                                                                    metre=torch.tensor(metre_vec.reshape(1,-1)))
+                        continue
                             
-                    # Ended Verse
-
-                    line_split = line.split()
-                    # 0 = sylab count, 1 = ending, 2 = #, 3: line itself
-                    # May struggle
-                    try:
-                        expected_sylab = int(line_split[0])
-                        expected_end = line_split[1].strip()
-                    except:
-                        sylab_all += 1
-                        end_all += 1
+                    
+                    line_analysis = TextAnalysis._continuos_line_analysis(line)
+                    # Was Still empty in terms of any text
+                    if len(line_analysis.keys()) == 0:
                         continue
                     
+                    end_all += 1
+                    if "END" in line_analysis.keys() and "TRUE_END" in line_analysis.keys() and line_analysis["END"] == line_analysis["TRUE_END"]:
+                        end_pos +=1
                     
-                    raw_line = " ".join(line_split[3:])  
-                               
-                    sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_line)
-                    observed_end = sub.strip()[-3:]
-                    end_all += 1 
-                    if observed_end == expected_end:
-                        end_pos += 1
+                    sylab_all +=1
+                    if "LENGTH" in line_analysis.keys() and "TRUE_LENGTH" in line_analysis.keys() and line_analysis["LENGTH"] == line_analysis["TRUE_LENGTH"]:
+                        sylab_pos +=1
                     
-                    observed_sylab = len(SyllableMaker.syllabify(raw_line)) # INFO: Now properly counts syllables
-                    sylab_all += 1
-                    if observed_sylab == expected_sylab:
-                        sylab_pos += 1
+                    
+                    
             end_accuracy.append(end_pos/end_all)
             sylab_accuracy.append(sylab_pos/sylab_all)
             rhyme_accuracy.append(rhyme_pos/rhyme_all)

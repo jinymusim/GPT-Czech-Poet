@@ -36,10 +36,15 @@ class TextManipulation:
     def _remove_most_nonchar(raw_text):
         text = re.sub(r'[–\„\“\’\;\:()\]\[\_\*\‘\”\'\-\—\"]+', "", raw_text)
         return text
+    
+    @staticmethod
+    def _remove_all_nonchar(raw_text):
+        sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_text)
+        return sub
 
 class TextAnalysis:
     
-    POET_PARAM_LIST = ["RHYME", "YEAR", "METER", "LENGTH", "END"]
+    POET_PARAM_LIST = ["RHYME", "YEAR", "METER", "LENGTH", "END", "TRUE_LENGTH", "TRUE_END"]
     
     @staticmethod
     def _is_meter(meter:str):
@@ -99,14 +104,21 @@ class TextAnalysis:
     
     @staticmethod
     def _continuos_line_analysis(text:str):
-        line_striped = text.strip()
+        line_striped = TextManipulation._remove_most_nonchar(text).strip()
         if not line_striped:
             return {}
         line_params = {}
         if TextAnalysis._is_line_length(line_striped.split()[0]):
-            line_params["LENGTH"] = line_striped.split()[0]
+            line_params["LENGTH"] = int(line_striped.split()[0])
         if len(line_striped.split()) > 1 and TextAnalysis._is_line_end(line_striped.split()[1]):
-            line_params["END"] = line_striped.split()[1]
+            line_params["END"] = line_striped.split()[1]        
+        if len(line_striped.split()) > 3:
+            line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(" ".join(line_striped.split()[3:])))
+            
+        line_only_char = TextManipulation._remove_all_nonchar(line_striped).strip()
+        if len(line_only_char) > 2:
+            line_params["TRUE_END"] = line_only_char[-3:]
+        
         return line_params
     
     @staticmethod

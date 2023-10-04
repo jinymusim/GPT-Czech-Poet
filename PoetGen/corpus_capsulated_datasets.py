@@ -182,7 +182,7 @@ class CorpusDatasetPytorch:
             
         
         def _construct_line(self, raw_text):
-            num_str = f"{len(re.findall('a|e|i|o|u|á|é|í|ú|ů|ó|ě|y|ý', raw_text.lower()))} " if self.prompt_length else ""
+            num_str = f"{len(SyllableMaker.syllabify(raw_text))} " if self.prompt_length else ""
             sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_text)
             verse_end = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
             return num_str + verse_end + raw_text
