@@ -3,6 +3,7 @@ import torch
 import os
 import argparse
 
+from accelerate import Accelerator
 from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
 from functools import partial
 
@@ -31,11 +32,11 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 
 parser.add_argument("--block_count", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--n_embd_metre", default=512, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_metre", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_metre", default=8, type=int, help="Batch size.")
 
 parser.add_argument("--hidden_layers", default=4, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size.")
+parser.add_argument("--batch_size_rhyme", default=16, type=int, help="Batch size.")
 
 def validate(model: ValidatorInterface, data, collate_fnc,times: int = 1000):
     true_hits = 0
@@ -76,6 +77,18 @@ def main(args):
                                       prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
                                       verse_len=args.verse_len)
     
+    # Parallel Plugin
+    from accelerate import FullyShardedDataParallelPlugin
+    from torch.distributed.fsdp.fully_sharded_data_parallel import FullOptimStateDictConfig, FullStateDictConfig
+
+    fsdp_plugin = FullyShardedDataParallelPlugin(
+        state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
+        optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
+        )
+
+    accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
+    rhyme_model = accelerator.prepare(rhyme_model)
+    
     training_args = TrainingArguments(
                                   save_strategy  = "no",
                                   warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
@@ -102,6 +115,14 @@ def main(args):
     
     
     collate  = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer, max_len=args.max_len_metre)
+    
+    fsdp_plugin = FullyShardedDataParallelPlugin(
+        state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
+        optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
+        )
+
+    accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
+    meter_model = accelerator.prepare(meter_model)
     
     training_args = TrainingArguments(
                                   save_strategy  = "no",
