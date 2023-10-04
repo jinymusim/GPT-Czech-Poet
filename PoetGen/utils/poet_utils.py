@@ -27,6 +27,11 @@ VERSE_ENDS = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'ce'
 POET_YEARS_BUCKETS = [1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, None]
 METER_TYPES = ["J","T","D","A","X","Y","N", None]
 
+VALID_CHARS = ["",'a','á','b','c','č','d','ď','e','é','ě',
+               'f','g','h','i','í','j','k','l','m','n','ň',
+               'o','ó','p','q','r','ř','s','š','t','ť','u',
+               'ú','ů','v','w','x','y','ý','z','ž']
+
 import re
 import numpy as np
 
@@ -68,7 +73,16 @@ class TextAnalysis:
             rhyme_vec[-1] = 1
             
         return rhyme_vec
-
+    
+    @staticmethod
+    def _rhyme_or_not(rhyme_str):
+        rhyme_vector = np.zeros(2)
+        if rhyme_str in RHYME_SCHEMES:
+            rhyme_vector[0] = 1
+        else:
+            rhyme_vector[1] = 1
+        return rhyme_vector
+        
     @staticmethod
     def _metre_vector(metre: str):
         metre_vec = np.zeros(len(METER_TYPES))

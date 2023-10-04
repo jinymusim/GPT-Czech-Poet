@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import re
 
-from utils.poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, SyllableMaker
+from utils.poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, VALID_CHARS,SyllableMaker
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizerBase
 
@@ -156,6 +156,15 @@ class CorpusDatasetPytorch:
                 rhyme_vector[RHYME_SCHEMES.index(rhyme_str)] = 1
             else:
                 rhyme_vector[-1] = 1
+            return rhyme_vector
+        
+        @staticmethod
+        def _rhyme_or_not(rhyme_str):
+            rhyme_vector = np.zeros(2)
+            if rhyme_str in RHYME_SCHEMES:
+                rhyme_vector[0] = 1
+            else:
+                rhyme_vector[1] = 1
             return rhyme_vector
             
         
@@ -345,18 +354,33 @@ class CorpusDatasetPytorch:
             "metre" : metre}
         
     @staticmethod
-    def collate_rhyme(batch, tokenizer: PreTrainedTokenizerBase, max_len:int = 32):
-        tokenizer.model_max_length = max_len
-        tokenized = tokenizer(
-            ["\n".join(
-                # Last line always contains just eof token, first line is always param line
-                [CorpusDatasetPytorch.BodyDataset._remove_most_nonchar(line)[-6:] for line in text['input_ids'].splitlines()[1:-1]]
-                ) for text in batch],
-            return_tensors='pt', truncation=True, padding=True
-            )
+    def collate_rhyme(batch, tokenizer: PreTrainedTokenizerBase, max_len:int = 36, max_verse_len:int = 6):
         
-        input_ids = tokenized['input_ids']
-        attention = tokenized["attention_mask"]
+        chars_per_line = max_len//max_verse_len
+        
+        input_ids = torch.zeros((len(batch), max_len * len(VALID_CHARS)))
+        for i, text in enumerate(batch):
+            one_input = text['input_ids']
+            lines = [re.sub(r'[^aábcčdďeéěfghiíjklmnňoópqrřsštťuúůvwxyýzž]+', '', line.lower()) for line in one_input.splitlines()]
+            j = 0
+            while j<len(lines) and j<max_verse_len:
+                k = 0
+                while k<len(lines[j]) and k<chars_per_line:    
+                    input_ids[i,j * chars_per_line * len(VALID_CHARS) +  k * len(VALID_CHARS) + VALID_CHARS.index(lines[j][k])] = 1
+                    k+=1
+                while k<chars_per_line:
+                    input_ids[i,j * chars_per_line * len(VALID_CHARS) +  k * len(VALID_CHARS)] = 1
+                    k+=1
+                j +=1
+            while j<max_verse_len:
+                input_ids[i,j*len(VALID_CHARS)] = 1
+                k=0
+                while k<chars_per_line:
+                    input_ids[i,j * chars_per_line * len(VALID_CHARS) +  k * len(VALID_CHARS)] = 1
+                    k+=1
+                j +=1
+                           
+        attention = torch.ones_like(input_ids)
         
         rhyme=None
         if "rhyme" in batch[0].keys():

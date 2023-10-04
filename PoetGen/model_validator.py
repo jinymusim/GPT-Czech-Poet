@@ -43,7 +43,6 @@ class ModelValidator:
                 self.validator_tokenizer.pad_token_id = 0
                 self.validator_tokenizer.unk_token = '<|endoftext|>'
                 self.validator_tokenizer.unk_token_id = 0
-                self.validator_tokenizer.model_max_length = self.meter_model.model.config.n_positions
                 
         try:    
             self.tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(tokenizer_name)
@@ -55,7 +54,6 @@ class ModelValidator:
             self.tokenizer.pad_token_id = 0
             self.tokenizer.unk_token = '<|endoftext|>'
             self.tokenizer.unk_token_id = 0
-            self.tokenizer.model_max_length = self.model.model.config.n_positions
             
         self.epochs = epochs
         self.runs_per_epoch = runs_per_epoch
@@ -100,11 +98,10 @@ class ModelValidator:
                         metre_all +=1
                         rhyme_all +=1
                         if self.rhyme_model != None and "RHYME" in values.keys():
-                            self.validator_tokenizer.model_max_length = self.rhyme_model.model.config.n_positions
                             rhyme_vec = TextAnalysis._rhyme_vector(values["RHYME"])
                             input_ids = self.rhyme_collate([{"input_ids" :decoded_cont}],
                                                           self.validator_tokenizer, 
-                                                          max_len=self.rhyme_model.model.config.n_positions)['input_ids']
+                                                          max_len=self.rhyme_model.raw_size)['input_ids']
                             rhyme_pos += self.rhyme_model.validate(input_ids=input_ids,
                                                                    rhyme=torch.tensor(rhyme_vec.reshape(1,-1)))
                         if self.meter_model != None and "METER" in values.keys():
