@@ -315,7 +315,7 @@ class CorpusDatasetPytorch:
         
         nums = None
         if "nums" in batch[0].keys():
-            nums = torch.tensor(np.asarray([text['nums'] for text in batch], dtype=np.int32), dtype=torch.int32)
+            nums = torch.tensor(np.asarray([text['nums'] for text in batch], dtype=np.int32), dtype=torch.float32)
             
         rhyme=None
         if "rhyme" in batch[0].keys():

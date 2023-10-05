@@ -40,6 +40,8 @@ parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max le
 parser.add_argument("--batch_size_rhyme", default=256, type=int, help="Batch size.")
 
 def validate(model: ValidatorInterface, data, collate_fnc,times: int = 1000):
+    model.eval()
+    
     true_hits = 0
     for i in range(times):
         datum = collate_fnc([data[i]])
@@ -47,6 +49,8 @@ def validate(model: ValidatorInterface, data, collate_fnc,times: int = 1000):
                                     rhyme=datum["rhyme"], 
                                     metre=datum["metre"])
     print(f"Validation acc: {true_hits/times}")
+    
+    model.train()
 
 
 def main(args):
@@ -95,7 +99,6 @@ def main(args):
                                   logging_dir = './logs',
                                   output_dir = './results',
                                   per_device_train_batch_size = args.batch_size_rhyme)
-    
     
     trainer = Trainer(model = rhyme_model,
                            args = training_args,
