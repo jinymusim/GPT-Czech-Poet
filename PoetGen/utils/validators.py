@@ -27,7 +27,8 @@ class RhymeValidator(ValidatorInterface):
         
         
         self.input_layer: torch.nn.Linear = torch.nn.Linear(self.input_size, self.model_size)
-        self.hidden_layers=torch.nn.ModuleList([ torch.nn.Linear(self.model_size, self.model_size) for _ in range(self.hidden_layers_count)])
+        self.hidden_layers=torch.nn.ModuleList([torch.nn.Linear(self.model_size, self.model_size) for _ in range(self.hidden_layers_count)])
+        self.batch_norms = torch.nn.ModuleList([torch.nn.BatchNorm1d(self.model_size) for _ in range(self.hidden_layers_count)])
         self.relu = torch.nn.ReLU()
         
         
@@ -38,7 +39,8 @@ class RhymeValidator(ValidatorInterface):
     def forward(self, input_ids=None, attention_mask=None, rhyme=None, *args, **kwargs):
         
         hidden = self.input_layer(input_ids)
-        for layer in self.hidden_layers:
+        for layer, norm in zip(self.hidden_layers, self.batch_norms):
+            hidden = norm(hidden)
             hidden = self.relu(hidden)    
             hidden = layer(hidden)
   

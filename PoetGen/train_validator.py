@@ -2,6 +2,7 @@
 import torch
 import os
 import argparse
+import time
 
 from accelerate import Accelerator
 from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
@@ -16,13 +17,13 @@ from utils.poet_utils import VALID_CHARS
 parser = argparse.ArgumentParser()
 
 
-parser.add_argument("--epochs", default=32, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs", default=128, type=int, help="Number of epochs to run.")
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
 parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "validators")),  type=str, help="Path to Model")
-parser.add_argument("--max_len_rhyme", default=24, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len_rhyme", default=36, type=int, help="Max length for tokenizer")
 parser.add_argument("--max_len_metre", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
@@ -32,11 +33,11 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 
 parser.add_argument("--block_count", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--n_embd_metre", default=512, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_metre", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_metre", default=128, type=int, help="Batch size.")
 
 parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
-parser.add_argument("--hidden_layer_rhyme", default=512, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=128, type=int, help="Batch size.")
+parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
+parser.add_argument("--batch_size_rhyme", default=256, type=int, help="Batch size.")
 
 def validate(model: ValidatorInterface, data, collate_fnc,times: int = 1000):
     true_hits = 0
@@ -49,6 +50,8 @@ def validate(model: ValidatorInterface, data, collate_fnc,times: int = 1000):
 
 
 def main(args):
+    # Time stamp for the validators
+    time_stamp = int(round(time.time() * 1000))
     
     if not os.path.exists(os.path.abspath(os.path.join(args.model_path, "rhyme"))):
         os.makedirs(os.path.abspath(os.path.join(args.model_path, "rhyme")))
@@ -101,7 +104,7 @@ def main(args):
     
     validate(rhyme_model.cpu(), train_data.pytorch_dataset_body,collate_rhyme)
     
-    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator")) )
+    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     
     collate  = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer, max_len=args.max_len_metre)
@@ -128,7 +131,7 @@ def main(args):
     
     validate(meter_model.cpu(), train_data.pytorch_dataset_body, collate)
     
-    torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator")) )
+    torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
