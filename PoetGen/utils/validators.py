@@ -55,8 +55,9 @@ class RhymeValidator(ValidatorInterface):
     def predict(self, input_ids=None, *args, **kwargs):
         
         hidden = self.input_layer(input_ids)
-        for layer in self.hidden_layers:
-            hidden = self.relu(hidden)
+        for layer, norm in zip(self.hidden_layers, self.batch_norms):
+            hidden = norm(hidden)
+            hidden = self.relu(hidden)    
             hidden = layer(hidden)
   
         rhyme_regression = self.rhyme_regressor(hidden)
