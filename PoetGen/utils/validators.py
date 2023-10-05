@@ -1,5 +1,5 @@
 import torch
-from transformers import  GPT2Model, GPT2Config
+from transformers import   GPT2Config, GPT2LMHeadModel
 from .poet_utils import RHYME_SCHEMES, METER_TYPES
 
 class ValidatorInterface(torch.nn.Module):
@@ -34,7 +34,7 @@ class RhymeValidator(ValidatorInterface):
         
         self.rhyme_regressor = torch.nn.Linear(self.model_size, len(RHYME_SCHEMES)) # Common Rhyme Type
         
-        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.2)
+        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.1)
         
     def forward(self, input_ids=None, attention_mask=None, rhyme=None, *args, **kwargs):
         
@@ -79,7 +79,7 @@ class MeterValidator(ValidatorInterface):
         super().__init__(*args, **kwargs)
         self.config = GPT2Config(n_positions=input_size, n_head=(n_embd//(768//12)),n_embd=n_embd, 
                                  n_layer=block_count, output_hidden_states=True)
-        self.model = GPT2Model(self.config)
+        self.model = GPT2LMHeadModel(self.config)
         
         self.model_size = n_embd
         
@@ -88,7 +88,7 @@ class MeterValidator(ValidatorInterface):
         self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.1)
         
     def forward(self, input_ids=None, attention_mask=None, metre=None, *args, **kwargs):
-        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
+        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
         
         last_hidden = outputs['hidden_states'][-1]
         
@@ -98,7 +98,7 @@ class MeterValidator(ValidatorInterface):
         meter_loss = self.loss_fnc(softmaxed, metre)
         
         return {"model_output" : softmaxed,
-                "loss": meter_loss}
+                "loss": meter_loss + outputs.loss}
         
     def predict(self, input_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids)

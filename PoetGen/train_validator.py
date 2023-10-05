@@ -17,7 +17,7 @@ from utils.poet_utils import VALID_CHARS
 parser = argparse.ArgumentParser()
 
 
-parser.add_argument("--epochs", default=128, type=int, help="Number of epochs to run.")
+
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
@@ -32,12 +32,14 @@ parser.add_argument("--prompt_length", default=True, type=bool, help="Verse leng
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
 parser.add_argument("--block_count", default=3, type=int, help="Max length for tokenizer")
-parser.add_argument("--n_embd_metre", default=512, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_metre", default=128, type=int, help="Batch size.")
+parser.add_argument("--n_embd_metre", default=768, type=int, help="Max length for tokenizer")
+parser.add_argument("--batch_size_metre", default=256, type=int, help="Batch size.")
+parser.add_argument("--epochs_metre", default=128, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_rhyme", default=256, type=int, help="Batch size.")
+parser.add_argument("--epochs_rhyme", default=256, type=int, help="Number of epochs to run.")
 
 def validate(model: ValidatorInterface, data, collate_fnc,times: int = 1000):
     model.eval()
@@ -91,7 +93,7 @@ def main(args):
                                   warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
-                                  num_train_epochs = args.epochs,
+                                  num_train_epochs = args.epochs_rhyme,
                                   learning_rate = args.learning_rate,
                                   fp16 = True if torch.cuda.is_available() else False,
                                   ddp_backend = "nccl",
@@ -117,11 +119,11 @@ def main(args):
                                   warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_metre,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
-                                  num_train_epochs = args.epochs,
+                                  num_train_epochs = args.epochs_metre,
                                   learning_rate = args.learning_rate,
                                   fp16 = True if torch.cuda.is_available() else False,
                                   ddp_backend = "nccl",
-                                  lr_scheduler_type="constant",
+                                  lr_scheduler_type="cosine_with_restarts",
                                   logging_dir = './logs',
                                   output_dir = './results',
                                   per_device_train_batch_size = args.batch_size_metre)
