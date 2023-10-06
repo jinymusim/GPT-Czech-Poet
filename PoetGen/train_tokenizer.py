@@ -26,7 +26,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # TheBloke/Llama-2-7B-fp16 4096
 # spital/gpt2-small-czech-cs 1024
 parser.add_argument("--default_tokenizer", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
-parser.add_argument("--tokenizer_type", default="BPE-Doubles", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "BPE-Doubles"], help="What type of tokenize to train")
+parser.add_argument("--tokenizer_type", default="BPE", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "BPE-Doubles"], help="What type of tokenize to train")
 parser.add_argument("--tokenizer_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"utils","tokenizers")),  type=str, help="Path to Model")
 
 
@@ -34,14 +34,16 @@ def main(args):
     tok = AutoTokenizer.from_pretrained(args.default_tokenizer)
     if args.tokenizer_type == "BPE":
         tokenizer = Tokenizer(BPE())
-        trainer = BpeTrainer(special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size, min_frequency=2)
+        trainer = BpeTrainer(special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size, min_frequency=2,
+                             initial_alphabet= ["#"])
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
         tokenizer.post_processor = BytePost(trim_offsets=False)
     elif args.tokenizer_type == "Unigram":
         tokenizer = Tokenizer(Unigram())
-        trainer = UnigramTrainer(unk_token=tok.all_special_tokens[0],special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size)
+        trainer = UnigramTrainer(unk_token=tok.all_special_tokens[0],special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size,
+                                 initial_alphabet= ["#"])
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
@@ -60,7 +62,7 @@ def main(args):
     elif args.tokenizer_type == "BPE-Doubles":
         tokenizer = Tokenizer(BPE())
         trainer = BpeTrainer(special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size, min_frequency=2, 
-                             initial_alphabet=SYLLABLES)
+                             initial_alphabet=SYLLABLES + ["#"])
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
@@ -70,7 +72,7 @@ def main(args):
     
 
     
-    train_data = CorpusDatasetPytorch(tok, data_dir=args.data_path)
+    train_data = CorpusDatasetPytorch(data_dir=args.data_path)
     #tokenizer.train_from_iterator(train_data.raw_dataset.get_text(),trainer=trainer)
     #tokenizer.train_from_iterator(train_data.raw_dataset.get_part(),trainer=trainer)
     tokenizer.train_from_iterator(train_data.raw_dataset.get_body(),trainer=trainer)

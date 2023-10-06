@@ -34,11 +34,11 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 parser.add_argument("--block_count", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--n_embd_metre", default=768, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_metre", default=256, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=128, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_metre", default=2048, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=256, type=int, help="Batch size.")
+parser.add_argument("--batch_size_rhyme", default=512, type=int, help="Batch size.")
 parser.add_argument("--epochs_rhyme", default=256, type=int, help="Number of epochs to run.")
 
 def validate(model: ValidatorInterface, data, collate_fnc,times: int = 1000):

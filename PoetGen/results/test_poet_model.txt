@@ -443,3 +443,28 @@ A
 11 ání # v tomném, sladkém usmívání
 10 ech # a v, v němž se tají každý vzdech,10ch v té chvíli, když se v prsou chvěje vz.
 10 ech # Ó,, ó, jak je sladký její dech!
+--- Model gpt-cz-poetry-all-e32e32 ---
+### Basic Decoding! ###
+ AABB  1895  J
+11 íží  a v okovách, jež vzdýchly, klid se níží.
+7 ýži  Jak na kostelní báni
+9 ění  mží démantových zubů šklení
+6 ení  se lebek mlčení.  
+
+ A  Hle, na sonet Ó, doby idylla! ?   no!
+
+ Teď  Ó šťastná Víro! praví teď. 9 a ruka jala jej....
+ Malebně, dvorně
+šudy 
+ Kyselá tvář se krade!    Slepě. 1
+ Moří
+  Naslouchá,  k němu,
+ přední.       ?     Sněný. A..
+. Kordí!.....
+ Kosí .. . Vale,  !!!. Pro!, Svítil.,!
+### Forced Decoding! ###
+ AABB ## 1895 ## J
+11 íti  Ó, jak to mohutná, přec mám tě míti,
+11 íti  když nad ní vyřkla kněžka slzy líti!
+9 ála  A přec to ona, která stála
+9 ála  před tváří hvězd, v niž úsměv vzplála, 
