@@ -23,9 +23,9 @@ from utils.poet_model_utils import ModelManipulation
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=128, type=int, help="Batch size.")
+parser.add_argument("--batch_size_LM", default=96, type=int, help="Batch size.")
 parser.add_argument("--epochs_LM", default=8, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=128, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=96, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=32, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
