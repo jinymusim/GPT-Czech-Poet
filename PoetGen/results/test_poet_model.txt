@@ -468,3 +468,28 @@ A
 11 íti  když nad ní vyřkla kněžka slzy líti!
 9 ála  A přec to ona, která stála
 9 ála  před tváří hvězd, v niž úsměv vzplála, 
+--- Model BPE-gpt-cz-poetry-all-e128e128 ---
+### Basic Decoding! ###
+ AABBCC ## 1883 
+12 ění  jemné žilky bájné poesie, snění,
+8 ení  věčné, věčné roztoužení
+5 ije vém  ve snu živém.
+7 ich  asé  perly krásné, malé
+6 yje  lidstvo rodí, koje
+9 ítí  se  srdce, jež právě prudce cítí
+4 yti  ukryty, ukryti,  
+
+
+3 ití  # a v tvém souviji. 4
+.   Co?  Co?
+ Romtesk?    Dasse?....  ,A?.... 1.,.!.!   Známe..    .....# Všechno. Vas.....??      ? ..
+211. Sed Sed..?
+ . Sed jsem. Jaké
+### Forced Decoding! ###
+ AABBCC ## 1887
+13 álo  se  mu baroni! Ó, mně to dávno zdálo se,
+13 álo # že kolem něho to zní! Jen hleď mi do očí!
+9 ěla ť učí!  každá teď mu sletěla.
+9 ěla # Ušklíbla se a jemu schvěla. 
+8 íci  děsně cosi  poutníci
+8 íci # se míhali v měsíci.    V líci,!! 9 i té knihy ve věnci
