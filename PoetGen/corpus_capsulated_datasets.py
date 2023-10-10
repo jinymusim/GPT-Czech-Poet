@@ -232,7 +232,7 @@ class CorpusDatasetPytorch:
                             if i in self.verse_len:
                                 rhyme_str = self._rhyme_string(rhyme)
                                 
-                                text = f"{rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + "\n" + self.end_token
+                                text = f"{rhyme_str} # {publish_year} # {metre}\n" + "\n".join(body) + "\n" + self.end_token
                                 context_text= "\n".join(context) + self.end_token
                                 self.data.append({
                                     "input_ids" : text,

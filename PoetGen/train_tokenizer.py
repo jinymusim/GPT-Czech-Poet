@@ -14,7 +14,7 @@ from tokenizers.decoders import ByteLevel as ByteDec, WordPiece as WordDec
 
 from tokenizers.normalizers import NFD
 
-from utils.poet_utils import SYLLABLES
+from utils.poet_utils import SYLLABLES, METER_TYPES, RHYME_SCHEMES
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
@@ -26,7 +26,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # TheBloke/Llama-2-7B-fp16 4096
 # spital/gpt2-small-czech-cs 1024
 parser.add_argument("--default_tokenizer", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
-parser.add_argument("--tokenizer_type", default="BPE-Doubles", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "BPE-Doubles"], help="What type of tokenize to train")
+parser.add_argument("--tokenizer_type", default="Unigram", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "BPE-Doubles"], help="What type of tokenize to train")
 parser.add_argument("--tokenizer_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"utils","tokenizers")),  type=str, help="Path to Model")
 
 
@@ -35,7 +35,7 @@ def main(args):
     if args.tokenizer_type == "BPE":
         tokenizer = Tokenizer(BPE())
         trainer = BpeTrainer(special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size, min_frequency=2,
-                             initial_alphabet= ["#"])
+                             initial_alphabet= ["#", "##"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
@@ -43,7 +43,7 @@ def main(args):
     elif args.tokenizer_type == "Unigram":
         tokenizer = Tokenizer(Unigram())
         trainer = UnigramTrainer(unk_token=tok.all_special_tokens[0],special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size,
-                                 initial_alphabet= ["#"])
+                                 initial_alphabet= ["#", "##"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
@@ -56,13 +56,14 @@ def main(args):
         tokenizer.pre_tokenizer = Whitespace()
     elif args.tokenizer_type == "WordPiece":
         tokenizer = Tokenizer(WordPiece(unk_token=tok.all_special_tokens[0]))
-        trainer = WordPieceTrainer(special_tokens=tok.all_special_tokens , vocab_size = tok.vocab_size, min_frequency=2, initial_alphabet= ["#"])
+        trainer = WordPieceTrainer(special_tokens=tok.all_special_tokens , vocab_size = tok.vocab_size, min_frequency=2, 
+                                   initial_alphabet= ["#", "##"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
         tokenizer.normalizer = NFD()
         tokenizer.decoder = WordDec()
     elif args.tokenizer_type == "BPE-Doubles":
         tokenizer = Tokenizer(BPE())
         trainer = BpeTrainer(special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size, min_frequency=2, 
-                             initial_alphabet=SYLLABLES +  ["#"])    
+                             initial_alphabet=SYLLABLES + ["#", "##"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])    
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
         tokenizer.post_processor = BytePost(trim_offsets=False)
@@ -81,9 +82,9 @@ def main(args):
     tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, "tokenizer.json"))
     
     
-    print("Strc prist # zkrz krk\n Hola hej")
-    print(tokenizer.encode("Strc prist # zkrz krk\n Hola hej").ids)
-    print(tokenizer.decode(tokenizer.encode("Strc prist # zkrz krk\n Hola hej").ids))
+    print("AABB # J # 1899\n Strc prist # zkrz krk\n Hola hej")
+    print(tokenizer.encode("AABB # J # 1899\n Strc prist # zkrz krk\n Hola hej").ids)
+    print(tokenizer.decode(tokenizer.encode("AABB # J # 1899\n Strc prist # zkrz krk\n Hola hej").ids))
     
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
