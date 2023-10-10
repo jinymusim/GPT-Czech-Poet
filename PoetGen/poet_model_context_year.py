@@ -131,9 +131,9 @@ class PoetModelContextYear(PoetModelInterface):
         if "RHYME" in features_dict.keys():
             poet_param_str += features_dict["RHYME"]
         if "YEAR" in features_dict.keys():
-            poet_param_str += f" ## {features_dict['YEAR']}"
+            poet_param_str += f" # {features_dict['YEAR']}"
         if "METER" in features_dict.keys():
-            poet_param_str += f" ## {features_dict['METER']}"
+            poet_param_str += f" # {features_dict['METER']}"
         # REPLACE OR INSERT BASED ON PRESENCE
         if len(features_dict_init.keys()) == 0: # Wierd Input
             prompt_list = [poet_param_str]
