@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import re
 
-from utils.poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, VALID_CHARS,SyllableMaker
+from utils.poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, VALID_CHARS, SyllableMaker
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizerBase
 
@@ -232,8 +232,8 @@ class CorpusDatasetPytorch:
                             if i in self.verse_len:
                                 rhyme_str = self._rhyme_string(rhyme)
                                 
-                                text = f"{rhyme_str} # {publish_year} # {metre}\n" + "\n".join(body) + "\n" + self.end_token
-                                context_text= "\n".join(context) + self.end_token
+                                text = f"{rhyme_str} # {publish_year} # {metre}\n" + "\n".join(body) + "\n"
+                                context_text= "\n".join(context)
                                 self.data.append({
                                     "input_ids" : text,
                                     "context_ids" : context_text,
@@ -305,7 +305,7 @@ class CorpusDatasetPytorch:
     def collate(batch, tokenizer: PreTrainedTokenizerBase ,max_len = 1024, max_context = 1024 ,mask_rate = 0.0):
         
         tokenizer.model_max_length = max_len
-        tokenized = tokenizer([text['input_ids'] for text in batch],return_tensors='pt', truncation=True, padding=True)
+        tokenized = tokenizer([text['input_ids'] + tokenizer.eos_token for text in batch],return_tensors='pt', truncation=True, padding=True)
         input_ids = tokenized['input_ids']
         attention = tokenized["attention_mask"]
         
@@ -337,7 +337,7 @@ class CorpusDatasetPytorch:
         context_attention_mask = None
         if "context_ids" in batch[0].keys():
             tokenizer.model_max_length = max_context
-            tokenized_context = tokenizer([text['context_ids'] for text in batch],return_tensors='pt', truncation=True, padding=True)
+            tokenized_context = tokenizer([text['context_ids'] + tokenizer.eos_token  for text in batch],return_tensors='pt', truncation=True, padding=True)
             context_ids = tokenized_context['input_ids']
             context_attention_mask = tokenized_context['attention_mask'] 
         
