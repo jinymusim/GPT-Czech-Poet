@@ -1,5 +1,6 @@
 import os
 import argparse
+import time
 
 
 from transformers import AutoTokenizer
@@ -26,11 +27,13 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # TheBloke/Llama-2-7B-fp16 4096
 # spital/gpt2-small-czech-cs 1024
 parser.add_argument("--default_tokenizer", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
-parser.add_argument("--tokenizer_type", default="Unigram", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "BPE-Doubles"], help="What type of tokenize to train")
+parser.add_argument("--tokenizer_type", default="WordPiece", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "BPE-Doubles"], help="What type of tokenize to train")
 parser.add_argument("--tokenizer_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"utils","tokenizers")),  type=str, help="Path to Model")
+parser.add_argument("--raw_data", default=False,  type=bool, help="If to use raw data")
 
 
 def main(args):
+    
     tok = AutoTokenizer.from_pretrained(args.default_tokenizer)
     if args.tokenizer_type == "BPE":
         tokenizer = Tokenizer(BPE())
@@ -73,13 +76,14 @@ def main(args):
 
     
     train_data = CorpusDatasetPytorch(data_dir=args.data_path)
-    #tokenizer.train_from_iterator(train_data.raw_dataset.get_text(),trainer=trainer)
-    #tokenizer.train_from_iterator(train_data.raw_dataset.get_part(),trainer=trainer)
-    tokenizer.train_from_iterator(train_data.raw_dataset.get_body(),trainer=trainer)
+    if args.raw_data:
+        tokenizer.train_from_iterator(train_data.raw_dataset.get_body(),trainer=trainer)
+    else:
+        tokenizer.train_from_iterator([text['input_ids'] for text in train_data.pytorch_dataset_body.data], trainer=trainer)
                 
     if not os.path.exists(os.path.join(args.tokenizer_path ,args.tokenizer_type)):
         os.makedirs(os.path.join(args.tokenizer_path, args.tokenizer_type))
-    tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, "tokenizer.json"))
+    tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, f"{'raw' if args.raw_data else 'processed'}_tokenizer.json"))
     
     
     print("AABB # J # 1899\n Strc prist # zkrz krk\n Hola hej")

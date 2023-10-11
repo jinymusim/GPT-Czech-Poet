@@ -34,3 +34,9 @@ Chars per token Base data: 9.737362298630016 +- 2.176732461956991
 All Runs Results: C:\Users\micha\Desktop\Git\Tensorflow-Shorts\PoetGen\utils\tokenizers\BPE-Doubles\tokenizer.json # Runs: 100 # Samples: 100
 Chars per token Poet data: 4.032971974862795 +- 0.16036852856198525
 Chars per token Base data: 3.7700921513863523 +- 0.07307242630174511
+All Runs Results: C:\Users\micha\Desktop\Git\Tensorflow-Shorts\PoetGen\utils\tokenizers\BPE\processed_tokenizer.json # Runs: 100 # Samples: 100
+Chars per token Poet data: 3.708941611409137 +- 0.2178069726711261
+Chars per token Base data: 3.2744861379271226 +- 0.06663968659758945
+All Runs Results: C:\Users\micha\Desktop\Git\Tensorflow-Shorts\PoetGen\utils\tokenizers\Unigram\processed_tokenizer.json # Runs: 100 # Samples: 100
+Chars per token Poet data: 3.3113513209024914 +- 0.2575136399035279
+Chars per token Base data: 2.7192276740545798 +- 0.052771969738579956
