@@ -493,3 +493,26 @@ A
 9 ěla # Ušklíbla se a jemu schvěla. 
 8 íci  děsně cosi  poutníci
 8 íci # se míhali v měsíci.    V líci,!! 9 i té knihy ve věnci
+--- Model BPE-gpt-cz-poetry-all-e8e32 ---
+### Basic Decoding! ###
+ AABB # 1892  J
+13 álo  u nás je dobře tak, že dřív nám přálo málo,
+9 alo# než by nám nebe slibovalo.
+4 ěst  slabá jen zvěst
+6 ezí  trpkých nám do hrází  
+5 íst v Bezkydách je číst,   .
+ D emeli se, pojdem.  Vzduchu!  Deme?
+
+8  má  zavřena všechna okna má.  ?
+‛   Je vrchní,  nu, generál,....
+20 ímášť  jízlivě prohlásil se pan farář.... 1.!
+ Zášť.!  .  já 
+ Ej, nuť, dím, já sám! dím.� spravím,!!!   a já raději mám oči zadím!!.... Nu, Bože!!
+### Forced Decoding! ###
+ AABBCC # 1883
+12 ívá 
+12 ívá # a kdo jde kol, na ten se neoptává,
+6 ěti  lze  co v městě zříti lze.
+6 ěti # A nejsou malé děti,  
+8 áčí  Petr dolů s nimi kráčí. 9 ích   se ohlédl a zmizel v rozpacích.   .
+8 áčí # V tom však již babka k oknu kráčí,  ..! ,
