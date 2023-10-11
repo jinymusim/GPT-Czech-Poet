@@ -27,9 +27,10 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # TheBloke/Llama-2-7B-fp16 4096
 # spital/gpt2-small-czech-cs 1024
 parser.add_argument("--default_tokenizer", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
-parser.add_argument("--tokenizer_type", default="BPE", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "BPE-Doubles"], help="What type of tokenize to train")
+parser.add_argument("--tokenizer_type", default="WordLevel", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece"], help="What type of tokenize to train")
 parser.add_argument("--tokenizer_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"utils","tokenizers")),  type=str, help="Path to Model")
 parser.add_argument("--raw_data", default=False,  type=bool, help="If to use raw data")
+parser.add_argument("--syllables", default=True,  type=bool, help="If to use syllables")
 
 
 def main(args):
@@ -63,13 +64,6 @@ def main(args):
                                    initial_alphabet= ["#", "##"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
         tokenizer.normalizer = NFD()
         tokenizer.decoder = WordDec()
-    elif args.tokenizer_type == "BPE-Doubles":
-        tokenizer = Tokenizer(BPE())
-        trainer = BpeTrainer(special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size, min_frequency=2, 
-                             initial_alphabet=SYLLABLES + ["#", "##"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])    
-        tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
-        tokenizer.decoder = ByteDec()
-        tokenizer.post_processor = BytePost(trim_offsets=False)
     else:
         raise ValueError("Unknown tokenize type")
     
@@ -79,16 +73,19 @@ def main(args):
     if args.raw_data:
         tokenizer.train_from_iterator(train_data.raw_dataset.get_body(),trainer=trainer)
     else:
-        tokenizer.train_from_iterator([text['input_ids'] for text in train_data.pytorch_dataset_body.data], trainer=trainer)
+        if args.syllables:
+            tokenizer.train_from_iterator([text['input_ids'][1] for text in train_data.pytorch_dataset_body.data], trainer=trainer)
+        else:      
+            tokenizer.train_from_iterator([text['input_ids'][0] for text in train_data.pytorch_dataset_body.data], trainer=trainer)
                 
     if not os.path.exists(os.path.join(args.tokenizer_path ,args.tokenizer_type)):
         os.makedirs(os.path.join(args.tokenizer_path, args.tokenizer_type))
-    tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, f"{'raw' if args.raw_data else 'processed'}_tokenizer.json"))
+    tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, f"{'syllabs_' if args.syllables else ''}{'raw' if args.raw_data else 'processed'}_tokenizer.json"))
     
     
-    print("AABB # J # 1899\n Strc prist # zkrz krk\n Hola hej")
-    print(tokenizer.encode("AABB # J # 1899\n Strc prist # zkrz krk\n Hola hej").ids)
-    print(tokenizer.decode(tokenizer.encode("AABB # J # 1899\n Strc prist # zkrz krk\n Hola hej").ids))
+    print("AABB # J # 1899\n strc prist # zkrz krk\n Hola hej")
+    print(tokenizer.encode("AABB # J # 1899\n strc prist # zkrz krk\n Hola hej").ids)
+    print(tokenizer.decode(tokenizer.encode("AABB # J # 1899\n strc prist # zkrz krk\n Hola hej").ids))
     
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)

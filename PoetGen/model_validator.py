@@ -2,6 +2,7 @@ import torch
 import os
 import random
 import re
+import argparse  
 import numpy as np
 
 from tqdm import tqdm
@@ -13,30 +14,30 @@ from utils.validators import ValidatorInterface
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 class ModelValidator:
-    def __init__(self, model_name: str, tokenizer_name: str,
-                 epochs:int = 20, runs_per_epoch: int = 10, 
+    def __init__(self, args: argparse.Namespace,
                  result_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__),"results")),
-                 rhyme_model_name: str = "", meter_model_name:str = "", validator_tokenizer_name: str = "",
-                 rhyme_collate_fnc = None, meter_collate_fnc = None) -> None:
-        self.model_name = model_name
-        _ ,self.model_rel_name =  os.path.split(model_name)
-        self.model: PoetModelInterface= (torch.load(model_name, map_location=torch.device('cpu')))
+                 rhyme_collate_fnc = None) -> None:
+        
+        self.args = args
+        
+        self.model_name = args.model_path_full
+        _ ,self.model_rel_name =  os.path.split(self.model_name)
+        self.model: PoetModelInterface= (torch.load(self.model_name, map_location=torch.device('cpu')))
         
         self.rhyme_model, self.meter_model = None, None
-        if rhyme_model_name:
-            self.rhyme_model: ValidatorInterface = (torch.load(rhyme_model_name, map_location=torch.device('cpu')))    
+        if args.rhyme_model_path_full:
+            self.rhyme_model: ValidatorInterface = (torch.load(args.rhyme_model_path_full, map_location=torch.device('cpu')))    
         self.rhyme_collate = rhyme_collate_fnc
         
-        if meter_model_name:
-            self.meter_model: ValidatorInterface = (torch.load(meter_model_name, map_location=torch.device('cpu')))
-        self.meter_collate = meter_collate_fnc
+        if args.metre_model_path_full:
+            self.meter_model: ValidatorInterface = (torch.load(args.metre_model_path_full, map_location=torch.device('cpu')))
             
         self.validator_tokenizer: PreTrainedTokenizerBase = None
-        if validator_tokenizer_name:
+        if args.validator_tokenizer_model:
             try:
-                self.validator_tokenizer = AutoTokenizer.from_pretrained(validator_tokenizer_name)
+                self.validator_tokenizer = AutoTokenizer.from_pretrained(args.validator_tokenizer_model)
             except:
-                self.validator_tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=validator_tokenizer_name)
+                self.validator_tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model)
                 self.validator_tokenizer.eos_token = "<|endoftext|>"
                 self.validator_tokenizer.eos_token_id = 0
                 self.validator_tokenizer.pad_token = '<|endoftext|>'
@@ -45,9 +46,9 @@ class ModelValidator:
                 self.validator_tokenizer.unk_token_id = 0
                 
         try:    
-            self.tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(tokenizer_name)
+            self.tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.default_tokenizer_model)
         except:
-            self.tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=tokenizer_name)
+            self.tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.default_tokenizer_model)
             self.tokenizer.eos_token = "<|endoftext|>"
             self.tokenizer.eos_token_id = 0
             self.tokenizer.pad_token = '<|endoftext|>'
@@ -55,8 +56,8 @@ class ModelValidator:
             self.tokenizer.unk_token = '<|endoftext|>'
             self.tokenizer.unk_token_id = 0
             
-        self.epochs = epochs
-        self.runs_per_epoch = runs_per_epoch
+        self.epochs = args.num_runs
+        self.runs_per_epoch = args.num_samples
         self.result_dir = result_dir
         if not os.path.exists(self.result_dir):
             os.makedirs(self.result_dir)
@@ -99,17 +100,14 @@ class ModelValidator:
                         rhyme_all +=1
                         if self.rhyme_model != None and "RHYME" in values.keys():
                             rhyme_vec = TextAnalysis._rhyme_vector(values["RHYME"])
-                            input_ids = self.rhyme_collate([{"input_ids" :decoded_cont}],
-                                                          self.validator_tokenizer, 
+                            input_ids = CorpusDatasetPytorch.collate_rhyme([{"input_ids" :[decoded_cont]}],
                                                           max_len=self.rhyme_model.raw_size)['input_ids']
                             rhyme_pos += self.rhyme_model.validate(input_ids=input_ids,
                                                                    rhyme=torch.tensor(rhyme_vec.reshape(1,-1)))
                         if self.meter_model != None and "METER" in values.keys():
                             metre_vec = TextAnalysis._metre_vector(values["METER"])
-                            
-                            input_ids =self.meter_collate([{"input_ids" :decoded_cont}],
-                                                          self.validator_tokenizer, 
-                                                          max_len=self.meter_model.model.config.n_positions)['input_ids']
+                            self.validate_tokenizer.model_max_length = self.meter_model.model.config.n_positions
+                            input_ids =self.validator_tokenizer([decoded_cont],return_tensors='pt', truncation=True, padding=True )['input_ids']
                             metre_pos += self.meter_model.validate(input_ids=input_ids,
                                                                    metre=torch.tensor(metre_vec.reshape(1,-1)))
                         continue
@@ -148,7 +146,7 @@ class ModelValidator:
         
       
       
-import argparse  
+
         
 parser = argparse.ArgumentParser()
 
@@ -164,15 +162,7 @@ parser.add_argument("--validator_tokenizer_model", default=os.path.abspath(os.pa
 
 
 def main(args):
-    val = ModelValidator(model_name=args.model_path_full, 
-                         tokenizer_name=args.default_tokenizer_model, 
-                         epochs=args.num_runs, 
-                         runs_per_epoch=args.num_samples,
-                         rhyme_model_name= args.rhyme_model_path_full,
-                         meter_model_name= args.metre_model_path_full,
-                         validator_tokenizer_name=args.validator_tokenizer_model,
-                         rhyme_collate_fnc=CorpusDatasetPytorch.collate_rhyme,
-                         meter_collate_fnc=CorpusDatasetPytorch.collate)
+    val = ModelValidator(args,rhyme_collate_fnc=CorpusDatasetPytorch.collate_rhyme)
     val.full_validate()
 
 if __name__ == "__main__":

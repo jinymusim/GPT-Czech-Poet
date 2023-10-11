@@ -31,15 +31,17 @@ parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is pr
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
+parser.add_argument("--syllables", default=False, type=bool, help="If to use syllable data")
+
 parser.add_argument("--block_count", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--n_embd_metre", default=768, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_metre", default=256, type=int, help="Batch size.")
 parser.add_argument("--epochs_metre", default=2048, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
+parser.add_argument("--hidden_layers", default=2, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=512, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=256, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_rhyme", default=128, type=int, help="Batch size.")
+parser.add_argument("--epochs_rhyme", default=32, type=int, help="Number of epochs to run.")
 
 def validate(model: ValidatorInterface, data, collate_fnc,times: int = 1000):
     model.eval()
@@ -80,7 +82,7 @@ def main(args):
         tokenizer.unk_token = "<|endoftext|>"
         tokenizer.unk_token_id = 0
         
-    collate_rhyme = partial(CorpusDatasetPytorch.collate_rhyme, tokenizer=tokenizer,max_len=args.max_len_rhyme, max_verse_len= max(args.verse_len))
+    collate_rhyme = partial(CorpusDatasetPytorch.collate_rhyme,max_len=args.max_len_rhyme, max_verse_len= max(args.verse_len))
     
     train_data = CorpusDatasetPytorch(data_dir=args.data_path, prompt_ending=args.prompt_ending, 
                                       prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
@@ -112,7 +114,7 @@ def main(args):
     torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     
-    collate  = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer, max_len=args.max_len_metre)
+    collate  = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer, max_len=args.max_len_metre, syllables=args.syllables)
     
     training_args = TrainingArguments(
                                   save_strategy  = "no",

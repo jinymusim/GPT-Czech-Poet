@@ -70,6 +70,7 @@ parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is pr
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
+parser.add_argument("--syllables", default=False, type=bool, help="If inputs should be parsed by syllables")
 
 
 def main(args: argparse.Namespace):
@@ -123,7 +124,7 @@ def main(args: argparse.Namespace):
     
     # Partial Function to use as data collection with input masking
     collate = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer,max_len=args.max_len, 
-                      max_context=args.context_max_len, mask_rate=args.input_mask_rate)
+                      max_context=args.context_max_len, mask_rate=args.input_mask_rate, syllables=args.syllables)
     
 
     train_data = CorpusDatasetPytorch(data_dir=args.data_path, prompt_ending=args.prompt_ending, 

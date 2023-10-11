@@ -70,9 +70,9 @@ class CorpusDatasetPytorch:
                  
         @staticmethod
         def _vowels_and_endings(raw_text):
-            vowels = len(SyllableMaker.syllabify(raw_text)) #INFO: Now counts the number of syllables
-            sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_text)
-            ending = sub.strip()[-2:].lower()
+            syllabs = SyllableMaker.syllabify(raw_text)
+            vowels = len(syllabs) #INFO: Now counts the number of syllables
+            ending = syllabs[-1]
             return vowels, ending
         
         @staticmethod
@@ -87,7 +87,12 @@ class CorpusDatasetPytorch:
         @staticmethod
         def _remove_most_nonchar(raw_text):
             text = re.sub(r'[–\„\“\’\;\:()\]\[\_\*\‘\”\'\-\—\"]+', "", raw_text)
-            return text
+            return text.lower()
+        
+        @staticmethod
+        def _syllable_line(raw_text):
+            ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
+            return " ".join(SyllableMaker.syllabify(raw_text)) + ending
                      
             
         def data_text_line_gen(self):
@@ -100,9 +105,10 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             scanned_text = self._remove_most_nonchar(text_line['text'])
                             
+                            syllable_line = self._syllable_line(scanned_text)
                             num_vowels, verse_end = self._vowels_and_endings(scanned_text)
                             self.data.append({
-                                "input_ids" : scanned_text,
+                                "input_ids" : [scanned_text,syllable_line],
                                 "nums": [num_vowels],
                                 "verse_end": verse_end
                                      })
@@ -196,10 +202,18 @@ class CorpusDatasetPytorch:
             verse_end = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
             return num_str + verse_end + raw_text
         
+        def _construct_syllable_line(self, raw_text):
+            ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
+            syllables = SyllableMaker.syllabify(raw_text)
+            num_str = f"{len(syllables)} " if self.prompt_length else ""
+            verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
+            return num_str + verse_end + " ".join(syllables) + ending
+            
+        
         @staticmethod
         def _remove_most_nonchar(raw_text):
             text = re.sub(r'[–\„\“\’\;\:()\]\[\_\*\‘\”\'\-\—\"]+', "", raw_text)
-            return text
+            return text.lower()
             
                                                            
         def data_body_gen(self):
@@ -214,6 +228,7 @@ class CorpusDatasetPytorch:
 
                     for part_line in data_line['body']:                                                        
                         body = []
+                        body_syllabs = []
                         rhyme= []
                         i = 0
                         for text_line in part_line:
@@ -226,6 +241,7 @@ class CorpusDatasetPytorch:
                             scanned_text = self._remove_most_nonchar(text_line["text"])
 
                             body.append(self._construct_line(scanned_text))
+                            body_syllabs.append(self._construct_syllable_line(scanned_text))
                             
                             i+=1
                             
@@ -233,9 +249,10 @@ class CorpusDatasetPytorch:
                                 rhyme_str = self._rhyme_string(rhyme)
                                 
                                 text = f"{rhyme_str} # {publish_year} # {metre}\n" + "\n".join(body) + "\n"
+                                syllable_text = f"{rhyme_str} # {publish_year} # {metre}\n" + "\n".join(body_syllabs) + "\n"
                                 context_text= "\n".join(context)
                                 self.data.append({
-                                    "input_ids" : text,
+                                    "input_ids" : [text,syllable_text],
                                     "context_ids" : context_text,
                                     "year": publish_year,
                                     "rhyme":  rhyme_str,
@@ -302,10 +319,11 @@ class CorpusDatasetPytorch:
         
         
     @staticmethod
-    def collate(batch, tokenizer: PreTrainedTokenizerBase ,max_len = 1024, max_context = 1024 ,mask_rate = 0.0):
+    def collate(batch, tokenizer: PreTrainedTokenizerBase ,max_len = 1024, max_context = 1024 ,mask_rate = 0.0, syllables: bool = False):
+        index = 1 if syllables else 0
         
         tokenizer.model_max_length = max_len
-        tokenized = tokenizer([text['input_ids'] + tokenizer.eos_token for text in batch],return_tensors='pt', truncation=True, padding=True)
+        tokenized = tokenizer([text['input_ids'][index] + tokenizer.eos_token for text in batch],return_tensors='pt', truncation=True, padding=True)
         input_ids = tokenized['input_ids']
         attention = tokenized["attention_mask"]
         
@@ -354,13 +372,12 @@ class CorpusDatasetPytorch:
             "metre" : metre}
         
     @staticmethod
-    def collate_rhyme(batch, tokenizer: PreTrainedTokenizerBase, max_len:int = 36, max_verse_len:int = 6):
-        
+    def collate_rhyme(batch, max_len:int = 36, max_verse_len:int = 6):
         chars_per_line = max_len//max_verse_len
         
         input_ids = torch.zeros((len(batch), max_len * len(VALID_CHARS)))
         for i, text in enumerate(batch):
-            one_input = text['input_ids']
+            one_input = text['input_ids'][0]
             lines = [re.sub(r'[^aábcčdďeéěfghiíjklmnňoópqrřsštťuúůvwxyýzž]+', '', line.lower()) for line in one_input.splitlines()]
             j = 0
             while j<len(lines) and j<max_verse_len:

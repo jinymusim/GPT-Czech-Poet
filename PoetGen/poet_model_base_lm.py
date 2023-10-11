@@ -2,6 +2,8 @@ from transformers import  AutoModelForCausalLM, AutoTokenizer
 from utils.poet_model_utils import PoetModelInterface
 from utils.poet_utils import TextAnalysis
 
+from transformers.utils import ModelOutput
+
 class PoetModelBase(PoetModelInterface):
     def __init__(self, pretrainedModel, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -21,8 +23,7 @@ class PoetModelBase(PoetModelInterface):
     def forward(self, input_ids=None, labels=None, attention_mask=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, labels=labels, attention_mask=attention_mask)
         
-        return {"model_output" : outputs,
-                "loss" : outputs.loss}
+        return ModelOutput(loss= outputs.loss, model_output=outputs) # {"model_output" : outputs,"loss" : outputs.loss}
     
     def save_LM(self, LM_path):
         self.model.save_pretrained(LM_path)
