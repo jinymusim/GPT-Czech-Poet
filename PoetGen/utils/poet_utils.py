@@ -53,9 +53,9 @@ import numpy as np
 class TextManipulation:
         
     @staticmethod
-    def _remove_most_nonchar(raw_text):
+    def _remove_most_nonchar(raw_text, lower_case=True):
         text = re.sub(r'[–\„\“\’\;\:()\]\[\_\*\‘\”\'\-\—\"]+', "", raw_text)
-        return text
+        return text.lower() if lower_case else text
     
     @staticmethod
     def _remove_all_nonchar(raw_text):

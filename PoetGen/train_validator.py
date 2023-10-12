@@ -33,28 +33,35 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 
 parser.add_argument("--syllables", default=False, type=bool, help="If to use syllable data")
 
-parser.add_argument("--block_count", default=3, type=int, help="Max length for tokenizer")
-parser.add_argument("--n_embd_metre", default=768, type=int, help="Max length for tokenizer")
+parser.add_argument("--block_count", default=4, type=int, help="Max length for tokenizer")
+parser.add_argument("--n_embd_metre", default=512, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_metre", default=256, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=2048, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_metre", default=128, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--hidden_layers", default=2, type=int, help="Max length for tokenizer")
+parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=128, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=32, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_rhyme", default=1024, type=int, help="Batch size.")
+parser.add_argument("--epochs_rhyme", default=128, type=int, help="Number of epochs to run.")
 
-def validate(model: ValidatorInterface, data, collate_fnc,times: int = 1000):
+parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
+parser.add_argument("--val_data_rate", default=0.1, type=float, help="Rate of validation data")
+
+parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "validators_acc.txt")), type=str, help="Result of Analysis File")
+
+def validate(model: ValidatorInterface, data, collate_fnc):
     model.eval()
     
     true_hits = 0
-    for i in range(times):
+    for i in range(len(data)):
         datum = collate_fnc([data[i]])
         true_hits += model.validate(input_ids=datum["input_ids"],
                                     rhyme=datum["rhyme"], 
                                     metre=datum["metre"])
-    print(f"Validation acc: {true_hits/times}")
+    print(f"Validation acc: {true_hits/len(data)}")
     
     model.train()
+    
+    return true_hits/len(data)
 
 
 def main(args):
@@ -86,7 +93,7 @@ def main(args):
     
     train_data = CorpusDatasetPytorch(data_dir=args.data_path, prompt_ending=args.prompt_ending, 
                                       prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
-                                      verse_len=args.verse_len)
+                                      verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate)
     
     # Parallel Plugin
     
@@ -109,9 +116,10 @@ def main(args):
                            train_dataset= train_data.pytorch_dataset_body,
                            data_collator=collate_rhyme).train()
     
-    validate(rhyme_model.cpu(), train_data.pytorch_dataset_body,collate_rhyme)
+    rhyme_acc =  validate(rhyme_model.cpu(), train_data.pytorch_dataset_body.validation_data,collate_rhyme)
+
     
-    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     
     collate  = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer, max_len=args.max_len_metre, syllables=args.syllables)
@@ -136,7 +144,12 @@ def main(args):
                            train_dataset= train_data.pytorch_dataset_body,
                            data_collator=collate).train()
     
-    validate(meter_model.cpu(), train_data.pytorch_dataset_body, collate)
+    metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
+    
+    with open(args.result_file, 'a') as file:
+        print(f"### {args.tokenizer} ###", file=file)
+        print(f"Rhyme Validator: MLP {args.hidden_layers},{args.hidden_layer_rhyme} Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}")
+        print(f"Metre Validator: GPT {args.block_count},{args.n_embd_metre},{args.max_len_metre} Epochs: {args.epochs_metre} Accuracy: {metre_acc}")
     
     torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     

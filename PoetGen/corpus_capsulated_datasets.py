@@ -11,8 +11,9 @@ from transformers import PreTrainedTokenizerBase
 class CorpusDatasetPytorch:
     
     class RawDataset:
-        def __init__(self, data_file_paths):
+        def __init__(self, data_file_paths, lower_case:bool = True):
             self._data_file_paths = data_file_paths
+            self.lower_case = lower_case
         
         def gen_files(self):
             for filename in self._data_file_paths:
@@ -26,7 +27,7 @@ class CorpusDatasetPytorch:
                 for data_line in datum:
                     for part_line in data_line['body']:
                         for text_line in part_line:
-                            yield text_line['text'].lower()
+                            yield text_line['text'].lower() if self.lower_case else text_line['text']
                             
         def get_part(self):
              for step,file in enumerate(self.gen_files()):
@@ -38,7 +39,7 @@ class CorpusDatasetPytorch:
                         part = []
                         for text_line in part_line:
                             part.append(text_line['text'])
-                        yield "\n".join(part).lower()
+                        yield "\n".join(part).lower() if self.lower_case else "\n".join(part)
         
         def get_body(self):
              for step,file in enumerate(self.gen_files()):
@@ -52,16 +53,20 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             body.append(text_line['text'])
                         body.append("\n")
-                    yield "\n".join(body).lower()
+                    yield "\n".join(body).lower() if self.lower_case else "\n".join(body)
     
     class TextDataset(Dataset):
         
-        def __init__(self, data_file_paths, prompt_length=True, prompt_ending=True):
+        def __init__(self, data_file_paths, prompt_length=True, prompt_ending=True, lower_case=True, val_data_rate: float = 0.1):
             self._data_file_paths = data_file_paths
             self.prompt_length = prompt_length
             self.prompt_ending = prompt_ending
+            self.lower_case = lower_case
+            
+            self.val_data_rate = val_data_rate
             
             self.data = []
+            self.validation_data = []
          
          
         def gen_files(self):
@@ -98,11 +103,18 @@ class CorpusDatasetPytorch:
                 for data_line in datum:
                     for part_line in data_line['body']:
                         for text_line in part_line:
-                            scanned_text = TextManipulation._remove_most_nonchar(text_line['text']).lower()
+                            scanned_text = TextManipulation._remove_most_nonchar(text_line['text'], self.lower_case)
                             
                             syllable_line = self._syllable_line(scanned_text)
                             num_vowels, verse_end = self._vowels_and_endings(scanned_text)
-                            self.data.append({
+                            if np.random.rand() > self.val_data_rate: 
+                                self.data.append({
+                                "input_ids" : [scanned_text,syllable_line],
+                                "nums": [num_vowels],
+                                "verse_end": verse_end
+                                     })
+                            else:
+                                self.validation_data.append({
                                 "input_ids" : [scanned_text,syllable_line],
                                 "nums": [num_vowels],
                                 "verse_end": verse_end
@@ -117,15 +129,17 @@ class CorpusDatasetPytorch:
         
     class BodyDataset(Dataset):
         def __init__(self, data_file_paths,
-                     prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6]):
+                     prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate: float = 0.1):
             self._data_file_paths = data_file_paths
             self.prompt_length = prompt_length
             self.prompt_ending = prompt_ending
             self.prompt_verse = prompt_verse
             self.verse_len = verse_len
-
+            self.lower_case = lower_case
+            self.val_data_rate = val_data_rate
             
-            self.data = []   
+            self.data = []
+            self.validation_data = []
         
         def gen_files(self):
             for filename in self._data_file_paths:
@@ -199,7 +213,7 @@ class CorpusDatasetPytorch:
 
                             rhyme.append(text_line["rhyme"])  
                             
-                            scanned_text = TextManipulation._remove_most_nonchar(text_line["text"]).lower()
+                            scanned_text = TextManipulation._remove_most_nonchar(text_line["text"], self.lower_case)
 
                             body.append(self._construct_line(scanned_text))
                             body_syllabs.append(self._construct_syllable_line(scanned_text))
@@ -212,7 +226,16 @@ class CorpusDatasetPytorch:
                                 text = f"{rhyme_str} # {publish_year} # {metre}\n" + "\n".join(body) + "\n"
                                 syllable_text = f"{rhyme_str} # {publish_year} # {metre}\n" + "\n".join(body_syllabs) + "\n"
                                 context_text= "\n".join(context)
-                                self.data.append({
+                                if np.random.rand() > self.val_data_rate:
+                                    self.data.append({
+                                    "input_ids" : [text,syllable_text],
+                                    "context_ids" : context_text,
+                                    "year": publish_year,
+                                    "rhyme":  rhyme_str,
+                                    "metre" : metre
+                                     })
+                                else:
+                                    self.validation_data.append({
                                     "input_ids" : [text,syllable_text],
                                     "context_ids" : context_text,
                                     "year": publish_year,
@@ -258,19 +281,21 @@ class CorpusDatasetPytorch:
     def load_raw_(self):
         filenames = self.get_filenames()
             
-        self.raw_dataset = CorpusDatasetPytorch.RawDataset(filenames)
+        self.raw_dataset = CorpusDatasetPytorch.RawDataset(filenames, self.lower_case)
     
-    def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=[4,6]):
+    def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=[4,6], val_data_rate=0.1):
         filenames = self.get_filenames()
         
         self.pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset(filenames, prompt_ending=prompt_ending, 
                                                     prompt_length=prompt_length, prompt_verse=prompt_verse, 
-                                                    verse_len=verse_len)
+                                                    verse_len=verse_len, lower_case=self.lower_case, 
+                                                    val_data_rate=val_data_rate)
         self.pytorch_dataset_body.data_body_gen()
          
         
         self.pytorch_dataset_text = CorpusDatasetPytorch.TextDataset(filenames, prompt_ending=prompt_ending, 
-                                                    prompt_length=prompt_length)
+                                                    prompt_length=prompt_length, lower_case=self.lower_case,
+                                                    val_data_rate=val_data_rate)
         
         self.pytorch_dataset_text.data_text_line_gen()
         
@@ -371,16 +396,22 @@ class CorpusDatasetPytorch:
             "metre": None}     
         
     def __init__(self, data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir='./', 
-                 prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6]):
+                 prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate=0.1):
+        self.lower_case = lower_case
         self.data_dir = data_dir
-        if  os.path.isfile(os.path.join(cache_dir, "body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "text_poet_data.json")):
+        if  os.path.isfile(os.path.join(cache_dir, "body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "text_poet_data.json")) \
+            and os.path.isfile(os.path.join(cache_dir, "val_body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "val_text_poet_data.json")):
             self.create_empty()
             self.pytorch_dataset_body.data =list(json.load( open( os.path.join(cache_dir, "body_poet_data.json"), 'r')))
             self.pytorch_dataset_text.data =list(json.load( open( os.path.join(cache_dir, "text_poet_data.json"), 'r')))
+            self.pytorch_dataset_body.validation_data = list(json.load( open( os.path.join(cache_dir, "val_body_poet_data.json"), 'r')))
+            self.pytorch_dataset_text.data = list(json.load( open( os.path.join(cache_dir, "val_text_poet_data.json"), 'r')))
         else:
-            self.load_json_filenames(prompt_length, prompt_ending, prompt_verse, verse_len=verse_len)
+            self.load_json_filenames(prompt_length, prompt_ending, prompt_verse, verse_len=verse_len, val_data_rate=val_data_rate)
             json.dump(self.pytorch_dataset_body.data, open( os.path.join(cache_dir, "body_poet_data.json"), 'w+'), indent = 6)
             json.dump(self.pytorch_dataset_text.data, open( os.path.join(cache_dir, "text_poet_data.json"), 'w+'), indent = 6)
+            json.dump(self.pytorch_dataset_body.validation_data, open( os.path.join(cache_dir, "val_body_poet_data.json"), 'w+'), indent = 6)
+            json.dump(self.pytorch_dataset_text.validation_data, open( os.path.join(cache_dir, "val_text_poet_data.json"), 'w+'), indent = 6)
             
         self.load_raw_()
         
