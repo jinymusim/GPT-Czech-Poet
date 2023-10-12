@@ -25,7 +25,22 @@ VERSE_ENDS = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'ce'
                 'yz', None]
 
 POET_YEARS_BUCKETS = [1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, None]
-METER_TYPES = ["J","T","D","A","X","Y","N", None]
+METER_TYPES = ["J","T","D","A","X","Y","N","H","P", None]
+METER_TRANSLATE = {
+    "J":"J",
+    "T":"T",
+    "D":"D",
+    "A":"A",
+    "X":"X",
+    "Y":"Y",
+    "hexameter": "H",
+    "pentameter": "P",
+    "N":"N"
+}
+
+PAD = "<|PAD|>"
+UNK = "<|UNK|>"
+EOS = "<|EOS|>"
 
 VALID_CHARS = ["",'a','á','b','c','č','d','ď','e','é','ě',
                'f','g','h','i','í','j','k','l','m','n','ň',
@@ -46,6 +61,14 @@ class TextManipulation:
     def _remove_all_nonchar(raw_text):
         sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_text)
         return sub
+    
+    @staticmethod
+    def _year_bucketor(raw_year):
+        if TextAnalysis._is_year(raw_year):
+            year_index = np.argmin(np.abs(np.asarray(POET_YEARS_BUCKETS[:-1]) - int(raw_year)))
+            return str(POET_YEARS_BUCKETS[year_index])
+        else:
+            return "NaN"
 
 class TextAnalysis:
     
@@ -57,7 +80,7 @@ class TextAnalysis:
     
     @staticmethod
     def _is_year(year:str):
-        return year.isdigit() and int(year) > 1_000 and int(year) < 10_000
+        return (year.isdigit() and int(year) > 1_000 and int(year) < 10_000) or year == "NaN"
     
     @staticmethod
     def _rhyme_like(rhyme:str):
@@ -103,7 +126,7 @@ class TextAnalysis:
             if TextAnalysis._is_meter(param):
                 poet_params["METER"] = param
             elif TextAnalysis._is_year(param):
-                poet_params["YEAR"] = param
+                poet_params["YEAR"] = TextManipulation._year_bucketor(param)
             elif TextAnalysis._rhyme_like(param):
                 poet_params["RHYME"] = param
         return poet_params
@@ -114,7 +137,7 @@ class TextAnalysis:
     
     @staticmethod
     def _is_line_end(end:str):
-        return end.isalpha()  and len(end) <= 3 
+        return end.isalpha()  and len(end) <= 5 
     
     @staticmethod
     def _continuos_line_analysis(text:str):

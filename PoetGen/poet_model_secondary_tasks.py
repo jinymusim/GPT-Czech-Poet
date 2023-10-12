@@ -100,7 +100,7 @@ class PoetModelSecondaryTasks(PoetModelInterface):
                                 num_beams=2,
                                 no_repeat_ngram_size=2,
                                 early_stopping=True,
-                                pad_token_id=tokenizer.eos_token_id)
+                                pad_token_id=tokenizer.pad_token_id)
         rhyme_dec = tokenizer.decode(rhyme_line[0], skip_special_tokens=True).splitlines()[0]
         features_dict= self.analyze_prompt(rhyme_dec)
         for key, value in features_dict_init.items():
@@ -144,7 +144,7 @@ class PoetModelSecondaryTasks(PoetModelInterface):
                                 num_beams=2,
                                 no_repeat_ngram_size=2,
                                 early_stopping=True,
-                                pad_token_id=tokenizer.eos_token_id)
+                                pad_token_id=tokenizer.pad_token_id)
             decoded_line: str = tokenizer.decode(out_line[0], skip_special_tokens=True).splitlines()[len(prompt_list)]
             if  f"LENGTH_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1:
                 features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]

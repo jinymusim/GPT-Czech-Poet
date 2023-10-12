@@ -7,7 +7,7 @@ import numpy as np
 
 from tqdm import tqdm
 from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
-from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation
+from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, UNK, EOS, PAD
 from utils.poet_model_utils import PoetModelInterface
 from utils.validators import ValidatorInterface
 
@@ -38,23 +38,23 @@ class ModelValidator:
                 self.validator_tokenizer = AutoTokenizer.from_pretrained(args.validator_tokenizer_model)
             except:
                 self.validator_tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model)
-                self.validator_tokenizer.eos_token = "<|endoftext|>"
+                self.validator_tokenizer.eos_token = EOS
                 self.validator_tokenizer.eos_token_id = 0
-                self.validator_tokenizer.pad_token = '<|endoftext|>'
-                self.validator_tokenizer.pad_token_id = 0
-                self.validator_tokenizer.unk_token = '<|endoftext|>'
-                self.validator_tokenizer.unk_token_id = 0
+                self.validator_tokenizer.pad_token = PAD
+                self.validator_tokenizer.pad_token_id = 1
+                self.validator_tokenizer.unk_token = UNK
+                self.validator_tokenizer.unk_token_id = 2
                 
         try:    
             self.tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.default_tokenizer_model)
         except:
             self.tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.default_tokenizer_model)
-            self.tokenizer.eos_token = "<|endoftext|>"
+            self.tokenizer.eos_token = EOS
             self.tokenizer.eos_token_id = 0
-            self.tokenizer.pad_token = '<|endoftext|>'
-            self.tokenizer.pad_token_id = 0
-            self.tokenizer.unk_token = '<|endoftext|>'
-            self.tokenizer.unk_token_id = 0
+            self.tokenizer.pad_token = PAD
+            self.tokenizer.pad_token_id = 1
+            self.tokenizer.unk_token = UNK
+            self.tokenizer.unk_token_id = 2
             
         self.epochs = args.num_runs
         self.runs_per_epoch = args.num_samples

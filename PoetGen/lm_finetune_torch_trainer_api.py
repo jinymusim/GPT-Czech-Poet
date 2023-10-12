@@ -20,6 +20,8 @@ from poet_model_all_tasks import PoetModelAllTasks
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 from utils.poet_model_utils import ModelManipulation
 
+from utils.poet_utils import EOS, PAD, UNK
+
 
 parser = argparse.ArgumentParser()
 
@@ -58,9 +60,9 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
-parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "processed_tokenizer.json")), type=str, help="Tokenizer to use")
+parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Tokenizer to use")
 parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Processed-BPE-gpt-cz-poetry-base-e16e16")),  type=str, help="Path to Model")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "SyllableBPETok-NormalData-gpt-cz-poetry-base-e16e16")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=256, type=int, help="Max length of context for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
@@ -98,12 +100,12 @@ def main(args: argparse.Namespace):
             tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.tokenizer)
         except: #TODO: Need model to update embedding matrix
             tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.tokenizer)
-            tokenizer.eos_token = "<|endoftext|>"
+            tokenizer.eos_token = EOS
             tokenizer.eos_token_id = 0
-            tokenizer.pad_token = '<|endoftext|>'
-            tokenizer.pad_token_id = 0
-            tokenizer.unk_token = "<|endoftext|>"
-            tokenizer.unk_token_id = 0
+            tokenizer.pad_token = PAD
+            tokenizer.pad_token_id = 1
+            tokenizer.unk_token = UNK
+            tokenizer.unk_token_id = 2
             
             ModelManipulation.exchange_embedding(model, tokenizer, AutoTokenizer.from_pretrained(args.default_hf_model))
     else:

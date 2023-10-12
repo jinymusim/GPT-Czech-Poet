@@ -516,3 +516,35 @@ A
 6 ěti # A nejsou malé děti,  
 8 áčí  Petr dolů s nimi kráčí. 9 ích   se ohlédl a zmizel v rozpacích.   .
 8 áčí # V tom však již babka k oknu kráčí,  ..! ,
+--- Model Processed-BPE-gpt-cz-poetry-base-e16e16 ---
+### Basic Decoding! ###
+ AABAXB # 1883 # J
+11 ání # a když se večer slunko k spánku sklání,
+13 aní # tu zdá se mu, že v dáli, v pološeru dlaní
+10 írá # kdes v koutě zatemnělém zmírá
+9 áníčko, dítě,  tak se sklání
+12 ívá # tvé čelo, čelo mé, jež v šeru spočívá,  
+8 íra # ó, jak je krásná ta víra, 
+
+ tmi # tak žila griselda. a za ní dětmi,   
+  
+ 
+.....m.
+. bhara, phihialek. s bohem, shirama. stymf. 
+
+
+  
+.  
+ bhi. již... i. ještě nau b. p. nemyš. já. jdu s ním. jděte..  bh. chcete. taky. #
+ b? jděte! 
+ b...
+....   
+.?.?...
+### Forced Decoding! ###
+ AABAAA # 1907 # T
+8 ání # a když večer v širou plání
+8 ání # slunce v západ zlato shání,
+7 vět # tu se zdá mi, celý svět
+8 ání # že je ztracen bez ustání
+8 ání # v tichém, věčném zadumání
+8 ání # na rtech úsměv, v srdci plání, 

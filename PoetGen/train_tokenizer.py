@@ -15,7 +15,7 @@ from tokenizers.decoders import ByteLevel as ByteDec, WordPiece as WordDec
 
 from tokenizers.normalizers import NFD
 
-from utils.poet_utils import SYLLABLES, METER_TYPES, RHYME_SCHEMES
+from utils.poet_utils import METER_TYPES, RHYME_SCHEMES, EOS, PAD, UNK
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
@@ -27,10 +27,10 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # TheBloke/Llama-2-7B-fp16 4096
 # spital/gpt2-small-czech-cs 1024
 parser.add_argument("--default_tokenizer", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
-parser.add_argument("--tokenizer_type", default="WordLevel", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece"], help="What type of tokenize to train")
+parser.add_argument("--tokenizer_type", default="BPE", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece"], help="What type of tokenize to train")
 parser.add_argument("--tokenizer_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"utils","tokenizers")),  type=str, help="Path to Model")
 parser.add_argument("--raw_data", default=False,  type=bool, help="If to use raw data")
-parser.add_argument("--syllables", default=True,  type=bool, help="If to use syllables")
+parser.add_argument("--syllables", default=False,  type=bool, help="If to use syllables")
 
 
 def main(args):
@@ -38,30 +38,30 @@ def main(args):
     tok = AutoTokenizer.from_pretrained(args.default_tokenizer)
     if args.tokenizer_type == "BPE":
         tokenizer = Tokenizer(BPE())
-        trainer = BpeTrainer(special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size, min_frequency=2,
-                             initial_alphabet= ["#", "##"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
+        trainer = BpeTrainer(special_tokens=[EOS, PAD, UNK], vocab_size = tok.vocab_size, min_frequency=2,
+                             initial_alphabet= ["#"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
         tokenizer.post_processor = BytePost(trim_offsets=False)
     elif args.tokenizer_type == "Unigram":
         tokenizer = Tokenizer(Unigram())
-        trainer = UnigramTrainer(unk_token=tok.all_special_tokens[0],special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size,
-                                 initial_alphabet= ["#", "##"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
+        trainer = UnigramTrainer(unk_token=UNK,special_tokens=[EOS, PAD, UNK], vocab_size = tok.vocab_size,
+                                 initial_alphabet= ["#"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
         tokenizer.post_processor = BytePost(trim_offsets=False)
     elif args.tokenizer_type == "WordLevel":
-        tokenizer = Tokenizer(WordLevel(unk_token=tok.all_special_tokens[0]))
-        trainer = WordLevelTrainer(special_tokens=tok.all_special_tokens, vocab_size = tok.vocab_size, min_frequency=2)
+        tokenizer = Tokenizer(WordLevel(unk_token=UNK))
+        trainer = WordLevelTrainer(special_tokens=[EOS, PAD, UNK], vocab_size = tok.vocab_size, min_frequency=2)
         
         tokenizer.normalizer = NFD()
         tokenizer.pre_tokenizer = Whitespace()
     elif args.tokenizer_type == "WordPiece":
-        tokenizer = Tokenizer(WordPiece(unk_token=tok.all_special_tokens[0]))
-        trainer = WordPieceTrainer(special_tokens=tok.all_special_tokens , vocab_size = tok.vocab_size, min_frequency=2, 
-                                   initial_alphabet= ["#", "##"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
+        tokenizer = Tokenizer(WordPiece(unk_token=UNK))
+        trainer = WordPieceTrainer(special_tokens=[EOS, PAD, UNK] , vocab_size = tok.vocab_size, min_frequency=2, 
+                                   initial_alphabet= ["#"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
         tokenizer.normalizer = NFD()
         tokenizer.decoder = WordDec()
     else:

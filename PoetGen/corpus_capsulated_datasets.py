@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import re
 
-from utils.poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, VALID_CHARS, SyllableMaker
+from utils.poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, VALID_CHARS, METER_TRANSLATE, SyllableMaker, TextAnalysis, TextManipulation
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizerBase
 
@@ -26,7 +26,7 @@ class CorpusDatasetPytorch:
                 for data_line in datum:
                     for part_line in data_line['body']:
                         for text_line in part_line:
-                            yield text_line['text']
+                            yield text_line['text'].lower()
                             
         def get_part(self):
              for step,file in enumerate(self.gen_files()):
@@ -38,7 +38,7 @@ class CorpusDatasetPytorch:
                         part = []
                         for text_line in part_line:
                             part.append(text_line['text'])
-                        yield "\n".join(part)
+                        yield "\n".join(part).lower()
         
         def get_body(self):
              for step,file in enumerate(self.gen_files()):
@@ -52,7 +52,7 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             body.append(text_line['text'])
                         body.append("\n")
-                    yield "\n".join(body)
+                    yield "\n".join(body).lower()
     
     class TextDataset(Dataset):
         
@@ -85,11 +85,6 @@ class CorpusDatasetPytorch:
             return verse_end_vector
         
         @staticmethod
-        def _remove_most_nonchar(raw_text):
-            text = re.sub(r'[–\„\“\’\;\:()\]\[\_\*\‘\”\'\-\—\"]+', "", raw_text)
-            return text.lower()
-        
-        @staticmethod
         def _syllable_line(raw_text):
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             return " ".join(SyllableMaker.syllabify(raw_text)) + ending
@@ -103,7 +98,7 @@ class CorpusDatasetPytorch:
                 for data_line in datum:
                     for part_line in data_line['body']:
                         for text_line in part_line:
-                            scanned_text = self._remove_most_nonchar(text_line['text'])
+                            scanned_text = TextManipulation._remove_most_nonchar(text_line['text']).lower()
                             
                             syllable_line = self._syllable_line(scanned_text)
                             num_vowels, verse_end = self._vowels_and_endings(scanned_text)
@@ -121,14 +116,14 @@ class CorpusDatasetPytorch:
             return self.data[index]
         
     class BodyDataset(Dataset):
-        def __init__(self, data_file_paths, end_token:str = "<|endoftext|>",
+        def __init__(self, data_file_paths,
                      prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6]):
             self._data_file_paths = data_file_paths
             self.prompt_length = prompt_length
             self.prompt_ending = prompt_ending
             self.prompt_verse = prompt_verse
             self.verse_len = verse_len
-            self.end_token = end_token
+
             
             self.data = []   
         
@@ -154,24 +149,6 @@ class CorpusDatasetPytorch:
                rhyme_str += CorpusDatasetPytorch.BodyDataset.rhyme_sec(reference, num)
             
             return rhyme_str
-        
-        @staticmethod
-        def _rhyme_vector(rhyme_str):
-            rhyme_vector = np.zeros(len(RHYME_SCHEMES))
-            if rhyme_str in RHYME_SCHEMES:
-                rhyme_vector[RHYME_SCHEMES.index(rhyme_str)] = 1
-            else:
-                rhyme_vector[-1] = 1
-            return rhyme_vector
-        
-        @staticmethod
-        def _rhyme_or_not(rhyme_str):
-            rhyme_vector = np.zeros(2)
-            if rhyme_str in RHYME_SCHEMES:
-                rhyme_vector[0] = 1
-            else:
-                rhyme_vector[1] = 1
-            return rhyme_vector
             
         
         @staticmethod
@@ -182,19 +159,8 @@ class CorpusDatasetPytorch:
                 publish_vector[-1] = 1
             else:
                 publish_vector[np.argmin( abs(np.asarray(POET_YEARS_BUCKETS[:-1]) - publish_year))] = 1
-            return publish_vector
-        
-        
-        
-        @staticmethod
-        def _metre_vector(metre):
-            meter_vector = np.zeros(len(METER_TYPES))
-            if metre in METER_TYPES:          
-                meter_vector[METER_TYPES.index(metre)] = 1
-            else:
-                meter_vector[-1] = 1
-            return meter_vector
-            
+            return publish_vector     
+                     
         
         def _construct_line(self, raw_text):
             num_str = f"{len(SyllableMaker.syllabify(raw_text))} " if self.prompt_length else ""
@@ -209,11 +175,6 @@ class CorpusDatasetPytorch:
             verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
             return num_str + verse_end + " ".join(syllables) + ending
             
-        
-        @staticmethod
-        def _remove_most_nonchar(raw_text):
-            text = re.sub(r'[–\„\“\’\;\:()\]\[\_\*\‘\”\'\-\—\"]+', "", raw_text)
-            return text.lower()
             
                                                            
         def data_body_gen(self):
@@ -223,7 +184,7 @@ class CorpusDatasetPytorch:
                 datum = json.load(file)
                 
                 for data_line in datum:
-                    publish_year = data_line["biblio"]["year"]
+                    publish_year = TextManipulation._year_bucketor(data_line["biblio"]["year"])
                     context = []
 
                     for part_line in data_line['body']:                                                        
@@ -234,11 +195,11 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             
                             # In rare cases multiple, but from searching only 1 metre per line
-                            metre = text_line["metre"][0]["type"]
+                            metre = METER_TRANSLATE.get(text_line["metre"][0]["type"], "N")
 
                             rhyme.append(text_line["rhyme"])  
                             
-                            scanned_text = self._remove_most_nonchar(text_line["text"])
+                            scanned_text = TextManipulation._remove_most_nonchar(text_line["text"]).lower()
 
                             body.append(self._construct_line(scanned_text))
                             body_syllabs.append(self._construct_syllable_line(scanned_text))
@@ -269,8 +230,8 @@ class CorpusDatasetPytorch:
                         # if len(body) > 0 and i not in self.verse_len:
                         #     rhyme_str = self._rhyme_string(rhyme)
                         #     
-                        #     text = f"{rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + "\n" + self.end_token
-                        #     context_text= "\n".join(context) + self.end_token
+                        #     text = f"{rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + "\n"
+                        #     context_text= "\n".join(context) 
                         #     self.data.append({
                         #             "input_ids" : text,
                         #             "context_ids" : context_text,
@@ -337,7 +298,7 @@ class CorpusDatasetPytorch:
             
         rhyme=None
         if "rhyme" in batch[0].keys():
-            rhyme = torch.tensor(np.asarray([CorpusDatasetPytorch.BodyDataset._rhyme_vector(text["rhyme"]) for text in batch], dtype=np.int32), dtype=torch.float32)
+            rhyme = torch.tensor(np.asarray([TextAnalysis._rhyme_vector(text["rhyme"]) for text in batch], dtype=np.int32), dtype=torch.float32)
         
         verse_end = None
         if "verse_end" in batch[0].keys():       
@@ -349,7 +310,7 @@ class CorpusDatasetPytorch:
             
         metre = None
         if "metre" in batch[0].keys():       
-            metre = torch.tensor(np.asarray([CorpusDatasetPytorch.BodyDataset._metre_vector(text["metre"]) for text in batch], dtype=np.int32), dtype=torch.float32)
+            metre = torch.tensor(np.asarray([TextAnalysis._metre_vector(text["metre"]) for text in batch], dtype=np.int32), dtype=torch.float32)
         
         context_ids = None
         context_attention_mask = None
@@ -401,7 +362,7 @@ class CorpusDatasetPytorch:
         
         rhyme=None
         if "rhyme" in batch[0].keys():
-            rhyme = torch.tensor(np.asarray([CorpusDatasetPytorch.BodyDataset._rhyme_vector(text["rhyme"]) for text in batch], dtype=np.int32), dtype=torch.float32)
+            rhyme = torch.tensor(np.asarray([TextAnalysis._rhyme_vector(text["rhyme"]) for text in batch], dtype=np.int32), dtype=torch.float32)
         
         return  {
             "input_ids": input_ids,

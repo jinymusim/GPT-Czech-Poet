@@ -12,7 +12,7 @@ from functools import partial
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 from utils.validators import MeterValidator, RhymeValidator, ValidatorInterface
 
-from utils.poet_utils import VALID_CHARS
+from utils.poet_utils import VALID_CHARS, UNK, PAD, EOS
 
 parser = argparse.ArgumentParser()
 
@@ -75,12 +75,12 @@ def main(args):
         tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.tokenizer)
     except:
         tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.tokenizer)
-        tokenizer.eos_token = "<|endoftext|>"
+        tokenizer.eos_token = EOS
         tokenizer.eos_token_id = 0
-        tokenizer.pad_token = '<|endoftext|>'
-        tokenizer.pad_token_id = 0
-        tokenizer.unk_token = "<|endoftext|>"
-        tokenizer.unk_token_id = 0
+        tokenizer.pad_token = PAD
+        tokenizer.pad_token_id = 1
+        tokenizer.unk_token = UNK
+        tokenizer.unk_token_id = 2
         
     collate_rhyme = partial(CorpusDatasetPytorch.collate_rhyme,max_len=args.max_len_rhyme, max_verse_len= max(args.verse_len))
     
