@@ -23,7 +23,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 
 parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "validators")),  type=str, help="Path to Model")
-parser.add_argument("--max_len_rhyme", default=36, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len_rhyme", default=48, type=int, help="Max length for tokenizer")
 parser.add_argument("--max_len_metre", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
@@ -33,15 +33,15 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 
 parser.add_argument("--syllables", default=False, type=bool, help="If to use syllable data")
 
-parser.add_argument("--block_count", default=5, type=int, help="Max length for tokenizer")
+parser.add_argument("--block_count", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--n_embd_metre", default=512, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_metre", default=256, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=32, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_metre", default=128, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
-parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
+parser.add_argument("--hidden_layers", default=2, type=int, help="Max length for tokenizer")
+parser.add_argument("--hidden_layer_rhyme", default=2048, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_rhyme", default=32, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=256, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_rhyme", default=1024, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 parser.add_argument("--val_data_rate", default=0.1, type=float, help="Rate of validation data")
