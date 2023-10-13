@@ -1,4 +1,5 @@
 import torch
+import random
 
 from transformers import  AutoModelForCausalLM, AutoTokenizer
 from utils.poet_model_utils import PoetModelInterface
@@ -111,7 +112,7 @@ class PoetModelAllTasks(PoetModelInterface):
                     features_dict[key] = value
             else:
                 for key, value in TextAnalysis._continuos_line_analysis(line).items():
-                    features_dict[f"{key}_{cont_line}"]
+                    features_dict[f"{key}_{cont_line}"] = value
                     cont_line += 1
         return features_dict
                    
@@ -130,10 +131,13 @@ class PoetModelAllTasks(PoetModelInterface):
                                 pad_token_id=tokenizer.pad_token_id,
                                 eos_token_id=tokenizer.eos_token_id)
         rhyme_dec = tokenizer.decode(rhyme_line[0], skip_special_tokens=True).splitlines()[0]
-        features_dict= self.analyze_prompt(rhyme_dec)
+        features_dict= TextAnalysis._first_line_analysis(rhyme_dec)
         for key, value in features_dict_init.items():
             features_dict[key] = value
         # CONSTRUCT BEST INPUT LINE
+        # BACKUP RHYME
+        if "RHYME" not in features_dict.keys():
+            features_dict["RHYME"] = random.choice(RHYME_SCHEMES[:-1])
         poet_param_str = ""
         if "RHYME" in features_dict.keys():
             poet_param_str += features_dict["RHYME"]

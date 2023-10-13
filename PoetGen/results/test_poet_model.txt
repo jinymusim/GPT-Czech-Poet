@@ -575,3 +575,50 @@ A
 8 sti # dojdeš cti a chvály dosti,
 7 můj # že jsy pravý přítel můj
 7 můj # pane bože, otče můj!
+--- Model Syllabs-BPE-NormalText-gpt-cz-poetry-base-e16e16 ---
+### Basic Decoding! ###
+ AED # 1880 # J
+11 ala # a když se duše moje rozplesala,
+10 ých # tu najednou jsem viděl v očích tvých
+12 aly # ty oči, které láskou k tobě plakaly
+4 ích # v těch nejkrasších!
+13 ání # to bylo jediné mé vroucí požehnání
+9 áni # po celém světě, drazí páni, 
+
+### Forced Decoding! ###
+ AED # 1880 # T
+8 ení # ale v tomto okamžení
+8 ení # viděla jsem políbení,
+7 ila # jež jsem tobě slíbila.
+--- Model Syllabs-BPE-NormalText-gpt-cz-poetry-base-e16e16 ---
+### Basic Decoding! ###
+ AABB # 1880 # J
+11 ení # a v srdci mém se ozývalo vření,
+10 eni # jak když se ptáci blíží k jeseni.
+12 ela # já cítil, jak mi v duši srdce sevřela
+6 elá # ta píseň veselá!
+
+### Forced Decoding! ###
+ AABB # 1920 # J
+11 ali # a když se domů z vojny navraceli,
+11 ali # s úsměvem na tváři jim odpovídali
+10 ící # ó, jaké štěstí, radost, blaho s lící!
+10 ící # jak milují a jak se těšících
+--- Model Syllabs-BPE-NormalText-gpt-cz-poetry-base-e16e16 ---
+### Basic Decoding! ###
+ AX # 1900 # T
+8 ali # a když jsme se objímali,
+7 ala # matička se dívala
+4 alá # jaká malá
+5 čka # tvářičky, líčka!
+3 čko # sluníčko
+6 alo # tak se usmívalo.
+
+### Forced Decoding! ###
+ AAABAB # 1880 # A
+9 ání # ó slyšte, moje vzpomínání,
+9 ání # jak znělo to večerním lkání
+9 ání # o lásce k vám, o vaše přání!
+10 ých # já viděl jsem v těch nocích bezhvězdných
+9 ání # v tom tichém a smutném pohrdání 
+10 ých # a slyšel jsem ve vlnách bouří zlých
