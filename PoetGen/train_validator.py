@@ -21,20 +21,20 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
-parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
+parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "validators")),  type=str, help="Path to Model")
-parser.add_argument("--max_len_rhyme", default=36, type=int, help="Max length for tokenizer")
-parser.add_argument("--max_len_metre", default=1024, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len_rhyme", default=24, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len_metre", default=512, type=int, help="Max length for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
 parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is prompted into training data")
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
-parser.add_argument("--syllables", default=True, type=bool, help="If to use syllable data")
+parser.add_argument("--syllables", default=False, type=bool, help="If to use syllable data")
 
-parser.add_argument("--block_count", default=4, type=int, help="Max length for tokenizer")
-parser.add_argument("--n_embd_metre", default=512, type=int, help="Max length for tokenizer")
+parser.add_argument("--block_count", default=6, type=int, help="Max length for tokenizer")
+parser.add_argument("--n_embd_metre", default=384, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_metre", default=256, type=int, help="Batch size.")
 parser.add_argument("--epochs_metre", default=128, type=int, help="Number of epochs to run.")
 
@@ -147,9 +147,9 @@ def main(args):
     metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     
     with open(args.result_file, 'a') as file:
-        print(f"### {args.tokenizer} ###", file=file)
-        print(f"Rhyme Validator: MLP {args.hidden_layers},{args.hidden_layer_rhyme} Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}")
-        print(f"Metre Validator: GPT {args.block_count},{args.n_embd_metre},{args.max_len_metre} Epochs: {args.epochs_metre} Accuracy: {metre_acc}")
+        print(f"### {args.tokenizer} ### {time_stamp}", file=file)
+        print(f"Rhyme Validator: MLP {args.hidden_layers},{args.hidden_layer_rhyme} Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
+        print(f"Metre Validator: GPT {args.block_count},{args.n_embd_metre},{args.max_len_metre} Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
     
     torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
