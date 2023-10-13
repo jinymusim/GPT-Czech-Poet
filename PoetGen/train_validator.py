@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
-parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllable_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
+parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "validators")),  type=str, help="Path to Model")
 parser.add_argument("--max_len_rhyme", default=24, type=int, help="Max length for tokenizer")
 parser.add_argument("--max_len_metre", default=512, type=int, help="Max length for tokenizer")
