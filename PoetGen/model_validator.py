@@ -15,8 +15,7 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 class ModelValidator:
     def __init__(self, args: argparse.Namespace,
-                 result_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__),"results")),
-                 rhyme_collate_fnc = None) -> None:
+                 result_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__),"results"))) -> None:
         
         self.args = args
         
@@ -27,7 +26,6 @@ class ModelValidator:
         self.rhyme_model, self.meter_model = None, None
         if args.rhyme_model_path_full:
             self.rhyme_model: ValidatorInterface = (torch.load(args.rhyme_model_path_full, map_location=torch.device('cpu')))    
-        self.rhyme_collate = rhyme_collate_fnc
         
         if args.metre_model_path_full:
             self.meter_model: ValidatorInterface = (torch.load(args.metre_model_path_full, map_location=torch.device('cpu')))
@@ -162,7 +160,7 @@ parser.add_argument("--validator_tokenizer_model", default=os.path.abspath(os.pa
 
 
 def main(args):
-    val = ModelValidator(args,rhyme_collate_fnc=CorpusDatasetPytorch.collate_rhyme)
+    val = ModelValidator(args)
     val.full_validate()
 
 if __name__ == "__main__":

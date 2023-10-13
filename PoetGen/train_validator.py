@@ -33,10 +33,10 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 
 parser.add_argument("--syllables", default=False, type=bool, help="If to use syllable data")
 
-parser.add_argument("--block_count", default=6, type=int, help="Max length for tokenizer")
+parser.add_argument("--block_count", default=5, type=int, help="Max length for tokenizer")
 parser.add_argument("--n_embd_metre", default=384, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_metre", default=256, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=128, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_metre", default=32, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--hidden_layers", default=4, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=512, type=int, help="Max length for tokenizer")
@@ -74,10 +74,6 @@ def main(args):
     if not os.path.exists(os.path.abspath(os.path.join(args.model_path, "meter"))):
         os.makedirs(os.path.abspath(os.path.join(args.model_path, "meter")))
         
-    rhyme_model = RhymeValidator(hidden_layers=args.hidden_layers, hidden_size=args.hidden_layer_rhyme, 
-                                 input_size=args.max_len_rhyme * len(VALID_CHARS), raw_size=args.max_len_rhyme)
-    meter_model = MeterValidator(block_count=args.block_count, n_embd=args.n_embd_metre, input_size=args.max_len_metre)
-    
     try:    
         tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.tokenizer)
     except:
@@ -89,6 +85,10 @@ def main(args):
         tokenizer.unk_token = UNK
         tokenizer.unk_token_id = 2
         
+    rhyme_model = RhymeValidator(hidden_layers=args.hidden_layers, hidden_size=args.hidden_layer_rhyme, 
+                                 input_size=args.max_len_rhyme * len(VALID_CHARS), raw_size=args.max_len_rhyme)
+    meter_model = MeterValidator(block_count=args.block_count, n_embd=args.n_embd_metre, input_size=args.max_len_metre, vocab_size=tokenizer.vocab_size)
+        
     collate_rhyme = partial(CorpusDatasetPytorch.collate_rhyme,max_len=args.max_len_rhyme, max_verse_len= max(args.verse_len))
     
     train_data = CorpusDatasetPytorch(data_dir=args.data_path, prompt_ending=args.prompt_ending, 
@@ -99,7 +99,6 @@ def main(args):
     
     training_args = TrainingArguments(
                                   save_strategy  = "no",
-                                  warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_rhyme,
@@ -126,7 +125,7 @@ def main(args):
     
     training_args = TrainingArguments(
                                   save_strategy  = "no",
-                                  warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_metre,
+                                  warmup_steps = 0,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_metre,

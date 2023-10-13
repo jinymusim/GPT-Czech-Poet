@@ -75,10 +75,10 @@ class RhymeValidator(ValidatorInterface):
     
     
 class MeterValidator(ValidatorInterface):
-    def __init__(self,block_count, input_size, n_embd , *args, **kwargs) -> None:
+    def __init__(self,block_count, input_size, n_embd , vocab_size, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.config = GPT2Config(n_positions=input_size, n_head=(n_embd//(768//12)),n_embd=n_embd, 
-                                 n_layer=block_count, output_hidden_states=True)
+                                 n_layer=block_count, output_hidden_states=True, vocab_size=vocab_size)
         self.model = GPT2LMHeadModel(self.config)
         
         self.model_size = n_embd
