@@ -7,7 +7,7 @@ import re
 from utils.poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, VALID_CHARS, METER_TRANSLATE, SyllableMaker, TextAnalysis, TextManipulation
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizerBase
-
+#TODO: Maybe replace year of book being written for year Author was born
 class CorpusDatasetPytorch:
     
     class RawDataset:

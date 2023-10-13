@@ -60,9 +60,9 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
-parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "processed_tokenizer.json")), type=str, help="Tokenizer to use")
+parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Tokenizer to use")
 parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Processed-BPE-gpt-cz-poetry-base-e16e16")),  type=str, help="Path to Model")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Syllabs-BPE-NormalText-gpt-cz-poetry-base-e16e16")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=256, type=int, help="Max length of context for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")

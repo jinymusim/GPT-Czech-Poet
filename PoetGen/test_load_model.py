@@ -33,8 +33,9 @@ tokenized_poet_start = tokenizer.encode("A", return_tensors='pt')
 
 out = model.model.generate(tokenized_poet_start, 
                                 max_length=192,
-                                num_beams=2,
+                                num_beams=8,
                                 no_repeat_ngram_size=2,
+                                eos_token_id = tokenizer.eos_token_id,
                                 early_stopping=True,
                                 pad_token_id=tokenizer.pad_token_id)
 

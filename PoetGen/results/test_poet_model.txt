@@ -518,33 +518,60 @@ A
 8 áčí # V tom však již babka k oknu kráčí,  ..! ,
 --- Model Processed-BPE-gpt-cz-poetry-base-e16e16 ---
 ### Basic Decoding! ###
- AABAXB # 1883 # J
-11 ání # a když se večer slunko k spánku sklání,
-13 aní # tu zdá se mu, že v dáli, v pološeru dlaní
-10 írá # kdes v koutě zatemnělém zmírá
-9 áníčko, dítě,  tak se sklání
-12 ívá # tvé čelo, čelo mé, jež v šeru spočívá,  
-8 íra # ó, jak je krásná ta víra, 
-
- tmi # tak žila griselda. a za ní dětmi,   
-  
- 
-.....m.
-. bhara, phihialek. s bohem, shirama. stymf. 
-
-
-  
+ AABAAA # 1900 # J
+8 vět # a v zimě mráz a mlhy květ
+6 let # nám v ňadra zavál v let,
+7 ání # ó, jaké vzpomínání! 
+4 led # jak naposled
+9 lets # v ten kouzelný a velký jara čas
+5 pět # se vrací zpět.
+ sti # ten, kdo se zrodil, žil a trpěl,
+ sti. vám, jen vám. 
+ jen! 
 .  
- bhi. již... i. ještě nau b. p. nemyš. já. jdu s ním. jděte..  bh. chcete. taky. #
- b? jděte! 
- b...
-....   
-.?.?...
+.....?!!!!!....!...!.....!.....  
+...
+. ! asi?! slečna nen kde koupit. mhou,, koupit...
+...   
+ méně v u více líp ale doma z lépe všude vybrat.......
+.....
 ### Forced Decoding! ###
- AABAAA # 1907 # T
-8 ání # a když večer v širou plání
-8 ání # slunce v západ zlato shání,
-7 vět # tu se zdá mi, celý svět
-8 ání # že je ztracen bez ustání
-8 ání # v tichém, věčném zadumání
-8 ání # na rtech úsměv, v srdci plání, 
+ AABXCB # 1880 # J
+11  se # a v tom, hle, před oknem, za kterým rdí se
+11 se # květ vodní růže, červená jak se,
+10 vět # se vynořilo děvče jako květ, 
+11 se # to dívka byla, bledá, chvějící se.
+12  té # já nevím, jak to bylo, ale v chvíli té
+10 vět # jsem cítil, že jsem změněn celý svět. 
+--- Model Processed-BPE-gpt-cz-poetry-base-e16e16 ---
+### Basic Decoding! ###
+ AABAAA # 1900 # J
+8 vět # a v duši mé se ozval svět,
+4 pět # ó, vrať se zpět!
+9  se # co bylo snem, co stalo se, vše zdá se
+6 let # v těch mladých, zlatých let
+7 led # jen jeden zbyl mi pohled
+3 ret # na tvůj ret.
+
+### Forced Decoding! ###
+ AABAAA # 1900 # J
+8 ích # a v nocích, plných snů a hřích,
+8 ích # v těch nocích dlouhých, smutných, hřích
+7 ění # se duše moje mění...
+8 ích # ó, jak se těším na tvůj smích, 
+8 ích # na sladký úsměv rtů tvých, líček, 
+8 ích # jak rád tvůj slyším smích a smích!
+--- Model Processed-BPE-gpt-cz-poetry-base-e16e16 ---
+### Basic Decoding! ###
+ AABB # 1920 # J
+11  se # a když se rozneslo, že vdala, vdala se.
+13 ase # muž s mužem, matka s charpou, děcka úsměv v hlase,
+10 žen # šat podle mody, šperky střižen, žen 
+12 den # nu, zkrátka, tak to chodí v světě každý den...
+
+### Forced Decoding! ###
+ AABB # 1840 # T
+8 sti # v každé ctnosti, v ctnosti ctnosti
+8 sti # dojdeš cti a chvály dosti,
+7 můj # že jsy pravý přítel můj
+7 můj # pane bože, otče můj!
