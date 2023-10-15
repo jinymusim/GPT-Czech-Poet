@@ -18,7 +18,8 @@ parser = argparse.ArgumentParser()
 
 
 
-parser.add_argument("--learning_rate", default=3e-4, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--learning_rate_rhyme", default=3e-4, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--learning_rate_metre", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
 parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
@@ -36,12 +37,12 @@ parser.add_argument("--syllables", default=False, type=bool, help="If to use syl
 parser.add_argument("--block_count", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--n_embd_metre", default=512, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_metre", default=256, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=32, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_metre", default=64, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=768, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=32, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=256, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_rhyme", default=256, type=int, help="Batch size.")
+parser.add_argument("--epochs_rhyme", default=1024, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 parser.add_argument("--val_data_rate", default=0.1, type=float, help="Rate of validation data")
@@ -102,7 +103,7 @@ def main(args):
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_rhyme,
-                                  learning_rate = args.learning_rate,
+                                  learning_rate = args.learning_rate_rhyme,
                                   fp16 = True if torch.cuda.is_available() else False,
                                   ddp_backend = "nccl",
                                   lr_scheduler_type="constant",
@@ -129,7 +130,7 @@ def main(args):
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_metre,
-                                  learning_rate = args.learning_rate,
+                                  learning_rate = args.learning_rate.metre,
                                   fp16 = True if torch.cuda.is_available() else False,
                                   ddp_backend = "nccl",
                                   lr_scheduler_type="cosine_with_restarts",
