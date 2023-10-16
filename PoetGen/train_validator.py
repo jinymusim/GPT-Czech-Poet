@@ -42,7 +42,7 @@ parser.add_argument("--epochs_metre", default=64, type=int, help="Number of epoc
 parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_rhyme", default=256, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=64, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_rhyme", default=256, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 parser.add_argument("--val_data_rate", default=0.1, type=float, help="Rate of validation data")
