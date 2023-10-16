@@ -1,5 +1,17 @@
-RHYME_SCHEMES = ["ABAB", "ABBA", "XAXA", "ABCB", "AABB", "AABA", "AAAA", "AABBCC", "AABCCB", "ABABCC", "AABCCB", "AAABAB", 
-                 "ABABCD", "ABABAB", "ABABBC", "ABABCB","ABBAAB","AABABB","ABCBBB", None]
+RHYME_SCHEMES = ["ABAB", "ABBA", 
+                 "XAXA", "ABCB", 
+                 "AABB", "AABA", 
+                 "AAAA", "AABC",
+                 'XXXX', 'AXAX',
+                 "AABBCC", "AABCCB", 
+                 "ABABCC", 'AABCBC', 
+                 "AAABAB", "ABABXX" 
+                 "ABABCD", "ABABAB", 
+                 "ABABBC", "ABABCB",
+                 "ABBAAB","AABABB",
+                 "ABCBBB",'ABCBCD', 
+                 "ABBACC","AABBCD",
+                  None]
 # First 200 Most common endings
 VERSE_ENDS = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'ce', 'ky', 'ku', 'ně', 'jí', 'ly', 'il', 'en', 'né', 
                 'lo', 'ne', 'vá', 'ny', 'se', 'na', 'ím', 'st', 'le', 'ný', 'ci', 'mi', 'ka', 'ná', 'lí', 'cí', 'ží', 'čí', 'ám', 

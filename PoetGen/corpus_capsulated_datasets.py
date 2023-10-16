@@ -148,16 +148,28 @@ class CorpusDatasetPytorch:
         @staticmethod
         def rhyme_sec(rhyme_ref, current_rhyme):
             rhyme_pos = ["A", "B", "C", "D", "E", "F", "G", "H"]
-            return "X" if current_rhyme == None or current_rhyme < rhyme_ref or current_rhyme >= rhyme_ref + len(rhyme_pos) else rhyme_pos[current_rhyme - rhyme_ref]
+            return "X" if current_rhyme == None or rhyme_ref == None or current_rhyme < rhyme_ref or current_rhyme >= rhyme_ref + len(rhyme_pos) else rhyme_pos[current_rhyme - rhyme_ref]
         
         @staticmethod
         def _rhyme_string(curr_rhyme_list):
             reference = None
+            # Give None a blank -1 rhyme id
+            for i in range(len(curr_rhyme_list)):
+                if curr_rhyme_list[i] != None and reference == None:
+                    reference = curr_rhyme_list[i]
+                else:
+                    curr_rhyme_list[i] = -1
+            # if there is valid rhyme, normalize 
+            if reference != None:
+                # sort the rhyme and get index of reference number
+                cheat_sheet =  list(sorted(set(curr_rhyme_list)))
+                ref_index = cheat_sheet.index(reference)
+                # normalize the rest around this reference
+                for i in range(len(curr_rhyme_list)):
+                    idx = cheat_sheet.index(curr_rhyme_list[i])
+                    curr_rhyme_list[i] = reference + (idx - ref_index)
             
-            for num in curr_rhyme_list:
-                if num != None:
-                    reference = num
-                    break
+                    
             rhyme_str = ""
             for num in curr_rhyme_list:
                rhyme_str += CorpusDatasetPytorch.BodyDataset.rhyme_sec(reference, num)

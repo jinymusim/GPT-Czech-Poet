@@ -27,8 +27,8 @@ class RhymeValidator(ValidatorInterface):
         
         
         self.input_layer: torch.nn.Linear = torch.nn.Linear(self.input_size, self.model_size)
-        self.hidden_layers=torch.nn.ModuleList([torch.nn.Linear(self.model_size, self.model_size) for _ in range(self.hidden_layers_count)])
-        self.batch_norms = torch.nn.ModuleList([torch.nn.BatchNorm1d(self.model_size) for _ in range(self.hidden_layers_count)])
+        self.hidden_layers=torch.nn.ModuleList([torch.nn.Linear(self.model_size, self.model_size) for i in range(self.hidden_layers_count)])
+        self.batch_norms = torch.nn.ModuleList([torch.nn.BatchNorm1d(self.model_size) for j in range(self.hidden_layers_count)])
         self.relu = torch.nn.ReLU()
         
         
@@ -59,6 +59,7 @@ class RhymeValidator(ValidatorInterface):
             hidden = norm(hidden)
             hidden = self.relu(hidden)    
             hidden = layer(hidden)
+        hidden = self.relu(hidden)
   
         rhyme_regression = self.rhyme_regressor(hidden)
             
