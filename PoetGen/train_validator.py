@@ -118,6 +118,9 @@ def main(args):
     
     rhyme_acc =  validate(rhyme_model.cpu(), train_data.pytorch_dataset_body.validation_data,collate_rhyme)
 
+    with open(args.result_file, 'a') as file:
+        print(f"### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp}", file=file)
+        print(f"Rhyme Validator: Length: {args.max_len_rhyme} MLP {args.hidden_layers},{args.hidden_layer_rhyme} Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
     
     torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
@@ -130,7 +133,7 @@ def main(args):
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_metre,
-                                  learning_rate = args.learning_rate.metre,
+                                  learning_rate = args.learning_rate_metre,
                                   fp16 = True if torch.cuda.is_available() else False,
                                   ddp_backend = "nccl",
                                   lr_scheduler_type="cosine_with_restarts",
@@ -147,8 +150,6 @@ def main(args):
     metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     
     with open(args.result_file, 'a') as file:
-        print(f"### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp}", file=file)
-        print(f"Rhyme Validator: MLP {args.hidden_layers},{args.hidden_layer_rhyme} Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
         print(f"Metre Validator: GPT {args.block_count},{args.n_embd_metre},{args.max_len_metre} Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
     
     torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
