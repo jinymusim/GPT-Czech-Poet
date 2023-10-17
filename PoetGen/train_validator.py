@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser()
 
 
 
-parser.add_argument("--learning_rate_rhyme", default=1e-3, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--learning_rate_rhyme", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--learning_rate_metre", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
@@ -41,7 +41,7 @@ parser.add_argument("--epochs_metre", default=64, type=int, help="Number of epoc
 
 parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=512, type=int, help="Batch size.")
+parser.add_argument("--batch_size_rhyme", default=128, type=int, help="Batch size.")
 parser.add_argument("--epochs_rhyme", default=256, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
