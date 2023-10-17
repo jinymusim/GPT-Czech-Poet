@@ -158,8 +158,9 @@ class CorpusDatasetPytorch:
             for i in range(len(rhyme_list)):
                 if rhyme_list[i] != None and reference == None:
                     reference = rhyme_list[i]
-                else:
-                    rhyme_list[i] = -1
+                elif rhyme_list[i] == None:
+                     rhyme_list[i] = -1
+                   
             # if there is valid rhyme, normalize 
             if reference != None:
                 # sort the rhyme and get index of reference number
