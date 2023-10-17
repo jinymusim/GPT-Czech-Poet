@@ -152,26 +152,27 @@ class CorpusDatasetPytorch:
         
         @staticmethod
         def _rhyme_string(curr_rhyme_list):
+            rhyme_list = curr_rhyme_list[:]
             reference = None
             # Give None a blank -1 rhyme id
-            for i in range(len(curr_rhyme_list)):
-                if curr_rhyme_list[i] != None and reference == None:
-                    reference = curr_rhyme_list[i]
+            for i in range(len(rhyme_list)):
+                if rhyme_list[i] != None and reference == None:
+                    reference = rhyme_list[i]
                 else:
-                    curr_rhyme_list[i] = -1
+                    rhyme_list[i] = -1
             # if there is valid rhyme, normalize 
             if reference != None:
                 # sort the rhyme and get index of reference number
-                cheat_sheet =  list(sorted(set(curr_rhyme_list)))
+                cheat_sheet =  sorted(list(set(rhyme_list[:])))
                 ref_index = cheat_sheet.index(reference)
                 # normalize the rest around this reference
-                for i in range(len(curr_rhyme_list)):
-                    idx = cheat_sheet.index(curr_rhyme_list[i])
-                    curr_rhyme_list[i] = reference + (idx - ref_index)
+                for i in range(len(rhyme_list)):
+                    idx = cheat_sheet.index(rhyme_list[i])
+                    rhyme_list[i] = reference + (idx - ref_index)
             
                     
             rhyme_str = ""
-            for num in curr_rhyme_list:
+            for num in rhyme_list:
                rhyme_str += CorpusDatasetPytorch.BodyDataset.rhyme_sec(reference, num)
             
             return rhyme_str
