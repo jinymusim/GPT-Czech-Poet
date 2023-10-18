@@ -155,7 +155,7 @@ def main(args):
     metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     
     with open(args.result_file, 'a') as file:
-        print(f"Metre Validator: GPT {args.block_count},{args.n_embd_metre},{args.max_len_metre} Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
+        print(f"Metre Validator: Roberta {args.block_count},{args.n_embd_metre},{args.max_len_metre} Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
     
     torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
