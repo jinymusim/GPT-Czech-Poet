@@ -111,10 +111,43 @@ class ModelManipulation:
             else:
                 new_embd[idx_new] = old_mean
                 
-        print(f"Vocab hit rate: {vocab_hit}/{new_tokenizer.vocab_size}")
+        print(f"Vocab hit rate: {vocab_hit}/{old_tokenizer.vocab_size}")
         
         new_embd_layer = torch.nn.Embedding(new_tokenizer.vocab_size, old_embed.size(1))
         new_embd_layer.weight.data = new_embd
         poet_model.model.transformer.set_input_embeddings(new_embd_layer)
-        poet_model.model.lm_head.weight = poet_model.model.transformer.wte.weight
+        new_decoder = torch.nn.Linear( old_embed.size(1), new_tokenizer.vocab_size, bias=False)
+        new_decoder.weight = poet_model.model.transformer.wte.weight
+        poet_model.model.lm_head = new_decoder
+        
+        poet_model.model.config.vocab_size = new_tokenizer.vocab_size
+        
+        
+    @staticmethod
+    def exchange_embedding_roberta(metre_model, new_tokenizer: PreTrainedTokenizerBase, old_tokenizer: PreTrainedTokenizerBase):
+        old_embed = metre_model.model.get_input_embeddings().weight.clone().detach()
+        old_mean = old_embed.mean(0)
+        
+        new_embd = old_embed.new_zeros(new_tokenizer.vocab_size, old_embed.size(1))
+        old_vocab = old_tokenizer.get_vocab()
+        
+        vocab_hit = 0
+        
+        for w, idx_new in new_tokenizer.get_vocab().items():
+            idx_old = old_vocab.get(w, -1)
+            if idx_old >= 0:
+                new_embd[idx_new] = old_embed[idx_old]
+                vocab_hit +=1
+            else:
+                new_embd[idx_new] = old_mean
+                
+        print(f"Vocab hit rate: {vocab_hit}/{old_tokenizer.vocab_size}")
+        new_embd_layer = torch.nn.Embedding(new_tokenizer.vocab_size, old_embed.size(1))
+        new_embd_layer.weight.data = new_embd
+        metre_model.model.set_input_embeddings(new_embd_layer)
+        new_decoder = torch.nn.Linear( old_embed.size(1), new_tokenizer.vocab_size)
+        new_decoder.weight = metre_model.model.roberta.embeddings.word_embeddings.weight
+        metre_model.model.lm_head.decoder = new_decoder
+        
+        metre_model.model.config.vocab_size = new_tokenizer.vocab_size
         

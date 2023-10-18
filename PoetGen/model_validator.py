@@ -104,7 +104,7 @@ class ModelValidator:
                                                                    rhyme=torch.tensor(rhyme_vec.reshape(1,-1)))
                         if self.meter_model != None and "METER" in values.keys():
                             metre_vec = TextAnalysis._metre_vector(values["METER"])
-                            self.validate_tokenizer.model_max_length = self.meter_model.model.config.n_positions
+                            self.validate_tokenizer.model_max_length = self.meter_model.model.config.max_position_embeddings
                             input_ids =self.validator_tokenizer([decoded_cont],return_tensors='pt', truncation=True, padding=True )['input_ids']
                             metre_pos += self.meter_model.validate(input_ids=input_ids,
                                                                    metre=torch.tensor(metre_vec.reshape(1,-1)))
