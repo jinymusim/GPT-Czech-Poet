@@ -104,8 +104,9 @@ class ModelValidator:
                                                                    rhyme=torch.tensor(rhyme_vec.reshape(1,-1)))
                         if self.meter_model != None and "METER" in values.keys():
                             metre_vec = TextAnalysis._metre_vector(values["METER"])
-                            self.validate_tokenizer.model_max_length = self.meter_model.model.config.max_position_embeddings
-                            input_ids =self.validator_tokenizer([decoded_cont],return_tensors='pt', truncation=True, padding=True )['input_ids']
+                            input_ids = CorpusDatasetPytorch.collate_metre([{"input_ids" :[decoded_cont]}],tokenizer=self.validator_tokenizer,
+                                                                           is_syllable=False, syllables=self.args.val_syllables,
+                                                                           max_len=self.meter_model.model.config.max_position_embeddings)['input_ids']
                             metre_pos += self.meter_model.validate(input_ids=input_ids,
                                                                    metre=torch.tensor(metre_vec.reshape(1,-1)))
                         continue
@@ -156,8 +157,7 @@ parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1696540325706')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator_1696540325706')),  type=str, help="Path to Model")
 parser.add_argument("--validator_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', "tokenizers", "BPE", "processed_tokenizer.json")), type=str, help="Validator tokenizer")
-
-
+parser.add_argument("--val_syllables", default=True, type=bool, help="Does validator use syllables")
 
 def main(args):
     val = ModelValidator(args)

@@ -32,13 +32,13 @@ parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is pr
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
-parser.add_argument("--syllables", default=False, type=bool, help="If to use syllable data")
+parser.add_argument("--syllables", default=True, type=bool, help="If to use syllable data")
 
 parser.add_argument("--pretrained_model", default="roberta-base", type=str, help="Roberta Model")
 parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_metre", default=32, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--hidden_layers", default=2, type=int, help="Max length for tokenizer")
+parser.add_argument("--hidden_layers", default=4, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_rhyme", default=128, type=int, help="Batch size.")
 parser.add_argument("--epochs_rhyme", default=256, type=int, help="Number of epochs to run.")
@@ -127,10 +127,10 @@ def main(args):
         print(f"### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp}", file=file)
         print(f"Rhyme Validator: Length: {args.max_len_rhyme} MLP {args.hidden_layers},{args.hidden_layer_rhyme} Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
     
-    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     
-    collate  = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer, max_len=args.max_len_metre, syllables=args.syllables)
+    collate  = partial(CorpusDatasetPytorch.collate_metre, tokenizer=tokenizer, max_len=args.max_len_metre, syllables=args.syllables, is_syllable=True)
     
     training_args = TrainingArguments(
                                   save_strategy  = "no",
@@ -157,7 +157,7 @@ def main(args):
     with open(args.result_file, 'a') as file:
         print(f"Metre Validator: GPT {args.block_count},{args.n_embd_metre},{args.max_len_metre} Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
     
-    torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+    torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
