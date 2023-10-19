@@ -622,3 +622,38 @@ A
 10 ých # já viděl jsem v těch nocích bezhvězdných
 9 ání # v tom tichém a smutném pohrdání 
 10 ých # a slyšel jsem ve vlnách bouří zlých
+--- Model Syllabs-BPE-NormalText-gpt-cz-poetry-base-e16e32 ---
+### Basic Decoding! ###
+ AACDB # 1900 # J
+11 ala # a já se ptal, proč vždycky jsi se ptala,
+10  se # proč každý den, když smrákalo se, se
+9 ání # v mém srdci ozývalo lkání
+6 ězd # z těch nekonečných hvězd, 
+12 ých # o kterých nevíš ani v nocích podzimních.
+4  ty # ó, jak jsi ty!
+
+### Forced Decoding! ###
+ AAABAB # 1900 # A
+5 ěje # co se to děje? 
+5 ěje # hle, motýl pěje,
+5 ěje # viz, jak se chvěje
+9 utí # a křídla svá rozpíná, kroutí
+5 ěje # kolem naděje!
+9 utí # ó bože, co je toho hnutí?
+--- Model Syllabs-BPE-NormalText-gpt-cz-poetry-base-e16e32 ---
+### Basic Decoding! ###
+ A # 1900 # T
+8 ala # a já jsem mu naslouchala,
+3  mi # zdálo mi
+5  mé # se to v duši mé
+4  se # ozývalo se
+2  ne # ne, ne.
+
+### Forced Decoding! ###
+ ABABCC # 1900 # A
+9 ání # ó, jaké to rozkošné zdání,
+8 sen # jaký to sladký, blaživý sen!
+9 ání # v tom večerním tichém usmání
+8 sen # se na mne usmál mladý sen.
+11 ěla # a v duši mé píseň se rozletěla
+11 ěla # tak sladce, že srdce mi rozechvěla 

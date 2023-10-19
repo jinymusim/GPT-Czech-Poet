@@ -8,7 +8,7 @@ from utils.poet_utils import UNK, PAD, EOS
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "Syllabs-BPE-NormalText-gpt-cz-poetry-base-e16e16")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "Syllabs-BPE-NormalText-gpt-cz-poetry-base-e16e32")),  type=str, help="Path to Model")
 # bigscience/bloom-560m
 parser.add_argument("--default_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "test_poet_model.txt")), type=str, help="Where to store the decoding efforts")

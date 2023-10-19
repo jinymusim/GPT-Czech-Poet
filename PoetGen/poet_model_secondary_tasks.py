@@ -151,7 +151,10 @@ class PoetModelSecondaryTasks(PoetModelInterface):
                                 early_stopping=True,
                                 pad_token_id=tokenizer.pad_token_id,
                                 eos_token_id=tokenizer.eos_token_id)
-            decoded_line: str = tokenizer.decode(out_line[0], skip_special_tokens=True).splitlines()[len(prompt_list)]
+            decoded_lines = tokenizer.decode(out_line[0], skip_special_tokens=True).splitlines()
+            if len(decoded_lines) <= len(prompt_list):
+                continue
+            decoded_line: str = decoded_lines[len(prompt_list)]
             if  f"LENGTH_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1:
                 features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
                 features_dict[f'END_{j}'] = decoded_line.split()[1]
