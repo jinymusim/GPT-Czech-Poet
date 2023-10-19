@@ -19,12 +19,12 @@ parser = argparse.ArgumentParser()
 
 
 parser.add_argument("--learning_rate_rhyme", default=3e-4, type=float, help="Learning Rate for Finetuning")
-parser.add_argument("--learning_rate_metre", default=3e-4, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--learning_rate_metre", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
-
-parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
+# os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")
+parser.add_argument("--tokenizer", default="roberta-base", type=str, help="Tokenizer to use")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "validators")),  type=str, help="Path to Model")
-parser.add_argument("--max_len_rhyme", default=18, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len_rhyme", default=48, type=int, help="Max length for tokenizer")
 parser.add_argument("--max_len_metre", default=512, type=int, help="Max length for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
@@ -36,12 +36,12 @@ parser.add_argument("--syllables", default=True, type=bool, help="If to use syll
 
 parser.add_argument("--pretrained_model", default="roberta-base", type=str, help="Roberta Model")
 parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=8, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_metre", default=16, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
-parser.add_argument("--hidden_layer_rhyme", default=512, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=128, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=256, type=int, help="Number of epochs to run.")
+parser.add_argument("--hidden_layer_rhyme", default=2048, type=int, help="Max length for tokenizer")
+parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size.")
+parser.add_argument("--epochs_rhyme", default=64, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 parser.add_argument("--val_data_rate", default=0.1, type=float, help="Rate of validation data")
@@ -134,14 +134,14 @@ def main(args):
     
     training_args = TrainingArguments(
                                   save_strategy  = "no",
-                                  warmup_steps = 0,
+                                  warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_metre,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_metre,
                                   learning_rate = args.learning_rate_metre,
                                   fp16 = True if torch.cuda.is_available() else False,
                                   ddp_backend = "nccl",
-                                  lr_scheduler_type="cosine_with_restarts",
+                                  lr_scheduler_type="cosine",
                                   logging_dir = './logs',
                                   output_dir = './results',
                                   per_device_train_batch_size = args.batch_size_metre)
@@ -155,7 +155,7 @@ def main(args):
     metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     
     with open(args.result_file, 'a') as file:
-        print(f"Metre Validator: Roberta {args.block_count},{args.n_embd_metre},{args.max_len_metre} Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
+        print(f"Metre Validator: Roberta, Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
     
     torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     

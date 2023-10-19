@@ -1,3 +1,4 @@
+# Most Common Rhyme Schemas
 RHYME_SCHEMES = ["ABAB", "ABBA", 
                  "XAXA", "ABCB", 
                  "AABB", "AABA", 
@@ -35,9 +36,11 @@ VERSE_ENDS = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'ce'
                 'oť', 'íz', 'lh', 'so', 'áb', 'ja', 'ij', 'ůn', 'rv', 'žů', 'ab', 'he', 'íd', 'ér', 'uš', 'ýž', 'fá', 'rs', 'rn', 
                 'iz', 'ib', 'ki', 'éd', 'év', 'rd', 'yb', 'oz', 'oř', 'ét', 'ož', 'ga', 'yň', 'rp', 'nd', 'of', 'rť', 'iď', 'ýv', 
                 'yz', None]
-
+# Years to bucket to
 POET_YEARS_BUCKETS = [1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, None]
+# Possible Meter Types
 METER_TYPES = ["J","T","D","A","X","Y","N","H","P", None]
+# Translation of Meter to one char types
 METER_TRANSLATE = {
     "J":"J",
     "T":"T",
@@ -49,11 +52,11 @@ METER_TRANSLATE = {
     "pentameter": "P",
     "N":"N"
 }
-
+# Tokenizers Special Tokens
 PAD = "<|PAD|>"
 UNK = "<|UNK|>"
 EOS = "<|EOS|>"
-
+# Basic Characters to consider in rhyme and syllables
 VALID_CHARS = ["",'a','á','b','c','č','d','ď','e','é','ě',
                'f','g','h','i','í','j','k','l','m','n','ň',
                'o','ó','p','q','r','ř','s','š','t','ť','u',
@@ -63,19 +66,49 @@ import re
 import numpy as np
 
 class TextManipulation:
+    """Static class for string manipulation methods
+
+    Returns:
+        _type_: str returned by all methods
+    """
         
     @staticmethod
     def _remove_most_nonchar(raw_text, lower_case=True):
+        """Remove most non-alpha non-whitespace characters
+
+        Args:
+            raw_text (str): Text to manipulate
+            lower_case (bool, optional): If resulting text should be lowercase. Defaults to True.
+
+        Returns:
+            str: Cleaned up text
+        """
         text = re.sub(r'[–\„\“\’\;\:()\]\[\_\*\‘\”\'\-\—\"]+', "", raw_text)
         return text.lower() if lower_case else text
     
     @staticmethod
     def _remove_all_nonchar(raw_text):
+        """Remove all possible non-alpha characters
+
+        Args:
+            raw_text (str): Text to manipulate
+
+        Returns:
+            str: Cleaned up text
+        """
         sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_text)
         return sub
     
     @staticmethod
     def _year_bucketor(raw_year):
+        """Bucketizes year string to boundaries, Bad inputs returns NaN string
+
+        Args:
+            raw_year (str): Year string to bucketize
+
+        Returns:
+            _type_: Bucketized year string
+        """
         if TextAnalysis._is_year(raw_year):
             year_index = np.argmin(np.abs(np.asarray(POET_YEARS_BUCKETS[:-1]) - int(raw_year)))
             return str(POET_YEARS_BUCKETS[year_index])
@@ -83,23 +116,61 @@ class TextManipulation:
             return "NaN"
 
 class TextAnalysis:
+    """Static class with methods of analysis of strings
+
+    Returns:
+        Union[str, bool, dict, numpy.ndarray]: Analyzed input
+    """
     
+    # Possible Keys if returned type is dict
     POET_PARAM_LIST = ["RHYME", "YEAR", "METER", "LENGTH", "END", "TRUE_LENGTH", "TRUE_END"]
     
     @staticmethod
     def _is_meter(meter:str):
+        """Return if string is meter type
+
+        Args:
+            meter (str): string to analyze
+
+        Returns:
+            bool: If string is meter type
+        """
         return meter in METER_TYPES[:-1]
     
     @staticmethod
     def _is_year(year:str):
+        """Return if string is year or special NaN
+
+        Args:
+            year (str): string to analyze
+
+        Returns:
+            bool: If string is year or special NaN
+        """
         return (year.isdigit() and int(year) > 1_000 and int(year) < 10_000) or year == "NaN"
     
     @staticmethod
     def _rhyme_like(rhyme:str):
+        """Return if string is structured like rhyme schema
+
+        Args:
+            rhyme (str): string to analyze
+
+        Returns:
+            bool: If string is structured like rhyme schema
+        """
         return (rhyme.isupper() and len(rhyme) >= 3 and len(rhyme) <= 8)
     
     @staticmethod
-    def _rhyme_vector(rhyme:str):
+    def _rhyme_vector(rhyme:str) -> np.ndarray:
+        """Create One-hot encoded rhyme schema vector from given string
+
+        Args:
+            rhyme (str): string to construct vector from 
+
+        Returns:
+            numpy.ndarray: One-hot encoded rhyme schema vector
+        """
         
         rhyme_vec = np.zeros(len(RHYME_SCHEMES))
         if rhyme in RHYME_SCHEMES:
@@ -110,7 +181,15 @@ class TextAnalysis:
         return rhyme_vec
     
     @staticmethod
-    def _rhyme_or_not(rhyme_str):
+    def _rhyme_or_not(rhyme_str:str) -> np.ndarray:
+        """Create vector if given rhyme string is in our list of rhyme schemas
+
+        Args:
+            rhyme_str (str): string to construct vector from 
+
+        Returns:
+            numpy.ndarray: Boolean flag vector
+        """
         rhyme_vector = np.zeros(2)
         if rhyme_str in RHYME_SCHEMES:
             rhyme_vector[0] = 1
@@ -119,7 +198,15 @@ class TextAnalysis:
         return rhyme_vector
         
     @staticmethod
-    def _metre_vector(metre: str):
+    def _metre_vector(metre: str) -> np.ndarray:
+        """Create One-hot encoded metre vector from given string
+
+        Args:
+            metre (str): string to construct vector from 
+
+        Returns:
+            numpy.ndarray: One-hot encoded metre vector
+        """
         metre_vec = np.zeros(len(METER_TYPES))
         if metre in METER_TYPES:
             metre_vec[METER_TYPES.index(metre)] = 1
@@ -130,40 +217,76 @@ class TextAnalysis:
     
     @staticmethod
     def _first_line_analysis(text:str):
+        """Analysis of parameter line for RHYME, METER, YEAR
+
+        Args:
+            text (str): parameter line string
+
+        Returns:
+            dict: Dictionary with analysis result
+        """
         line_striped = text.strip()
         if not line_striped:
             return {}
         poet_params = {}
+        # Look for each possible parameter
         for param in line_striped.split():
             if TextAnalysis._is_meter(param):
                 poet_params["METER"] = param
             elif TextAnalysis._is_year(param):
-                poet_params["YEAR"] = TextManipulation._year_bucketor(param)
+                # Year is Bucketized so to fit
+                poet_params["YEAR"] = TextManipulation._year_bucketor(param) 
             elif TextAnalysis._rhyme_like(param):
                 poet_params["RHYME"] = param
         return poet_params
     
     @staticmethod
     def _is_line_length(length:str):
+        """Return if string is number of syllables parameter
+
+        Args:
+            length (str): string to analyze
+
+        Returns:
+            bool: If string is number of syllables parameter
+        """
         return length.isdigit() and int(length) > 1 and int(length) < 100
     
     @staticmethod
     def _is_line_end(end:str):
+        """Return if string is valid ending syllable/sequence parameter
+
+        Args:
+            end (str): string to analyze
+
+        Returns:
+            bool: If string is valid ending syllable/sequence parameter
+        """
         return end.isalpha()  and len(end) <= 5 
     
     @staticmethod
     def _continuos_line_analysis(text:str):
+        """Analysis of Content lines for LENGTH, TRUE_LENGTH, END, TRUE_END
+
+        Args:
+            text (str): content line to analyze
+
+        Returns:
+            dict: Dictionary with analysis result
+        """
+        # Strip line of most separators and look if its empty
         line_striped = TextManipulation._remove_most_nonchar(text).strip()
         if not line_striped:
             return {}
         line_params = {}
+        # Look for parameters in Order LENGTH, END, TRUE_LENGTH, TRUE_END
         if TextAnalysis._is_line_length(line_striped.split()[0]):
             line_params["LENGTH"] = int(line_striped.split()[0])
         if len(line_striped.split()) > 1 and TextAnalysis._is_line_end(line_striped.split()[1]):
             line_params["END"] = line_striped.split()[1]        
         if len(line_striped.split()) > 3:
             line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(" ".join(line_striped.split()[3:])))
-            
+        # TRUE_END needs only alpha chars, so all other chars are removed    
         line_only_char = TextManipulation._remove_all_nonchar(line_striped).strip()
         if len(line_only_char) > 2:
             line_params["TRUE_END"] = line_only_char[-3:]
@@ -172,6 +295,14 @@ class TextAnalysis:
     
     @staticmethod
     def _is_param_line(text:str):
+        """Return if line is a Parameter line (Parameters RHYME, METER, YEAR)
+
+        Args:
+            text (str): line to analyze
+
+        Returns:
+            bool: If line is a Parameter line
+        """
         line_striped = text.strip()
         if not line_striped:
             return False
@@ -181,6 +312,11 @@ class TextAnalysis:
 # NON-Original code!
 # Taken from Barbora Štěpánková
 class SyllableMaker:
+    """Static class with methods for separating string to list of Syllables
+
+    Returns:
+        list: List of syllables
+    """
 
     @staticmethod
     def syllabify(text : str) -> list[str]:
@@ -198,7 +334,7 @@ class SyllableMaker:
             letter_counter = 0
 
             # Get syllables: mask the word and split the mask
-            for syllable_mask in SyllableMaker._split_mask(SyllableMaker._create_word_mask(word)):
+            for syllable_mask in SyllableMaker.__split_mask(SyllableMaker.__create_word_mask(word)):
                 word_syllable = ""
                 for character in syllable_mask:
                     word_syllable += word[letter_counter]
@@ -212,7 +348,7 @@ class SyllableMaker:
 
 
     @staticmethod
-    def _create_word_mask(word : str) -> str:
+    def __create_word_mask(word : str) -> str:
         word = word.lower()
 
         vocals = r"[aeiyouáéěíýóůúäöü]"
@@ -255,7 +391,7 @@ class SyllableMaker:
 
 
     @staticmethod
-    def _split_mask(mask : str) -> list[str]:
+    def __split_mask(mask : str) -> list[str]:
         replacements = [
     		# vocal at the beginning
     		(r'(^0*V)(K0*V)', r'\1/\2'),

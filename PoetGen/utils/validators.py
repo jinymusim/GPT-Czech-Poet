@@ -3,16 +3,48 @@ from transformers import  AutoModelForMaskedLM
 from .poet_utils import RHYME_SCHEMES, METER_TYPES
 
 class ValidatorInterface(torch.nn.Module):
+    """Pytorch Model Interface. Abstract class for all validators
+
+    Args:
+        torch (_type_): Is child of torch.nn.Module for integration with torch and huggingface 
+    """
     def __init__(self, *args, **kwargs) -> None:
+        """ Constructor. As child Class needs to construct Parent
+        """
         super().__init__(*args, **kwargs)
         
     def forward(self, input_ids=None, attention_mask=None, *args, **kwargs):
+        """Compute model output and model loss
+
+        Args:
+            input_ids (_type_, optional): Model inputs. Defaults to None.
+            attention_mask (_type_, optional): Attention mask where padding starts. Defaults to None.
+
+        Raises:
+            NotImplementedError: Abstract class
+        """
         raise NotImplementedError()
     
     def predict(self, input_ids=None, *args, **kwargs):
+        """Compute model outputs
+
+        Args:
+            input_ids (_type_, optional): Model inputs. Defaults to None.
+
+        Raises:
+            NotImplementedError: Abstract class
+        """
         raise NotImplementedError()
     
     def validate(self, input_ids=None, *args, **kwargs):
+        """Validate model given some labels, Doesn't use loss
+
+        Args:
+            input_ids (_type_, optional): Model inputs. Defaults to None.
+
+        Raises:
+            NotImplementedError: Abstract class
+        """
         raise NotImplementedError()
     
     

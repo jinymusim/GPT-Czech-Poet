@@ -9,17 +9,37 @@ from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizerBase
 #TODO: Maybe replace year of book being written for year Author was born
 class CorpusDatasetPytorch:
+    """Dataset class responsible for data loading.
+    """
     
     class RawDataset:
+        """Dataset distributing raw sting data with no preprocessing
+        """
         def __init__(self, data_file_paths, lower_case:bool = True):
+            """Construct the frame around Raw data generation
+
+            Args:
+                data_file_paths (_type_): list of paths to data files
+                lower_case (bool, optional): if resulting data should be in lowercase. Defaults to True.
+            """
             self._data_file_paths = data_file_paths
             self.lower_case = lower_case
         
         def gen_files(self):
+            """Get individual opened files
+
+            Yields:
+                _type_: open file object
+            """
             for filename in self._data_file_paths:
                  yield open(filename, 'r') 
                  
         def get_text(self):
+            """Get lines of text of poetry
+
+            Yields:
+                str: individual verse line
+            """
             for step,file in enumerate(self.gen_files()):
                 if step % 500 == 0:
                     print(f"Processing file {step}")
@@ -30,7 +50,12 @@ class CorpusDatasetPytorch:
                             yield text_line['text'].lower() if self.lower_case else text_line['text']
                             
         def get_part(self):
-             for step,file in enumerate(self.gen_files()):
+            """Get strophe of poetry
+
+            Yields:
+                str: 1 strophe of poetry
+            """
+            for step,file in enumerate(self.gen_files()):
                 if step % 500 == 0:
                     print(f"Processing file {step}")
                 datum = json.load(file)
@@ -42,7 +67,12 @@ class CorpusDatasetPytorch:
                         yield "\n".join(part).lower() if self.lower_case else "\n".join(part)
         
         def get_body(self):
-             for step,file in enumerate(self.gen_files()):
+            """Get whole poem
+
+            Yields:
+                str: 1 whole poem
+            """
+            for step,file in enumerate(self.gen_files()):
                 if step % 500 == 0:
                     print(f"Processing file {step}")
                 datum = json.load(file)
@@ -56,8 +86,22 @@ class CorpusDatasetPytorch:
                     yield "\n".join(body).lower() if self.lower_case else "\n".join(body)
     
     class TextDataset(Dataset):
+        """Dataset of preprocessed verse lines 
+
+        Args:
+            Dataset (_type_): Dataset is child of torch class for better integration with torch and huggingface
+        """
         
         def __init__(self, data_file_paths, prompt_length=True, prompt_ending=True, lower_case=True, val_data_rate: float = 0.1):
+            """Construct the class our given data files path and store variables
+
+            Args:
+                data_file_paths (_type_):  list of paths to data files
+                prompt_length (bool, optional): If to prompt the syllable count. Defaults to True.
+                prompt_ending (bool, optional): If to prompt verse ending. Defaults to True.
+                lower_case (bool, optional): If the string should be in lowercase. Defaults to True.
+                val_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.1.
+            """
             self._data_file_paths = data_file_paths
             self.prompt_length = prompt_length
             self.prompt_ending = prompt_ending
@@ -70,11 +114,24 @@ class CorpusDatasetPytorch:
          
          
         def gen_files(self):
+            """Get individual opened files
+
+            Yields:
+                _type_: open file object
+            """
             for filename in self._data_file_paths:
                  yield open(filename, 'r') 
                  
         @staticmethod
         def _vowels_and_endings(raw_text):
+            """Get the verse ending and number of syllables in verse
+
+            Args:
+                raw_text (str): raw verse to analyze
+
+            Returns:
+                tuple: number of syllables, ending syllable
+            """
             syllabs = SyllableMaker.syllabify(raw_text)
             vowels = len(syllabs) #INFO: Now counts the number of syllables
             ending = syllabs[-1]
@@ -82,6 +139,14 @@ class CorpusDatasetPytorch:
         
         @staticmethod
         def _ending_vector(end):
+            """Construct One-hot encoded vector for ending syllable
+
+            Args:
+                end (str): Ending syllable
+
+            Returns:
+                numpy.ndarray: One-hot encoded vector of ending syllable
+            """
             verse_end_vector = np.zeros(len(VERSE_ENDS))
             if end in VERSE_ENDS:
                 verse_end_vector[VERSE_ENDS.index(end)] = 1
@@ -91,11 +156,21 @@ class CorpusDatasetPytorch:
         
         @staticmethod
         def _syllable_line(raw_text):
+            """Construct verse as sequence of syllables
+
+            Args:
+                raw_text (str): raw verse line
+
+            Returns:
+                str: Verse line as sequence of syllables
+            """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             return " ".join(SyllableMaker.syllabify(raw_text)) + ending
                      
             
         def data_text_line_gen(self):
+            """Preprocess and process data for usage
+            """
             for step,file in enumerate(self.gen_files()):
                 if step % 500 == 0:
                     print(f"Processing file {step}")
@@ -107,6 +182,7 @@ class CorpusDatasetPytorch:
                             
                             syllable_line = self._syllable_line(scanned_text)
                             num_vowels, verse_end = self._vowels_and_endings(scanned_text)
+                            # Based on result of random chose proper set. Because data are large enough, will result in wanted split.
                             if np.random.rand() > self.val_data_rate: 
                                 self.data.append({
                                 "input_ids" : [scanned_text,syllable_line],
@@ -122,9 +198,22 @@ class CorpusDatasetPytorch:
                             
             
         def __len__(self):
+            """Return length of training data
+
+            Returns:
+                int: length of training data
+            """
             return len(self.data)
         
         def __getitem__(self, index):
+            """return indexed item
+
+            Args:
+                index (int): index from where to return
+
+            Returns:
+                dict: dict with indexed data
+            """
             return self.data[index]
         
     class BodyDataset(Dataset):
