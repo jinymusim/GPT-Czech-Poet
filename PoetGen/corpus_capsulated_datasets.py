@@ -217,8 +217,24 @@ class CorpusDatasetPytorch:
             return self.data[index]
         
     class BodyDataset(Dataset):
+        """Dataset of preprocessed strophe
+
+        Args:
+            Dataset (_type_): Dataset is child of torch class for better integration with torch and huggingface
+        """
         def __init__(self, data_file_paths,
                      prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate: float = 0.1):
+            """Construct the class our given data files path and store variables
+
+            Args:
+                data_file_paths (_type_): list of paths to data files
+                prompt_length (bool, optional): If to prompt the syllable count. Defaults to True.
+                prompt_ending (bool, optional): If to prompt verse ending. Defaults to True.
+                prompt_verse (bool, optional): If to prompt rhyme schema . Defaults to True.
+                verse_len (list, optional): Considered length of strophe. Defaults to [4,6].
+                lower_case (bool, optional): If the string should be in lowercase. Defaults to True.
+                val_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.1.
+            """
             self._data_file_paths = data_file_paths
             self.prompt_length = prompt_length
             self.prompt_ending = prompt_ending
@@ -231,16 +247,38 @@ class CorpusDatasetPytorch:
             self.validation_data = []
         
         def gen_files(self):
+            """Get individual opened files
+
+            Yields:
+                _type_: open file object
+            """
             for filename in self._data_file_paths:
                  yield open(filename, 'r')
         
         @staticmethod
         def rhyme_sec(rhyme_ref, current_rhyme):
+            """Return proper rhyme indicator to given reference
+
+            Args:
+                rhyme_ref (_type_): reference number of 'A'
+                current_rhyme (_type_): current rhyme number that needs inidcation
+
+            Returns:
+                str: rhyme indicator character
+            """
             rhyme_pos = ["A", "B", "C", "D", "E", "F", "G", "H"]
             return "X" if current_rhyme == None or rhyme_ref == None or current_rhyme < rhyme_ref or current_rhyme >= rhyme_ref + len(rhyme_pos) else rhyme_pos[current_rhyme - rhyme_ref]
         
         @staticmethod
         def _rhyme_string(curr_rhyme_list):
+            """Translate rhyme as list of rhyming number to rhyme schema
+
+            Args:
+                curr_rhyme_list (list): Current rhyme as list of ints indicating rhyming verses
+
+            Returns:
+                str: Rhyme schema
+            """
             rhyme_list = curr_rhyme_list[:]
             reference = None
             # Give None a blank -1 rhyme id
@@ -270,6 +308,14 @@ class CorpusDatasetPytorch:
         
         @staticmethod
         def _publish_year_vector(year_string):
+            """Construct vector of year of publishing
+
+            Args:
+                year_string (str): String with publish year
+
+            Returns:
+                numpy.ndarray: Vector of bucketized One-hot encoded publish year
+            """
             publish_year = None if not year_string.isdigit() else int(year_string)
             publish_vector = np.zeros(len(POET_YEARS_BUCKETS))
             if publish_year == None:
@@ -280,12 +326,28 @@ class CorpusDatasetPytorch:
                      
         
         def _construct_line(self, raw_text):
-            num_str = f"{len(SyllableMaker.syllabify(raw_text))} " if self.prompt_length else ""
-            sub = re.sub(r'([^\w\s]+|[0-9]+)', '', raw_text)
-            verse_end = f"{sub.strip()[-3:]} # " if self.prompt_ending else ""
+            """Construct individual content line
+
+            Args:
+                raw_text (str): raw verse line
+
+            Returns:
+                str: Processed verse line with line parameters
+            """
+            syllables = SyllableMaker.syllabify(raw_text)
+            num_str = f"{len(syllables)} " if self.prompt_length else ""
+            verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
             return num_str + verse_end + raw_text
         
         def _construct_syllable_line(self, raw_text):
+            """Construct individual content line as sequence of syllables
+
+            Args:
+                raw_text (str): raw verse line
+
+            Returns:
+                str: Processed verse line as sequence of syllables with line parameters
+            """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             syllables = SyllableMaker.syllabify(raw_text)
             num_str = f"{len(syllables)} " if self.prompt_length else ""
@@ -295,6 +357,8 @@ class CorpusDatasetPytorch:
             
                                                            
         def data_body_gen(self):
+            """Preprocess and process data for usage
+            """
             for step,file in enumerate(self.gen_files()):
                 if step % 500 == 0:
                     print(f"Processing file {step}")
@@ -351,29 +415,33 @@ class CorpusDatasetPytorch:
                                     body = []
                                     rhyme = []
                                     i=0
-                        # The resulting schema throws the model often off
-                        
-                        # if len(body) > 0 and i not in self.verse_len:
-                        #     rhyme_str = self._rhyme_string(rhyme)
-                        #     
-                        #     text = f"{rhyme_str} ## {publish_year} ## {metre}\n" + "\n".join(body) + "\n"
-                        #     context_text= "\n".join(context) 
-                        #     self.data.append({
-                        #             "input_ids" : text,
-                        #             "context_ids" : context_text,
-                        #             "year": publish_year,
-                        #             "rhyme":  rhyme_str,
-                        #             "metre" : metre
-                        #              })
                                 
         
         def __len__(self):
+            """Return length of training data
+
+            Returns:
+                int: length of training data
+            """
             return len(self.data)
         
         def __getitem__(self, index):
+            """return indexed item
+
+            Args:
+                index (int): index from where to return
+
+            Returns:
+                dict: dict with indexed data
+            """
             return self.data[index]
         
     def get_filenames(self):
+        """Get paths of data files
+
+        Returns:
+            list: Paths of data files
+        """
         data_filenames = os.listdir(self.data_dir)
         data_by_files = []
         for filename in data_filenames:
@@ -382,11 +450,22 @@ class CorpusDatasetPytorch:
         return data_by_files
         
     def load_raw_(self):
+        """Load Raw dataset with raw string data
+        """
         filenames = self.get_filenames()
             
         self.raw_dataset = CorpusDatasetPytorch.RawDataset(filenames, self.lower_case)
     
     def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=[4,6], val_data_rate=0.1):
+        """Load Verse and Strophe datasets
+
+        Args:
+            prompt_length (bool, optional): If to prompt the syllable count. Defaults to True.
+            prompt_ending (bool, optional): If to prompt verse ending. Defaults to True.
+            prompt_verse (bool, optional): If to prompt rhyme schema . Defaults to True.
+            verse_len (list, optional): Considered length of strophe. Defaults to [4,6].
+            val_data_rate (float, optional): If the string should be in lowercase. Defaults to 0.1.
+        """
         filenames = self.get_filenames()
         
         self.pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset(filenames, prompt_ending=prompt_ending, 
@@ -403,12 +482,27 @@ class CorpusDatasetPytorch:
         self.pytorch_dataset_text.data_text_line_gen()
         
     def create_empty(self):
+        """Create empty holder for possible load of processed data from file
+        """
         self.pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset([])
         self.pytorch_dataset_text = CorpusDatasetPytorch.TextDataset([])
         
         
     @staticmethod
     def collate(batch, tokenizer: PreTrainedTokenizerBase ,max_len = 1024, max_context = 1024 ,mask_rate = 0.0, syllables: bool = False):
+        """Process data for usage in LM
+
+        Args:
+            batch (_type_): Batch with selected data points
+            tokenizer (PreTrainedTokenizerBase): tokenizer to tokenize input text
+            max_len (int, optional): Maximum length of tokenization. Defaults to 1024.
+            max_context (int, optional): Maximum length of tokenization of context. Defaults to 1024.
+            mask_rate (float, optional): Rate in with to mask data. Defaults to 0.0.
+            syllables (bool, optional): If to use sequence of syllables as input text. Defaults to False.
+
+        Returns:
+            dict: tokenized and processed to tensors data
+        """
         index = 1 if syllables else 0
         
         tokenizer.model_max_length = max_len
@@ -462,6 +556,16 @@ class CorpusDatasetPytorch:
         
     @staticmethod
     def collate_rhyme(batch, max_len:int = 36, max_verse_len:int = 6):
+        """Process data for use in MLP for rhyme prediction
+
+        Args:
+            batch (_type_): Batch with selected data points
+            max_len (int, optional): Maxim length of chars to consider. Defaults to 36.
+            max_verse_len (int, optional): Maximum length of Strophe to consider. Defaults to 6.
+
+        Returns:
+            dict: tokenized and processed to tensors data
+        """
         chars_per_line = max_len//max_verse_len
         
         input_ids = torch.zeros((len(batch), max_len * len(VALID_CHARS)))
@@ -501,6 +605,18 @@ class CorpusDatasetPytorch:
         
     @staticmethod
     def collate_metre(batch, tokenizer: PreTrainedTokenizerBase,syllables:bool, is_syllable:bool = False,max_len = 1024):
+        """Process data for use in LM for metre prediction
+
+        Args:
+            batch (_type_): Batch with selected data points
+            tokenizer (PreTrainedTokenizerBase): tokenizer to tokenize input text   
+            syllables (bool): If to use sequence of syllables as input text
+            is_syllable (bool, optional): Signal if the preprocessed inputs contain syllable data. Defaults to False.
+            max_len (int, optional): Maximum length of tokenization. Defaults to 1024.
+
+        Returns:
+            dict: tokenized and processed to tensors data
+        """
         index = 1 if syllables and is_syllable else 0
         tokenizer.model_max_length = max_len
         data_ids = ["\n".join(
@@ -526,6 +642,18 @@ class CorpusDatasetPytorch:
         
     def __init__(self, data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir='./', 
                  prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate=0.1):
+        """Construct the Dataloader and create Datasets
+
+        Args:
+            data_dir (str, optional): Path to data. Defaults to "PoetGen\corpusCzechVerse-master\ccv".
+            cache_dir (str, optional): Path where to store processed data. Defaults to './'.
+            prompt_length (bool, optional): If to prompt the syllable count. Defaults to True.
+            prompt_ending (bool, optional): If to prompt verse ending. Defaults to True.
+            prompt_verse (bool, optional): If to prompt rhyme schema. Defaults to True.
+            verse_len (list, optional): Considered length of strophe. Defaults to [4,6].
+            lower_case (bool, optional): If the string should be in lowercase. Defaults to True.
+            val_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.1.
+        """
         self.lower_case = lower_case
         self.data_dir = data_dir
         if  os.path.isfile(os.path.join(cache_dir, "body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "text_poet_data.json")) \
