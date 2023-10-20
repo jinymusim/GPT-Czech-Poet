@@ -44,7 +44,7 @@ parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size
 parser.add_argument("--epochs_rhyme", default=64, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
-parser.add_argument("--val_data_rate", default=0.1, type=float, help="Rate of validation data")
+parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
 
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "validators_acc.txt")), type=str, help="Result of Analysis File")
 
