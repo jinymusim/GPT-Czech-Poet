@@ -57,7 +57,7 @@ PAD = "<|PAD|>"
 UNK = "<|UNK|>"
 EOS = "<|EOS|>"
 # Basic Characters to consider in rhyme and syllables
-VALID_CHARS = ["",'a','á','b','c','č','d','ď','e','é','ě',
+VALID_CHARS = [""," ",'a','á','b','c','č','d','ď','e','é','ě',
                'f','g','h','i','í','j','k','l','m','n','ň',
                'o','ó','p','q','r','ř','s','š','t','ť','u',
                'ú','ů','v','w','x','y','ý','z','ž']

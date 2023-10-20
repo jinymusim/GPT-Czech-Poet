@@ -36,7 +36,7 @@ parser.add_argument("--syllables", default=False, type=bool, help="If to use syl
 
 parser.add_argument("--pretrained_model", default="roberta-base", type=str, help="Roberta Model")
 parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=16, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_metre", default=8, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--hidden_layers", default=2, type=int, help="Max length for tokenizer")
 parser.add_argument("--hidden_layer_rhyme", default=2048, type=int, help="Max length for tokenizer")

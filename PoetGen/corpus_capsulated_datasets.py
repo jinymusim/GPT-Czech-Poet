@@ -572,7 +572,7 @@ class CorpusDatasetPytorch:
         for i, text in enumerate(batch):
             one_input = text['input_ids'][0]
             # First Line is parameter line
-            lines = [re.sub(r'[^aábcčdďeéěfghiíjklmnňoópqrřsštťuúůvwxyýzž]+', '', line.lower()) for line in one_input.splitlines()[1:max_verse_len + 1]]
+            lines = [re.sub(r'[^ aábcčdďeéěfghiíjklmnňoópqrřsštťuúůvwxyýzž]+', '', line.lower()) for line in one_input.splitlines()[1:max_verse_len + 1]]
             j = 0
             while j<len(lines) and j<max_verse_len:
                 k = 0
