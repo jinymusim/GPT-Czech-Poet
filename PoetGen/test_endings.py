@@ -21,6 +21,14 @@ if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
 def poet_samples(args):
+    """Collect samples of verse ending (only alpha part)
+
+    Args:
+        args (_type_): Regex to use for filtering
+
+    Returns:
+        list: All founds ends of verses
+    """
     data_filenames_poet = os.listdir(args.data_path_poet)
     text_lines_poet = []
     i = 0
@@ -41,9 +49,11 @@ def poet_samples(args):
     return text_lines_poet
 
 
-
+# Collect all ends
 poet_endings = poet_samples(args)
+# Count ends by number of appearances
 endings = Counter(poet_endings)
+# Print and store requested amount of top appearing endings
 print(endings.most_common(args.top))
 with open(args.result_file, 'a', encoding="utf8") as file:
     print(f"--- Tested Regex {args.regex} --- Top {'All' if args.top == None else args.top}", file=file)

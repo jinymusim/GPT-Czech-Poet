@@ -23,9 +23,10 @@ parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.pat
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
+# Load Tokenizer
 try:    
     tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.default_tokenizer_model)
-except: #TODO: Need model to update embedding matrix
+except:
     tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.default_tokenizer_model)
     tokenizer.eos_token = EOS
     tokenizer.eos_token_id = 0
@@ -35,6 +36,15 @@ except: #TODO: Need model to update embedding matrix
     tokenizer.unk_token_id = 2
 
 def poet_samples(args, shuffle=True):
+    """Collect samples of verses
+
+    Args:
+        args (_type_): Arguments on number of samples
+        shuffle (bool, optional): if to shuffle data. Defaults to True.
+
+    Returns:
+        list: list of poet verses
+    """
     data_filenames_poet = os.listdir(args.data_path_poet)
     if shuffle:
         random.shuffle(data_filenames_poet)
@@ -54,6 +64,15 @@ def poet_samples(args, shuffle=True):
     return text_lines_poet
 
 def base_samples(args, shuffle=True):
+    """Collect sample of prosaic text
+
+    Args:
+        args (_type_): Prosaic dataset, number of samples
+        shuffle (bool, optional):  if to shuffle data. Defaults to True.
+
+    Returns:
+        list: list of prosaic lines
+    """
     dataset = load_dataset(args.data_path_base)
     if shuffle:
         dataset = dataset.shuffle()
@@ -65,20 +84,23 @@ def base_samples(args, shuffle=True):
             return text_lines_base
     return text_lines_base
     
-    
+# Store Results of individual runs 
 poet_runs = []
 base_runs = []
+# Run the requested number of runs
 for j in tqdm(range(args.num_runs),desc=f"Tokenizer {args.default_tokenizer_model}"):
+    # Collect samples for run
     poet = poet_samples(args)
     base = base_samples(args)
     i = 1
     poet_chars_per_token = []
     base_chars_per_token = []
+    # Tokenize samples with tokenizer
     for sample_p, sample_b in zip(poet, base):
         poet_chars_per_token.append(len(sample_p) / len(tokenizer.encode(sample_p, return_tensors="np")[0]))
         base_chars_per_token.append(len(sample_b) / len(tokenizer.encode(sample_b, return_tensors="np")[0]))
         i+= 1
-
+    # Print and store results
     print(f"Run {j}")
     print(f"Analyzed Samples: {i}")
     print(f"Chars per token Poet data: {sum(poet_chars_per_token)/len(poet_chars_per_token)}")

@@ -14,18 +14,20 @@ parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.pat
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
     
-
+# Load basic data
 train_data = CorpusDatasetPytorch(AutoTokenizer.from_pretrained("gpt2"), data_dir=args.data_path)
 
+# Store for syllables
 sylables = set()
 i = 0
+# Try syllabify text and store the found syllables
 for text in train_data.raw_dataset.get_text():
     for item in SyllableMaker.syllabify(text):
         sylables.add(item)
     i+=1
     if i > 500_000:
         break
-        
+# Store the found syllables
 with open(args.result_file, 'a', encoding="utf8") as file:
     print("--- Syllables ---", file=file)
     print( list(sylables), file=file)        

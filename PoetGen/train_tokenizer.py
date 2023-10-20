@@ -37,6 +37,7 @@ parser.add_argument("--lower_case", default=True, type=bool, help="If to lower c
 
 def main(args):
     
+    # Create tokenizer based on arguments. Keep the structural parameters (vocabulary size) from default tokenizer
     tok = AutoTokenizer.from_pretrained(args.default_tokenizer)
     if args.tokenizer_type == "BPE":
         tokenizer = Tokenizer(BPE())
@@ -70,23 +71,26 @@ def main(args):
         raise ValueError("Unknown tokenize type")
     
 
-    
+    # Create or load data
     train_data = CorpusDatasetPytorch(data_dir=args.data_path, lower_case=args.lower_case)
+    # Train on raw or processed data
     if args.raw_data:
         tokenizer.train_from_iterator(train_data.raw_dataset.get_body(),trainer=trainer)
     else:
+        # Train on syllable or normal processed data
         if args.syllables:
             tokenizer.train_from_iterator([text['input_ids'][1] for text in train_data.pytorch_dataset_body.data]  \
                                           + [text['input_ids'][1] for text in train_data.pytorch_dataset_body.validation_data], trainer=trainer)
         else:      
             tokenizer.train_from_iterator([text['input_ids'][0] for text in train_data.pytorch_dataset_body.data] \
                                           + [text['input_ids'][0] for text in train_data.pytorch_dataset_body.validation_data], trainer=trainer)
-                
+    
+    # Store tokenizer        
     if not os.path.exists(os.path.join(args.tokenizer_path ,args.tokenizer_type)):
         os.makedirs(os.path.join(args.tokenizer_path, args.tokenizer_type))
     tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, f"new_{'syllabs_' if args.syllables else ''}{'raw' if args.raw_data else 'processed'}_tokenizer.json"))
     
-    
+    # Simple tokenizer test With some basic needs for Strophe generation
     print("AABB # J # 1899\n strc prist # zkrz krk\n Hola hej")
     print(tokenizer.encode("AABB # J # 1899\n strc prist # zkrz krk\n Hola hej").ids)
     print(tokenizer.decode(tokenizer.encode("AABB # J # 1899\n strc prist # zkrz krk\n Hola hej").ids))

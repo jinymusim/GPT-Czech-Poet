@@ -16,9 +16,10 @@ parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.pa
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
+# Load tokenizer
 try:    
     tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.default_tokenizer_model)
-except: #TODO: Need model to update embedding matrix
+except: 
     tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.default_tokenizer_model)
     tokenizer.eos_token = EOS
     tokenizer.eos_token_id = 0
@@ -26,9 +27,10 @@ except: #TODO: Need model to update embedding matrix
     tokenizer.pad_token_id = 1
     tokenizer.unk_token = UNK
     tokenizer.unk_token_id = 2
-    
-model: PoetModelInterface= (torch.load(args.model_path_full, map_location=torch.device('cpu')))
 
+# Load model
+model: PoetModelInterface= (torch.load(args.model_path_full, map_location=torch.device('cpu')))
+# Free model generation
 tokenized_poet_start = tokenizer.encode("A", return_tensors='pt')
 
 out = model.model.generate(tokenized_poet_start, 
@@ -41,13 +43,13 @@ out = model.model.generate(tokenized_poet_start,
 
 
 decoded_cont = tokenizer.decode(out[0], skip_special_tokens=True)
-
+# Print the result of generation
 print("### Basic Decoding! ###\n", decoded_cont)
-
+# Restricted generation 
 out_forced = model.generate_forced("A", tokenizer, verse_len=4)
-
+# Print the result of generation
 print("### Forced Decoding! ###\n", out_forced)
-
+# Store both types of generation as well as the name of used LM
 _, base_filename = os.path.split(args.model_path_full)
 with open(args.result_file, 'a', encoding="utf-8") as file:
     print(f"--- Model {base_filename} ---", file=file)

@@ -14,15 +14,25 @@ from utils.validators import ValidatorInterface
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 class ModelValidator:
+    """Class to Validate LMs using Validators and Analysis
+    """
     def __init__(self, args: argparse.Namespace,
                  result_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__),"results"))) -> None:
+        """Construct Validators using given arguments. Save the requested number of repeats
+
+        Args:
+            args (argparse.Namespace): Arguments of Validation
+            result_dir (str, optional): Directory to store results. Defaults to os.path.abspath(os.path.join(os.path.dirname(__file__),"results")).
+        """
         
         self.args = args
         
         self.model_name = args.model_path_full
+        # Split Path to find only the LM name itself
         _ ,self.model_rel_name =  os.path.split(self.model_name)
         self.model: PoetModelInterface= (torch.load(self.model_name, map_location=torch.device('cpu')))
         
+        # Load validators 
         self.rhyme_model, self.meter_model = None, None
         if args.rhyme_model_path_full:
             self.rhyme_model: ValidatorInterface = (torch.load(args.rhyme_model_path_full, map_location=torch.device('cpu')))    
@@ -30,6 +40,7 @@ class ModelValidator:
         if args.metre_model_path_full:
             self.meter_model: ValidatorInterface = (torch.load(args.metre_model_path_full, map_location=torch.device('cpu')))
             
+        # Load validator tokenizer
         self.validator_tokenizer: PreTrainedTokenizerBase = None
         if args.validator_tokenizer_model:
             try:
@@ -42,7 +53,8 @@ class ModelValidator:
                 self.validator_tokenizer.pad_token_id = 1
                 self.validator_tokenizer.unk_token = UNK
                 self.validator_tokenizer.unk_token_id = 2
-                
+         
+        # Load LM tokenizers       
         try:    
             self.tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.default_tokenizer_model)
         except:
@@ -53,7 +65,8 @@ class ModelValidator:
             self.tokenizer.pad_token_id = 1
             self.tokenizer.unk_token = UNK
             self.tokenizer.unk_token_id = 2
-            
+        
+        # Store the Validation arguments    
         self.epochs = args.num_runs
         self.runs_per_epoch = args.num_samples
         self.result_dir = result_dir
@@ -62,6 +75,14 @@ class ModelValidator:
             
             
     def decode_helper(self, type:str):
+        """Wrapper around LM generation
+
+        Args:
+            type (str): Which type of generation to use ('basic', 'forced')
+
+        Returns:
+            str: Generated Strophe
+        """
         if type  == "basic":
             tokenized_poet_start = self.tokenizer.encode(random.choice(RHYME_SCHEMES[:-1]), return_tensors='pt', truncation=True)
         
@@ -79,29 +100,42 @@ class ModelValidator:
             
             
     def validate_decoding(self, type:str):
+        """Validate LM given generation type. Measure metrics (Rhyme acc, Metrum acc, End acc, Syllable count acc)
+
+        Args:
+            type (str): Type of generation to use
+        """
+        # Store of individual runs of evaluation
         end_accuracy, sylab_accuracy, rhyme_accuracy, metre_accuracy = [], [], [],[]
+        # Run the requested amount of evaluations
         for _ in tqdm(range(self.epochs), desc=f"Validation {type}"):
+            # Store results of current evaluation
             end_all, sylab_all, rhyme_all, metre_all = 0,0,0,0
             end_pos, sylab_pos, rhyme_pos, metre_pos = 0,0,0,0
+            # Run the requested steps in evaluation
             for _ in range(self.runs_per_epoch):
-                
+                # Get generated Strophe
                 decoded_cont:str = self.decode_helper(type)
-                
+                # Validate line by line
                 for line in decoded_cont.splitlines():
+                    # Skip Empty lines
                     if not line.strip(): 
                         break
                     if not (TextManipulation._remove_most_nonchar(line)).strip():
                         break
+                    # Validate for Strophe Parameters
                     if TextAnalysis._is_param_line(line):
                         values = TextAnalysis._first_line_analysis(line)
                         metre_all +=1
                         rhyme_all +=1
+                        # Validate for Rhyme schema
                         if self.rhyme_model != None and "RHYME" in values.keys():
                             rhyme_vec = TextAnalysis._rhyme_vector(values["RHYME"])
                             input_ids = CorpusDatasetPytorch.collate_rhyme([{"input_ids" :[decoded_cont]}],
                                                           max_len=self.rhyme_model.raw_size)['input_ids']
                             rhyme_pos += self.rhyme_model.validate(input_ids=input_ids,
                                                                    rhyme=torch.tensor(rhyme_vec.reshape(1,-1)))
+                        # Validate for Metrum
                         if self.meter_model != None and "METER" in values.keys():
                             metre_vec = TextAnalysis._metre_vector(values["METER"])
                             input_ids = CorpusDatasetPytorch.collate_metre([{"input_ids" :[decoded_cont]}],tokenizer=self.validator_tokenizer,
@@ -111,7 +145,7 @@ class ModelValidator:
                                                                    metre=torch.tensor(metre_vec.reshape(1,-1)))
                         continue
                             
-                    
+                    # Else validate for individual verse
                     line_analysis = TextAnalysis._continuos_line_analysis(line)
                     # Was Still empty in terms of any text
                     if len(line_analysis.keys()) == 0:
@@ -126,11 +160,12 @@ class ModelValidator:
                         sylab_pos +=1
                     
                     
-                    
+            # Store Results        
             end_accuracy.append(end_pos/end_all)
             sylab_accuracy.append(sylab_pos/sylab_all)
             rhyme_accuracy.append(rhyme_pos/rhyme_all)
             metre_accuracy.append(metre_pos/metre_all)
+        # Log all results and configuration
         with open(os.path.abspath(os.path.join(self.result_dir, self.model_rel_name)), 'a') as file:
              print(f"{type} Decoding Validation: Epochs: {self.epochs}, Runs per epoch: {self.runs_per_epoch}", file=file)
              print(f"Num Sylabs Accuracy: {np.mean(sylab_accuracy)} +- {np.std(sylab_accuracy, ddof=1)}", file=file)
@@ -140,6 +175,8 @@ class ModelValidator:
                     
             
     def full_validate(self):
+        """Validate both generation types
+        """
         self.validate_decoding("basic")
         self.validate_decoding("forced")
         

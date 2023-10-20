@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--learning_rate_rhyme", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--learning_rate_metre", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
-# os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")
+#parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Tokenizer to use")
 parser.add_argument("--tokenizer", default="roberta-base", type=str, help="Tokenizer to use")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "validators")),  type=str, help="Path to Model")
 parser.add_argument("--max_len_rhyme", default=24, type=int, help="Max length for tokenizer")
@@ -49,6 +49,16 @@ parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of v
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "validators_acc.txt")), type=str, help="Result of Analysis File")
 
 def validate(model: ValidatorInterface, data, collate_fnc):
+    """Validate model for accuracy on trained task
+
+    Args:
+        model (ValidatorInterface): Model to validate
+        data (_type_): Validation data
+        collate_fnc (_type_): Function to transform data for model
+
+    Returns:
+        float: Accuracy of model
+    """
     model.eval()
     
     true_hits = 0
@@ -68,17 +78,19 @@ def main(args):
     # Time stamp for the validators
     time_stamp = int(round(time.time() * 1000))
     
+    # Create directory for Validators to store to
     if not os.path.exists(os.path.abspath(os.path.join(args.model_path, "rhyme"))):
         os.makedirs(os.path.abspath(os.path.join(args.model_path, "rhyme")))
         
     if not os.path.exists(os.path.abspath(os.path.join(args.model_path, "meter"))):
         os.makedirs(os.path.abspath(os.path.join(args.model_path, "meter")))
         
-        
+    # Create Validators    
     rhyme_model = RhymeValidator(hidden_layers=args.hidden_layers, hidden_size=args.hidden_layer_rhyme, 
                                  input_size=args.max_len_rhyme * len(VALID_CHARS), raw_size=args.max_len_rhyme)
     meter_model = MeterValidator(pretrained_model=args.pretrained_model)
         
+    # Load tokenizer for validators
     try:    
         tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.tokenizer)
     except:
@@ -94,14 +106,12 @@ def main(args):
         
         
    
-        
+    # Train Rhyme Validator 
     collate_rhyme = partial(CorpusDatasetPytorch.collate_rhyme,max_len=args.max_len_rhyme, max_verse_len= max(args.verse_len))
     
     train_data = CorpusDatasetPytorch(data_dir=args.data_path, prompt_ending=args.prompt_ending, 
                                       prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
                                       verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate)
-    
-    # Parallel Plugin
     
     training_args = TrainingArguments(
                                   save_strategy  = "no",
@@ -120,16 +130,16 @@ def main(args):
                            args = training_args,
                            train_dataset= train_data.pytorch_dataset_body,
                            data_collator=collate_rhyme).train()
-    
+    # Validate rhyme Validator on validation data
     rhyme_acc =  validate(rhyme_model.cpu(), train_data.pytorch_dataset_body.validation_data,collate_rhyme)
-
+    # Store result and model
     with open(args.result_file, 'a') as file:
         print(f"### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp}", file=file)
         print(f"Rhyme Validator: Length: {args.max_len_rhyme} MLP {args.hidden_layers},{args.hidden_layer_rhyme} Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
     
     torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
-    
+    # Train Metrum Validator
     collate  = partial(CorpusDatasetPytorch.collate_metre, tokenizer=tokenizer, max_len=args.max_len_metre, syllables=args.syllables, is_syllable=True)
     
     training_args = TrainingArguments(
@@ -151,9 +161,9 @@ def main(args):
                            args = training_args,
                            train_dataset= train_data.pytorch_dataset_body,
                            data_collator=collate).train()
-    
+    # Validate Metrum validator on validation data
     metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
-    
+    # Store result and model
     with open(args.result_file, 'a') as file:
         print(f"Metre Validator: Roberta, Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
     
