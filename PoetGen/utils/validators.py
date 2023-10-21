@@ -66,7 +66,7 @@ class RhymeValidator(ValidatorInterface):
         
         self.rhyme_regressor = torch.nn.Linear(self.model_size, len(RHYME_SCHEMES)) # Common Rhyme Type
         
-        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.1)
+        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.05)
         
     def forward(self, input_ids=None, attention_mask=None, rhyme=None, *args, **kwargs):
         
@@ -118,7 +118,7 @@ class MeterValidator(ValidatorInterface):
         
         self.meter_regressor = torch.nn.Linear(self.model_size, len(METER_TYPES)) # Meter Type
         
-        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.1)
+        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.05)
         
     def forward(self, input_ids=None, attention_mask=None, metre=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
