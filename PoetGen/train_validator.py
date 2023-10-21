@@ -18,13 +18,13 @@ parser = argparse.ArgumentParser()
 
 
 
-parser.add_argument("--learning_rate_rhyme", default=5e-5, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--learning_rate_rhyme", default=3e-4, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--learning_rate_metre", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Tokenizer to use")
 parser.add_argument("--tokenizer", default="roberta-base", type=str, help="Tokenizer to use")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "validators")),  type=str, help="Path to Model")
-parser.add_argument("--max_len_rhyme", default=18, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len_rhyme", default=36, type=int, help="Max length for tokenizer")
 parser.add_argument("--max_len_metre", default=512, type=int, help="Max length for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
@@ -39,8 +39,8 @@ parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size
 parser.add_argument("--epochs_metre", default=1, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--hidden_layers", default=2, type=int, help="Max length for tokenizer")
-parser.add_argument("--hidden_layer_rhyme", default=2048, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=16, type=int, help="Batch size.")
+parser.add_argument("--hidden_layer_rhyme", default=4096, type=int, help="Max length for tokenizer")
+parser.add_argument("--batch_size_rhyme", default=32, type=int, help="Batch size.")
 parser.add_argument("--epochs_rhyme", default=64, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
