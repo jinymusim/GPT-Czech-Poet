@@ -159,7 +159,7 @@ class TextAnalysis:
         Returns:
             bool: If string is structured like rhyme schema
         """
-        return (rhyme.isupper() and len(rhyme) >= 3 and len(rhyme) <= 8)
+        return (rhyme.isupper() and len(rhyme) >= 3 and len(rhyme) <= 6)
     
     @staticmethod
     def _rhyme_vector(rhyme:str) -> np.ndarray:

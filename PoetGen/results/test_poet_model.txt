@@ -657,3 +657,171 @@ A
 8 sen # se na mne usmál mladý sen.
 11 ěla # a v duši mé píseň se rozletěla
 11 ěla # tak sladce, že srdce mi rozechvěla 
+--- Model New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e8e16 ---
+### Basic Decoding! ###
+ A 1900 # 1880 # T
+8 ní # ale běda, v okamžení
+7 den # nastal onen smutný den,
+3 sen # krátký sen.
+4 ni # večer v stráni
+2 ku # v mraku
+5 sten # umírá můj sten!
+
+### Forced Decoding! ###
+ AXAX # 1920 # A
+9 la # a jakoby v duši se chvěla,
+9 la # jak v srdci by bolestně zněla.
+9 la # ta píseň, jak by ji zpívala
+9 la # má milá, se nikdy už nela!
+--- Model New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e4e8 ---
+### Basic Decoding! ###
+ A 1840 # 1920 # J
+11 la # a když se rozprchla a umírala,
+10 ní # tu bylo jí, jakoby v umdlení
+12 ní palčivou touhu po pomoci raní.
+13 lo # však srdce její bolestně se probudilo 
+9 lá # jak byla bledá, osamělá!
+6 la krev jí v žilách tečela
+
+### Forced Decoding! ###
+ AABBCC # 1880 # A
+11 hlas # a v tom zazněl tak slavičí, sladký hlas,
+11 hlas # jak andělských křídel by stříbrný hlas
+12 ný # se rozléhal v kraj širý a milojemný.
+12 ný # to byla ta hudba, zvuk čarovný, jemný!
+13 ní # ó, bylo to kouzlo, jež v duši se promění, 
+13 ní # v té hudbě, tak sladké, že srdce se zachvění
+--- Model New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e4e8 ---
+### Basic Decoding! ###
+ A 1840 # 1880 # T
+8 ní # ale běda, bědování! 
+7 den # nastal zápas jako den,
+3 ven # ven, ó ven!
+4 men # z ňader plamen
+5 sten # vytryskl mi sten.
+9 sen # ach, jaký to divný, sladký sen
+
+### Forced Decoding! ###
+ AXAX # 1920 # J
+9 ní # a v tom je všecko jako v snění,
+8 lí # jak v duši, v srdci, veselí.
+9 ní # je tolik radostí a není
+8 lí # nic z toho, co nás zabolí?
+--- Model New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e4e8 ---
+### Basic Decoding! ###
+ A 1880 1880 # J
+11 ní # a v okamžiku tom, kdy z nenadání
+10 la # milenka moje v náruč klesala,
+13 ni # já nevěděl jsem, kterak asi budu šťastni.  
+12 né # ó, jaké štěstí, že to bylo radostné!
+9 lo # jak srdce mé se rozskočilo.
+5 no # ach, co je platno?
+
+### Forced Decoding! ###
+ AXAX # 1900 # J
+11 ní # ó, jaká radost! jaké potěšení!
+10 ší # jaký to jásot v duši nejvyšší,
+11 ní # a každé slovo jako požehnání
+8 tí # se v srdci lidském zachytí.
+--- Model New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e4e4 ---
+### Basic Decoding! ###
+ A 1880 1880 # J
+11 ní # a v tomto okamžení, v rozjímání
+10 la # kdy duše má se k tobě sklonila,
+12 ni # tu cítila jsem, jak v mém srdci plameni
+13 ný # se rozplýval tvůj oheň lásky nesmrtelný,  
+9 ny # ó jak jsi milovala ženy!
+8 ný hlas tvůj sladký, lahodný
+
+### Forced Decoding! ###
+ ABABBC # 1880 # A
+9 ní # ó jaké to rozkošné snění,
+8 lo # jaká to radostná chvílo!
+9 ní # v tom okamžiku, jako v chvění
+8 lo # kdy srdce se rozproudilo.
+8 lo # ach, co se to stalo, vílo?
+11 tí # to bylo tak krásné a sladké žití
+--- Model New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e2e4 ---
+### Basic Decoding! ###
+ A # 1880 # T
+8 ní # ale v tomto okamžení
+7 la # matička se zachvěla,
+3 lá # spanilá! 
+6 la milovat se dala.
+4 se # smála jsem se
+5 ku # na malou hubičku
+
+### Forced Decoding! ###
+ AABABB # 1880 # A
+11 květ # a v srdci mém rozkvetl mladistvý květ,
+11 květ # v mé duši se probudil nový a květ.
+12 ní # ó, jaké to radostné políbení, paní!
+11 květ # jak líbezný, sladký se rozvíjel květ! 
+12 ní # ach, tolik milostí, lásky a přátelníkní
+12 ní # mé srdce se k tobě tak vroucně a sklání. ?
+--- Model New-Processed-BPE-NormalText-gpt-cz-poetry-base-e8e16 ---
+### Basic Decoding! ###
+ AABAAA # 1900 # J
+9 ní # a přec, ó bože, slitování!
+5 ni # ó, shlédni na ni,
+8 žal # ať v srdci mém i v duši žal
+7 nní # se zjeví v záři denní, 
+
+### Forced Decoding! ###
+ AABAAA # 1900 # A
+9 li # a přece jsme se milovali, 
+9 li # jak bychom se nikdy neloučili,
+8 lí # když srdce se k srdci tulí.
+9 li # ó, jak jsme si v náruč se vzali!
+9 li # v té chvíli, když jsme sobě přáli
+9 li # to štěstí, že spolu jsme žili
+--- Model New-Processed-BPE-NormalText-gpt-cz-poetry-all-e4e4 ---
+### Basic Decoding! ###
+ AB # 1880 # J
+11 ní # v tom okamžiku, v okamžení, paní,
+10 la # když na prahu jsem tebe spatřila, 
+9 ni # ó, jak jsi krásná, krásná pro ni!
+8 lá # jak krásná jsi ty, spanilá! 
+
+### Forced Decoding! ###
+ AABXCB # 1880 # A
+11 kem # on ještě za dne tu zatichlým sklíčkem,
+11 kem # jak za večera když za jasným leskem
+10 hrá # si hrají si tam dva rybáři, hrá...
+12 vem # a přec tak by ráda i dnes přišla kovem
+9 má # jim touha má, než srdce se má
+10 hrá # mít v hrsti hrášky, již v ruce si hrá, 
+--- Model New-Processed-BPE-NormalText-gpt-cz-poetry-all-e4e16 ---
+### Basic Decoding! ###
+ ABAXBX # 1880 # J
+11 ní # a v chvíli té jsem cítil, jak se sklání
+10 hlas # má duše k tobě, a jak slyším hlas,
+9 ni # jenž volá mne pojď, pojď ke mně, zvedni! 
+6 zas # já zachvěl se a zas
+8 třás # jsem rozechvěn se, chvěl a třás
+2 slyš # ó slyš!
+
+### Forced Decoding! ###
+ ACCDBD # 1880 # A
+11 hlas # tak truchlivý hovoří, tlumí svůj hlas,
+9 há # však dívka mu na smích již nesáhá, 
+9 há # dí chladně a pokorně sáhá
+10 ret # po knize drahé. jen němý ten ret
+8 hách # se chvěje jí v matných čihách.
+10 ret # jen z ňader vzdech ulétl, pohasne ret, 
+--- Model New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e4e16 ---
+### Basic Decoding! ###
+ AB # 1880 # T
+8 ní # a v tom sladkém roztoužení
+7 la # duše moje tušila,
+4 že # jak to může
+5 být # krásnější než být! 
+3 lá # ó, milá!
+9 la vrkočů se kolem rozvila
+
+### Forced Decoding! ###
+ ABAB # 1880 # A
+10 ně # a takto ke chrámu družic temně
+8 hled # už kráčel osudný pohled
+10 ně # však za nimi v jednu padala temná 
+8 hled # velebně v německý pohřeb.

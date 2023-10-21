@@ -96,6 +96,7 @@ class PoetModelBase(PoetModelInterface):
         
         
         # Generating 4 verse rhymes
+        has_rep= False
         while len(prompt_list) <= verse_len:
             j = 0
             if features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "B":
@@ -104,21 +105,28 @@ class PoetModelBase(PoetModelInterface):
                 j = 2
             elif features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "D":
                 j = 3
+            elif features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "X":
+                j=-1
             line_start =  (features_dict[f"LENGTH_{j}"] if f"LENGTH_{j}" in features_dict.keys() else "" )  + \
                 (f" {features_dict[f'END_{j}'] } #" if  f"END_{j}" in features_dict.keys() else "")
             tokenized_poet_start = tokenizer.encode("\n".join(prompt_list) + "\n" + line_start,  return_tensors='pt')
             out_line =  self.model.generate(tokenized_poet_start, 
                                 max_new_tokens= 100,
-                                num_beams=8,
+                                num_beams=2,
                                 no_repeat_ngram_size=2,
                                 early_stopping=True,
                                 pad_token_id=tokenizer.pad_token_id,
                                 eos_token_id=tokenizer.eos_token_id)
             decoded_lines = tokenizer.decode(out_line[0], skip_special_tokens=True).splitlines()
             if len(decoded_lines) <= len(prompt_list):
+                if has_rep:
+                    prompt_list.pop()
+                    has_rep= False
+                else:
+                    has_rep = True
                 continue
             decoded_line: str = decoded_lines[len(prompt_list)]
-            if  f"LENGTH_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1:
+            if  f"LENGTH_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1 and j>=0:
                 features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
                 features_dict[f'END_{j}'] = decoded_line.split()[1]
             prompt_list.append(decoded_line)
