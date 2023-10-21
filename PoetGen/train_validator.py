@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser()
 
 
 
-parser.add_argument("--learning_rate_rhyme", default=3e-4, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--learning_rate_rhyme", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--learning_rate_metre", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Tokenizer to use")
@@ -38,8 +38,8 @@ parser.add_argument("--pretrained_model", default="roberta-base", type=str, help
 parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_metre", default=1, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
-parser.add_argument("--hidden_layer_rhyme", default=4096, type=int, help="Max length for tokenizer")
+parser.add_argument("--hidden_layers", default=2, type=int, help="Max length for tokenizer")
+parser.add_argument("--hidden_layer_rhyme", default=8192, type=int, help="Max length for tokenizer")
 parser.add_argument("--batch_size_rhyme", default=16, type=int, help="Batch size.")
 parser.add_argument("--epochs_rhyme", default=64, type=int, help="Number of epochs to run.")
 
@@ -119,9 +119,9 @@ def main(args):
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_rhyme,
                                   learning_rate = args.learning_rate_rhyme,
-                                  fp16 = True if torch.cuda.is_available() else False,
+                                  fp16 = False,
                                   ddp_backend = "nccl",
-                                  lr_scheduler_type="constant",
+                                  lr_scheduler_type="cosine",
                                   logging_dir = './logs',
                                   output_dir = './results',
                                   per_device_train_batch_size = args.batch_size_rhyme)
