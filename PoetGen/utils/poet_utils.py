@@ -207,12 +207,11 @@ class TextAnalysis:
         Returns:
             numpy.ndarray: One-hot encoded metre vector
         """
-        metre_vec = np.zeros(len(METER_TYPES))
+        metre_vec = np.zeros(len(METER_TYPES[:-1]))
         if metre in METER_TYPES:
             metre_vec[METER_TYPES.index(metre)] = 1
         else:
-            metre_vec[-1] = 1
-            
+            metre_vec[-1] = 1            
         return metre_vec
     
     @staticmethod
