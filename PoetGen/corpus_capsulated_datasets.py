@@ -569,10 +569,12 @@ class CorpusDatasetPytorch:
         chars_per_line = max_len//max_verse_len
         
         input_ids = torch.zeros((len(batch), max_len * len(VALID_CHARS)))
+        number_ids = torch.zeros(len(batch), max_verse_len)
         for i, text in enumerate(batch):
             one_input = text['input_ids'][0]
             # First Line is parameter line
             lines = [re.sub(r'[^ aábcčdďeéěfghiíjklmnňoópqrřsštťuúůvwxyýzž]+', '', line.lower()) for line in one_input.splitlines()[1:max_verse_len + 1]]
+            
             j = 0
             while j<len(lines) and j<max_verse_len:
                 k = 0
@@ -590,7 +592,11 @@ class CorpusDatasetPytorch:
                     input_ids[i,j * chars_per_line * len(VALID_CHARS) +  k * len(VALID_CHARS)] = 1
                     k+=1
                 j +=1
-                           
+                
+            numbers = torch.tensor(
+                [int(line.split()[0]) if TextAnalysis._is_line_length(line.split()[0]) else 0 for line in one_input.splitlines()[1:max_verse_len + 1]]
+            )
+            number_ids[i] = torch.nn.functional.pad(numbers,(0,max_verse_len - len(numbers)))                           
         attention = torch.ones_like(input_ids)
         
         rhyme=None
@@ -601,6 +607,7 @@ class CorpusDatasetPytorch:
             "input_ids": input_ids,
             "attention_mask": attention,
             "rhyme": rhyme,
+            "number_ids": number_ids,
             "metre": None}
         
     @staticmethod
@@ -637,6 +644,7 @@ class CorpusDatasetPytorch:
             "input_ids": input_ids,
             "attention_mask": attention,
             "rhyme": None,
+            "number_ids": None,
             "metre": metre}
     
         

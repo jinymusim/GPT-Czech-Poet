@@ -49,16 +49,18 @@ class ValidatorInterface(torch.nn.Module):
     
     
 class RhymeValidator(ValidatorInterface):
-    def __init__(self,hidden_layers, input_size, hidden_size ,raw_size, *args, **kwargs) -> None:
+    def __init__(self,hidden_layers, input_size, hidden_size ,raw_size, verse_len, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         
         self.hidden_layers_count = hidden_layers - 1
         self.input_size = input_size
         self.model_size = hidden_size
         self.raw_size = raw_size
+        self.verse_len = verse_len
         
         
-        self.input_layer: torch.nn.Linear = torch.nn.Linear(self.input_size, self.model_size)
+        self.input_layer: torch.nn.Linear = torch.nn.Linear(self.input_size, self.model_size - self.verse_len**2)
+        self.input_num_layer: torch.nn.Linear = torch.nn.Linear(self.verse_len, self.verse_len**2)
         self.hidden_layers=torch.nn.ModuleList([torch.nn.Linear(self.model_size, self.model_size) for i in range(self.hidden_layers_count)])
         self.batch_norms = torch.nn.ModuleList([torch.nn.BatchNorm1d(self.model_size) for j in range(self.hidden_layers_count)])
         self.relu = torch.nn.ReLU()
@@ -68,9 +70,9 @@ class RhymeValidator(ValidatorInterface):
         
         self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.05)
         
-    def forward(self, input_ids=None, attention_mask=None, rhyme=None, *args, **kwargs):
+    def forward(self, input_ids=None, number_ids=None,attention_mask=None, rhyme=None, *args, **kwargs):
         
-        hidden = self.input_layer(input_ids)
+        hidden = torch.cat([self.input_layer(input_ids),self.input_num_layer(number_ids)], dim=-1)
         for layer, norm in zip(self.hidden_layers, self.batch_norms):
             hidden = norm(hidden)
             hidden = self.relu(hidden)    
@@ -84,23 +86,22 @@ class RhymeValidator(ValidatorInterface):
         return {"model_output" : softmaxed,
                 "loss": rhyme_loss}
         
-    def predict(self, input_ids=None, *args, **kwargs):
+    def predict(self, input_ids=None, number_ids=None, *args, **kwargs):
         
-        hidden = self.input_layer(input_ids)
+        hidden = torch.cat([self.input_layer(input_ids),self.input_num_layer(number_ids)], dim=-1)
         for layer, norm in zip(self.hidden_layers, self.batch_norms):
             hidden = norm(hidden)
             hidden = self.relu(hidden)    
             hidden = layer(hidden)
         hidden = self.relu(hidden)
-  
         rhyme_regression = self.rhyme_regressor(hidden)
             
         softmaxed = torch.softmax(rhyme_regression, dim=1)
         
         return softmaxed
     
-    def validate(self, input_ids=None, rhyme=None,*args, **kwargs):
-        outputs = self.forward(input_ids=input_ids, rhyme=rhyme)['model_output']
+    def validate(self, input_ids=None, rhyme=None,number_ids=None,*args, **kwargs):
+        outputs = self.forward(input_ids=input_ids, rhyme=rhyme, number_ids=number_ids)['model_output']
         
         _true_val = (torch.argmax(rhyme, dim=1) == torch.argmax(outputs, dim=1)).float().sum().numpy()
         

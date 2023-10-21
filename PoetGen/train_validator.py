@@ -38,9 +38,9 @@ parser.add_argument("--pretrained_model", default="roberta-base", type=str, help
 parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_metre", default=1, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--hidden_layers", default=2, type=int, help="Max length for tokenizer")
-parser.add_argument("--hidden_layer_rhyme", default=4096, type=int, help="Max length for tokenizer")
-parser.add_argument("--batch_size_rhyme", default=32, type=int, help="Batch size.")
+parser.add_argument("--hidden_layers", default=3, type=int, help="Max length for tokenizer")
+parser.add_argument("--hidden_layer_rhyme", default=2048, type=int, help="Max length for tokenizer")
+parser.add_argument("--batch_size_rhyme", default=16, type=int, help="Batch size.")
 parser.add_argument("--epochs_rhyme", default=64, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
@@ -66,7 +66,8 @@ def validate(model: ValidatorInterface, data, collate_fnc):
         datum = collate_fnc([data[i]])
         true_hits += model.validate(input_ids=datum["input_ids"],
                                     rhyme=datum["rhyme"], 
-                                    metre=datum["metre"])
+                                    metre=datum["metre"],
+                                    number_ids=datum["number_ids"])
     print(f"Validation acc: {true_hits/len(data)}")
     
     model.train()
@@ -87,7 +88,7 @@ def main(args):
         
     # Create Validators    
     rhyme_model = RhymeValidator(hidden_layers=args.hidden_layers, hidden_size=args.hidden_layer_rhyme, 
-                                 input_size=args.max_len_rhyme * len(VALID_CHARS), raw_size=args.max_len_rhyme)
+                                 input_size=args.max_len_rhyme * len(VALID_CHARS), raw_size=args.max_len_rhyme, verse_len=max(args.verse_len))
     meter_model = MeterValidator(pretrained_model=args.pretrained_model)
         
     # Load tokenizer for validators

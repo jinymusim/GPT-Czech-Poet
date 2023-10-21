@@ -132,9 +132,10 @@ class ModelValidator:
                         if self.rhyme_model != None and "RHYME" in values.keys():
                             rhyme_vec = TextAnalysis._rhyme_vector(values["RHYME"])
                             input_ids = CorpusDatasetPytorch.collate_rhyme([{"input_ids" :[decoded_cont]}],
-                                                          max_len=self.rhyme_model.raw_size)['input_ids']
-                            rhyme_pos += self.rhyme_model.validate(input_ids=input_ids,
-                                                                   rhyme=torch.tensor(rhyme_vec.reshape(1,-1)))
+                                                          max_len=self.rhyme_model.raw_size)
+                            rhyme_pos += self.rhyme_model.validate(input_ids=input_ids['input_ids'],
+                                                                   rhyme=torch.tensor(rhyme_vec.reshape(1,-1)),
+                                                                   number_ids=input_ids['number_ids'])
                         # Validate for Metrum
                         if self.meter_model != None and "METER" in values.keys():
                             metre_vec = TextAnalysis._metre_vector(values["METER"])
