@@ -75,7 +75,7 @@ class RhymeValidator(ValidatorInterface):
             hidden = norm(hidden)
             hidden = self.relu(hidden)    
             hidden = layer(hidden)
-  
+        hidden = self.relu(hidden)
         rhyme_regression = self.rhyme_regressor(hidden)
             
         softmaxed = torch.softmax(rhyme_regression, dim=1)
