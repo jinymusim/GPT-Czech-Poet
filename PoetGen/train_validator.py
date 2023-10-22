@@ -18,8 +18,8 @@ parser = argparse.ArgumentParser()
 
 
 
-parser.add_argument("--learning_rate_rhyme", default=3e-4, type=float, help="Learning Rate for Finetuning")
-parser.add_argument("--learning_rate_metre", default=3e-4, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--learning_rate_rhyme", default=1e-3, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--learning_rate_metre", default=1e-3, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Tokenizer to use")
 parser.add_argument("--tokenizer", default="roberta-base", type=str, help="Tokenizer to use")
@@ -34,10 +34,10 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 parser.add_argument("--syllables", default=True, type=bool, help="If to use syllable data")
 
 parser.add_argument("--pretrained_model", default="roberta-base", type=str, help="Roberta Model")
-parser.add_argument("--batch_size_metre", default=96, type=int, help="Batch size.")
+parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_metre", default=64, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--batch_size_rhyme", default=96, type=int, help="Batch size.")
+parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_rhyme", default=64, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
