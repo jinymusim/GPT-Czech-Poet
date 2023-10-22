@@ -49,61 +49,54 @@ class ValidatorInterface(torch.nn.Module):
     
     
 class RhymeValidator(ValidatorInterface):
-    def __init__(self,hidden_layers, input_size, hidden_size ,raw_size, verse_len, *args, **kwargs) -> None:
+    def __init__(self, pretrained_model, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         
-        self.hidden_layers_count = hidden_layers - 1
-        self.input_size = input_size
-        self.model_size = hidden_size
-        self.raw_size = raw_size
-        self.verse_len = verse_len
+        self.model = AutoModelForMaskedLM.from_pretrained(pretrained_model, output_hidden_states=True)
         
+        self.config = self.model.config
         
-        self.input_layer: torch.nn.Linear = torch.nn.Linear(self.input_size, self.model_size - self.verse_len**2)
-        self.input_num_layer: torch.nn.Linear = torch.nn.Linear(self.verse_len, self.verse_len**2)
-        self.hidden_layers=torch.nn.ModuleList([torch.nn.Linear(self.model_size, self.model_size) for i in range(self.hidden_layers_count)])
-        self.batch_norms = torch.nn.ModuleList([torch.nn.BatchNorm1d(self.model_size) for j in range(self.hidden_layers_count)])
-        self.relu = torch.nn.ReLU()
-        
+        self.model_size = self.config.hidden_size 
         
         self.rhyme_regressor = torch.nn.Linear(self.model_size, len(RHYME_SCHEMES)) # Common Rhyme Type
         
         self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.05)
         
-    def forward(self, input_ids=None, number_ids=None,attention_mask=None, rhyme=None, *args, **kwargs):
+    def forward(self, input_ids=None, attention_mask=None, rhyme=None, *args, **kwargs):
+        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
         
-        hidden = torch.cat([self.input_layer(input_ids),self.input_num_layer(number_ids)], dim=-1)
-        for layer, norm in zip(self.hidden_layers, self.batch_norms):
-            hidden = norm(hidden)
-            hidden = self.relu(hidden)    
-            hidden = layer(hidden)
-        hidden = self.relu(hidden)
-        rhyme_regression = self.rhyme_regressor(hidden)
+        last_hidden = outputs['hidden_states'][-1]
+        
+        rhyme_regression = self.rhyme_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
             
         softmaxed = torch.softmax(rhyme_regression, dim=1)
         rhyme_loss = self.loss_fnc(softmaxed, rhyme)
         
         return {"model_output" : softmaxed,
-                "loss": rhyme_loss}
+                "loss": rhyme_loss + outputs.loss}
         
-    def predict(self, input_ids=None, number_ids=None, *args, **kwargs):
+    def predict(self, input_ids=None, *args, **kwargs):
         
-        hidden = torch.cat([self.input_layer(input_ids),self.input_num_layer(number_ids)], dim=-1)
-        for layer, norm in zip(self.hidden_layers, self.batch_norms):
-            hidden = norm(hidden)
-            hidden = self.relu(hidden)    
-            hidden = layer(hidden)
-        hidden = self.relu(hidden)
-        rhyme_regression = self.rhyme_regressor(hidden)
+        outputs = self.model(input_ids=input_ids)
+        
+        last_hidden = outputs['hidden_states'][-1]
+        
+        rhyme_regression = self.rhyme_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
             
         softmaxed = torch.softmax(rhyme_regression, dim=1)
         
         return softmaxed
     
-    def validate(self, input_ids=None, rhyme=None,number_ids=None,*args, **kwargs):
-        outputs = self.forward(input_ids=input_ids, rhyme=rhyme, number_ids=number_ids)['model_output']
+    def validate(self, input_ids=None, rhyme=None,*args, **kwargs):
+        outputs = self.model(input_ids=input_ids)
         
-        _true_val = (torch.argmax(rhyme, dim=1) == torch.argmax(outputs, dim=1)).float().sum().numpy()
+        last_hidden = outputs['hidden_states'][-1]
+        
+        rhyme_regression = self.rhyme_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
+            
+        softmaxed = torch.softmax(rhyme_regression, dim=1)
+        
+        _true_val = (torch.argmax(rhyme, dim=1) == torch.argmax(softmaxed, dim=1)).float().sum().numpy()
         
         return _true_val
     

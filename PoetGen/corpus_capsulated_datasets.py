@@ -555,63 +555,7 @@ class CorpusDatasetPytorch:
             "metre" : metre}
         
     @staticmethod
-    def collate_rhyme(batch, max_len:int = 36, max_verse_len:int = 6):
-        """Process data for use in MLP for rhyme prediction
-
-        Args:
-            batch (_type_): Batch with selected data points
-            max_len (int, optional): Maxim length of chars to consider. Defaults to 36.
-            max_verse_len (int, optional): Maximum length of Strophe to consider. Defaults to 6.
-
-        Returns:
-            dict: tokenized and processed to tensors data
-        """
-        chars_per_line = max_len//max_verse_len
-        
-        input_ids = torch.zeros((len(batch), max_len * len(VALID_CHARS)))
-        number_ids = torch.zeros(len(batch), max_verse_len)
-        for i, text in enumerate(batch):
-            one_input = text['input_ids'][0]
-            # First Line is parameter line
-            lines = [re.sub(r'[^ aábcčdďeéěfghiíjklmnňoópqrřsštťuúůvwxyýzž]+', '', line.lower()) for line in one_input.splitlines()[1:max_verse_len + 1]]
-            
-            j = 0
-            while j<len(lines) and j<max_verse_len:
-                k = 0
-                while k<len(lines[j]) and k<chars_per_line:    
-                    input_ids[i,j * chars_per_line * len(VALID_CHARS) +  k * len(VALID_CHARS) + VALID_CHARS.index(lines[j][k])] = 1
-                    k+=1
-                while k<chars_per_line:
-                    input_ids[i,j * chars_per_line * len(VALID_CHARS) +  k * len(VALID_CHARS)] = 1
-                    k+=1
-                j +=1
-            while j<max_verse_len:
-                input_ids[i,j*len(VALID_CHARS)] = 1
-                k=0
-                while k<chars_per_line:
-                    input_ids[i,j * chars_per_line * len(VALID_CHARS) +  k * len(VALID_CHARS)] = 1
-                    k+=1
-                j +=1
-                
-            numbers = torch.tensor(
-                [int(line.split()[0]) if TextAnalysis._is_line_length(line.split()[0]) else 0 for line in one_input.splitlines()[1:max_verse_len + 1]]
-            )
-            number_ids[i] = torch.nn.functional.pad(numbers,(0,max_verse_len - len(numbers)))                           
-        attention = torch.ones_like(input_ids)
-        
-        rhyme=None
-        if "rhyme" in batch[0].keys():
-            rhyme = torch.tensor(np.asarray([TextAnalysis._rhyme_vector(text["rhyme"]) for text in batch], dtype=np.int32), dtype=torch.float32)
-        
-        return  {
-            "input_ids": input_ids,
-            "attention_mask": attention,
-            "rhyme": rhyme,
-            "number_ids": number_ids,
-            "metre": None}
-        
-    @staticmethod
-    def collate_metre(batch, tokenizer: PreTrainedTokenizerBase,syllables:bool, is_syllable:bool = False,max_len = 1024):
+    def collate_validator(batch, tokenizer: PreTrainedTokenizerBase,syllables:bool, is_syllable:bool = False,max_len = 1024):
         """Process data for use in LM for metre prediction
 
         Args:
@@ -636,15 +580,19 @@ class CorpusDatasetPytorch:
         tokenized = tokenizer(data_ids, return_tensors='pt', truncation=True, padding=True)
         input_ids = tokenized['input_ids']
         attention = tokenized["attention_mask"]
+        
         metre = None
         if "metre" in batch[0].keys():       
             metre = torch.tensor(np.asarray([TextAnalysis._metre_vector(text["metre"]) for text in batch], dtype=np.int32), dtype=torch.float32)
+            
+        rhyme=None
+        if "rhyme" in batch[0].keys():
+            rhyme = torch.tensor(np.asarray([TextAnalysis._rhyme_vector(text["rhyme"]) for text in batch], dtype=np.int32), dtype=torch.float32)
         
         return  {
             "input_ids": input_ids,
             "attention_mask": attention,
-            "rhyme": None,
-            "number_ids": None,
+            "rhyme": rhyme,
             "metre": metre}
     
         
