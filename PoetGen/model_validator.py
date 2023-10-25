@@ -7,7 +7,7 @@ import numpy as np
 
 from tqdm import tqdm
 from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
-from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, UNK, EOS, PAD
+from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, UNK, EOS, PAD, NORMAL_SCHEMES
 from utils.poet_model_utils import PoetModelInterface
 from utils.validators import ValidatorInterface
 
@@ -87,7 +87,7 @@ class ModelValidator:
             str: Generated Strophe
         """
         if type  == "basic":
-            tokenized_poet_start = self.tokenizer.encode(random.choice(RHYME_SCHEMES[:-1]), return_tensors='pt', truncation=True)
+            tokenized_poet_start = self.tokenizer.encode(random.choice(NORMAL_SCHEMES), return_tensors='pt', truncation=True)
         
             out = self.model.model.generate(tokenized_poet_start, 
                                         max_length=192,
@@ -97,7 +97,7 @@ class ModelValidator:
                                         pad_token_id=self.tokenizer.eos_token_id)
             return self.tokenizer.decode(out[0], skip_special_tokens=True)
         if type == "forced":
-            rhyme = random.choice(RHYME_SCHEMES[:-1])
+            rhyme = random.choice(NORMAL_SCHEMES)
             return self.model.generate_forced(rhyme, self.tokenizer, verse_len= len(rhyme))
             
             
@@ -190,11 +190,11 @@ class ModelValidator:
         
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--default_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
+parser.add_argument("--default_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=5, type=int, help="Number of runs on datasets")
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "Syllabs-BPE-NormalText-gpt-cz-poetry-base-e16e16")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e8e16")),  type=str, help="Path to Model")
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1697993440889')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator_1697833311028')),  type=str, help="Path to Model")
 parser.add_argument("--validator_tokenizer_model", default='roberta-base', type=str, help="Validator tokenizer")
