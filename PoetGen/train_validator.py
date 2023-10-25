@@ -133,7 +133,7 @@ def main(args):
     rhyme_acc =  validate(rhyme_model.cpu(), train_data.pytorch_dataset_body.validation_data,collate)
     
     
-    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     # Train Metrum Validator
     

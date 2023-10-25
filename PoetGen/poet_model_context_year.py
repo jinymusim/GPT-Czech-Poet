@@ -155,6 +155,7 @@ class PoetModelContextYear(PoetModelInterface):
         
         # Generating 4 verse rhymes
         has_rep= False
+        has_rep_again = False
         while len(prompt_list) <= verse_len:
             j = 0
             if features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "B":
@@ -176,14 +177,21 @@ class PoetModelContextYear(PoetModelInterface):
                                 pad_token_id=tokenizer.pad_token_id,
                                 eos_token_id=tokenizer.eos_token_id)
             decoded_lines = tokenizer.decode(out_line[0], skip_special_tokens=True).splitlines()
-            if len(decoded_lines) <= len(prompt_list):
+            # Repetition catcher
+           
+            # Possible 
+            if len(decoded_lines) <= len(prompt_list) and not(has_rep_again and has_rep):
                 if has_rep:
                     prompt_list.pop()
                     has_rep= False
+                    has_rep_again = True
                 else:
                     has_rep = True
                 continue
-            decoded_line: str = decoded_lines[len(prompt_list)]
+            if has_rep_again and has_rep:
+                decoded_line: str = decoded_lines[-1]
+            else:
+                decoded_line: str = decoded_lines[len(prompt_list)]
             if  f"LENGTH_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1 and j>=0:
                 features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
                 features_dict[f'END_{j}'] = decoded_line.split()[1]

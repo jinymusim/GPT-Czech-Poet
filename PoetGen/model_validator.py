@@ -31,14 +31,17 @@ class ModelValidator:
         # Split Path to find only the LM name itself
         _ ,self.model_rel_name =  os.path.split(self.model_name)
         self.model: PoetModelInterface= (torch.load(self.model_name, map_location=torch.device('cpu')))
+        self.model.eval()
         
         # Load validators 
         self.rhyme_model, self.meter_model = None, None
         if args.rhyme_model_path_full:
-            self.rhyme_model: ValidatorInterface = (torch.load(args.rhyme_model_path_full, map_location=torch.device('cpu')))    
+            self.rhyme_model: ValidatorInterface = (torch.load(args.rhyme_model_path_full, map_location=torch.device('cpu')))
+            self.rhyme_model.eval() 
         
         if args.metre_model_path_full:
             self.meter_model: ValidatorInterface = (torch.load(args.metre_model_path_full, map_location=torch.device('cpu')))
+            self.meter_model.eval()
             
         # Load validator tokenizer
         self.validator_tokenizer: PreTrainedTokenizerBase = None
@@ -132,7 +135,7 @@ class ModelValidator:
                         if self.rhyme_model != None and "RHYME" in values.keys():
                             rhyme_vec = TextAnalysis._rhyme_vector(values["RHYME"])
                             input_ids = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont]}],tokenizer=self.validator_tokenizer,
-                                                                           is_syllable=False, syllables=self.args.val_syllables,
+                                                                           is_syllable=False, syllables=self.args.val_syllables_rhyme,
                                                                            max_len=self.rhyme_model.model.config.max_position_embeddings)['input_ids']
                             rhyme_pos += self.rhyme_model.validate(input_ids=input_ids,
                                                                    rhyme=torch.tensor(rhyme_vec.reshape(1,-1)))
@@ -140,7 +143,7 @@ class ModelValidator:
                         if self.meter_model != None and "METER" in values.keys():
                             metre_vec = TextAnalysis._metre_vector(values["METER"])
                             input_ids = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont]}],tokenizer=self.validator_tokenizer,
-                                                                           is_syllable=False, syllables=self.args.val_syllables,
+                                                                           is_syllable=False, syllables=self.args.val_syllables_meter,
                                                                            max_len=self.meter_model.model.config.max_position_embeddings)['input_ids']
                             metre_pos += self.meter_model.validate(input_ids=input_ids,
                                                                    metre=torch.tensor(metre_vec.reshape(1,-1)))
@@ -187,15 +190,16 @@ class ModelValidator:
         
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--default_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "tokenizer.json")), type=str, help="Default Model from HF to use")
+parser.add_argument("--default_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=5, type=int, help="Number of runs on datasets")
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-all-e32e32")),  type=str, help="Path to Model")
-parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1696540325706')),  type=str, help="Path to Model")
-parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator_1696540325706')),  type=str, help="Path to Model")
-parser.add_argument("--validator_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', "tokenizers", "BPE", "processed_tokenizer.json")), type=str, help="Validator tokenizer")
-parser.add_argument("--val_syllables", default=True, type=bool, help="Does validator use syllables")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Processed-BPE-NormalText-gpt-cz-poetry-base-e8e16")),  type=str, help="Path to Model")
+parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1697993440889')),  type=str, help="Path to Model")
+parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator_1697833311028')),  type=str, help="Path to Model")
+parser.add_argument("--validator_tokenizer_model", default='roberta-base', type=str, help="Validator tokenizer")
+parser.add_argument("--val_syllables_rhyme", default=True, type=bool, help="Does validator use syllables")
+parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
 
 def main(args):
     val = ModelValidator(args)
