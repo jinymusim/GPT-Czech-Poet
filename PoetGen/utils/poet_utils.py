@@ -291,7 +291,7 @@ class TextAnalysis:
         # TRUE_END needs only alpha chars, so all other chars are removed    
         line_only_char = TextManipulation._remove_all_nonchar(line_striped).strip()
         if len(line_only_char) > 2:
-            line_params["TRUE_END"] = line_only_char[-3:]
+            line_params["TRUE_END"] = SyllableMaker.syllabify(line_only_char)[-1]
         
         return line_params
     
