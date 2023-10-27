@@ -117,7 +117,7 @@ class ModelValidator:
             end_all, sylab_all, rhyme_all, metre_all = 0,0,0,0
             end_pos, sylab_pos, rhyme_pos, metre_pos = 0,0,0,0
             # Run the requested steps in evaluation
-            for _ in range(self.runs_per_epoch):
+            for _ in tqdm(range(self.runs_per_epoch), leave=False):
                 # Get generated Strophe
                 decoded_cont:str = self.decode_helper(type)
                 # Validate line by line

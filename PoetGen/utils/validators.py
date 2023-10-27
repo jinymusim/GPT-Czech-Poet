@@ -1,6 +1,11 @@
 import torch
+import transformers
+from tqdm import tqdm
 from transformers import  AutoModelForMaskedLM
 from .poet_utils import RHYME_SCHEMES, METER_TYPES
+
+from torch.utils.data import DataLoader, Dataset
+from pytorch_optimizer import SAM,GSAM
 
 class ValidatorInterface(torch.nn.Module):
     """Pytorch Model Interface. Abstract class for all validators
@@ -152,5 +157,39 @@ class MeterValidator(ValidatorInterface):
         return _true_val
     
 
+class ValidatorTrainer:
+    def __init__(self, model: ValidatorInterface, args: dict, train_dataset: Dataset, data_collator, device):
+        self.model = model
+        self.args = args
+        self.epochs = 1 if "epochs" not in args.keys() else args["epochs"]
+        self.batch_size = 1 if "batch_size" not in args.keys() else args["batch_size"]
+        self.lr = 3e-4 if "lr" not in args.keys() else args["lr"]
+        self.weight_decay = 0.0 if "weight_decay" not in args.keys() else args['weight_decay']
         
+        self.train_loader = DataLoader(train_dataset, self.batch_size, True, collate_fn=data_collator)
         
+        self.device = device      
+        self.optimizer = SAM(self.model.parameters(), torch.optim.AdamW, lr=self.lr, weight_decay=self.weight_decay)
+        self.scheduler = transformers.get_constant_schedule_with_warmup(self.optimizer, len(train_dataset)//self.batch_size)
+      
+    def train(self):
+        for epoch in  tqdm(range(self.epochs)):
+            self.model.train()
+            for step, batch in enumerate(self.train_loader):
+                # First Pass
+                loss = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
+                                  rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
+                                  metre = None if batch["metre"] == None else batch["metre"].to(self.device))['loss']
+                loss.backward()          
+                self.optimizer.first_step(zero_grad=True)
+                # Second Pass
+                loss = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
+                                      rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
+                                      metre = None if batch["metre"] == None else batch["metre"].to(self.device))['loss']
+                loss.backward()
+                self.optimizer.second_step(zero_grad=True)
+                self.scheduler.step()
+                
+                if step % 100 == 0:
+                    print(f'Step {step},  loss : {loss.item()}')
+    

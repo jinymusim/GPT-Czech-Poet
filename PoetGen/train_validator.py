@@ -9,7 +9,7 @@ from functools import partial
 
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
-from utils.validators import MeterValidator, RhymeValidator, ValidatorInterface
+from utils.validators import MeterValidator, RhymeValidator, ValidatorInterface, ValidatorTrainer
 
 from utils.poet_utils import VALID_CHARS, UNK, PAD, EOS
 from utils.poet_model_utils import ModelManipulation
@@ -35,10 +35,10 @@ parser.add_argument("--syllables", default=True, type=bool, help="If to use syll
 
 parser.add_argument("--pretrained_model", default="roberta-base", type=str, help="Roberta Model")
 parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=1, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_metre", default=16, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=128, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_rhyme", default=16, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
@@ -111,24 +111,41 @@ def main(args):
                                       prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
                                       verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate)
     
-    training_args = TrainingArguments(
-                                  save_strategy  = "no",
-                                  logging_steps = 500,
-                                  warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
-                                  weight_decay = 0.0,
-                                  num_train_epochs = args.epochs_rhyme,
-                                  learning_rate = args.learning_rate_rhyme,
-                                  fp16 = True if torch.cuda.is_available() else False,
-                                  ddp_backend = "nccl",
-                                  lr_scheduler_type="cosine",
-                                  logging_dir = './logs',
-                                  output_dir = './results',
-                                  per_device_train_batch_size = args.batch_size_rhyme)
-    
-    trainer = Trainer(model = rhyme_model,
-                           args = training_args,
-                           train_dataset= train_data.pytorch_dataset_body,
-                           data_collator=collate).train()
+    if torch.cuda.device_count() > 1:
+        training_args = TrainingArguments(
+                                      save_strategy  = "no",
+                                      logging_steps = 500,
+                                      warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
+                                      weight_decay = 0.0,
+                                      num_train_epochs = args.epochs_rhyme,
+                                      learning_rate = args.learning_rate_rhyme,
+                                      fp16 = True if torch.cuda.is_available() else False,
+                                      ddp_backend = "nccl",
+                                      lr_scheduler_type="cosine",
+                                      logging_dir = './logs',
+                                      output_dir = './results',
+                                      per_device_train_batch_size = args.batch_size_rhyme)
+
+        trainer = Trainer(model = rhyme_model,
+                               args = training_args,
+                               train_dataset= train_data.pytorch_dataset_body,
+                               data_collator=collate).train()
+    else:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        
+        training_args = {"lr" : args.learning_rate_rhyme,
+                         "epochs" : args.epochs_rhyme,
+                         "batch_size" : args.batch_size_rhyme}
+        
+        rhyme_model = rhyme_model.to(device)
+        
+        trainer = ValidatorTrainer(model=rhyme_model, 
+                                   args=training_args, 
+                                   train_dataset=train_data.pytorch_dataset_body, 
+                                   data_collator=collate,
+                                   device=device).train()
+        
+        
     # Validate rhyme Validator on validation data
     rhyme_acc =  validate(rhyme_model.cpu(), train_data.pytorch_dataset_body.validation_data,collate)
     
@@ -137,26 +154,40 @@ def main(args):
     
     # Train Metrum Validator
     
-    
-    training_args = TrainingArguments(
-                                  save_strategy  = "no",
-                                  warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_metre,
-                                  logging_steps = 500,
-                                  weight_decay = 0.0,
-                                  num_train_epochs = args.epochs_metre,
-                                  learning_rate = args.learning_rate_metre,
-                                  fp16 = True if torch.cuda.is_available() else False,
-                                  ddp_backend = "nccl",
-                                  lr_scheduler_type="cosine",
-                                  logging_dir = './logs',
-                                  output_dir = './results',
-                                  per_device_train_batch_size = args.batch_size_metre)
-    
-    
-    trainer = Trainer(model = meter_model,
-                           args = training_args,
-                           train_dataset= train_data.pytorch_dataset_body,
-                           data_collator=collate).train()
+    if torch.cuda.device_count() > 1:
+        training_args = TrainingArguments(
+                                      save_strategy  = "no",
+                                      warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_metre,
+                                      logging_steps = 500,
+                                      weight_decay = 0.0,
+                                      num_train_epochs = args.epochs_metre,
+                                      learning_rate = args.learning_rate_metre,
+                                      fp16 = True if torch.cuda.is_available() else False,
+                                      ddp_backend = "nccl",
+                                      lr_scheduler_type="cosine",
+                                      logging_dir = './logs',
+                                      output_dir = './results',
+                                      per_device_train_batch_size = args.batch_size_metre)
+
+
+        trainer = Trainer(model = meter_model,
+                               args = training_args,
+                               train_dataset= train_data.pytorch_dataset_body,
+                               data_collator=collate).train()
+    else:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        
+        training_args = {"lr" : args.learning_rate_metre,
+                         "epochs" : args.epochs_metre,
+                         "batch_size" : args.batch_size_metre}
+        
+        meter_model = meter_model.to(device)
+        
+        trainer = ValidatorTrainer(model=meter_model, 
+                                   args=training_args, 
+                                   train_dataset=train_data.pytorch_dataset_body, 
+                                   data_collator=collate,
+                                   device=device).train()
     # Validate Metrum validator on validation data
     metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     # Store result and model
