@@ -72,8 +72,9 @@ class ModelValidator:
         self.dataset = CorpusDatasetPytorch(data_dir=args.data_path_poet)
         self.validation_data = self.dataset.pytorch_dataset_body.validation_data
         
-        # Store the Validation arguments    
+        # Store the Validation arguments  
         self.epochs = args.num_runs
+        self.runs_per_epoch = args.num_samples
         self.result_dir = result_dir
         if not os.path.exists(self.result_dir):
             os.makedirs(self.result_dir)
@@ -119,10 +120,11 @@ class ModelValidator:
             # Store results of current evaluation
             end_all, sylab_all, rhyme_all, metre_all = 0,0,0,0
             end_pos, sylab_pos, rhyme_pos, metre_pos = 0,0,0,0
+            samples = random.choices(list(range(len(self.validation_data))), k=self.runs_per_epoch)
             # Run the requested steps in evaluation
-            for index in tqdm(range(len(self.validation_data)), leave=False):
+            for i in tqdm(range(self.runs_per_epoch), leave=False):
                 # Get generated Strophe
-                decoded_cont:str = self.decode_helper(type,index)
+                decoded_cont:str = self.decode_helper(type,samples[i])
                 # Validate line by line
                 for line in decoded_cont.splitlines():
                     # Skip Empty lines
@@ -173,7 +175,7 @@ class ModelValidator:
             metre_accuracy.append(metre_pos/metre_all)
         # Log all results and configuration
         with open(os.path.abspath(os.path.join(self.result_dir, self.model_rel_name)), 'a') as file:
-             print(f"{type} Decoding Validation: Epochs: {self.epochs}, Validation length: {len(self.validation_data)}", file=file)
+             print(f"{type} Decoding Validation: Epochs: {self.epochs}, Runs per epoch: {self.runs_per_epoch}", file=file)
              print(f"Num Sylabs Accuracy: {np.mean(sylab_accuracy)} +- {np.std(sylab_accuracy, ddof=1)}", file=file)
              print(f"Endings Accuracy: {np.mean(end_accuracy)} +- {np.std(end_accuracy, ddof=1)}", file=file)
              print(f"Rhyme Accuracy: {np.mean(rhyme_accuracy)} +- {np.std(rhyme_accuracy, ddof=1)}", file=file)
@@ -194,7 +196,8 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--default_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
-parser.add_argument("--num_runs", default=1, type=int, help="Number of runs on datasets")
+parser.add_argument("--num_samples", default=1, type=int, help="Number of samples to test the tokenizer on")
+parser.add_argument("--num_runs", default=10, type=int, help="Number of runs on datasets")
 parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e4e8")),  type=str, help="Path to Model")
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1697993440889')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator_1697833311028')),  type=str, help="Path to Model")
