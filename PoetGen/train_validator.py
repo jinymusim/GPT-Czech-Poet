@@ -35,13 +35,13 @@ parser.add_argument("--syllables", default=True, type=bool, help="If to use syll
 
 parser.add_argument("--pretrained_model", default="roberta-base", type=str, help="Roberta Model")
 parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=2, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_metre", default=1, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=2, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_rhyme", default=1, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
-parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
+parser.add_argument("--val_data_rate", default=0.025, type=float, help="Rate of validation data")
 
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "validators_acc.txt")), type=str, help="Result of Analysis File")
 

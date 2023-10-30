@@ -76,7 +76,7 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 parser.add_argument("--syllables", default=False, type=bool, help="If inputs should be parsed by syllables")
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 
-parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
+parser.add_argument("--val_data_rate", default=0.025, type=float, help="Rate of validation data")
 
 
 def main(args: argparse.Namespace):
