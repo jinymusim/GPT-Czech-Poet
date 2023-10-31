@@ -210,7 +210,7 @@ class ValidatorTrainer:
                         outputs = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
                                   rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
                                   metre = None if batch["metre"] == None else batch["metre"].to(self.device))
-                        loss = torch.nn.functional.cross_entropy(outputs['model_output'],batch['rhyme'] if isinstance(self.model, RhymeValidator) else batch['metre'])
+                        loss = torch.nn.functional.cross_entropy(outputs['model_output'].to(self.device),batch['rhyme'].to(self.device) if isinstance(self.model, RhymeValidator) else batch['metre'].to(self.device))
                     loss.backward()
                     return outputs['model_output'], loss.detach()
                 predictions, loss = self.optimizer.step(closure)
