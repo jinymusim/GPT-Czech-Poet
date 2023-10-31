@@ -5,7 +5,7 @@ from transformers import  AutoModelForMaskedLM
 from .poet_utils import RHYME_SCHEMES, METER_TYPES
 
 from torch.utils.data import DataLoader, Dataset
-from pytorch_optimizer import SAM,GSAM, ProportionScheduler
+from pytorch_optimizer import SAM,GSAM, ProportionScheduler, AdamP
 
 class ValidatorInterface(torch.nn.Module):
     """Pytorch Model Interface. Abstract class for all validators
@@ -156,7 +156,6 @@ class MeterValidator(ValidatorInterface):
         
         return _true_val
     
-    
 
 class ValidatorTrainer:
     def __init__(self, model: ValidatorInterface, args: dict, train_dataset: Dataset, data_collator, device):
@@ -169,26 +168,51 @@ class ValidatorTrainer:
         
         self.train_loader = DataLoader(train_dataset, self.batch_size, True, collate_fn=data_collator)
         
+        # SAM Values
+        #self.device = device      
+        #self.optimizer = SAM(self.model.parameters(), torch.optim.AdamW, lr=self.lr, weight_decay=self.weight_decay)
+        #self.scheduler = transformers.get_constant_schedule_with_warmup(self.optimizer, len(train_dataset)//self.batch_size)
+        
+        # GSAM Value
         self.device = device
-        self.base_optim =  torch.optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
+        self.base_optim =  AdamP(self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         self.scheduler = transformers.get_constant_schedule_with_warmup(self.base_optim, len(train_dataset)//self.batch_size)
         self.rho_scheduler=  ProportionScheduler( self.scheduler, max_lr=self.lr)
-        self.optimizer = GSAM(self.model.parameters(),self.base_optim, self.model, self.rho_scheduler)
-        
+        self.optimizer = GSAM(self.model.parameters(),self.base_optim, self.model, self.rho_scheduler, alpha=0.05)
       
     def train(self):
         for epoch in  tqdm(range(self.epochs)):
             self.model.train()
+            
+            # SAM Attempt
+            
+            #for step, batch in enumerate(self.train_loader):
+            #    # First Pass
+            #    loss = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
+            #                      rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
+            #                      metre = None if batch["metre"] == None else batch["metre"].to(self.device))['loss']
+            #    loss.backward()          
+            #    self.optimizer.first_step(zero_grad=True)
+            #    # Second Pass
+            #    loss = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
+            #                          rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
+            #                          metre = None if batch["metre"] == None else batch["metre"].to(self.device))['loss']
+            #    loss.backward()
+            #    self.optimizer.second_step(zero_grad=True)
+            #    self.scheduler.step()
+           
+            # GSAM Attempt 
+                 
             for step, batch in enumerate(self.train_loader):
                 def closure():
-                    self.base_optim.zero_grad()
+                    self.optimizer.base_optimizer.zero_grad()
                     with torch.enable_grad():
                         outputs = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
                                   rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
                                   metre = None if batch["metre"] == None else batch["metre"].to(self.device))
-                    outputs['loss'].backward()
-                    return outputs['model_output'], outputs['loss'].detach()
-           
+                        loss = torch.nn.functional.cross_entropy(outputs['model_output'],batch['rhyme'] if isinstance(self.model, RhymeValidator) else batch['metre'])
+                    loss.backward()
+                    return outputs['model_output'], loss.detach()
                 predictions, loss = self.optimizer.step(closure)
                 self.scheduler.step()
                 self.optimizer.update_rho_t()
