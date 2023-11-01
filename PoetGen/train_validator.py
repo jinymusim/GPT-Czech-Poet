@@ -31,7 +31,7 @@ parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is pr
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
-parser.add_argument("--syllables", default=True, type=bool, help="If to use syllable data")
+parser.add_argument("--syllables", default=False, type=bool, help="If to use syllable data")
 
 parser.add_argument("--pretrained_model", default="roberta-base", type=str, help="Roberta Model")
 parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
