@@ -841,3 +841,19 @@ A
 11 vlas # ten velebnâk, ten svatôvįdce v zmar v hlas
 9 nïm # i v poslednnśj vrcholcňujřčösnďanüs?
 9 nïm # ó, vzneźcuj se nad svÛta danëm!
+--- Model Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM ---
+### Basic Decoding! ###
+ ABBA # 1900 # J
+11 ží # však přijde čas, kdy člověk sám se sn�ům vzpru 
+10 né # a v snech svých zapomene zúrodnčen�e,
+12 ne # kdy srdce svoje v touze k srdci povzletne
+13 či # jak orel k slunci vzlet, ať k nebi zvedne peruōi.
+
+### Forced Decoding! ###
+ AABBCC # 1880 # A
+11 říš # ať věčného blaha se zjevuje   v tužňářči
+11 říš # vůz vyplul, a východ se vznúŭ v nóũ 
+12 nį # to velebnost vzne�cenå, to svatost v plamenďanĈ,
+12 nį # jest pöblich, jejŽm je vrcholkem zlatou janćânĴ.
+10 vdül # on, pŶblach a wacht am rhein, on v d�rwel
+10 vdül # se prodëlè, wärm, s wirthem witek, v slast wlast v dur v

@@ -6,10 +6,12 @@ import argparse
 import numpy as np
 
 from tqdm import tqdm
-from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
+from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase, AutoModelForCausalLM
 from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, UNK, EOS, PAD, NORMAL_SCHEMES
 from utils.poet_model_utils import PoetModelInterface
 from utils.validators import ValidatorInterface
+
+from poet_model_base_lm import PoetModelBase
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
@@ -30,7 +32,12 @@ class ModelValidator:
         self.model_name = args.model_path_full
         # Split Path to find only the LM name itself
         _ ,self.model_rel_name =  os.path.split(self.model_name)
-        self.model: PoetModelInterface= (torch.load(self.model_name, map_location=torch.device('cpu')))
+        # Load Model as Pickle file or as stored LM 
+        if "_LM" in self.model_rel_name:
+            self.model_rel_name = re.sub("_LM", "", self.model_rel_name)
+            self.model: PoetModelInterface = PoetModelBase(self.model_name)
+        else:
+            self.model: PoetModelInterface= (torch.load(self.model_name, map_location=torch.device('cpu')))
         self.model.eval()
         
         # Load validators 
@@ -59,9 +66,9 @@ class ModelValidator:
          
         # Load LM tokenizers       
         try:    
-            self.tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.default_tokenizer_model)
+            self.tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(self.model_name)
         except:
-            self.tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.default_tokenizer_model)
+            self.tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.backup_tokenizer_model)
             self.tokenizer.eos_token = EOS
             self.tokenizer.eos_token_id = 0
             self.tokenizer.pad_token = PAD
@@ -194,12 +201,12 @@ class ModelValidator:
         
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--default_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
+parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--num_samples", default=1, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=10, type=int, help="Number of runs on datasets")
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e4e16")),  type=str, help="Path to Model")
-parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1698231907866')),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM")),  type=str, help="Path to Model")
+parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1697993440889')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator_1697833311028')),  type=str, help="Path to Model")
 parser.add_argument("--validator_tokenizer_model", default='roberta-base', type=str, help="Validator tokenizer")
 parser.add_argument("--val_syllables_rhyme", default=False, type=bool, help="Does validator use syllables")

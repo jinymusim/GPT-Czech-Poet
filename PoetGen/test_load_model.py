@@ -3,14 +3,15 @@ import os
 import argparse
 
 from transformers import  AutoTokenizer, PreTrainedTokenizerBase, PreTrainedTokenizerFast
+from poet_model_base_lm import PoetModelBase
 from utils.poet_model_utils import PoetModelInterface
 from utils.poet_utils import UNK, PAD, EOS
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM")),  type=str, help="Path to Model")
 # bigscience/bloom-560m
-parser.add_argument("--default_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Original", "base_tokenizer.json")), type=str, help="Default Model from HF to use")
+parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Original", "base_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "test_poet_model.txt")), type=str, help="Where to store the decoding efforts")
 
 if __name__ == "__main__":
@@ -18,9 +19,9 @@ if __name__ == "__main__":
 
 # Load tokenizer
 try:    
-    tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.default_tokenizer_model)
+    tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.model_path_full)
 except: 
-    tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.default_tokenizer_model)
+    tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.backup_tokenizer_model)
     tokenizer.eos_token = EOS
     tokenizer.eos_token_id = 0
     tokenizer.pad_token = PAD
@@ -29,7 +30,10 @@ except:
     tokenizer.unk_token_id = 2
 
 # Load model
-model: PoetModelInterface= (torch.load(args.model_path_full, map_location=torch.device('cpu')))
+if "_LM" in args.model_path_full:
+    model: PoetModelInterface= PoetModelBase(args.model_path_full)
+else:
+    model: PoetModelInterface= (torch.load(args.model_path_full, map_location=torch.device('cpu')))
 # Free model generation
 tokenized_poet_start = tokenizer.encode("AB", return_tensors='pt')
 
