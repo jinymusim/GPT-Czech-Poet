@@ -112,7 +112,7 @@ class TextManipulation:
         Returns:
             _type_: Bucketized year string
         """
-        if TextAnalysis._is_year(raw_year):
+        if TextAnalysis._is_year(raw_year) and raw_year != "NaN":
             year_index = np.argmin(np.abs(np.asarray(POET_YEARS_BUCKETS[:-1]) - int(raw_year)))
             return str(POET_YEARS_BUCKETS[year_index])
         else:
