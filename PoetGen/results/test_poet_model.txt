@@ -825,3 +825,19 @@ A
 8 hled # už kráčel osudný pohled
 10 ně # však za nimi v jednu padala temná 
 8 hled # velebně v německý pohřeb.
+--- Model Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16 ---
+### Basic Decoding! ###
+ ABBA # 1900 # J
+11 ží # však přijde čas, kdy člověk sám se zmňou 
+10 né # svým způsobem, ať v tóny čarovny
+12 ne # svou harmonii sladkou, vroucnou zachytne,
+13 či # a v skutečnost se vrhne, zapomene v plúďi.
+
+### Forced Decoding! ###
+ AABBCC # 1880 # A
+12 ší # až výkřik ten zoufalé vzdechy má větŭ,
+12 ší # v nčem zanikne vůdcovskú hudba, je vznÙeť
+11 vlas # jen v červ�anech zlatþen jest na tvór v jas vas
+11 vlas # ten velebnâk, ten svatôvįdce v zmar v hlas
+9 nïm # i v poslednnśj vrcholcňujřčösnďanüs?
+9 nïm # ó, vzneźcuj se nad svÛta danëm!
