@@ -202,8 +202,8 @@ parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1698231907866')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator_1697833311028')),  type=str, help="Path to Model")
 parser.add_argument("--validator_tokenizer_model", default='roberta-base', type=str, help="Validator tokenizer")
-parser.add_argument("--val_syllables_rhyme", default=False, type=bool, help="Does validator use syllables")
-parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
+parser.add_argument("--val_syllables_rhyme", default=True, type=bool, help="Does validator use syllables")
+parser.add_argument("--val_syllables_meter", default=True, type=bool, help="Does validator use syllables")
 
 def main(args):
     val = ModelValidator(args)
