@@ -34,11 +34,11 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 parser.add_argument("--syllables", default=True, type=bool, help="If to use syllable data")
 
 parser.add_argument("--pretrained_model", default="ufal/robeczech-base", type=str, help="Roberta Model")
-parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=8, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_metre", default=32, type=int, help="Batch size.")
+parser.add_argument("--epochs_metre", default=4, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=8, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_rhyme", default=32, type=int, help="Batch size.")
+parser.add_argument("--epochs_rhyme", default=4, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
@@ -111,7 +111,7 @@ def main(args):
                                       prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
                                       verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate)
     
-    if torch.cuda.device_count() > 1:
+    if torch.cuda.device_count() > 0:
         training_args = TrainingArguments(
                                       save_strategy  = "no",
                                       logging_steps = 500,
