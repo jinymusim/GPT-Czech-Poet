@@ -105,17 +105,25 @@ class ModelValidator:
         
         if type  == "BASIC":
             tokenized_poet_start = self.tokenizer.encode(start, return_tensors='pt', truncation=True)
-        
-            out = self.model.model.generate(tokenized_poet_start, 
+            if self.args.sample:
+                out = self.model.model.generate(tokenized_poet_start, 
                                         max_length=256,
                                         num_beams=8,
                                         no_repeat_ngram_size=2,
                                         eos_token_id = self.tokenizer.eos_token_id,
                                         early_stopping=True,
                                         pad_token_id=self.tokenizer.pad_token_id)
+            else:
+                out = self.model.model.generate(tokenized_poet_start, 
+                                        max_length=256,
+                                        do_sample=True,
+                                        top_k=50,
+                                        eos_token_id = self.tokenizer.eos_token_id,
+                                        early_stopping=True,
+                                        pad_token_id=self.tokenizer.pad_token_id)
             return self.tokenizer.decode(out[0], skip_special_tokens=True)
         if type == "FORCED":
-            return self.model.generate_forced(start, self.tokenizer, verse_len= len(self.validation_data[index]['rhyme']))
+            return self.model.generate_forced(start, self.tokenizer, verse_len= len(self.validation_data[index]['rhyme']), sample=self.args.sample)
             
             
             
@@ -211,7 +219,7 @@ class ModelValidator:
             levenshtein_dist.append(lev_distance/lev_distance_all)
         # Log all results and configuration
         with open(os.path.abspath(os.path.join(self.result_dir, self.model_rel_name + ".txt")), 'a') as file:
-            print(f" ===== {type} Decoding Validation: Epochs: {self.epochs}, Runs per epoch: {self.runs_per_epoch} =====", file=file)
+            print(f" ===== {type} Decoding Validation: Epochs: {self.epochs}, Runs per epoch: {self.runs_per_epoch}, SAMPLING: {str(self.args.sample)} =====", file=file)
             print(f"Num Sylabs Accuracy: {np.mean(sylab_accuracy)} +- {np.std(sylab_accuracy, ddof=1)}", file=file)
             print(f"Endings Accuracy: {np.mean(end_accuracy)} +- {np.std(end_accuracy, ddof=1)}\n", file=file)
             print(f"Rhyme model: {self.rhyme_model_name}, Syllable {str(self.args.val_syllables_rhyme)}", file=file)
@@ -249,6 +257,7 @@ parser.add_argument("--val_syllables_rhyme", default=True, type=bool, help="Does
 parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
 
 parser.add_argument("--top_k", default=2, type=int, help="Top k number")
+parser.add_argument("--sample", default=False, type=bool, help="Sample during generation")
 
 def main(args):
     val = ModelValidator(args)

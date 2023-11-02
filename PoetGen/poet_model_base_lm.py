@@ -53,13 +53,22 @@ class PoetModelBase(PoetModelInterface):
         return features_dict
                    
     
-    def generate_forced(self, prompt:str, tokenizer: AutoTokenizer, verse_len:int = 4):
+    def generate_forced(self, prompt:str, tokenizer: AutoTokenizer, verse_len:int = 4, sample: bool = False):
         
         features_dict_init = self.analyze_prompt(prompt)
         prompt_list = prompt.splitlines()
         # GENERATE FOR POSSIBLE MISSING POET PARAM
         token_gen_rhyme = tokenizer.encode("A", return_tensors='pt')
-        rhyme_line = self.model.generate(token_gen_rhyme, 
+        if sample:
+            rhyme_line = self.model.generate(token_gen_rhyme, 
+                                max_new_tokens= 100,
+                                do_sample=True,
+                                top_k=50,
+                                early_stopping=True,
+                                pad_token_id=tokenizer.pad_token_id,
+                                eos_token_id=tokenizer.eos_token_id)
+        else:
+            rhyme_line = self.model.generate(token_gen_rhyme, 
                                 max_new_tokens= 100,
                                 num_beams=8,
                                 no_repeat_ngram_size=2,
@@ -111,7 +120,16 @@ class PoetModelBase(PoetModelInterface):
             line_start =  (features_dict[f"LENGTH_{j}"] if f"LENGTH_{j}" in features_dict.keys() else "" )  + \
                 (f" {features_dict[f'END_{j}'] } #" if  f"END_{j}" in features_dict.keys() else "")
             tokenized_poet_start = tokenizer.encode("\n".join(prompt_list) + "\n" + line_start,  return_tensors='pt')
-            out_line =  self.model.generate(tokenized_poet_start, 
+            if sample:
+                out_line =  self.model.generate(tokenized_poet_start, 
+                                max_new_tokens= 100,
+                                do_sample=True,
+                                top_k=50,
+                                early_stopping=True,
+                                pad_token_id=tokenizer.pad_token_id,
+                                eos_token_id=tokenizer.eos_token_id)
+            else:
+                out_line =  self.model.generate(tokenized_poet_start, 
                                 max_new_tokens= 100,
                                 num_beams=2,
                                 no_repeat_ngram_size=2,
