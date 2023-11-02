@@ -220,13 +220,16 @@ class ModelValidator:
         # Log all results and configuration
         with open(os.path.abspath(os.path.join(self.result_dir, self.model_rel_name + ".txt")), 'a') as file:
             print(f" ===== {type} Decoding Validation: Epochs: {self.epochs}, Runs per epoch: {self.runs_per_epoch}, SAMPLING: {str(self.args.sample)} =====", file=file)
+            # Line Metrics
             print(f"Num Sylabs Accuracy: {np.mean(sylab_accuracy)} +- {np.std(sylab_accuracy, ddof=1)}", file=file)
             print(f"Endings Accuracy: {np.mean(end_accuracy)} +- {np.std(end_accuracy, ddof=1)}\n", file=file)
+            # Rhyme Related Metrics
             print(f"Rhyme model: {self.rhyme_model_name}, Syllable {str(self.args.val_syllables_rhyme)}", file=file)
             print(f"Rhyme Accuracy: {np.mean(rhyme_accuracy)} +- {np.std(rhyme_accuracy, ddof=1)}", file=file)
             print(f"Rhyme top {self.args.top_k} presence: {np.mean(rhyme_top_k)} +- {np.std(rhyme_top_k, ddof=1)}", file=file)
             print(f"Rhyme label presence: {np.mean(rhyme_label_acc)} +- {np.std(rhyme_label_acc, ddof=1)}", file=file)
             print(f"Rhyme Levenshtein distance: {np.mean(levenshtein_dist)} +- {np.std(levenshtein_dist, ddof=1)}\n", file=file)
+            # Metre related metrics
             print(f"Metre model: {self.meter_model_name}, Syllable {str(self.args.val_syllables_meter)}", file=file)
             print(f"Metre Accuracy: {np.mean(metre_accuracy)} +- {np.std(metre_accuracy, ddof=1)}", file=file)
             print(f"Metre top {self.args.top_k} presence: {np.mean(metre_top_k)} +- {np.std(metre_top_k, ddof=1)}", file=file)
@@ -249,7 +252,7 @@ parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--num_samples", default=1, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=10, type=int, help="Number of runs on datasets")
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e4e16_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Processed-BPE-NormalText-gpt-cz-poetry-base-e8e16_LM")),  type=str, help="Path to Model")
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1697993440889')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator_1697833311028')),  type=str, help="Path to Model")
 parser.add_argument("--validator_tokenizer_model", default='roberta-base', type=str, help="Validator tokenizer")
