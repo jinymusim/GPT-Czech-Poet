@@ -63,7 +63,7 @@ def validate(model: ValidatorInterface, data, collate_fnc):
         datum = collate_fnc([data[i]])
         true_hits += model.validate(input_ids=datum["input_ids"],
                                     rhyme=datum["rhyme"], 
-                                    metre=datum["metre"])
+                                    metre=datum["metre"])['acc']
     print(f"Validation acc: {true_hits/len(data)}")
     
     model.train()

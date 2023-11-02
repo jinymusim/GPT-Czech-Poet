@@ -1,5 +1,6 @@
 import torch
 import transformers
+import jellyfish
 from tqdm import tqdm
 from transformers import  AutoModelForMaskedLM
 from .poet_utils import RHYME_SCHEMES, METER_TYPES
@@ -92,7 +93,7 @@ class RhymeValidator(ValidatorInterface):
         
         return softmaxed
     
-    def validate(self, input_ids=None, rhyme=None,*args, **kwargs):
+    def validate(self, input_ids=None, rhyme=None, k:int = 2,*args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
@@ -101,9 +102,29 @@ class RhymeValidator(ValidatorInterface):
             
         softmaxed = torch.softmax(rhyme_regression, dim=1)
         
-        _true_val = (torch.argmax(rhyme, dim=1) == torch.argmax(softmaxed, dim=1)).float().sum().numpy()
+        softmaxed = softmaxed.flatten()
         
-        return _true_val
+        predicted_val = torch.argmax(softmaxed)
+        
+        predicted_top_k = torch.topk(softmaxed, k).indices
+        
+        label_val = torch.argmax(rhyme.flatten())
+        
+        validation_true_val = (label_val == predicted_val).float().sum().numpy()
+        top_k_presence = 0
+        if label_val in predicted_top_k:
+            top_k_presence = 1
+            
+        levenshtein = jellyfish.levenshtein_distance(RHYME_SCHEMES[predicted_val] if RHYME_SCHEMES[predicted_val] != None else "", RHYME_SCHEMES[label_val] if  RHYME_SCHEMES[label_val] != None else "")
+        
+        hit_pred = softmaxed[label_val].detach().numpy()
+        
+        return {"acc" : validation_true_val,
+                "top_k" : top_k_presence,
+                "lev_distance": levenshtein,
+                "predicted_label" : hit_pred
+        }
+         
     
     
 class MeterValidator(ValidatorInterface):
@@ -143,7 +164,7 @@ class MeterValidator(ValidatorInterface):
         
         return softmaxed
     
-    def validate(self, input_ids=None, metre=None,*args, **kwargs):
+    def validate(self, input_ids=None, metre=None, k: int=2,*args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
@@ -152,9 +173,25 @@ class MeterValidator(ValidatorInterface):
             
         softmaxed = torch.softmax(meter_regression, dim=1)
         
-        _true_val = (torch.argmax(metre, dim=1) == torch.argmax(softmaxed, dim=1)).float().sum().numpy()
+        softmaxed = softmaxed.flatten()
         
-        return _true_val
+        predicted_val = torch.argmax(softmaxed)
+        
+        predicted_top_k = torch.topk(softmaxed, k).indices
+        
+        label_val = torch.argmax(metre.flatten())
+        
+        validation_true_val = (label_val == predicted_val).float().sum().numpy()
+        top_k_presence = 0
+        if label_val in predicted_top_k:
+            top_k_presence = 1
+        
+        hit_pred = softmaxed[label_val].detach().numpy()
+        
+        return {"acc" : validation_true_val,
+                "top_k" : top_k_presence,
+                "predicted_label" : hit_pred
+        }
     
 
 class ValidatorTrainer:
