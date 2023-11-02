@@ -218,5 +218,5 @@ class ValidatorTrainer:
             #    self.optimizer.update_rho_t()
             #    
                 if step % 100 == 0:
-                    print(f'Step {step},  loss : {loss.item()}')
+                    print(f'Step {step},  loss : {loss.item()}', flush=True)
     
