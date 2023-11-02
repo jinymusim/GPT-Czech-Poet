@@ -1,0 +1,30 @@
+basic Decoding Validation: Epochs: 10, Runs per epoch: 200
+Num Sylabs Accuracy: 0.914497333423886 +- 0.007275321785263692
+Endings Accuracy: 0.0859698328419901 +- 0.006430807561888272
+Rhyme Accuracy: 0.44049999999999995 +- 0.036927105371408565
+Metre Accuracy: 1.0 +- 0.0
+basic Decoding Validation: Epochs: 10, Runs per epoch: 200
+Num Sylabs Accuracy: 0.9110352480978194 +- 0.004048643602808631
+Endings Accuracy: 1.0 +- 0.0
+Rhyme Accuracy: 0.41400000000000003 +- 0.03526093211095437
+Metre Accuracy: 1.0 +- 0.0
+forced Decoding Validation: Epochs: 10, Runs per epoch: 200
+Num Sylabs Accuracy: 1.0 +- 0.0
+Endings Accuracy: 0.9735347308122533 +- 0.003914507308204032
+Rhyme Accuracy: 0.28500000000000003 +- 0.02380476142847616
+Metre Accuracy: 1.0 +- 0.0
+forced Decoding Validation: Epochs: 10, Runs per epoch: 200
+Num Sylabs Accuracy: 1.0 +- 0.0
+Endings Accuracy: 0.13390694394935113 +- 0.01305200523927689
+Rhyme Accuracy: 0.3015 +- 0.04755406280107819
+Metre Accuracy: 1.0 +- 0.0
+basic Decoding Validation: Epochs: 10, Runs per epoch: 200
+Num Sylabs Accuracy: 0.8823926127008924 +- 0.014271989431426027
+Endings Accuracy: 0.9786696916766484 +- 0.005321992102099379
+Rhyme Accuracy: 0.38249999999999995 +- 0.02595401917066241
+Metre Accuracy: 0.9325000000000001 +- 0.01252774698197739
+forced Decoding Validation: Epochs: 10, Runs per epoch: 200
+Num Sylabs Accuracy: 0.8857416230752995 +- 0.021483300443156807
+Endings Accuracy: 0.9517207816419306 +- 0.011120341997247214
+Rhyme Accuracy: 0.4645 +- 0.039612708398526195
+Metre Accuracy: 0.9469999999999998 +- 0.015491933384829642

@@ -60,3 +60,9 @@ Metre Validator: Roberta, Epochs: 64 Accuracy: 0.36200218492402425
 ### BPE ### 1698091240245
 Rhyme Validator: Roberta, Epochs: 64 Accuracy: 0.908398715529513
 Metre Validator: Roberta, Epochs: 64 Accuracy: 0.9596782202800676
+### BPE ### 1698231907866
+Rhyme Validator: Roberta, Epochs: 128 Accuracy: 0.909756016817294
+Metre Validator: Roberta, Epochs: 1 Accuracy: 0.8661568510610124
+### BPE ### 1698405575013
+Rhyme Validator: Roberta, Epochs: 16 Accuracy: 0.3090674347005661
+Metre Validator: Roberta, Epochs: 16 Accuracy: 0.7743238322243189

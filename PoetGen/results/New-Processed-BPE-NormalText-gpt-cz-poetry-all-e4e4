@@ -1,0 +1,10 @@
+basic Decoding Validation: Epochs: 10, Runs per epoch: 200
+Num Sylabs Accuracy: 0.9468489841491623 +- 0.004992094879552232
+Endings Accuracy: 0.08611343272100835 +- 0.01625078246379666
+Rhyme Accuracy: 0.2995 +- 0.05002499375312305
+Metre Accuracy: 1.0 +- 0.0
+forced Decoding Validation: Epochs: 10, Runs per epoch: 200
+Num Sylabs Accuracy: 0.9467206755873052 +- 0.0047994145808185505
+Endings Accuracy: 0.13701983598540954 +- 0.015221150814028382
+Rhyme Accuracy: 0.4165 +- 0.03232216301892901
+Metre Accuracy: 1.0 +- 0.0
