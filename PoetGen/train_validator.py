@@ -111,7 +111,7 @@ def main(args):
                                       prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
                                       verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate)
     
-    if torch.cuda.device_count() > 0:
+    if torch.cuda.device_count() > -1:
         training_args = TrainingArguments(
                                       save_strategy  = "no",
                                       logging_steps = 500,
@@ -154,7 +154,7 @@ def main(args):
     
     # Train Metrum Validator
     
-    if torch.cuda.device_count() > 1:
+    if torch.cuda.device_count() > -1:
         training_args = TrainingArguments(
                                       save_strategy  = "no",
                                       warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_metre,
@@ -193,8 +193,8 @@ def main(args):
     # Store result and model
     with open(args.result_file, 'a') as file:
         print(f"### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp}", file=file)
-        print(f"Rhyme Validator: Roberta, Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
-        print(f"Metre Validator: Roberta, Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
+        print(f"Rhyme Validator: {args.pretrained_model}, Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
+        print(f"Metre Validator: {args.pretrained_model}, Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
     
     torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{args.pretrained_model}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
