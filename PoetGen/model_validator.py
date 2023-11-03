@@ -241,7 +241,7 @@ class ModelValidator:
             print(f"Rhyme model: {self.rhyme_model_name}, Syllable {str(self.args.val_syllables_rhyme)}", file=file)
             print(f"Rhyme Accuracy: {np.mean(rhyme_accuracy):.4f} +- {np.std(rhyme_accuracy, ddof=1):.4f}", file=file)
             print(f"Rhyme top {self.args.top_k} presence: {np.mean(rhyme_top_k):.4f} +- {np.std(rhyme_top_k, ddof=1):.4f}", file=file)
-            print(f"Rhyme label presence: {np.mean(rhyme_label_acc):.4f} +- {np.std(rhyme_label_acc, ddof=1)}", file=file)
+            print(f"Rhyme label presence: {np.mean(rhyme_label_acc):.4f} +- {np.std(rhyme_label_acc, ddof=1):.4f}", file=file)
             # Measures Levenshtein distance only on wrong examples!
             print(f"Rhyme Levenshtein distance: {np.mean(levenshtein_dist):.4f} +- {np.std(levenshtein_dist, ddof=1):.4f}\n", file=file)
             # Metre related metrics
