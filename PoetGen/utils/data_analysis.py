@@ -7,6 +7,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--data_files", default=[os.path.abspath(os.path.join(os.path.dirname(__file__),"..","..",  "body_poet_data.json")) , 
                                              os.path.abspath(os.path.join(os.path.dirname(__file__),"..","..", "val_body_poet_data.json"))], type=list, help="Paths to data files")
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"..","results",  "data_analysis.txt")), type=str, help="Path to result file")
+parser.add_argument("--raw_data_files", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"..", "corpusCzechVerse", "ccv")), type=str, help="Path to raw data")
+parser.add_argument("--raw_result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"..","results",  "raw_data_analysis.txt")), type=str, help="Path to result file")
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
@@ -29,11 +31,37 @@ years = sorted(years.items(), key=lambda x: x[1], reverse=True)
 
 with open(args.result_file, "w+") as file:
     print("=== RHYMES ===", file=file)
-    for rhyme in rhymes[:100]:
+    for rhyme in rhymes:
         print(f"{rhyme[0]}, Presence: {rhyme[1] * 100:.2f} %", file=file)
     print("=== METRES ===", file=file)
-    for metre in metres[:100]:
+    for metre in metres:
         print(f"{metre[0]}, Presence: {metre[1] * 100:.2f} %", file=file)
     print("=== YEARS ===", file=file)
-    for years in years[:100]:
+    for years in years:
         print(f"{years[0]}, Presence: {years[1] * 100:.2f} %", file=file)
+
+writer_data = {}
+data_filenames = os.listdir(args.raw_data_files)
+for filename in data_filenames:
+    file_path = os.path.join(args.raw_data_files, filename)
+    
+    with open(file_path, "r") as file:
+        data = json.load(file)
+    for book in data:
+        # Real name is under 'identity'
+        try:
+            author = book['p_author']['identity']
+        except:
+            author = book['b_author']['identity']
+        line_count = 0
+        for body_part in book['body']:
+            for text_line in  body_part:
+                line_count +=1
+        writer_data[author] = writer_data.get(author, 0) + line_count
+        
+writers = sorted(writer_data.items(), key=lambda x: x[1], reverse=True)
+with open(args.raw_result_file, "w+", encoding="utf-8") as file:
+    print("=== WRITERS ===", file=file)
+    for writer in writers:
+        print(f"{writer[0]}, Number of Lines: {writer[1]}", file=file)
+    

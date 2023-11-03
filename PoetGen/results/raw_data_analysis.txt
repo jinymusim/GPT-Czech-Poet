@@ -1,0 +1,264 @@
+=== WRITERS ===
+Vrchlický, Jaroslav, Number of Lines: 235512
+Machar, Josef Svatopluk, Number of Lines: 180234
+Heyduk, Adolf, Number of Lines: 133954
+Čech, Svatopluk, Number of Lines: 71788
+Sova, Antonín, Number of Lines: 70204
+Zeyer, Julius, Number of Lines: 68505
+Neumann, Stanislav Kostka, Number of Lines: 47719
+Klášterský, Antonín, Number of Lines: 47146
+Dyk, Viktor, Number of Lines: 44673
+Kaminský, Bohdan, Number of Lines: 40456
+Krásnohorská, Eliška, Number of Lines: 39687
+Nejedlý, Vojtěch, Number of Lines: 39252
+Sládek, Josef Václav, Number of Lines: 39124
+Leger, Karel, Number of Lines: 37293
+Procházka, František Serafínský, Number of Lines: 33130
+Táborský, František, Number of Lines: 30574
+Dvořák, Xaver, Number of Lines: 25368
+Hněvkovský, Šebestián, Number of Lines: 25114
+Neruda, Jan, Number of Lines: 22313
+Mužík, Augustin Eugen, Number of Lines: 20736
+Stašek, Antal, Number of Lines: 19982
+Dostál-Lutinov, Karel, Number of Lines: 19901
+Tomek, Ferdinand, Number of Lines: 18542
+Leubner, František, Number of Lines: 17583
+Holý, Josef, Number of Lines: 17001
+Pfleger Moravský, Gustav, Number of Lines: 16848
+Kulda, Beneš Metod, Number of Lines: 16798
+Mahen, Jiří, Number of Lines: 16759
+Hálek, Vítězslav, Number of Lines: 16751
+Kalus, Josef, Number of Lines: 16389
+Pokorný, Rudolf, Number of Lines: 16241
+Červinka, Otakar, Number of Lines: 15958
+Jesenská, Růžena, Number of Lines: 15628
+Furch, Vincenc, Number of Lines: 14901
+Gellner, František, Number of Lines: 14255
+Kollár, Jan, Number of Lines: 13801
+z Wojkowicz, Jan, Number of Lines: 13400
+Klácel, František Matouš, Number of Lines: 13115
+Koubek, Jan Pravoslav, Number of Lines: 12504
+Březina, Otokar, Number of Lines: 12424
+Wenzig, Josef, Number of Lines: 12110
+Sušil, František, Number of Lines: 11909
+Škampa, Alois, Number of Lines: 11797
+Opolský, Jan, Number of Lines: 11773
+Vinařický, Karel Alois, Number of Lines: 11681
+Jakubec, Josef, Number of Lines: 10994
+Quis, Ladislav, Number of Lines: 10826
+Lošťák, Ludvík, Number of Lines: 10744
+H. Uden, Number of Lines: 10698
+Odvalil, František, Number of Lines: 10411
+Miřiovský, Emanuel, Number of Lines: 10287
+Crha, Václav Antonín, Number of Lines: 9990
+Medek, Rudolf, Number of Lines: 9952
+Tablic, Bohuslav, Number of Lines: 9546
+Nečas, Jan Evangelista, Number of Lines: 9133
+Uhlíř, Josef, Number of Lines: 8688
+Čenkov, Emanuel, Number of Lines: 8498
+Mráz, Stanislav, Number of Lines: 8488
+Rubeš, František Jaromír, Number of Lines: 8452
+Šolc, Václav, Number of Lines: 8292
+Kvapil, František, Number of Lines: 8280
+Křička, Petr, Number of Lines: 8047
+Babánek, Karel, Number of Lines: 7812
+Sabina, Karel, Number of Lines: 7777
+Lukavský, Josef, Number of Lines: 7537
+Zavřel, František, Number of Lines: 7353
+Fischer, Otokar, Number of Lines: 7349
+Kuchař, Josef, Number of Lines: 7185
+Mokrý, Otokar, Number of Lines: 7135
+Weiner, Richard, Number of Lines: 7001
+Benešová, Božena, Number of Lines: 6880
+Chalupa, František, Number of Lines: 6698
+Vocel, Jan Erazim, Number of Lines: 6638
+Taufer, František, Number of Lines: 6586
+Racek, Adolf, Number of Lines: 6477
+Cajthaml-Liberté, František, Number of Lines: 6476
+Kyselý, František, Number of Lines: 6473
+Karas, Josef František, Number of Lines: 6463
+Züngel, Emanuel, Number of Lines: 6346
+Mácha, Karel Hynek, Number of Lines: 6056
+Čelakovský, František Ladislav, Number of Lines: 5978
+Geisslová, Irma, Number of Lines: 5876
+Kučera, Karel, Number of Lines: 5844
+Polák, Milota Zdirad, Number of Lines: 5843
+Šmilovský, Alois Vojtěch, Number of Lines: 5728
+Erben, Karel Jaromír, Number of Lines: 5631
+Bělohrobský, Vojtěch M. V., Number of Lines: 5606
+Kapper, Siegfried, Number of Lines: 5552
+Havlíček Borovský, Karel, Number of Lines: 5530
+Frič, Josef Václav, Number of Lines: 5519
+Bouška, Sigismund, Number of Lines: 5507
+Mašek, Karel, Number of Lines: 5369
+Breska, Alfons, Number of Lines: 5324
+Picek, Václav Jaromír, Number of Lines: 5270
+Brabec, Adolf, Number of Lines: 5257
+Pelíšek, Jan, Number of Lines: 5213
+Grünwald, Beneš, Number of Lines: 5181
+Hajniš, František, Number of Lines: 5175
+Červinka, Miloš, Number of Lines: 4956
+Dörfl, Gustav, Number of Lines: 4949
+Langer, Josef Jaroslav, Number of Lines: 4944
+Stach, Václav, Number of Lines: 4811
+Paroubek, Otakar G., Number of Lines: 4756
+Fingal, Petr, Number of Lines: 4546
+Červinka, Karel, Number of Lines: 4544
+Vacek Kamenický, František Jaroslav, Number of Lines: 4302
+Villani, Karel Maria Drahotín, Number of Lines: 4293
+Kamarýt, Josef Vlastimil, Number of Lines: 4111
+Toman, Karel, Number of Lines: 4056
+Macháček, Simeon Karel, Number of Lines: 3996
+Rokos, František Alexandr, Number of Lines: 3845
+Havelka, Matěj, Number of Lines: 3838
+Šnajdr, Karel Sudimír, Number of Lines: 3837
+Klose, Antonín Jaroslav, Number of Lines: 3832
+Červenka, Jan, Number of Lines: 3829
+Jungmann, Josef, Number of Lines: 3822
+Tůma, Jan Václav, Number of Lines: 3802
+Macek, Antonín, Number of Lines: 3733
+Nebeský, Václav Bolemír, Number of Lines: 3688
+Marek, Jan Jindřich, Number of Lines: 3661
+Štulc, Václav, Number of Lines: 3567
+Jonáš, Karel, Number of Lines: 3547
+Puchmajer, Antonín Jaroslav, Number of Lines: 3505
+Pilbauerová, Herma, Number of Lines: 3420
+Grunert, Hynek, Number of Lines: 3384
+Dostal, Adolf Bohuslav, Number of Lines: 3373
+Theer, Otakar, Number of Lines: 3315
+Korvín, Jan Daniel, Number of Lines: 3294
+Rais, Karel V., Number of Lines: 3225
+Fučík, Milan, Number of Lines: 3119
+Pakosta, Vojtěch, Number of Lines: 3109
+Bíbl, František, Number of Lines: 2982
+Červinka, Adolf, Number of Lines: 2892
+Křikava, Louis, Number of Lines: 2867
+Menhard, František Ladislav, Number of Lines: 2641
+Lešetický, Vojtěch, Number of Lines: 2618
+Chmelenský, Josef Krasoslav, Number of Lines: 2570
+Ambrož, Vilém, Number of Lines: 2543
+Jablonský, Boleslav, Number of Lines: 2543
+Tomíček, Jan Slavomír, Number of Lines: 2503
+Písecký, Ferdinand, Number of Lines: 2489
+Jahn, Jiljí Vratislav, Number of Lines: 2468
+Houdek, Vladimír, Number of Lines: 2450
+Ráb, Václav Věnceslav, Number of Lines: 2400
+Martinec, Jaroslav, Number of Lines: 2386
+Hašek, Roman, Number of Lines: 2378
+Rypáček, František Jaroslav, Number of Lines: 2346
+Bulant, Antonín, Number of Lines: 2342
+Hek, František Vladislav, Number of Lines: 2284
+Auředníček, Otakar, Number of Lines: 2210
+Goll, Jaroslav, Number of Lines: 2195
+Ryba, Jakub Jan, Number of Lines: 2184
+Adámek, Bohumil, Number of Lines: 2158
+Ostravický, Čechoslav, Number of Lines: 2148
+Illový, Rudolf, Number of Lines: 2128
+Květ, Bohuslav, Number of Lines: 2098
+Frída, Vladimír, Number of Lines: 2086
+Merhaut, Josef, Number of Lines: 2078
+Jelínek, Hanuš, Number of Lines: 2038
+Burgerstein, Josef, Number of Lines: 1963
+Hilar, Karel Hugo, Number of Lines: 1893
+Gallat, Alois, Number of Lines: 1801
+Just, Eduard, Number of Lines: 1711
+Pok Poděbradský, Václav, Number of Lines: 1685
+Ceyp z Peclinovce, Jan Bohumil, Number of Lines: 1684
+Nevšímal, August, Number of Lines: 1646
+Pachmayer, Josef, Number of Lines: 1598
+Šafařík, Pavel Josef, Number of Lines: 1577
+Rožek, Karel, Number of Lines: 1542
+Albert, Eduard, Number of Lines: 1539
+Spáčil Žeranovský, Jan, Number of Lines: 1531
+Špindler, Ervín, Number of Lines: 1524
+Koukl, Antonín, Number of Lines: 1508
+Čermák, Bohuslav, Number of Lines: 1470
+Klicpera, Václav Kliment, Number of Lines: 1467
+Růžičková, Anna Vlastimila, Number of Lines: 1466
+Dvořáková-Mráčková, Albína, Number of Lines: 1465
+Maternová, Pavla, Number of Lines: 1456
+Drahoňovský, František Karel, Number of Lines: 1455
+Ježek, Jan, Number of Lines: 1453
+Vřesnický, Jan, Number of Lines: 1436
+Karafiát, Jan, Number of Lines: 1429
+Šimáček, Matěj Anastázia, Number of Lines: 1427
+Košín z Radostova, Josef, Number of Lines: 1412
+Sychra, Matěj Josef, Number of Lines: 1404
+Mayer, Rudolf, Number of Lines: 1379
+Ráž, Arnošt, Number of Lines: 1361
+Hofmeister, Rudolf Richard, Number of Lines: 1339
+Soldan, František, Number of Lines: 1319
+Beránek, Jan, Number of Lines: 1318
+Šrámek, Jan, Number of Lines: 1313
+Baar, Jindřich Šimon, Number of Lines: 1311
+Rosenzweig-Moir, Josef, Number of Lines: 1252
+Bort, Rudolf, Number of Lines: 1246
+Trnka, František, Number of Lines: 1236
+Haasz, Jaroslav, Number of Lines: 1236
+Kučera, Eduard, Number of Lines: 1229
+Koráb, Julius Alois, Number of Lines: 1226
+Jirásek, Alois, Number of Lines: 1206
+Kubelka, Josef, Number of Lines: 1144
+Hájek, Karel B., Number of Lines: 1140
+Arietto, Ladislav, Number of Lines: 1132
+Baše, Josef, Number of Lines: 1129
+Mařík, Ruda, Number of Lines: 1124
+Hlaváček, Karel, Number of Lines: 1097
+Balcárek, Aleš, Number of Lines: 1045
+Tichý, Josef, Number of Lines: 1029
+Vlk, Jan, Number of Lines: 1015
+Bitnar, Vilém, Number of Lines: 985
+Chládek, František, Number of Lines: 979
+Přibil, Martin Alexander, Number of Lines: 950
+Šimeček, František, Number of Lines: 940
+Prokop, Karel Vojtěch, Number of Lines: 935
+Gintl, Zdeněk, Number of Lines: 905
+Popelka, Stanislav, Number of Lines: 898
+Sís, František, Number of Lines: 889
+Böhm, Jindřich, Number of Lines: 861
+Čacká, Marie, Number of Lines: 838
+Mühlsteinová, Berta, Number of Lines: 829
+Panýrek, Duchoslav, Number of Lines: 800
+Vojáček, Václav, Number of Lines: 799
+Forman, Bohumil, Number of Lines: 774
+Scheinpflug, Karel, Number of Lines: 763
+Rybář, František, Number of Lines: 745
+Procházka, Arnošt, Number of Lines: 719
+Simerská, Anna, Number of Lines: 718
+Wunsch, Hugo Václav, Number of Lines: 705
+Berdych, Kamil, Number of Lines: 703
+Bogner, Adolf, Number of Lines: 696
+Hanka, Václav, Number of Lines: 692
+Flekáček, Josef, Number of Lines: 658
+Vladyka, Jan Bapt., Number of Lines: 633
+Šembera, Vratislav Kazimír, Number of Lines: 622
+Nejedlý, Jan, Number of Lines: 608
+Karásek ze Lvovic, Jiří, Number of Lines: 596
+Opočenský, Jiří, Number of Lines: 593
+Kepka, Hugo, Number of Lines: 589
+Krapka Náchodský, Josef, Number of Lines: 537
+Barák, Josef, Number of Lines: 536
+Hais, František, Number of Lines: 522
+Palacký, František, Number of Lines: 498
+Melezínek, Václav, Number of Lines: 464
+Černý, Boleslav L., Number of Lines: 442
+Kalaš, Josef V., Number of Lines: 441
+Linhart, Ladislav, Number of Lines: 437
+Němcová, Božena, Number of Lines: 397
+Blatný, Lev, Number of Lines: 353
+Marek, Antonín, Number of Lines: 348
+Šimková-Uzlová, Fanda, Number of Lines: 338
+Stankovský, Josef Jiří, Number of Lines: 328
+Haber, Alois Věkoslav, Number of Lines: 325
+Eisler, František, Number of Lines: 317
+Patrčka, Michal Silorad, Number of Lines: 308
+Nejč, Karel, Number of Lines: 296
+Pokorný-Pikulík, Josef Václav, Number of Lines: 222
+Hlaváček, Václav, Number of Lines: 211
+Vavák, František Jan, Number of Lines: 208
+Švejda, František, Number of Lines: 197
+Lešehrad, Emanuel, Number of Lines: 153
+Hauner, Emanuel, Number of Lines: 106
+Leška, Štěpán, Number of Lines: 105
+Kalina, Josef Jaroslav, Number of Lines: 100
+Melichar, Josef Jaroslav, Number of Lines: 100
