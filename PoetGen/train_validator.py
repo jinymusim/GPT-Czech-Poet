@@ -31,7 +31,7 @@ parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is pr
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
-parser.add_argument("--syllables", default=True, type=bool, help="If to use syllable data")
+parser.add_argument("--syllables", default=False, type=bool, help="If to use syllable data")
 
 parser.add_argument("--pretrained_model", default="ufal/robeczech-base", type=str, help="Roberta Model")
 parser.add_argument("--batch_size_metre", default=32, type=int, help="Batch size.")
@@ -192,7 +192,7 @@ def main(args):
     metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     # Store result and model
     with open(args.result_file, 'a') as file:
-        print(f"### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp}", file=file)
+        print(f"### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp} ### Syllable: {str(args.syllables)} ", file=file)
         print(f"Rhyme Validator: {args.pretrained_model}, Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
         print(f"Metre Validator: {args.pretrained_model}, Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
     

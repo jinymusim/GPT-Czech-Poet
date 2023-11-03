@@ -7,7 +7,7 @@ import numpy as np
 
 from tqdm import tqdm
 from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase, AutoModelForCausalLM
-from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, UNK, EOS, PAD, NORMAL_SCHEMES
+from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, UNK, EOS, PAD, NORMAL_SCHEMES, SyllableMaker
 from utils.poet_model_utils import PoetModelInterface
 from utils.validators import ValidatorInterface
 
@@ -135,12 +135,16 @@ class ModelValidator:
         """
         # Store of individual runs of evaluation
         end_accuracy, sylab_accuracy, rhyme_accuracy, metre_accuracy, rhyme_top_k, metre_top_k, rhyme_label_acc, metre_label_acc, levenshtein_dist = [], [], [], [], [], [], [], [], []
+        
+        syllable_running_ration = []
         # Run the requested amount of evaluations
         for _ in tqdm(range(self.epochs), desc=f"Validation {type}"):
             # Store results of current evaluation
-            end_all, sylab_all, rhyme_all, metre_all, rhyme_top_k_all,metre_top_k_all, rhyme_label_all, metre_label_all,lev_distance_all = 0,0,0,0,0,0,0,0,0
+            end_all, sylab_all, rhyme_all, metre_all, rhyme_top_k_all = 0,0,0,0,0
+            metre_top_k_all, rhyme_label_all, metre_label_all,lev_distance_all = 0,0,0,0
             
-            end_pos, sylab_pos, rhyme_pos, metre_pos, rhyme_top_k_pos,metre_top_k_pos, rhyme_label_pos, metre_label_pos,lev_distance = 0,0,0,0,0,0,0,0,0
+            end_pos, sylab_pos, rhyme_pos, metre_pos, rhyme_top_k_pos = 0,0,0,0,0
+            metre_top_k_pos, rhyme_label_pos, metre_label_pos,lev_distance = 0,0,0,0,
             
             
             samples = random.choices(list(range(len(self.validation_data))), k=self.runs_per_epoch)
@@ -166,7 +170,7 @@ class ModelValidator:
                         rhyme_top_k_all +=1
                         rhyme_label_all +=1
                         
-                        lev_distance_all += 1
+                        
                         # Validate for Rhyme schema
                         if self.rhyme_model != None and "RHYME" in values.keys():
                             data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], 'rhyme' : values["RHYME"]}],tokenizer=self.validator_tokenizer,
@@ -177,7 +181,9 @@ class ModelValidator:
                             rhyme_pos += res['acc']
                             rhyme_top_k_pos += res['top_k']
                             rhyme_label_pos += res['predicted_label']
-                            lev_distance +=res['lev_distance']
+                            if res['acc'] < 0.5:
+                                lev_distance_all += 1
+                                lev_distance +=res['lev_distance']
                             
                         # Validate for Metrum
                         if self.meter_model != None and "METER" in values.keys():
@@ -190,6 +196,13 @@ class ModelValidator:
                             metre_pos += res['acc']
                             metre_top_k_pos += res['top_k']
                             metre_label_pos += res['predicted_label']
+                        # Measure Syllable uniqueness
+                        all_sylabs = []
+                        for line in decoded_cont.splitlines()[1:]:
+                            all_sylabs += SyllableMaker.syllabify(line.split("#")[-1])
+                        if len(all_sylabs)  != 0:
+                            syllable_running_ration.append(len(set(all_sylabs))/len(all_sylabs))
+                        
                         continue
                             
                     # Else validate for individual verse
@@ -216,24 +229,26 @@ class ModelValidator:
             metre_top_k.append(metre_top_k_pos/metre_top_k_all)
             rhyme_label_acc.append(rhyme_label_pos/rhyme_label_all)
             metre_label_acc.append(metre_label_pos/metre_label_all)
-            levenshtein_dist.append(lev_distance/lev_distance_all)
+            levenshtein_dist.append(0 if lev_distance_all == 0 else lev_distance/lev_distance_all)
         # Log all results and configuration
         with open(os.path.abspath(os.path.join(self.result_dir, self.model_rel_name + ".txt")), 'a') as file:
             print(f" ===== {type} Decoding Validation: Epochs: {self.epochs}, Runs per epoch: {self.runs_per_epoch}, SAMPLING: {str(self.args.sample)} =====", file=file)
             # Line Metrics
-            print(f"Num Sylabs Accuracy: {np.mean(sylab_accuracy)} +- {np.std(sylab_accuracy, ddof=1)}", file=file)
-            print(f"Endings Accuracy: {np.mean(end_accuracy)} +- {np.std(end_accuracy, ddof=1)}\n", file=file)
+            print(f"Num Sylabs Accuracy: {np.mean(sylab_accuracy):.4f} +- {np.std(sylab_accuracy, ddof=1):.4f}", file=file)
+            print(f"Endings Accuracy: {np.mean(end_accuracy):.4f} +- {np.std(end_accuracy, ddof=1):.4f}", file=file)
+            print(f"Unique Syllable Ratio: {np.mean(syllable_running_ration):.4f} +- {np.std(syllable_running_ration, ddof=1):.4f}\n", file=file)
             # Rhyme Related Metrics
             print(f"Rhyme model: {self.rhyme_model_name}, Syllable {str(self.args.val_syllables_rhyme)}", file=file)
-            print(f"Rhyme Accuracy: {np.mean(rhyme_accuracy)} +- {np.std(rhyme_accuracy, ddof=1)}", file=file)
-            print(f"Rhyme top {self.args.top_k} presence: {np.mean(rhyme_top_k)} +- {np.std(rhyme_top_k, ddof=1)}", file=file)
-            print(f"Rhyme label presence: {np.mean(rhyme_label_acc)} +- {np.std(rhyme_label_acc, ddof=1)}", file=file)
-            print(f"Rhyme Levenshtein distance: {np.mean(levenshtein_dist)} +- {np.std(levenshtein_dist, ddof=1)}\n", file=file)
+            print(f"Rhyme Accuracy: {np.mean(rhyme_accuracy):.4f} +- {np.std(rhyme_accuracy, ddof=1):.4f}", file=file)
+            print(f"Rhyme top {self.args.top_k} presence: {np.mean(rhyme_top_k):.4f} +- {np.std(rhyme_top_k, ddof=1):.4f}", file=file)
+            print(f"Rhyme label presence: {np.mean(rhyme_label_acc):.4f} +- {np.std(rhyme_label_acc, ddof=1)}", file=file)
+            # Measures Levenshtein distance only on wrong examples!
+            print(f"Rhyme Levenshtein distance: {np.mean(levenshtein_dist):.4f} +- {np.std(levenshtein_dist, ddof=1):.4f}\n", file=file)
             # Metre related metrics
             print(f"Metre model: {self.meter_model_name}, Syllable {str(self.args.val_syllables_meter)}", file=file)
-            print(f"Metre Accuracy: {np.mean(metre_accuracy)} +- {np.std(metre_accuracy, ddof=1)}", file=file)
-            print(f"Metre top {self.args.top_k} presence: {np.mean(metre_top_k)} +- {np.std(metre_top_k, ddof=1)}", file=file)
-            print(f"Metre label presence: {np.mean(metre_label_acc)} +- {np.std(metre_label_acc, ddof=1)}\n", file=file)
+            print(f"Metre Accuracy: {np.mean(metre_accuracy):.4f} +- {np.std(metre_accuracy, ddof=1):.4f}", file=file)
+            print(f"Metre top {self.args.top_k} presence: {np.mean(metre_top_k):.4f} +- {np.std(metre_top_k, ddof=1):.4f}", file=file)
+            print(f"Metre label presence: {np.mean(metre_label_acc):.4f} +- {np.std(metre_label_acc, ddof=1):.4f}\n", file=file)
                     
             
     def full_validate(self):
@@ -250,9 +265,9 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
-parser.add_argument("--num_samples", default=50, type=int, help="Number of samples to test the tokenizer on")
+parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=2, type=int, help="Number of runs on datasets")
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e8e16_LM")),  type=str, help="Path to Model")
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1697993440889')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator_1697833311028')),  type=str, help="Path to Model")
 parser.add_argument("--validator_tokenizer_model", default='roberta-base', type=str, help="Validator tokenizer")
