@@ -3,7 +3,7 @@ import transformers
 import jellyfish
 from tqdm import tqdm
 from transformers import  AutoModelForMaskedLM
-from .poet_utils import RHYME_SCHEMES, METER_TYPES
+from .poet_utils import RHYME_SCHEMES, METER_TYPES, POET_YEARS_BUCKETS
 
 from torch.utils.data import DataLoader, Dataset
 from pytorch_optimizer import SAM,GSAM, ProportionScheduler, AdamP
@@ -192,6 +192,73 @@ class MeterValidator(ValidatorInterface):
                 "top_k" : top_k_presence,
                 "predicted_label" : hit_pred
         }
+        
+class YearValidator(ValidatorInterface):
+    def __init__(self, pretrained_model, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.model = AutoModelForMaskedLM.from_pretrained(pretrained_model, output_hidden_states=True)
+        
+        self.config = self.model.config
+        
+        self.model_size = self.config.hidden_size
+        
+        self.year_regressor = torch.nn.Linear(self.model_size, len(POET_YEARS_BUCKETS)) # Meter Type
+        
+        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.05)
+        
+    def forward(self, input_ids=None, attention_mask=None, year=None, *args, **kwargs):
+        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
+        
+        last_hidden = outputs['hidden_states'][-1]
+        
+        year_regression = self.year_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
+            
+        softmaxed = torch.softmax(year_regression, dim=1)
+        meter_loss = self.loss_fnc(softmaxed, year)
+        
+        return {"model_output" : softmaxed,
+                "loss": meter_loss + outputs.loss}
+        
+    def predict(self, input_ids=None, *args, **kwargs):
+        outputs = self.model(input_ids=input_ids)
+        
+        last_hidden = outputs['hidden_states'][-1]
+        
+        year_regression = self.year_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
+            
+        softmaxed = torch.softmax(year_regression, dim=1)
+        
+        return softmaxed
+    
+    def validate(self, input_ids=None, year=None, k: int=2,*args, **kwargs):
+        outputs = self.model(input_ids=input_ids)
+        
+        last_hidden = outputs['hidden_states'][-1]
+        
+        year_regression = self.year_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
+            
+        softmaxed = torch.softmax(year_regression, dim=1)
+        
+        softmaxed = softmaxed.flatten()
+        
+        predicted_val = torch.argmax(softmaxed)
+        
+        predicted_top_k = torch.topk(softmaxed, k).indices
+        
+        label_val = torch.argmax(year.flatten())
+        
+        validation_true_val = (label_val == predicted_val).float().sum().numpy()
+        top_k_presence = 0
+        if label_val in predicted_top_k:
+            top_k_presence = 1
+        
+        hit_pred = softmaxed[label_val].detach().numpy()
+        
+        return {"acc" : validation_true_val,
+                "top_k" : top_k_presence,
+                "predicted_label" : hit_pred
+        }       
+    
     
 
 class ValidatorTrainer:
@@ -227,13 +294,16 @@ class ValidatorTrainer:
                 # First Pass
                 loss = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
                                   rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
-                                  metre = None if batch["metre"] == None else batch["metre"].to(self.device))['loss']
+                                  metre = None if batch["metre"] == None else batch["metre"].to(self.device),
+                                  year = None if batch["year"] == None else batch["year"].to(self.device))['loss']
                 loss.backward()          
                 self.optimizer.first_step(zero_grad=True)
                 # Second Pass
                 loss = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
                                       rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
-                                      metre = None if batch["metre"] == None else batch["metre"].to(self.device))['loss']
+                                      metre = None if batch["metre"] == None else batch["metre"].to(self.device),
+                                      year = None if batch["year"] == None else batch["year"].to(self.device))['loss']
+                
                 loss.backward()
                 self.optimizer.second_step(zero_grad=True)
                 self.scheduler.step()

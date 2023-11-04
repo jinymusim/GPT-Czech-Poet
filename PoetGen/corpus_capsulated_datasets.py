@@ -556,7 +556,7 @@ class CorpusDatasetPytorch:
         
     @staticmethod
     def collate_validator(batch, tokenizer: PreTrainedTokenizerBase,syllables:bool, is_syllable:bool = False,max_len = 1024):
-        """Process data for use in LM for metre prediction
+        """Process data for use in LM for metre,rhyme and year prediction
 
         Args:
             batch (_type_): Batch with selected data points
@@ -588,12 +588,17 @@ class CorpusDatasetPytorch:
         rhyme=None
         if "rhyme" in batch[0].keys():
             rhyme = torch.tensor(np.asarray([TextAnalysis._rhyme_vector(text["rhyme"]) for text in batch], dtype=np.int32), dtype=torch.float32)
+            
+        year = None
+        if "year" in batch[0].keys():      
+            year = torch.tensor(np.asarray([CorpusDatasetPytorch.BodyDataset._publish_year_vector(text["year"]) for text in batch], dtype=np.int32), dtype=torch.float32)
         
         return  {
             "input_ids": input_ids,
             "attention_mask": attention,
             "rhyme": rhyme,
-            "metre": metre}
+            "metre": metre,
+            "year": year}
     
         
     def __init__(self, data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir='./', 
