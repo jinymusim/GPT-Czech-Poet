@@ -1,6 +1,0 @@
-basic Decoding Validation: Epochs: 5, Runs per epoch: 100
-Num Sylabs Accuracy: 0.41246812504627056 +- 0.0062391347951267955
-Endings Accuracy: 0.5235805810009792 +- 0.019044543053094283
-forced Decoding Validation: Epochs: 5, Runs per epoch: 100
-Num Sylabs Accuracy: 0.6876216672072111 +- 0.018986343455264128
-Endings Accuracy: 0.914194047343911 +- 0.025287907753457094
