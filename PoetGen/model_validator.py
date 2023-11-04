@@ -275,7 +275,7 @@ parser.add_argument("--val_syllables_rhyme", default=True, type=bool, help="Does
 parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
 
 parser.add_argument("--top_k", default=2, type=int, help="Top k number")
-parser.add_argument("--sample", default=True, type=bool, help="Sample during generation")
+parser.add_argument("--sample", default=False, type=bool, help="Sample during generation")
 
 def main(args):
     val = ModelValidator(args)
