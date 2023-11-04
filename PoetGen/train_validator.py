@@ -38,10 +38,10 @@ parser.add_argument("--syllables", default=True, type=bool, help="If to use syll
 parser.add_argument("--pretrained_model", default="ufal/robeczech-base", type=str, help="Roberta Model")
 
 parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=4, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_metre", default=0, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=4, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_rhyme", default=0, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--batch_size_year", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_year", default=4, type=int, help="Number of epochs to run.")
@@ -124,7 +124,8 @@ def main(args):
                                       verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate)
     
     if torch.cuda.device_count() > -1:
-        training_args = TrainingArguments(
+        if args.epoch_rhyme > 0:
+            training_args = TrainingArguments(
                                       save_strategy  = "no",
                                       logging_steps = 500,
                                       warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
@@ -138,7 +139,7 @@ def main(args):
                                       output_dir = './results',
                                       per_device_train_batch_size = args.batch_size_rhyme)
 
-        trainer = Trainer(model = rhyme_model,
+            trainer = Trainer(model = rhyme_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
                                data_collator=collate).train()
@@ -159,15 +160,17 @@ def main(args):
         
         
     # Validate rhyme Validator on validation data
-    rhyme_acc =  validate(rhyme_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
+    rhyme_acc = 0
+    if args.epoch_rhyme > 0:
+        rhyme_acc =  validate(rhyme_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     
-    
-    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+        torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     # Train Metrum Validator
     
     if torch.cuda.device_count() > -1:
-        training_args = TrainingArguments(
+        if args.epochs_metre > 0:
+            training_args = TrainingArguments(
                                       save_strategy  = "no",
                                       warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_metre,
                                       logging_steps = 500,
@@ -182,7 +185,7 @@ def main(args):
                                       per_device_train_batch_size = args.batch_size_metre)
 
 
-        trainer = Trainer(model = meter_model,
+            trainer = Trainer(model = meter_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
                                data_collator=collate).train()
@@ -201,14 +204,17 @@ def main(args):
                                    data_collator=collate,
                                    device=device).train()
     # Validate Metrum validator on validation data
-    metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
+    metre_acc = 0
+    if args.epochs_metre > 0:
+        metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     
-    torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+        torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     # Train Year Validator
     
     if torch.cuda.device_count() > -1:
-        training_args = TrainingArguments(
+        if args.epochs_year > 0:
+            training_args = TrainingArguments(
                                       save_strategy  = "no",
                                       warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_year,
                                       logging_steps = 500,
@@ -223,7 +229,7 @@ def main(args):
                                       per_device_train_batch_size = args.batch_size_year)
 
 
-        trainer = Trainer(model = year_model,
+            trainer = Trainer(model = year_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
                                data_collator=collate).train()
@@ -241,10 +247,12 @@ def main(args):
                                    train_dataset=train_data.pytorch_dataset_body, 
                                    data_collator=collate,
                                    device=device).train()
-        
-    year_acc = validate(year_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     
-    torch.save(year_model, os.path.abspath(os.path.join(args.model_path, "year", f"{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+    year_acc = 0
+    if args.epochs_year > 0:
+        year_acc = validate(year_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
+    
+        torch.save(year_model, os.path.abspath(os.path.join(args.model_path, "year", f"{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     
     # Store result and model
