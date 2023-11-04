@@ -108,19 +108,21 @@ class ModelValidator:
             if self.args.sample:
                 out = self.model.model.generate(tokenized_poet_start, 
                                         max_length=256,
-                                        num_beams=8,
-                                        no_repeat_ngram_size=2,
-                                        eos_token_id = self.tokenizer.eos_token_id,
-                                        early_stopping=True,
-                                        pad_token_id=self.tokenizer.pad_token_id)
-            else:
-                out = self.model.model.generate(tokenized_poet_start, 
-                                        max_length=256,
                                         do_sample=True,
                                         top_k=50,
                                         eos_token_id = self.tokenizer.eos_token_id,
                                         early_stopping=True,
                                         pad_token_id=self.tokenizer.pad_token_id)
+                
+            else:
+                out = self.model.model.generate(tokenized_poet_start, 
+                                        max_length=256,
+                                        num_beams=8,
+                                        no_repeat_ngram_size=2,
+                                        eos_token_id = self.tokenizer.eos_token_id,
+                                        early_stopping=True,
+                                        pad_token_id=self.tokenizer.pad_token_id)
+                
             return self.tokenizer.decode(out[0], skip_special_tokens=True)
         if type == "FORCED":
             return self.model.generate_forced(start, self.tokenizer, verse_len= len(self.validation_data[index]['rhyme']), sample=self.args.sample)
@@ -254,6 +256,10 @@ class ModelValidator:
     def full_validate(self):
         """Validate both generation types
         """
+        self.args.sample = True
+        self.validate_decoding("BASIC")
+        self.validate_decoding("FORCED")
+        self.args.sample = False
         self.validate_decoding("BASIC")
         self.validate_decoding("FORCED")
         
@@ -275,7 +281,6 @@ parser.add_argument("--val_syllables_rhyme", default=True, type=bool, help="Does
 parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
 
 parser.add_argument("--top_k", default=2, type=int, help="Top k number")
-parser.add_argument("--sample", default=False, type=bool, help="Sample during generation")
 
 def main(args):
     val = ModelValidator(args)
