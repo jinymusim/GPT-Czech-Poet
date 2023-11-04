@@ -31,7 +31,7 @@ parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is pr
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
-parser.add_argument("--syllables", default=False, type=bool, help="If to use syllable data")
+parser.add_argument("--syllables", default=True, type=bool, help="If to use syllable data")
 
 parser.add_argument("--pretrained_model", default="ufal/robeczech-base", type=str, help="Roberta Model")
 parser.add_argument("--batch_size_metre", default=32, type=int, help="Batch size.")
@@ -150,7 +150,7 @@ def main(args):
     rhyme_acc =  validate(rhyme_model.cpu(), train_data.pytorch_dataset_body.validation_data,collate)
     
     
-    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{args.pretrained_model}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+    torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     # Train Metrum Validator
     
@@ -196,7 +196,7 @@ def main(args):
         print(f"Rhyme Validator: {args.pretrained_model}, Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
         print(f"Metre Validator: {args.pretrained_model}, Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
     
-    torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{args.pretrained_model}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+    torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
