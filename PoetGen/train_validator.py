@@ -44,7 +44,7 @@ parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size
 parser.add_argument("--epochs_rhyme", default=0, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--batch_size_year", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_year", default=4, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_year", default=16, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
