@@ -15,6 +15,8 @@ from poet_model_base_lm import PoetModelBase
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
+#TODO: Add Year Validator to the mix
+
 class ModelValidator:
     """Class to Validate LMs using Validators and Analysis
     """
@@ -41,8 +43,8 @@ class ModelValidator:
         self.model.eval()
         
         # Load validators 
-        self.rhyme_model, self.meter_model = None, None
-        self.rhyme_model_name, self.meter_model_name = "", ""
+        self.rhyme_model, self.meter_model, self.year_model = None, None, None
+        self.rhyme_model_name, self.meter_model_name, self.year_model_name = "", "", ""
         if args.rhyme_model_path_full:
             self.rhyme_model: ValidatorInterface = (torch.load(args.rhyme_model_path_full, map_location=torch.device('cpu')))
             self.rhyme_model.eval()
@@ -52,6 +54,11 @@ class ModelValidator:
             self.meter_model: ValidatorInterface = (torch.load(args.metre_model_path_full, map_location=torch.device('cpu')))
             self.meter_model.eval()
             _, self.meter_model_name = os.path.split(args.metre_model_path_full)
+            
+        if args.year_model_path_full:
+            self.year_model: ValidatorInterface = (torch.load(args.year_model_path_full, map_location=torch.device('cpu')))
+            self.year_model.eval()
+            _,  self.year_model_name = os.path.split(args.year_model_path_full)
             
 
             
@@ -136,17 +143,25 @@ class ModelValidator:
             type (str): Type of generation to use
         """
         # Store of individual runs of evaluation
-        end_accuracy, sylab_accuracy, rhyme_accuracy, metre_accuracy, rhyme_top_k, metre_top_k, rhyme_label_acc, metre_label_acc, levenshtein_dist = [], [], [], [], [], [], [], [], []
+        end_accuracy, sylab_accuracy = [], []
+        rhyme_accuracy, rhyme_top_k, rhyme_label_acc, levenshtein_dist = [], [], [], []
+        metre_accuracy, metre_top_k, metre_label_acc  = [], [], []
+        year_accuracy, year_top_k, year_label_acc  = [], [], []
         
         syllable_running_ration = []
         # Run the requested amount of evaluations
         for _ in tqdm(range(self.epochs), desc=f"Validation {type}"):
             # Store results of current evaluation
-            end_all, sylab_all, rhyme_all, metre_all, rhyme_top_k_all = 0,0,0,0,0
-            metre_top_k_all, rhyme_label_all, metre_label_all,lev_distance_all = 0,0,0,0
+            end_all, sylab_all  = 0,0
+            rhyme_all, rhyme_top_k_all, rhyme_label_all, lev_distance_all = 0,0,0,0
+            metre_all, metre_top_k_all, metre_label_all = 0,0,0
+            year_all, year_top_k_all, year_label_all = 0,0,0
             
-            end_pos, sylab_pos, rhyme_pos, metre_pos, rhyme_top_k_pos = 0,0,0,0,0
-            metre_top_k_pos, rhyme_label_pos, metre_label_pos,lev_distance = 0,0,0,0,
+            
+            end_pos, sylab_pos = 0, 0
+            rhyme_pos, rhyme_top_k_pos, rhyme_label_pos, lev_distance = 0,0,0,0
+            metre_pos, metre_top_k_pos, metre_label_pos  = 0,0,0
+            year_pos, year_top_k_pos, year_label_pos = 0,0,0
             
             
             samples = random.choices(list(range(len(self.validation_data))), k=self.runs_per_epoch)
@@ -172,6 +187,9 @@ class ModelValidator:
                         rhyme_top_k_all +=1
                         rhyme_label_all +=1
                         
+                        year_all +=1
+                        year_top_k_all +=1
+                        year_label_all +=1
                         
                         # Validate for Rhyme schema
                         if self.rhyme_model != None and "RHYME" in values.keys():
@@ -198,6 +216,20 @@ class ModelValidator:
                             metre_pos += res['acc']
                             metre_top_k_pos += res['top_k']
                             metre_label_pos += res['predicted_label']
+                        
+                        #Validate for Year
+                        if self.year_model != None and "YEAR" in values.keys():
+                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], "year": values["YEAR"]}],tokenizer=self.validator_tokenizer,
+                                                                           is_syllable=False, syllables=self.args.val_syllables_meter,
+                                                                           max_len=self.year_model.model.config.max_position_embeddings)
+                            res = self.year_model.validate(input_ids=data['input_ids'],
+                                                                   year=data['metre'],k=self.args.top_k)
+                            
+                            year_pos += res['acc']
+                            year_top_k_pos += res['top_k']
+                            year_label_pos += res['predicted_label']
+                                
+                        
                         # Measure Syllable uniqueness
                         all_sylabs = []
                         for line in decoded_cont.splitlines()[1:]:
@@ -225,13 +257,21 @@ class ModelValidator:
             # Store Results        
             end_accuracy.append(end_pos/end_all)
             sylab_accuracy.append(sylab_pos/sylab_all)
+            
             rhyme_accuracy.append(rhyme_pos/rhyme_all)
-            metre_accuracy.append(metre_pos/metre_all)
             rhyme_top_k.append(rhyme_top_k_pos/rhyme_top_k_all)
-            metre_top_k.append(metre_top_k_pos/metre_top_k_all)
             rhyme_label_acc.append(rhyme_label_pos/rhyme_label_all)
-            metre_label_acc.append(metre_label_pos/metre_label_all)
             levenshtein_dist.append(0 if lev_distance_all == 0 else lev_distance/lev_distance_all)
+            
+            metre_accuracy.append(metre_pos/metre_all)
+            metre_top_k.append(metre_top_k_pos/metre_top_k_all)
+            metre_label_acc.append(metre_label_pos/metre_label_all)
+            
+            year_accuracy.append(year_pos/year_all)
+            year_top_k.append(year_top_k_pos/year_top_k_all)
+            year_label_acc.append(year_label_pos/year_label_all)
+            
+            
         # Log all results and configuration
         with open(os.path.abspath(os.path.join(self.result_dir, self.model_rel_name + ".txt")), 'a') as file:
             print(f" ===== {type} Decoding Validation: Epochs: {self.epochs}, Runs per epoch: {self.runs_per_epoch}, SAMPLING: {str(self.args.sample)} =====", file=file)
@@ -251,6 +291,11 @@ class ModelValidator:
             print(f"Metre Accuracy: {np.mean(metre_accuracy):.4f} +- {np.std(metre_accuracy, ddof=1):.4f}", file=file)
             print(f"Metre top {self.args.top_k} presence: {np.mean(metre_top_k):.4f} +- {np.std(metre_top_k, ddof=1):.4f}", file=file)
             print(f"Metre label presence: {np.mean(metre_label_acc):.4f} +- {np.std(metre_label_acc, ddof=1):.4f}\n", file=file)
+            # Year related metrics
+            print(f"Year model: {self.year_model_name}, Syllable {str(self.args.val_syllables_year)}", file=file)
+            print(f"Year Accuracy: {np.mean(year_accuracy):.4f} +- {np.std(year_accuracy, ddof=1):.4f}", file=file)
+            print(f"Year top {self.args.top_k} presence: {np.mean(year_top_k):.4f} +- {np.std(year_top_k, ddof=1):.4f}", file=file)
+            print(f"Year label presence: {np.mean(year_label_acc):.4f} +- {np.std(year_label_acc, ddof=1):.4f}\n", file=file)
                     
             
     def full_validate(self):
@@ -271,14 +316,20 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_syllabs_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
+
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=2, type=int, help="Number of runs on datasets")
+
 parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Processed-BPE-NormalText-gpt-cz-poetry-all-e4e16_LM")),  type=str, help="Path to Model")
+
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1697993440889')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator_1697833311028')),  type=str, help="Path to Model")
+parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', '...')),  type=str, help="Path to Model")
+
 parser.add_argument("--validator_tokenizer_model", default='roberta-base', type=str, help="Validator tokenizer")
 parser.add_argument("--val_syllables_rhyme", default=True, type=bool, help="Does validator use syllables")
 parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
+parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does validator use syllables")
 
 parser.add_argument("--top_k", default=2, type=int, help="Top k number")
 
