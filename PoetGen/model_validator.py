@@ -223,7 +223,7 @@ class ModelValidator:
                                                                            is_syllable=False, syllables=self.args.val_syllables_meter,
                                                                            max_len=self.year_model.model.config.max_position_embeddings)
                             res = self.year_model.validate(input_ids=data['input_ids'],
-                                                                   year=data['metre'],k=self.args.top_k)
+                                                                   year=data['year'],k=self.args.top_k)
                             
                             year_pos += res['acc']
                             year_top_k_pos += res['top_k']
