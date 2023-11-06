@@ -38,10 +38,10 @@ parser.add_argument("--syllables", default=True, type=bool, help="If to use syll
 parser.add_argument("--pretrained_model", default="ufal/robeczech-base", type=str, help="Roberta Model")
 
 parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=0, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_metre", default=64, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=64, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_rhyme", default=0, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--batch_size_year", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_year", default=0, type=int, help="Number of epochs to run.")
