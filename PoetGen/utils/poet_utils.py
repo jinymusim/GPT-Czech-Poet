@@ -150,7 +150,7 @@ class TextAnalysis:
         Returns:
             bool: If string is year or special NaN
         """
-        return (year.isdigit() and int(year) > 1_000 and int(year) < 10_000) or year == "NaN"
+        return (year.isdecimal() and int(year) > 1_000 and int(year) < 10_000) or year == "NaN"
     
     @staticmethod
     def _rhyme_like(rhyme:str):
