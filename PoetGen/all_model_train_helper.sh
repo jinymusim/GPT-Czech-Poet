@@ -6,4 +6,4 @@ pip install --target=$SCRATCHDIR torch torchvision torchaudio --index-url https:
 pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/requirements.txt
 export PYTHONPATH="${PYTHONPATH}:${TMPDIR}"
 cd /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen
-python3 lm_finetune_torch_trainer_api.py --epochs_LM=$1 --epochs_poet=$2 --tokenizer="$3" --model_type="$4" --model_path="$5"
+python3 lm_finetune_torch_trainer_api.py --epochs_LM=$E1 --epochs_poet=$E2 --tokenizer="$TOK" --model_type="$TYPE" --model_path="$MOD"
