@@ -58,6 +58,11 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # model.base_model.h.append(torch.nn.Linear(1,768))
 # model.base_model.h.insert(7,torch.nn.Linear(768,768))
 
+#TODO: BaseTokenize, base e4 e8, base e4 e4
+#TODO: UnicodeTokenizer, all e8 e24, all e8 e16
+#TODO: SyllableTokenizer, all e4 e8, all e4 e4
+#TODO: ProcessedTokenizer, base e4 e16, base e4 e8, base e4 e4,all e4 e8
+
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Unicode", "unicode_tokenizer.json")), type=str, help="Tokenizer to use")
