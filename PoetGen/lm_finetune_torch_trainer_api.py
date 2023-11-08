@@ -40,6 +40,8 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # bigscience/bloom-560m 2048
 # TheBloke/Llama-2-7B-fp16 4096
 # spital/gpt2-small-czech-cs 1024
+# distilgpt2 1024
+# gpt2 1024 
 
 #TODO: Introduce Layered Model, Best done by modifiing 
 # self.h = nn.ModuleList([GPT2Block(config) for _ in range(config.num_hidden_layers)])
@@ -58,10 +60,10 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # model.base_model.h.append(torch.nn.Linear(1,768))
 # model.base_model.h.insert(7,torch.nn.Linear(768,768))
 
-#TODO: BaseTokenize, base e4 e8, base e4 e4
-#TODO: UnicodeTokenizer, all e8 e24, all e8 e16
-#TODO: SyllableTokenizer, all e4 e8, all e4 e4
-#TODO: ProcessedTokenizer, base e4 e16, base e4 e8, base e4 e4,all e4 e8
+#TODO: BaseTokenize, all e4 e8, base e4 e8
+#TODO: UnicodeTokenizer, all e4 e8, base e4 e8
+#TODO: SyllableTokenizer, all e4 e8, base e4 e8
+#TODO: ProcessedTokenizer, all e4 e8, base e4 e8
 
 parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
