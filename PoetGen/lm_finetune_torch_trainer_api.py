@@ -109,6 +109,10 @@ def main(args: argparse.Namespace):
         
         try:    
             tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.tokenizer)
+            if tokenizer.pad_token == None:
+                tokenizer.pad_token = tokenizer.eos_token
+                tokenizer.pad_token_id = tokenizer.eos_token_id
+                
         except: #TODO: Need model to update embedding matrix
             tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.tokenizer)
             tokenizer.eos_token = EOS
