@@ -1,0 +1,84 @@
+ ===== BASIC Decoding Validation: Epochs: 5, Runs per epoch: 200, SAMPLING: True =====
+Num Sylabs Accuracy: 0.9022 +- 0.0127
+Endings Accuracy: 0.9432 +- 0.0106
+Unique Syllable Ratio: 0.8483 +- 0.0715
+
+Rhyme model: BPE_validator_1697993440889, Syllable True
+Rhyme Accuracy: 0.6740 +- 0.0219
+Rhyme top 2 presence: 0.7530 +- 0.0164
+Rhyme label presence: 0.6735 +- 0.0219
+Rhyme Levenshtein distance: 3.7529 +- 0.2371
+
+Metre model: BPE_validator_1697833311028, Syllable False
+Metre Accuracy: 0.9330 +- 0.0140
+Metre top 2 presence: 0.9560 +- 0.0139
+Metre label presence: 0.9329 +- 0.0143
+
+Year model: roberta-base_BPE_validator_1699191075556, Syllable False
+Year Accuracy: 0.3980 +- 0.0189
+Year top 2 presence: 0.6440 +- 0.0386
+Year label presence: 0.3937 +- 0.0214
+
+ ===== FORCED Decoding Validation: Epochs: 5, Runs per epoch: 200, SAMPLING: True =====
+Num Sylabs Accuracy: 0.9098 +- 0.0049
+Endings Accuracy: 0.9514 +- 0.0063
+Unique Syllable Ratio: 0.8305 +- 0.0769
+
+Rhyme model: BPE_validator_1697993440889, Syllable True
+Rhyme Accuracy: 0.6910 +- 0.0233
+Rhyme top 2 presence: 0.7970 +- 0.0220
+Rhyme label presence: 0.6913 +- 0.0233
+Rhyme Levenshtein distance: 3.7321 +- 0.0385
+
+Metre model: BPE_validator_1697833311028, Syllable False
+Metre Accuracy: 0.9350 +- 0.0154
+Metre top 2 presence: 0.9560 +- 0.0167
+Metre label presence: 0.9353 +- 0.0159
+
+Year model: roberta-base_BPE_validator_1699191075556, Syllable False
+Year Accuracy: 0.4020 +- 0.0179
+Year top 2 presence: 0.6260 +- 0.0089
+Year label presence: 0.3971 +- 0.0176
+
+ ===== BASIC Decoding Validation: Epochs: 5, Runs per epoch: 200, SAMPLING: False =====
+Num Sylabs Accuracy: 0.8766 +- 0.0096
+Endings Accuracy: 0.9808 +- 0.0043
+Unique Syllable Ratio: 0.8495 +- 0.0711
+
+Rhyme model: BPE_validator_1697993440889, Syllable True
+Rhyme Accuracy: 0.5730 +- 0.0325
+Rhyme top 2 presence: 0.6870 +- 0.0182
+Rhyme label presence: 0.5707 +- 0.0318
+Rhyme Levenshtein distance: 3.8331 +- 0.0762
+
+Metre model: BPE_validator_1697833311028, Syllable False
+Metre Accuracy: 0.9320 +- 0.0172
+Metre top 2 presence: 0.9440 +- 0.0108
+Metre label presence: 0.9320 +- 0.0169
+
+Year model: roberta-base_BPE_validator_1699191075556, Syllable False
+Year Accuracy: 0.5100 +- 0.0426
+Year top 2 presence: 0.6930 +- 0.0313
+Year label presence: 0.5034 +- 0.0477
+
+ ===== FORCED Decoding Validation: Epochs: 5, Runs per epoch: 200, SAMPLING: False =====
+Num Sylabs Accuracy: 0.9013 +- 0.0103
+Endings Accuracy: 0.9550 +- 0.0080
+Unique Syllable Ratio: 0.7538 +- 0.1548
+
+Rhyme model: BPE_validator_1697993440889, Syllable True
+Rhyme Accuracy: 0.5550 +- 0.0494
+Rhyme top 2 presence: 0.6770 +- 0.0323
+Rhyme label presence: 0.5573 +- 0.0493
+Rhyme Levenshtein distance: 3.9207 +- 0.1289
+
+Metre model: BPE_validator_1697833311028, Syllable False
+Metre Accuracy: 0.9330 +- 0.0115
+Metre top 2 presence: 0.9590 +- 0.0129
+Metre label presence: 0.9331 +- 0.0115
+
+Year model: roberta-base_BPE_validator_1699191075556, Syllable False
+Year Accuracy: 0.4390 +- 0.0272
+Year top 2 presence: 0.6460 +- 0.0175
+Year label presence: 0.4232 +- 0.0220
+

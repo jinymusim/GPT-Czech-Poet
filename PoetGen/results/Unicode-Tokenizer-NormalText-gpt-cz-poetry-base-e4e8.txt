@@ -1,0 +1,63 @@
+ ===== BASIC Decoding Validation: Epochs: 5, Runs per epoch: 200, SAMPLING: True =====
+Num Sylabs Accuracy: 0.9276 +- 0.0035
+Endings Accuracy: 0.9387 +- 0.0029
+Unique Syllable Ratio: 0.8933 +- 0.0544
+
+Rhyme model: BPE_validator_1697993440889, Syllable True
+Rhyme Accuracy: 0.7750 +- 0.0389
+Rhyme top 2 presence: 0.8160 +- 0.0309
+Rhyme label presence: 0.7718 +- 0.0383
+Rhyme Levenshtein distance: 4.2877 +- 0.2292
+
+Metre model: BPE_validator_1697833311028, Syllable False
+Metre Accuracy: 0.9290 +- 0.0108
+Metre top 2 presence: 0.9540 +- 0.0143
+Metre label presence: 0.9290 +- 0.0108
+
+Year model: roberta-base_BPE_validator_1699191075556, Syllable False
+Year Accuracy: 0.3750 +- 0.0255
+Year top 2 presence: 0.6360 +- 0.0124
+Year label presence: 0.3740 +- 0.0205
+
+ ===== FORCED Decoding Validation: Epochs: 5, Runs per epoch: 200, SAMPLING: True =====
+Num Sylabs Accuracy: 0.9727 +- 0.0036
+Endings Accuracy: 0.9869 +- 0.0039
+Unique Syllable Ratio: 0.8767 +- 0.0555
+
+Rhyme model: BPE_validator_1697993440889, Syllable True
+Rhyme Accuracy: 0.8690 +- 0.0152
+Rhyme top 2 presence: 0.8930 +- 0.0202
+Rhyme label presence: 0.8692 +- 0.0162
+Rhyme Levenshtein distance: 3.6995 +- 0.1467
+
+Metre model: BPE_validator_1697833311028, Syllable False
+Metre Accuracy: 0.9390 +- 0.0178
+Metre top 2 presence: 0.9560 +- 0.0114
+Metre label presence: 0.9388 +- 0.0179
+
+Year model: roberta-base_BPE_validator_1699191075556, Syllable False
+Year Accuracy: 0.4090 +- 0.0628
+Year top 2 presence: 0.6230 +- 0.0431
+Year label presence: 0.4006 +- 0.0529
+
+ ===== BASIC Decoding Validation: Epochs: 5, Runs per epoch: 200, SAMPLING: False =====
+Num Sylabs Accuracy: 0.0345 +- 0.0072
+Endings Accuracy: 0.0090 +- 0.0022
+Unique Syllable Ratio: 0.9989 +- 0.0049
+
+Rhyme model: BPE_validator_1697993440889, Syllable True
+Rhyme Accuracy: 0.3019 +- 0.0396
+Rhyme top 2 presence: 0.4376 +- 0.0547
+Rhyme label presence: 0.3019 +- 0.0396
+Rhyme Levenshtein distance: 3.7982 +- 0.1415
+
+Metre model: BPE_validator_1697833311028, Syllable False
+Metre Accuracy: 0.4683 +- 0.0301
+Metre top 2 presence: 0.5682 +- 0.0297
+Metre label presence: 0.4686 +- 0.0300
+
+Year model: roberta-base_BPE_validator_1699191075556, Syllable False
+Year Accuracy: 0.2535 +- 0.0206
+Year top 2 presence: 0.6615 +- 0.0384
+Year label presence: 0.2754 +- 0.0210
+
