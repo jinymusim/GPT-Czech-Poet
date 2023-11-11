@@ -12,8 +12,8 @@ from utils.poet_utils import UNK, EOS, PAD
 
 parser = argparse.ArgumentParser()
 
-#parser.add_argument("--default_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Tokenizer to use")
-parser.add_argument("--default_tokenizer_model", default='ufal/robeczech-base', type=str, help="Tokenizer to use")
+parser.add_argument("--default_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_syllabs_processed_tokenizer.json")), type=str, help="Tokenizer to use")
+#parser.add_argument("--default_tokenizer_model", default='ufal/robeczech-base', type=str, help="Tokenizer to use")
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--data_path_base", default="cs_restaurants", type=str, help="Base dataset")
 parser.add_argument("--base_part", default="unshuffled_deduplicated_cs", type=str, help="Which part of base dataset to consider")

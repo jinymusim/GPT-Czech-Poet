@@ -857,3 +857,17 @@ A
 12 nį # jest pöblich, jejŽm je vrcholkem zlatou janćânĴ.
 10 vdül # on, pŶblach a wacht am rhein, on v d�rwel
 10 vdül # se prodëlè, wärm, s wirthem witek, v slast wlast v dur v
+--- Model Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e8e16_LM ---
+### Basic Decoding! ###
+ ABAB # 1900 # J
+9 vá # jde každé slibné písně hravá,
+8 vděk # však tichý cit a lásky vděk
+9 vá # ve vzdušné flóry noc je lává
+8 vbekvět # a krůpěj chtivá srdce v bekvět.
+
+### Forced Decoding! ###
+ AABC # 1960 # A
+11 smích # a poslouchat písně a zlý její smích, 
+11 smích # a zlý ten chvalozpěv, a zlý ten zpěv smích!
+11 muž # děl k dětem a mluvil byl zkušený muž,
+10 řek # a šťastnější? bylo by záhy řek,

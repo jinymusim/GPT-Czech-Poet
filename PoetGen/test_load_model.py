@@ -9,10 +9,12 @@ from utils.poet_utils import UNK, PAD, EOS
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e8e16_LM")),  type=str, help="Path to Model")
 # bigscience/bloom-560m
 parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Original", "base_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "test_poet_model.txt")), type=str, help="Where to store the decoding efforts")
+parser.add_argument("--sample", default= True, type=bool, help="If to sample during generation")
+
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
@@ -37,20 +39,30 @@ else:
 # Free model generation
 tokenized_poet_start = tokenizer.encode("AB", return_tensors='pt')
 
-out = model.model.generate(tokenized_poet_start, 
-                                max_length=256,
-                                num_beams=8,
-                                no_repeat_ngram_size=2,
-                                eos_token_id = tokenizer.eos_token_id,
-                                early_stopping=True,
-                                pad_token_id=tokenizer.pad_token_id)
+if args.sample:
+    out = model.model.generate(tokenized_poet_start, 
+                                        max_length=256,
+                                        do_sample=True,
+                                        top_k=50,
+                                        eos_token_id = tokenizer.eos_token_id,
+                                        early_stopping=True,
+                                        pad_token_id=tokenizer.pad_token_id)
+                
+else:
+    out = model.model.generate(tokenized_poet_start, 
+                                        max_length=256,
+                                        num_beams=8,
+                                        no_repeat_ngram_size=2,
+                                        eos_token_id =tokenizer.eos_token_id,
+                                        early_stopping=True,
+                                        pad_token_id=tokenizer.pad_token_id)
 
 
 decoded_cont = tokenizer.decode(out[0], skip_special_tokens=True)
 # Print the result of generation
 print("### Basic Decoding! ###\n", decoded_cont)
 # Restricted generation 
-out_forced = model.generate_forced("A", tokenizer, verse_len=4)
+out_forced = model.generate_forced("A", tokenizer, verse_len=4, sample=args.sample)
 # Print the result of generation
 print("### Forced Decoding! ###\n", out_forced)
 # Store both types of generation as well as the name of used LM
