@@ -36,12 +36,14 @@ parser.add_argument("--input_mask_rate", default=0.00, type=float, help="Rate of
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
 # huggyllama/llama-7b 4096
-# lchaloupsky/czech-gpt2-oscar 1024 Czech Model
 # bigscience/bloom-560m 2048
 # TheBloke/Llama-2-7B-fp16 4096
+
+# lchaloupsky/czech-gpt2-oscar 1024 Czech Model
 # spital/gpt2-small-czech-cs 1024 Alt Czech Model
 # distilgpt2 1024 Alt En Model
 # gpt2 1024 EN Model
+# stabilityai/StableBeluga-7B 4096 Large
 
 #TODO: Introduce Layered Model, Best done by modifiing 
 # self.h = nn.ModuleList([GPT2Block(config) for _ in range(config.num_hidden_layers)])

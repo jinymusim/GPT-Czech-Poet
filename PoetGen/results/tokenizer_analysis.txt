@@ -55,3 +55,6 @@ Chars per token Base data: 3.5555354739904295 +- 0.07900823431947528
 All Runs Results: C:\Users\micha\Desktop\Git\Tensorflow-Shorts\PoetGen\utils\tokenizers\BPE\new_syllabs_processed_tokenizer.json # Runs: 100 # Samples: 100
 Chars per token Poet data: 2.4274444117466683 +- 0.08584493273997632
 Chars per token Base data: 2.1197043558484014 +- 0.025161001539278798
+All Runs Results: stabilityai/StableBeluga-7B # Runs: 100 # Samples: 100
+Chars per token Poet data: 1.985945634125393 +- 0.06788747237114318
+Chars per token Base data: 2.238096385682024 +- 0.0314092873334366

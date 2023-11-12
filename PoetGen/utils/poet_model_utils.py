@@ -190,10 +190,13 @@ class ModelManipulation:
             old_tokenizer (PreTrainedTokenizerBase): Old tokenization
         """
         # Get old Embeddings
-        old_embed = poet_model.model.get_input_embeddings().weight.clone().detach()
-        old_mean = old_embed.mean(0)
+        old_embed_in = poet_model.model.get_input_embeddings().weight.clone().detach()
+        old_mean_in = old_embed_in.mean(0)
+        old_embed_out = poet_model.model.get_output_embeddings().weight.clone().detach()
+        old_mean_out = old_embed_out.mean(0)
         # Generate new Embedding based on new tokenization
-        new_embd = old_embed.new_zeros(new_tokenizer.vocab_size, old_embed.size(1))
+        new_embd_in = old_embed_in.new_zeros(new_tokenizer.vocab_size, old_embed_in.size(1))
+        new_embd_out = old_mean_out.new_zeros(new_tokenizer.vocab_size, old_embed_out.size(1))
         old_vocab = old_tokenizer.get_vocab()
         
         vocab_hit = 0
@@ -201,19 +204,23 @@ class ModelManipulation:
         for w, idx_new in new_tokenizer.get_vocab().items():
             idx_old = old_vocab.get(w, -1)
             if idx_old >= 0:
-                new_embd[idx_new] = old_embed[idx_old]
+                new_embd_in[idx_new] = old_embed_in[idx_old]
+                new_embd_out[idx_new] = old_embed_out[idx_old]
                 vocab_hit +=1
             else:
-                new_embd[idx_new] = old_mean
+                new_embd_in[idx_new] = old_mean_in
+                new_embd_out[idx_new] = old_mean_out
                 
         print(f"Vocab hit rate: {vocab_hit}/{old_tokenizer.vocab_size}")
         #Exchange Embeddings and Decoding
-        new_embd_layer = torch.nn.Embedding(new_tokenizer.vocab_size, old_embed.size(1))
-        new_embd_layer.weight.data = new_embd
-        poet_model.model.transformer.set_input_embeddings(new_embd_layer)
-        new_decoder = torch.nn.Linear( old_embed.size(1), new_tokenizer.vocab_size, bias=False)
-        new_decoder.weight = poet_model.model.transformer.wte.weight
-        poet_model.model.lm_head = new_decoder
+        new_embd_layer_in = torch.nn.Embedding(new_tokenizer.vocab_size, old_embed_in.size(1))
+        new_embd_layer_in.weight.data = new_embd_in
+        new_embd_layer_out = torch.nn.Linear(old_embed_out.size(1), new_tokenizer.vocab_size, bias=False)
+        new_embd_layer_out.weight.data = new_embd_out
+        
+        poet_model.model.set_input_embeddings(new_embd_layer_in)
+        poet_model.model.set_output_embeddings(new_embd_layer_out)
+        
         # Update LM config to reflect possible change in vocab size
         poet_model.model.config.vocab_size = new_tokenizer.vocab_size
         
