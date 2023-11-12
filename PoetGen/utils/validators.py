@@ -267,7 +267,7 @@ class ValidatorTrainer:
         self.args = args
         self.epochs = 1 if "epochs" not in args.keys() else args["epochs"]
         self.batch_size = 1 if "batch_size" not in args.keys() else args["batch_size"]
-        self.lr = 3e-4 if "lr" not in args.keys() else args["lr"]
+        self.lr = 5e-5 if "lr" not in args.keys() else args["lr"]
         self.weight_decay = 0.0 if "weight_decay" not in args.keys() else args['weight_decay']
         
         self.train_loader = DataLoader(train_dataset, self.batch_size, True, collate_fn=data_collator)

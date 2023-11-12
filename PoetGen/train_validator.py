@@ -239,9 +239,9 @@ def main(args):
     elif args.epochs_year > 0:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
-        training_args = {"lr" : args.learning_rate_metre,
-                         "epochs" : args.epochs_metre,
-                         "batch_size" : args.batch_size_metre}
+        training_args = {"lr" : args.learning_rate_year,
+                         "epochs" : args.epochs_year,
+                         "batch_size" : args.batch_size_year}
         
         year_model = year_model.to(device)
         
