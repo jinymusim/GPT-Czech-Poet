@@ -11,7 +11,7 @@ from functools import partial
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 from utils.validators import MeterValidator, RhymeValidator, YearValidator,ValidatorInterface, ValidatorTrainer
 
-from utils.poet_utils import VALID_CHARS, UNK, PAD, EOS
+from utils.poet_utils import VALID_CHARS, UNK, PAD, EOS, parse_boolean
 from utils.poet_model_utils import ModelManipulation
 
 parser = argparse.ArgumentParser()
@@ -33,17 +33,19 @@ parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is pr
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
-parser.add_argument("--syllables", default=True, type=bool, help="If to use syllable data")
+parser.add_argument("--syllables", default=True, type=parse_boolean, help="If to use syllable data")
+
+parser.add_argument("--SAM", default=False, type=parse_boolean, help='If to use Sharpness-Aware Minimazation')
 
 parser.add_argument("--pretrained_model", default="xlm-roberta-base", type=str, help="Roberta Model")
 
-parser.add_argument("--batch_size_metre", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_metre", default=0, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--batch_size_rhyme", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_rhyme", default=0, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--batch_size_year", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_year", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_year", default=0, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
@@ -123,7 +125,7 @@ def main(args):
                                       prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
                                       verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate)
     
-    if torch.cuda.device_count() > -1:
+    if torch.cuda.device_count() > 1 or not args.SAM:
         if args.epochs_rhyme > 0:
             training_args = TrainingArguments(
                                       save_strategy  = "no",
@@ -143,7 +145,8 @@ def main(args):
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
                                data_collator=collate).train()
-    else:
+    elif args.epochs_rhyme > 0:
+        
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         training_args = {"lr" : args.learning_rate_rhyme,
@@ -164,11 +167,11 @@ def main(args):
     if args.epochs_rhyme > 0:
         rhyme_acc =  validate(rhyme_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     
-        torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+        torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     # Train Metrum Validator
     
-    if torch.cuda.device_count() > -1:
+    if torch.cuda.device_count() >  1 or not args.SAM:
         if args.epochs_metre > 0:
             training_args = TrainingArguments(
                                       save_strategy  = "no",
@@ -189,7 +192,7 @@ def main(args):
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
                                data_collator=collate).train()
-    else:
+    elif args.epochs_metre > 0:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         training_args = {"lr" : args.learning_rate_metre,
@@ -208,11 +211,11 @@ def main(args):
     if args.epochs_metre > 0:
         metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     
-        torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+        torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     # Train Year Validator
     
-    if torch.cuda.device_count() > -1:
+    if torch.cuda.device_count() >  1 or not args.SAM:
         if args.epochs_year > 0:
             training_args = TrainingArguments(
                                       save_strategy  = "no",
@@ -233,7 +236,7 @@ def main(args):
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
                                data_collator=collate).train()
-    else:
+    elif args.epochs_year > 0:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         training_args = {"lr" : args.learning_rate_metre,
@@ -252,12 +255,12 @@ def main(args):
     if args.epochs_year > 0:
         year_acc = validate(year_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
     
-        torch.save(year_model, os.path.abspath(os.path.join(args.model_path, "year", f"{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+        torch.save(year_model, os.path.abspath(os.path.join(args.model_path, "year", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     
     # Store result and model
     with open(args.result_file, 'a') as file:
-        print(f"### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp} ### Syllable: {str(args.syllables)} ", file=file)
+        print(f"### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp} ### Syllable: {str(args.syllables)} ### SAM Training: {str(args.SAM)}", file=file)
         print(f"Rhyme Validator: {args.pretrained_model}, Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
         print(f"Metre Validator: {args.pretrained_model}, Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
         print(f"Year Validator: {args.pretrained_model}, Epochs: {args.epochs_year} Accuracy: {year_acc}", file=file)

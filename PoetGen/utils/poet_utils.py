@@ -68,6 +68,16 @@ VALID_CHARS = [""," ",'a','á','b','c','č','d','ď','e','é','ě',
 import re
 import numpy as np
 
+def parse_boolean(value):
+    value = value.lower()
+
+    if value in ["true", "yes", "y", "1", "t"]:
+        return True
+    elif value in ["false", "no", "n", "0", "f"]:
+        return False
+
+    return False
+
 class TextManipulation:
     """Static class for string manipulation methods
 
