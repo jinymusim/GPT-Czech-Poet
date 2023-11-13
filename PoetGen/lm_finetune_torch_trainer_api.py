@@ -20,7 +20,7 @@ from poet_model_all_tasks import PoetModelAllTasks
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 from utils.poet_model_utils import ModelManipulation
 
-from utils.poet_utils import EOS, PAD, UNK
+from utils.poet_utils import EOS, PAD, UNK, parse_boolean
 
 
 parser = argparse.ArgumentParser()
@@ -85,6 +85,8 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 parser.add_argument("--syllables", default=False, type=bool, help="If inputs should be parsed by syllables")
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 
+parser.add_argument("--mirror_imbed", default=False, type=parse_boolean, help="If to mirror input embedding to output ones")
+
 parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
 
 
@@ -124,7 +126,7 @@ def main(args: argparse.Namespace):
             tokenizer.unk_token = UNK
             tokenizer.unk_token_id = 2
             
-            ModelManipulation.exchange_embedding(model, tokenizer, AutoTokenizer.from_pretrained(args.default_hf_model))
+            ModelManipulation.exchange_embedding(model, tokenizer, AutoTokenizer.from_pretrained(args.default_hf_model), args.mirror_imbed)
     else:
         tokenizer = AutoTokenizer.from_pretrained(args.model_path)
         model = torch.load(args.model_path, map_location=torch.device('cpu'))

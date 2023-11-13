@@ -181,7 +181,7 @@ class ModelManipulation:
     """
      
     @staticmethod
-    def exchange_embedding(poet_model: PoetModelInterface, new_tokenizer: PreTrainedTokenizerBase, old_tokenizer: PreTrainedTokenizerBase):
+    def exchange_embedding(poet_model: PoetModelInterface, new_tokenizer: PreTrainedTokenizerBase, old_tokenizer: PreTrainedTokenizerBase, mirror_imbed:bool=False):
         """Exchange embedding matrixes for GPT2 Models
 
         Args:
@@ -216,9 +216,12 @@ class ModelManipulation:
         new_embd_layer_in = torch.nn.Embedding(new_tokenizer.vocab_size, old_embed_in.size(1))
         new_embd_layer_in.weight.data = new_embd_in
         new_embd_layer_out = torch.nn.Linear(old_embed_out.size(1), new_tokenizer.vocab_size, bias=False)
-        new_embd_layer_out.weight.data = new_embd_out
         
-        poet_model.model.set_input_embeddings(new_embd_layer_in)
+        if mirror_imbed:
+            new_embd_layer_out.weight.data = new_embd_in
+        else:
+            new_embd_layer_in.weight.data = new_embd_out
+
         poet_model.model.set_output_embeddings(new_embd_layer_out)
         
         # Update LM config to reflect possible change in vocab size
