@@ -147,12 +147,16 @@ PYTORCH/
 */corpusCzechVerse-master/
 # Models
 */backup_LMS/*
+# Models in base dir
 */gpt-cz-poetry*
 */gpt-cz-poetry*_LM
 */bloom-cz-poetry*
+# Validators
 */utils/validators/meter/*
 */utils/validators/rhyme/*
 */utils/validators/year/*
+# Bad Old Models
+*/bad_LMS/*
 
 # Data
 *.json
