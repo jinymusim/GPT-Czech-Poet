@@ -871,3 +871,66 @@ A
 11 smích # a zlý ten chvalozpěv, a zlý ten zpěv smích!
 11 muž # děl k dětem a mluvil byl zkušený muž,
 10 řek # a šťastnější? bylo by záhy řek,
+--- Model CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e8_LM ---
+### Basic Decoding! ###
+ AB # 1920 # T
+10 no # jako to, že všecko dávno marno.
+10 no # co as zítra vyhlídati ráno?
+10 no # čeho se tak člověk konečně zbavil?
+9 ky # ciferníku? ciferníky?
+
+### Forced Decoding! ###
+ AAABAB # 1880 # A
+18 ny # však běda  snad nikdy mu nebude úspěch u činy,
+18 ny # vždy výše se budou pnouti šílené dřívější a plány,
+18 ny # a budou vždy výše výš plameny, a budou vždy větší 
+,
+18 ny # již nestačí pro veliké činy nám zrající své činy,
+18 ny # již nestačí pro veliké činy nám zrající své činy,
+--- Model CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e8_LM ---
+### Basic Decoding! ###
+ ABAB # 1840 # T
+6 lo # a to hrdé čelo
+5 nosť # před světem stísněnosť
+5 ví # jak stůl duboví,
+5 lí # stůl bez kupo
+
+### Forced Decoding! ###
+ AABB # 1840 # A
+9 le # však na vysokém v daleku dole
+9 le # již mizí ve plamenném bez cíle
+9 le # a tam, sotva až u vrchole,
+9 le # již viděti dojde je dále,
+--- Model CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e8_LM ---
+### Basic Decoding! ###
+ ABAB # 1880 # T
+10 tí # slunce i kámen jak jedno kvítí
+10 kem # s různým právem, nebo i jiném spolkem. 
+9 ná # co nám po tom? že ti jediná
+10 ci # zasvětil se někdo v revoluci mezi lodi.
+9 na # ale též jedna vlna jedna
+
+### Forced Decoding! ###
+ ABBACC # 1880 # J
+11 na # již byla večer už. v tom byla rána,
+11 ny # však než se zapisuješ do školy,
+11 ny # my na zádech s vesnickou byli humny,
+11 na # neb naše společnosťení již byla plna.
+11 na # neb naše společnosťení již byla plna.
+11 na # to byla pro tebe, má hesio, změna!
+--- Model CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e8_LM ---
+### Basic Decoding! ###
+ ABAB # 1900 # J
+11 ní # a v chvíli té, v té chvíli umírání, lkání,
+10 lo # jež zvolna v duši mou se vralo, 
+13 la # já cítil, jak má duše v smutku svém se chvěla
+12 mi # nad tím, co kdysi bylo a co bylo mi.
+
+### Forced Decoding! ###
+ ABBACC # 1880 # J
+11 ní # a v chvíli té, v té chvíli umírání, lkání,
+10 vzdech # jak větru van a větrů stálý vzdech
+10 vzdech # se nesl k nám, jak tichý, sladký vzdech, 
+11 ní # to naše štěstí, naše vykoupení.
+11 ní # to naše štěstí, naše vykoupení.
+11 ní # ó bože, bože! bože smilování!
