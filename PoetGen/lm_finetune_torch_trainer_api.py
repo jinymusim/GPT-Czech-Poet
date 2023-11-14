@@ -44,6 +44,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # distilgpt2 1024 Alt En Model
 # gpt2 1024 EN Model
 # stabilityai/StableBeluga-7B 4096 Large
+# RWKV/rwkv-4-169m-pile 1024 RNN
 
 #TODO: Introduce Layered Model, Best done by modifiing 
 # self.h = nn.ModuleList([GPT2Block(config) for _ in range(config.num_hidden_layers)])
