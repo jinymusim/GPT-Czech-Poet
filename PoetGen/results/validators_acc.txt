@@ -238,3 +238,31 @@ Year Validator: distilroberta-base, Epochs: 0 Accuracy: 0
 Rhyme Validator: distilroberta-base, Epochs: 0 Accuracy: 0
 Metre Validator: distilroberta-base, Epochs: 16 Accuracy: 0.9132881777428749
 Year Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+### BPE ### 1699793277325 ### Syllable: True ### SAM Training: True
+Rhyme Validator: distilroberta-base, Epochs: 16 Accuracy: 0.46454631720166223
+Metre Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+Year Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+### BPE ### 1699793276938 ### Syllable: True ### SAM Training: True
+Rhyme Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+Metre Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+Year Validator: distilroberta-base, Epochs: 16 Accuracy: 0.47181047740584403
+### BPE ### 1699793276938 ### Syllable: True ### SAM Training: True
+Rhyme Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+Metre Validator: distilroberta-base, Epochs: 16 Accuracy: 0.8984653643532607
+Year Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+### BPE ### 1699928589488 ### Syllable: False ### SAM Training: False
+Rhyme Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+Metre Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+Year Validator: ufal/robeczech-base, Epochs: 16 Accuracy: 0.5151336670920454
+### BPE ### 1699928908531 ### Syllable: False ### SAM Training: False
+Rhyme Validator: ufal/robeczech-base, Epochs: 16 Accuracy: 0.483295703674618
+Metre Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+Year Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+### BPE ### 1699941103881 ### Syllable: False ### SAM Training: False
+Rhyme Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+Metre Validator: ufal/robeczech-base, Epochs: 16 Accuracy: 0.8212427603808776
+Year Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+### BPE ### 1699941424652 ### Syllable: False ### SAM Training: True
+Rhyme Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+Metre Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+Year Validator: ufal/robeczech-base, Epochs: 16 Accuracy: 0.5394456987664016
