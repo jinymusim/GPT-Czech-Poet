@@ -108,7 +108,7 @@ class ModelValidator:
         Returns:
             str: Generated Strophe
         """
-        start = f"{self.validation_data[index]['rhyme']} # {self.validation_data[index]['year']} # {self.validation_data[index]['metre']}" 
+        start = f"{self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])} # {self.validation_data[index]['metre']}" 
         
         if type  == "BASIC":
             tokenized_poet_start = self.tokenizer.encode(start, return_tensors='pt', truncation=True)

@@ -25,9 +25,9 @@ from utils.poet_utils import EOS, PAD, UNK, parse_boolean
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_LM", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_LM", default=4, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=24, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=48, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=8, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
@@ -86,7 +86,7 @@ parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of 
 parser.add_argument("--syllables", default=False, type=bool, help="If inputs should be parsed by syllables")
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 
-parser.add_argument("--mirror_imbed", default=False, type=bool, help="If to mirror input embedding to output ones")
+parser.add_argument("--mirror_imbed", default=True, type=bool, help="If to mirror input embedding to output ones")
 
 parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
 

@@ -102,7 +102,7 @@ class RhymeValidator(ValidatorInterface):
             
         softmaxed = torch.softmax(rhyme_regression, dim=1)
         
-        softmaxed = softmaxed.flatten()
+        softmaxed = softmaxed.flatten().cpu()
         
         predicted_val = torch.argmax(softmaxed)
         
@@ -173,7 +173,7 @@ class MeterValidator(ValidatorInterface):
             
         softmaxed = torch.softmax(meter_regression, dim=1)
         
-        softmaxed = softmaxed.flatten()
+        softmaxed = softmaxed.flatten().cpu()
         
         predicted_val = torch.argmax(softmaxed)
         
@@ -204,7 +204,7 @@ class YearValidator(ValidatorInterface):
         
         self.year_regressor = torch.nn.Linear(self.model_size, len(POET_YEARS_BUCKETS)) # Meter Type
         
-        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.05)
+        self.loss_fnc = torch.nn.CrossEntropyLoss()
         
     def forward(self, input_ids=None, attention_mask=None, year=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
@@ -239,7 +239,7 @@ class YearValidator(ValidatorInterface):
             
         softmaxed = torch.softmax(year_regression, dim=1)
         
-        softmaxed = softmaxed.flatten()
+        softmaxed = softmaxed.flatten().cpu()
         
         predicted_val = torch.argmax(softmaxed)
         
@@ -325,5 +325,5 @@ class ValidatorTrainer:
             #    self.optimizer.update_rho_t()
             #    
                 if step % 100 == 0:
-                    print(f'Step {step},  loss : {loss.item()}', flush=True)
+                    print(f'Step {len(self.train_loader) * epoch + step},  loss : {loss.item()}', flush=True)
     

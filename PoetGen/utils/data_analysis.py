@@ -2,6 +2,8 @@ import json
 import argparse
 import os
 
+from poet_utils import TextManipulation
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--data_files", default=[os.path.abspath(os.path.join(os.path.dirname(__file__),"..","..",  "body_poet_data.json")) , 
@@ -20,14 +22,17 @@ for datafile in args.data_files:
 rhymes = {}
 metres = {}
 years = {}
+years_bucketed = {}
 for line in all_data:
     rhymes[line['rhyme']] = rhymes.get(line['rhyme'], 0) + (1/len(all_data))
     metres[line['metre']] = metres.get(line['metre'],0) + (1/len(all_data))
     years[line['year']] = years.get(line['year'],0) + (1/len(all_data))
+    years_bucketed[TextManipulation._year_bucketor(line['year'])] = years_bucketed.get(TextManipulation._year_bucketor(line['year']),0) + (1/len(all_data))
     
 rhymes = sorted(rhymes.items(), key=lambda x: x[1], reverse=True)
 metres = sorted(metres.items(), key=lambda x: x[1], reverse=True)
 years = sorted(years.items(), key=lambda x: x[1], reverse=True)
+years_bucketed =sorted(years_bucketed.items(),key=lambda x: x[1], reverse=True)
 
 with open(args.result_file, "w+") as file:
     print("=== RHYMES ===", file=file)
@@ -38,6 +43,9 @@ with open(args.result_file, "w+") as file:
         print(f"{metre[0]}, Presence: {metre[1] * 100:.2f} %", file=file)
     print("=== YEARS ===", file=file)
     for years in years:
+        print(f"{years[0]}, Presence: {years[1] * 100:.2f} %", file=file)
+    print("=== BUCKETED YEARS ===", file=file)
+    for years in years_bucketed:
         print(f"{years[0]}, Presence: {years[1] * 100:.2f} %", file=file)
 
 writer_data = {}

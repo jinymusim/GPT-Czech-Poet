@@ -254,75 +254,9 @@ class CorpusDatasetPytorch:
             """
             for filename in self._data_file_paths:
                  yield open(filename, 'r')
+                 
         
-        @staticmethod
-        def rhyme_sec(rhyme_ref, current_rhyme):
-            """Return proper rhyme indicator to given reference
-
-            Args:
-                rhyme_ref (_type_): reference number of 'A'
-                current_rhyme (_type_): current rhyme number that needs inidcation
-
-            Returns:
-                str: rhyme indicator character
-            """
-            rhyme_pos = ["A", "B", "C", "D", "E", "F", "G", "H"]
-            return "X" if current_rhyme == None or rhyme_ref == None or current_rhyme < rhyme_ref or current_rhyme >= rhyme_ref + len(rhyme_pos) else rhyme_pos[current_rhyme - rhyme_ref]
-        
-        @staticmethod
-        def _rhyme_string(curr_rhyme_list):
-            """Translate rhyme as list of rhyming number to rhyme schema
-
-            Args:
-                curr_rhyme_list (list): Current rhyme as list of ints indicating rhyming verses
-
-            Returns:
-                str: Rhyme schema
-            """
-            rhyme_list = curr_rhyme_list[:]
-            reference = None
-            # Give None a blank -1 rhyme id
-            for i in range(len(rhyme_list)):
-                if rhyme_list[i] != None and reference == None:
-                    reference = rhyme_list[i]
-                elif rhyme_list[i] == None:
-                     rhyme_list[i] = -1
-                   
-            # if there is valid rhyme, normalize 
-            if reference != None:
-                # sort the rhyme and get index of reference number
-                cheat_sheet =  sorted(list(set(rhyme_list[:])))
-                ref_index = cheat_sheet.index(reference)
-                # normalize the rest around this reference
-                for i in range(len(rhyme_list)):
-                    idx = cheat_sheet.index(rhyme_list[i])
-                    rhyme_list[i] = reference + (idx - ref_index)
-            
-                    
-            rhyme_str = ""
-            for num in rhyme_list:
-               rhyme_str += CorpusDatasetPytorch.BodyDataset.rhyme_sec(reference, num)
-            
-            return rhyme_str
-            
-        
-        @staticmethod
-        def _publish_year_vector(year_string):
-            """Construct vector of year of publishing
-
-            Args:
-                year_string (str): String with publish year
-
-            Returns:
-                numpy.ndarray: Vector of bucketized One-hot encoded publish year
-            """
-            publish_year = None if not year_string.isdigit() else int(year_string)
-            publish_vector = np.zeros(len(POET_YEARS_BUCKETS))
-            if publish_year == None:
-                publish_vector[-1] = 1
-            else:
-                publish_vector[np.argmin( abs(np.asarray(POET_YEARS_BUCKETS[:-1]) - publish_year))] = 1
-            return publish_vector     
+   
                      
         
         def _construct_line(self, raw_text):
@@ -365,7 +299,8 @@ class CorpusDatasetPytorch:
                 datum = json.load(file)
                 
                 for data_line in datum:
-                    publish_year = TextManipulation._year_bucketor(data_line["biblio"]["year"])
+                    publish_year_text = TextManipulation._year_bucketor(data_line["biblio"]["year"])
+                    publish_year_true = data_line["biblio"]["year"] if TextAnalysis._is_year(data_line["biblio"]["year"]) else 'NaN'
                     context = []
 
                     for part_line in data_line['body']:                                                        
@@ -388,16 +323,16 @@ class CorpusDatasetPytorch:
                             i+=1
                             
                             if i in self.verse_len:
-                                rhyme_str = self._rhyme_string(rhyme)
+                                rhyme_str = TextManipulation._rhyme_string(rhyme)
                                 
-                                text = f"{rhyme_str} # {publish_year} # {metre}\n" + "\n".join(body) + "\n"
-                                syllable_text = f"{rhyme_str} # {publish_year} # {metre}\n" + "\n".join(body_syllabs) + "\n"
+                                text = f"{rhyme_str} # {publish_year_text} # {metre}\n" + "\n".join(body) + "\n"
+                                syllable_text = f"{rhyme_str} # {publish_year_text} # {metre}\n" + "\n".join(body_syllabs) + "\n"
                                 context_text= "\n".join(context)
                                 if np.random.rand() > self.val_data_rate:
                                     self.data.append({
                                     "input_ids" : [text,syllable_text],
                                     "context_ids" : context_text,
-                                    "year": publish_year,
+                                    "year": publish_year_true,
                                     "rhyme":  rhyme_str,
                                     "metre" : metre
                                      })
@@ -405,7 +340,7 @@ class CorpusDatasetPytorch:
                                     self.validation_data.append({
                                     "input_ids" : [text,syllable_text],
                                     "context_ids" : context_text,
-                                    "year": publish_year,
+                                    "year": publish_year_true,
                                     "rhyme":  rhyme_str,
                                     "metre" : metre
                                      })
@@ -528,7 +463,7 @@ class CorpusDatasetPytorch:
         
         year = None
         if "year" in batch[0].keys():      
-            year = torch.tensor(np.asarray([CorpusDatasetPytorch.BodyDataset._publish_year_vector(text["year"]) for text in batch], dtype=np.int32), dtype=torch.float32)
+            year = torch.tensor(np.asarray([TextAnalysis._publish_year_vector(text["year"]) for text in batch], dtype=np.int32), dtype=torch.float32)
             
         metre = None
         if "metre" in batch[0].keys():       
@@ -591,7 +526,7 @@ class CorpusDatasetPytorch:
             
         year = None
         if "year" in batch[0].keys():      
-            year = torch.tensor(np.asarray([CorpusDatasetPytorch.BodyDataset._publish_year_vector(text["year"]) for text in batch], dtype=np.int32), dtype=torch.float32)
+            year = torch.tensor(np.asarray([TextAnalysis._publish_year_vector(text["year"]) for text in batch], dtype=np.int32), dtype=torch.float32)
         
         return  {
             "input_ids": input_ids,
@@ -602,7 +537,7 @@ class CorpusDatasetPytorch:
     
         
     def __init__(self, data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir='./', 
-                 prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate=0.1):
+                 prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate=0.05):
         """Construct the Dataloader and create Datasets
 
         Args:

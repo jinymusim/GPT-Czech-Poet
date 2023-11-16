@@ -1,44 +1,42 @@
-# Most Common Rhyme Schemas
-RHYME_SCHEMES = ["ABAB", "ABBA", 
-                 "XAXA", "ABCB", 
-                 "AABB", "AABA", 
-                 "AAAA", "AABC",
-                 'XXXX', 'AXAX',
-                 "AABBCC", "AABCCB", 
-                 "ABABCC", 'AABCBC', 
-                 "AAABAB", "ABABXX" 
-                 "ABABCD", "ABABAB", 
-                 "ABABBC", "ABABCB",
-                 "ABBAAB","AABABB",
-                 "ABCBBB",'ABCBCD', 
-                 "ABBACC","AABBCD",
+# Most Common Rhyme Schemas (Every Rhyme schema with presence over 0.1 %)
+RHYME_SCHEMES = ['ABAB', 'XXXX',
+                 'XAXA','AABB', 
+                 'XXXXXX','ABBA', 
+                 'AAXX', 'AABBCC',
+                 'ABABCC','ABABXX',
+                 'AABCCB','XXAA', 
+                 'XAAX', 'AXAX', 
+                 'XAXAXX','XXABAB',
+                 'ABBACC','AXAA', 
+                 'XAABBX','AABCBC',
+                 'AABBXX','ABBAXX',
+                 'ABABAB','AAXA', 
+                 'AXXA','XAXABB',
+                 'XXAABB','XXAAXX',
+                 'ABABAX','XXABBA',
+                 'AAXBBX','XXXAXA',
+                 'AAAX','XABABX',
+                 'XABBAX','AAXXBB',
+                 'AXABBX','ABABBX',
+                 'XAAXBB','AAAA',
+                 'XAAA','XAABXB',
+                 'AXABXB','AXAXBB',
                   None]
 
 NORMAL_SCHEMES = ["ABAB", "ABBA", "AABB", "AABBCC", "ABABCC", "ABBACC", "ABBAAB"]
 
 # First 200 Most common endings
-VERSE_ENDS = ['ní', 'ou', 'em', 'la', 'ch', 'ti', 'tí', 'je', 'li', 'al', 'ce', 'ky', 'ku', 'ně', 'jí', 'ly', 'il', 'en', 'né', 
-                'lo', 'ne', 'vá', 'ny', 'se', 'na', 'ím', 'st', 'le', 'ný', 'ci', 'mi', 'ka', 'ná', 'lí', 'cí', 'ží', 'čí', 'ám', 
-                'hu', 'ho', 'ří', 'dí', 'nu', 'dy', 'ší', 'ví', 'du', 'ta', 'as', 'tě', 'ře', 'ru', 'vé', 'ým', 'at', 'ek', 'el', 
-                'te', 'tu', 'ká', 'ji', 'ět', 'ni', 'še', 'vy', 'dá', 'it', 'tá', 'ty', 'lý', 'lá', 'mu', 'va', 'ém', 'ěl', 'no', 
-                'že', 'vu', 'ál', 'há', 'ků', 'vý', 'bě', 'hy', 'lé', 'sy', 'me', 'es', 'ra', 'ak', 'ad', 'ry', 'zí', 'et', 'rá', 
-                'de', 'vě', 'ři', 'lu', 'át', 'da', 'ko', 'ha', 'té', 'to', 'ed', 'ít', 'ký', 'ši', 'íš', 'sí', 'íc', 'ze', 'si', 
-                'be', 'má', 'mě', 'by', 'su', 'tý', 'ej', 'či', 'če', 'my', 'ké', 'án', 'ma', 'ům', 'or', 'nů', 'áš', 'dě', 'ec', 
-                'mí', 'ev', 'ád', 'ut', 'am', 'yl', 'ul', 'tů', 'bu', 'ás', 'ba', 'ud', 'ář', 'ie', 'od', 'pí', 'ůj', 'eš', 'hý', 
-                'bí', 'íž', 'dé', 'an', 'sa', 've', 'lů', 'ín', 'id', 'in', 'mů', 'di', 'hů', 'ic', 'on', 'eň', 'zy', 'ol', 'vo', 
-                'ži', 'sů', 'ík', 'vi', 'oj', 'uk', 'uh', 'oc', 'iž', 'sá', 'ěv', 'dý', 'av', 'iv', 'rů', 'ot', 'py', 'mé', 'um', 
-                'zd', 'dů', 'ar', 'rý', 'aň', 'sk', 'ok', 'om', 'už', 'ěk', 'ov', 'er', 'uď', 'bi', 'áz', 'ýt', 'ěm', 'ik', 'eď', 
-                'ob', 'ák', 'ůh', 'ár', 'sť', 'ro', 'yt', 'ěj', 'mý', 'us', 'ěn', 'ii', 'hé', 'áj', 'pá', 'íh', 'ih', 'zi', 'bá', 
-                'eč', 'ré', 'ír', 'ců', 'uj', 'dl', 'áh', 'ův', 'aj', 'eh', 'éž', 'pu', 'ýš', 'zu', 'im', 're', 'up', 'os', 'ah', 
-                'rt', 'mo', 'áň', 'sl', 'íl', 'cy', 'ys', 'hl', 'oh', 'ěz', 'ěs', 'ež', 'ií', 'vů', 'kl', 'az', 'cý', 'pe', 'ěd', 
-                'do', 'yn', 'šť', 'ez', 'ůl', 'ub', 'ln', 'yk', 'pý', 'ěc', 'ať', 'já', 'op', 'eb', 'áč', 'ív', 'áv', 'jů', 'sý', 
-                'is', ' a', 'iť', 'ěř', 'za', 'uť', 'ěh', 'pě', 'íp', 'áž', 'ěď', 'bů', 'ep', 'iš', 'yš', 'ia', 'pa', 'un', 'ěť', 
-                'pů', 'eř', 'tr', 'nt', 'pi', 'tl', 'eť', 'ju', 'oď', 'řů', 'ýr', 'rh', 'ur', 'zý', 'ěž', 'ýn', 'ip', 'bý', 'pé', 
-                'íň', 'zů', 'čů', 'uč', 'éb', 'ap', 'ón', 'uř', 'ůr', 'íř', 'ač', 'co', 'íč', 'až', 'ls', 'ůž', 'ěr', 'oč', 'ič', 
-                'ař', 'ěš', 'uv', 'ůz', 'oň', 'bé', 'sé', 'yč', 'áť', 'jď', 'ri', 'íť', 'oš', 'ůň', 'ék', 'uc', 'rk', 'bo', 'ýl', 
-                'oť', 'íz', 'lh', 'so', 'áb', 'ja', 'ij', 'ůn', 'rv', 'žů', 'ab', 'he', 'íd', 'ér', 'uš', 'ýž', 'fá', 'rs', 'rn', 
-                'iz', 'ib', 'ki', 'éd', 'év', 'rd', 'yb', 'oz', 'oř', 'ét', 'ož', 'ga', 'yň', 'rp', 'nd', 'of', 'rť', 'iď', 'ýv', 
-                'yz', None]
+VERSE_ENDS = ['ní', 'la', 'je', 'tí', 'ce', 'ti', 'ky', 'ku', 'li', 'jí', 'ně', 'né', 'vá', 'se', 'ny', 'ly', 'na', 'ne', 'nou', 
+              'lo', 'ci', 'mi', 'ný', 'sti', 'ka', 'le', 'cí', 'ná', 'ží', 'čí', 'ho', 'dí', 'ší', 'du', 'lí', 'dy', 'nu', 'ří', 
+              'ji', 'ru', 'tě', 'ře', 'stí', 'vy', 'ká', 'še', 'dá', 'ni', 'te', 'ví', 'mu', 'tu', 'ta', 'vé', 'val', 'va', 'lý', 
+              'tá', 'že', 'ty', 'no', 'vu', 'lá', 'kem', 'chu', 'ků', 'bě', 'vý', 'sy', 'me', 'zí', 'hu', 'vě', 'lu', 'da', 'ry', 
+              'rá', 'lé', 'ko', 'ři', 'de', 'hy', 'lem', 'tem', 'kou', 'vou', 'ši', 'há', 'sí', 'ze', 'be', 'ra', 'má', 'to', 'by', 
+              'mě', 'su', 'té', 'si', 'ných', 'den', 'či', 'ký', 'ním', 'če', 'tý', 'ma', 'my', 'sem', 'nem', 'dě', 'ha', 'vat', 'ným', 
+              'dem', 'dou', 'sta', 'dla', 'svět', 'zem', 'jen', 'dal', 'mí', 'hou', 'zas', 'sen', 'rem', 'nů', 'bu', 'e', 'ba', 'ké', 
+              'til', 'jest', 'ství', 'děl', 'květ', 'tů', 'chem', 'lou', 'sám', 'bí', 'tou', 'dé', 'šel', 'nul', 'chá', 'vem', 'sa', 
+              'hlas', 'pí', 'čas', 'dil', 'let', 'cích', 'lů', 'žil', 'mů', 'dál', 'cha', 'byl', 'nost', 'ček', 'zy', 'hý', 'nám', 'di', 
+              'bou', 'tím', 'ži', 'tek', 'vil', 'jsem', 'sů', 'dech', 'men', 'tla', 'sá', 'zrak', 'chy', 'vám', 'vi', 'dý', 'rád', 'svou', 
+              'ném', 've', 'py', 'vo', 'vým', 'nek', 'již', 'víc', 'kal', 'mé', 'dů', 'stá', 'dnes', 'sty', 'ven', None]
 # Years to bucket to
 POET_YEARS_BUCKETS = [1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, None]
 # Possible Meter Types
@@ -127,6 +125,101 @@ class TextManipulation:
             return str(POET_YEARS_BUCKETS[year_index])
         else:
             return "NaN"
+        
+    _RHYME_POS = ["A", "B", "C", "D", "E", "F", "G", "H"]
+        
+    @staticmethod
+    def rhyme_sec(rhyme_ref, current_rhyme):
+        """Return proper rhyme indicator to given reference
+        
+        Args:
+            rhyme_ref (_type_): reference number of 'A'
+            current_rhyme (_type_): current rhyme number that needs inidcation
+            
+        Returns:
+            str: rhyme indicator character
+        """
+        
+        return "X" if current_rhyme == None or rhyme_ref == None or current_rhyme < rhyme_ref or current_rhyme >= rhyme_ref + len(TextManipulation._RHYME_POS) else TextManipulation._RHYME_POS[current_rhyme - rhyme_ref]
+        
+    @staticmethod
+    def __post_process_rhyme(rhyme_str: str):
+        # First Pass
+        marker_count = {marker: rhyme_str.count(marker) for marker in TextManipulation._RHYME_POS}
+        for key, val in marker_count.items():
+            # Replace all, that ocurr only once with X
+            if val == 1:
+                rhyme_str = re.sub(key, 'X', rhyme_str)
+            # Downscale higher to lower if lower not present
+            if val > 1:
+                key_index = TextManipulation._RHYME_POS.index(key)
+                replacements = {marker: rhyme_str.count(marker) for marker in TextManipulation._RHYME_POS[:key_index]}
+                for rep_key, rep_val in replacements.items():
+                    if rep_val ==0:
+                        rhyme_str = re.sub(key, rep_key, rhyme_str)
+                        break
+                    
+        # Pass to swap letters
+        marker_index = {marker: rhyme_str.find(marker) for marker in TextManipulation._RHYME_POS if rhyme_str.find(marker) != -1}
+        keys_values = marker_index.items()
+        keys = [v[0] for v in keys_values]
+        values = [v[1] for v in keys_values]
+       
+        i = 0
+        while i < len(keys):
+            j= 0
+            while j< len(keys):
+                if TextManipulation._RHYME_POS.index(keys[j]) > TextManipulation._RHYME_POS.index(keys[i]) and values[j] < values[i]:
+                    # Swap the positions
+                    rhyme_str = re.sub(keys[j], 'Z', rhyme_str)
+                    rhyme_str = re.sub(keys[i], keys[j], rhyme_str)
+                    rhyme_str = re.sub('Z', keys[i], rhyme_str)
+                    # Need to update the value
+                    temp = values[i]
+                    values[i]= values[j]
+                    values[j] = temp
+                j+=1
+            i+=1
+        
+            
+        return rhyme_str
+            
+        
+    @staticmethod
+    def _rhyme_string(curr_rhyme_list):
+        """Translate rhyme as list of rhyming number to rhyme schema
+
+        Args:
+            curr_rhyme_list (list): Current rhyme as list of ints indicating rhyming verses
+
+        Returns:
+            str: Rhyme schema
+        """
+        rhyme_list = curr_rhyme_list[:]
+        reference = None
+        # Give None a blank -1 rhyme id
+        for i in range(len(rhyme_list)):
+            if rhyme_list[i] != None and reference == None:
+                reference = rhyme_list[i]
+            elif rhyme_list[i] == None:
+                 rhyme_list[i] = -1
+               
+        # if there is valid rhyme, normalize 
+        if reference != None:
+            # sort the rhyme and get index of reference number
+            cheat_sheet =  sorted(list(set(rhyme_list[:])))
+            ref_index = cheat_sheet.index(reference)
+            # normalize the rest around this reference
+            for i in range(len(rhyme_list)):
+                idx = cheat_sheet.index(rhyme_list[i])
+                rhyme_list[i] = reference + (idx - ref_index)
+        
+                
+        rhyme_str = ""
+        for num in rhyme_list:
+           rhyme_str += TextManipulation.rhyme_sec(reference, num)
+        
+        return TextManipulation.__post_process_rhyme(rhyme_str)
 
 class TextAnalysis:
     """Static class with methods of analysis of strings
@@ -192,6 +285,26 @@ class TextAnalysis:
             rhyme_vec[-1] = 1
             
         return rhyme_vec
+    
+    
+    @staticmethod
+    def _publish_year_vector(year_string):
+        """Construct vector of year of publishing, weighting by distance
+
+        Args:
+            year_string (str): String with publish year
+
+        Returns:
+            numpy.ndarray: Vector of bucketized One-hot encoded publish year
+        """
+        publish_year = None if not year_string.isdigit() else int(year_string)
+        publish_vector = np.zeros(len(POET_YEARS_BUCKETS))
+        if publish_year == None:
+            publish_vector[-1] = 1
+        else:
+            distance_weighting = [1/(1 + abs(year - publish_year)) for year in POET_YEARS_BUCKETS[-1]] + [0]
+            publish_vector = np.asarray(distance_weighting)/sum(distance_weighting)
+        return publish_vector  
     
     @staticmethod
     def _rhyme_or_not(rhyme_str:str) -> np.ndarray:

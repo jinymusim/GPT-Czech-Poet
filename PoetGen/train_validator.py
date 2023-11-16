@@ -53,7 +53,7 @@ parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of v
 
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "validators_acc.txt")), type=str, help="Result of Analysis File")
 
-def validate(model: ValidatorInterface, data, collate_fnc):
+def validate(model: ValidatorInterface, data, collate_fnc, device):
     """Validate model for accuracy on trained task
 
     Args:
@@ -69,7 +69,7 @@ def validate(model: ValidatorInterface, data, collate_fnc):
     true_hits = 0
     for i in range(len(data)):
         datum = collate_fnc([data[i]])
-        true_hits += model.validate(input_ids=datum["input_ids"],
+        true_hits += model.validate(input_ids=datum["input_ids"].to(device),
                                     rhyme=datum["rhyme"], 
                                     metre=datum["metre"],
                                     year=datum['year'])['acc']
@@ -83,6 +83,9 @@ def validate(model: ValidatorInterface, data, collate_fnc):
 def main(args):
     # Time stamp for the validators
     time_stamp = int(round(time.time() * 1000))
+    
+    # Device for validation
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # Create directory for Validators to store to
     if not os.path.exists(os.path.abspath(os.path.join(args.model_path, "rhyme"))):
@@ -147,7 +150,6 @@ def main(args):
                                data_collator=collate).train()
     elif args.epochs_rhyme > 0:
         
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         training_args = {"lr" : args.learning_rate_rhyme,
                          "epochs" : args.epochs_rhyme,
@@ -165,9 +167,9 @@ def main(args):
     # Validate rhyme Validator on validation data
     rhyme_acc = 0
     if args.epochs_rhyme > 0:
-        rhyme_acc =  validate(rhyme_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
+        rhyme_acc =  validate(rhyme_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device)
     
-        torch.save(rhyme_model, os.path.abspath(os.path.join(args.model_path, "rhyme", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+        torch.save(rhyme_model.cpu(), os.path.abspath(os.path.join(args.model_path, "rhyme", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     # Train Metrum Validator
     
@@ -193,7 +195,6 @@ def main(args):
                                train_dataset= train_data.pytorch_dataset_body,
                                data_collator=collate).train()
     elif args.epochs_metre > 0:
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         training_args = {"lr" : args.learning_rate_metre,
                          "epochs" : args.epochs_metre,
@@ -209,9 +210,9 @@ def main(args):
     # Validate Metrum validator on validation data
     metre_acc = 0
     if args.epochs_metre > 0:
-        metre_acc = validate(meter_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
+        metre_acc = validate(meter_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device)
     
-        torch.save(meter_model, os.path.abspath(os.path.join(args.model_path, "meter", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+        torch.save(meter_model.cpu(), os.path.abspath(os.path.join(args.model_path, "meter", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     # Train Year Validator
     
@@ -237,7 +238,6 @@ def main(args):
                                train_dataset= train_data.pytorch_dataset_body,
                                data_collator=collate).train()
     elif args.epochs_year > 0:
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         training_args = {"lr" : args.learning_rate_year,
                          "epochs" : args.epochs_year,
@@ -253,14 +253,14 @@ def main(args):
     
     year_acc = 0
     if args.epochs_year > 0:
-        year_acc = validate(year_model.cpu(), train_data.pytorch_dataset_body.validation_data, collate)
+        year_acc = validate(year_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device)
     
-        torch.save(year_model, os.path.abspath(os.path.join(args.model_path, "year", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+        torch.save(year_model.cpu(), os.path.abspath(os.path.join(args.model_path, "year", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     
     # Store result and model
     with open(args.result_file, 'a') as file:
-        print(f"### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp} ### Syllable: {str(args.syllables)} ### SAM Training: {str(args.SAM)}", file=file)
+        print(f"### NEW FORMAT! ### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp} ### Syllable: {str(args.syllables)} ### SAM Training: {str(args.SAM)}", file=file)
         print(f"Rhyme Validator: {args.pretrained_model}, Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
         print(f"Metre Validator: {args.pretrained_model}, Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
         print(f"Year Validator: {args.pretrained_model}, Epochs: {args.epochs_year} Accuracy: {year_acc}", file=file)

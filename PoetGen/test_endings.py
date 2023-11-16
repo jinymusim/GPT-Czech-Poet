@@ -4,6 +4,8 @@ import argparse
 import json
 
 from collections import Counter
+from utils.poet_utils import SyllableMaker, TextManipulation
+
 
 # r'[\,\.\?\!–\„\“\’\;\:()\]\[\_\*\‘\”\'0-9\-\—\"]+'
 # r'[^a-zA-Z\s]+'
@@ -14,7 +16,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "endings.txt")), type=str, help="Result of Analysis File")
-parser.add_argument("--top", default=400, type=int, help="Amount of top endings (None for all)")
+parser.add_argument("--top", default=200, type=int, help="Amount of top endings (None for all)")
 parser.add_argument("--regex", default=r'([^\w\s]+|[0-9]+)', type=str, help="Tested Regex")
 
 if __name__ == "__main__":
@@ -40,9 +42,9 @@ def poet_samples(args):
                 for part_line in data_line['body']:
                     for text_line in part_line:
                         # r'[^a-zA-Z\s]+' Will also match í,ě and others, so not usable
-                        # r'[^\w\s"]+' Doesn't work better than current regex                
-                        sub = re.sub(args.regex, '', text_line['text'])
-                        text_lines_poet.append(sub.strip()[-2:].lower())
+                        # r'[^\w\s"]+' Doesn't work better than current regex
+                        whitening = TextManipulation._remove_all_nonchar(TextManipulation._remove_most_nonchar(text_line['text'])).strip() 
+                        text_lines_poet.append(SyllableMaker.syllabify( " ".join(whitening.split()[-2:]))[-1])
         i += 1
         if i % 500 == 0:
             print(f"Processing file {i}")
