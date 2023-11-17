@@ -23,11 +23,17 @@ rhymes = {}
 metres = {}
 years = {}
 years_bucketed = {}
+m_count = 0
 for line in all_data:
     rhymes[line['rhyme']] = rhymes.get(line['rhyme'], 0) + (1/len(all_data))
-    metres[line['metre']] = metres.get(line['metre'],0) + (1/len(all_data))
+    for meter in line['metre_ids']:
+        metres[meter] = metres.get(meter,0) + 1
+        m_count +=1
     years[line['year']] = years.get(line['year'],0) + (1/len(all_data))
     years_bucketed[TextManipulation._year_bucketor(line['year'])] = years_bucketed.get(TextManipulation._year_bucketor(line['year']),0) + (1/len(all_data))
+
+for key, value in metres.items():
+    metres[key] = value/m_count
     
 rhymes = sorted(rhymes.items(), key=lambda x: x[1], reverse=True)
 metres = sorted(metres.items(), key=lambda x: x[1], reverse=True)

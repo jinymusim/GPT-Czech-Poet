@@ -79,22 +79,20 @@ class PoetModelBase(PoetModelInterface):
         features_dict= TextAnalysis._first_line_analysis(rhyme_dec)
         for key, value in features_dict_init.items():
             features_dict[key] = value
+        # CONSTRUCT BEST INPUT LINE
         # BACKUP RHYME
         if "RHYME" not in features_dict.keys():
             features_dict["RHYME"] = random.choice(RHYME_SCHEMES[:-1])
-        # CONSTRUCT BEST INPUT LINE
         poet_param_str = ""
         if "RHYME" in features_dict.keys():
             poet_param_str += features_dict["RHYME"]
         if "YEAR" in features_dict.keys():
             poet_param_str += f" # {features_dict['YEAR']}"
-        if "METER" in features_dict.keys():
-            poet_param_str += f" # {features_dict['METER']}"
         # REPLACE OR INSERT BASED ON PRESENCE
         if len(features_dict_init.keys()) == 0: # Wierd Input
             prompt_list = [poet_param_str]
         elif "RHYME" not in features_dict_init.keys():
-            if "METER" in features_dict_init.keys() or "YEAR" in features_dict_init.keys(): # Replace the Uncomplete first line 
+            if "YEAR" in features_dict_init.keys(): # Replace the Uncomplete first line 
                 prompt_list[0] = poet_param_str
             else:
                 prompt_list.insert(0, poet_param_str)
@@ -117,8 +115,9 @@ class PoetModelBase(PoetModelInterface):
                 j = 3
             elif features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "X":
                 j=-1
-            line_start =  (features_dict[f"LENGTH_{j}"] if f"LENGTH_{j}" in features_dict.keys() else "" )  + \
-                (f" {features_dict[f'END_{j}'] } #" if  f"END_{j}" in features_dict.keys() else "")
+            line_start =  (features_dict[f"LENGTH_{j}"] if f"LENGTH_{j} # " in features_dict.keys() else "" )  + \
+                (f"{features_dict[f'END_{j}'] } # " if  f"END_{j}" in features_dict.keys() else "") + \
+                (f"{features_dict[f'METER_{j}'] } # " if f"METER_{j}" in features_dict.keys() else "")
             tokenized_poet_start = tokenizer.encode("\n".join(prompt_list) + "\n" + line_start,  return_tensors='pt')
             if sample:
                 out_line =  self.model.generate(tokenized_poet_start, 
@@ -150,11 +149,12 @@ class PoetModelBase(PoetModelInterface):
                 continue
             if has_rep_again and has_rep:
                 decoded_line: str = decoded_lines[-1]
-            else: 
+            else:
                 decoded_line: str = decoded_lines[len(prompt_list)]
-            if  f"LENGTH_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1 and j>=0:
+            if  f"METER_{j}" not in features_dict.keys() and len(decoded_line.split()) > 4 and j>=0:
                 features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
-                features_dict[f'END_{j}'] = decoded_line.split()[1]
+                features_dict[f'END_{j}'] = decoded_line.split()[2]
+                features_dict[f'METER_{j}'] = decoded_line.split()[4]
             prompt_list.append(decoded_line)
         
         return "\n".join(prompt_list)

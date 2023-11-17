@@ -24,7 +24,7 @@ parser.add_argument("--learning_rate_year", default=5e-5, type=float, help="Lear
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Tokenizer to use")
-parser.add_argument("--tokenizer", default="xlm-roberta-base", type=str, help="Tokenizer to use")
+parser.add_argument("--tokenizer", default="roberta-base", type=str, help="Tokenizer to use")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "validators")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=512, type=int, help="Max length for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
@@ -37,7 +37,7 @@ parser.add_argument("--syllables", default=True, type=parse_boolean, help="If to
 
 parser.add_argument("--SAM", default=False, type=parse_boolean, help='If to use Sharpness-Aware Minimazation')
 
-parser.add_argument("--pretrained_model", default="xlm-roberta-base", type=str, help="Roberta Model")
+parser.add_argument("--pretrained_model", default="roberta-base", type=str, help="Roberta Model")
 
 parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_metre", default=0, type=int, help="Number of epochs to run.")
@@ -66,30 +66,42 @@ def validate(model: ValidatorInterface, data, collate_fnc, device, val_str:str):
     """
     model.eval()
     per_value_accs = {}
-    req_val = 'metre' if 'met' in val_str else ('year' if 'year' in val_str else 'rhyme')
+    req_val = 'metre_ids' if 'met' in val_str else ('year' if 'year' in val_str else 'rhyme')
     
     
     true_hits = 0
+    count = 0
     for i in range(len(data)):
         
         datum = collate_fnc([data[i]])
-        res = model.validate(input_ids=datum["input_ids"].to(device),
+        if req_val == 'metre':
+            for i in range(datum['input_ids'].shape[0]):
+                res = model.validate(input_ids=datum["input_ids"][i,:].reshape(1,-1).to(device),
+                                    rhyme=None, 
+                                    metre_ids=datum["metre_ids"][i,:].reshape(1,-1),
+                                    year=None)['acc']
+                true_hits += res
+                per_value_accs[data[i][req_val]] = per_value_accs.get(data[i][req_val], []) + [res]
+                count +=1
+        else:      
+            res = model.validate(input_ids=datum["input_ids"].to(device),
                                     rhyme=datum["rhyme"], 
-                                    metre=datum["metre"],
+                                    metre_ids=None,
                                     year=datum['year'])['acc']
+            true_hits += res
+            per_value_accs[data[i][req_val]] = per_value_accs.get(data[i][req_val], []) + [res]
+            count +=1
         
         
-        true_hits += res
-        per_value_accs[data[i][req_val]] = per_value_accs.get(data[i][req_val], []) + [res]
         
-    print(f"Validation acc: {true_hits/len(data)}")
+    print(f"Validation acc: {true_hits/count}")
     
     for key, value in per_value_accs.items():
         per_value_accs[key] = sum(value) / len(value)
     
     model.train()
     
-    return true_hits/len(data), per_value_accs
+    return true_hits/count, per_value_accs
 
 
 def main(args):
@@ -132,6 +144,7 @@ def main(args):
         
       
     collate  = partial(CorpusDatasetPytorch.collate_validator, tokenizer=tokenizer, max_len=args.max_len, syllables=args.syllables, is_syllable=True)  
+    collate_metre  = partial(CorpusDatasetPytorch.collate_meter, tokenizer=tokenizer, max_len=args.max_len, syllables=args.syllables, is_syllable=True)  
    
     # Train Rhyme Validator 
 
@@ -206,7 +219,7 @@ def main(args):
             trainer = Trainer(model = meter_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
-                               data_collator=collate).train()
+                               data_collator=collate_metre).train()
     elif args.epochs_metre > 0:
         
         training_args = {"lr" : args.learning_rate_metre,
@@ -218,13 +231,13 @@ def main(args):
         trainer = ValidatorTrainer(model=meter_model, 
                                    args=training_args, 
                                    train_dataset=train_data.pytorch_dataset_body, 
-                                   data_collator=collate,
+                                   data_collator=collate_metre,
                                    device=device).train()
     # Validate Metrum validator on validation data
     metre_acc = 0
     metre_val_accs = {}
     if args.epochs_metre > 0:
-        metre_acc, metre_val_accs = validate(meter_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device, 'metre')
+        metre_acc, metre_val_accs = validate(meter_model.to(device), train_data.pytorch_dataset_body.validation_data, collate_metre, device, 'metre')
     
         torch.save(meter_model.cpu(), os.path.abspath(os.path.join(args.model_path, "meter", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     

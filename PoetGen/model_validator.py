@@ -108,7 +108,7 @@ class ModelValidator:
         Returns:
             str: Generated Strophe
         """
-        start = f"{self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])} # {self.validation_data[index]['metre']}" 
+        start = f"{self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])}" 
         
         if type  == "BASIC":
             tokenized_poet_start = self.tokenizer.encode(start, return_tensors='pt', truncation=True)
@@ -179,9 +179,6 @@ class ModelValidator:
                     # Validate for Strophe Parameters
                     if TextAnalysis._is_param_line(line):
                         values = TextAnalysis._first_line_analysis(line)
-                        metre_all +=1
-                        metre_top_k_all +=1
-                        metre_label_all +=1
                         
                         rhyme_all +=1
                         rhyme_top_k_all +=1
@@ -205,17 +202,6 @@ class ModelValidator:
                                 lev_distance_all += 1
                                 lev_distance +=res['lev_distance']
                             
-                        # Validate for Metrum
-                        if self.meter_model != None and "METER" in values.keys():
-                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], "metre": values["METER"]}],tokenizer=self.validator_tokenizer,
-                                                                           is_syllable=False, syllables=self.args.val_syllables_meter,
-                                                                           max_len=self.meter_model.model.config.max_position_embeddings)
-                            res = self.meter_model.validate(input_ids=data['input_ids'],
-                                                                   metre=data['metre'],k=self.args.top_k)
-                            
-                            metre_pos += res['acc']
-                            metre_top_k_pos += res['top_k']
-                            metre_label_pos += res['predicted_label']
                         
                         #Validate for Year
                         if self.year_model != None and "YEAR" in values.keys():
@@ -244,6 +230,22 @@ class ModelValidator:
                     # Was Still empty in terms of any text
                     if len(line_analysis.keys()) == 0:
                         continue
+                    
+                    # Validate for Metrum
+                    metre_all +=1
+                    metre_top_k_all +=1
+                    metre_label_all +=1
+                    if self.meter_model != None and "METER" in line_analysis.keys():
+                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line], "metre": line_analysis["METER"]}],tokenizer=self.validator_tokenizer,
+                                                                       is_syllable=False, syllables=self.args.val_syllables_meter,
+                                                                       max_len=self.meter_model.model.config.max_position_embeddings)
+                        res = self.meter_model.validate(input_ids=data['input_ids'],
+                                                            metre_ids=data['metre'],k=self.args.top_k)
+                        
+                        metre_pos += res['acc']
+                        metre_top_k_pos += res['top_k']
+                        metre_label_pos += res['predicted_label']
+                        
                     
                     end_all += 1
                     if "END" in line_analysis.keys() and "TRUE_END" in line_analysis.keys() and line_analysis["END"] == line_analysis["TRUE_END"]:

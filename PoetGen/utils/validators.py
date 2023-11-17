@@ -140,7 +140,7 @@ class MeterValidator(ValidatorInterface):
         
         self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.05)
         
-    def forward(self, input_ids=None, attention_mask=None, metre=None, *args, **kwargs):
+    def forward(self, input_ids=None, attention_mask=None, metre_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
         
         last_hidden = outputs['hidden_states'][-1]
@@ -148,7 +148,7 @@ class MeterValidator(ValidatorInterface):
         meter_regression = self.meter_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
             
         softmaxed = torch.softmax(meter_regression, dim=1)
-        meter_loss = self.loss_fnc(softmaxed, metre)
+        meter_loss = self.loss_fnc(softmaxed, metre_ids)
         
         return {"model_output" : softmaxed,
                 "loss": meter_loss + outputs.loss}
@@ -164,7 +164,7 @@ class MeterValidator(ValidatorInterface):
         
         return softmaxed
     
-    def validate(self, input_ids=None, metre=None, k: int=2,*args, **kwargs):
+    def validate(self, input_ids=None, metre_ids=None, k: int=2,*args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
@@ -179,7 +179,7 @@ class MeterValidator(ValidatorInterface):
         
         predicted_top_k = torch.topk(softmaxed, k).indices
         
-        label_val = torch.argmax(metre.flatten())
+        label_val = torch.argmax(metre_ids.flatten())
         
         validation_true_val = (label_val == predicted_val).float().sum().numpy()
         top_k_presence = 0
@@ -294,14 +294,14 @@ class ValidatorTrainer:
                 # First Pass
                 loss = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
                                   rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
-                                  metre = None if batch["metre"] == None else batch["metre"].to(self.device),
+                                  metre_ids = None if batch["metre_ids"] == None else batch["metre_ids"].to(self.device),
                                   year = None if batch["year"] == None else batch["year"].to(self.device))['loss']
                 loss.backward()          
                 self.optimizer.first_step(zero_grad=True)
                 # Second Pass
                 loss = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
                                       rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
-                                      metre = None if batch["metre"] == None else batch["metre"].to(self.device),
+                                      metre_ids = None if batch["metre_ids"] == None else batch["metre_ids"].to(self.device),
                                       year = None if batch["year"] == None else batch["year"].to(self.device))['loss']
                 
                 loss.backward()

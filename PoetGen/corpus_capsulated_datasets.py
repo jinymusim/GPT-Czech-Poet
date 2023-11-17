@@ -166,6 +166,37 @@ class CorpusDatasetPytorch:
             """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             return " ".join(SyllableMaker.syllabify(raw_text)) + ending
+        
+        def _construct_line(self, raw_text, metre):
+            """Construct individual content line
+
+            Args:
+                raw_text (str): raw verse line
+
+            Returns:
+                str: Processed verse line with line parameters
+            """
+            syllables = SyllableMaker.syllabify(raw_text)
+            num_str = f"{len(syllables)} # " if self.prompt_length else ""
+            verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
+            metre_txt = f"{metre} # "
+            return num_str + verse_end + metre_txt + raw_text
+        
+        def _construct_syllable_line(self, raw_text, metre):
+            """Construct individual content line as sequence of syllables
+
+            Args:
+                raw_text (str): raw verse line
+
+            Returns:
+                str: Processed verse line as sequence of syllables with line parameters
+            """
+            ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
+            syllables = SyllableMaker.syllabify(raw_text)
+            num_str = f"{len(syllables)} # " if self.prompt_length else ""
+            verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
+            metre_txt = f"{metre} # "
+            return num_str + verse_end + metre_txt + " ".join(syllables) + ending
                      
             
         def data_text_line_gen(self):
@@ -178,22 +209,29 @@ class CorpusDatasetPytorch:
                 for data_line in datum:
                     for part_line in data_line['body']:
                         for text_line in part_line:
+                            metre = METER_TRANSLATE.get(text_line["metre"][0]["type"], "N")
+                            
                             scanned_text = TextManipulation._remove_most_nonchar(text_line['text'], self.lower_case)
                             
-                            syllable_line = self._syllable_line(scanned_text)
+                            text_line = self._construct_line(scanned_text, metre)
+                            syllable_line = self._construct_syllable_line(scanned_text, metre)
+                            
                             num_vowels, verse_end = self._vowels_and_endings(scanned_text)
+                            
                             # Based on result of random chose proper set. Because data are large enough, will result in wanted split.
                             if np.random.rand() > self.val_data_rate: 
                                 self.data.append({
-                                "input_ids" : [scanned_text,syllable_line],
+                                "input_ids" : [text_line,syllable_line],
                                 "nums": [num_vowels],
-                                "verse_end": verse_end
+                                "verse_end": verse_end,
+                                "metre": metre
                                      })
                             else:
                                 self.validation_data.append({
-                                "input_ids" : [scanned_text,syllable_line],
+                                "input_ids" : [text_line,syllable_line],
                                 "nums": [num_vowels],
-                                "verse_end": verse_end
+                                "verse_end": verse_end,
+                                "metre": metre
                                      })
                             
             
@@ -255,11 +293,10 @@ class CorpusDatasetPytorch:
             for filename in self._data_file_paths:
                  yield open(filename, 'r')
                  
-        
    
                      
         
-        def _construct_line(self, raw_text):
+        def _construct_line(self, raw_text, metre):
             """Construct individual content line
 
             Args:
@@ -269,11 +306,12 @@ class CorpusDatasetPytorch:
                 str: Processed verse line with line parameters
             """
             syllables = SyllableMaker.syllabify(raw_text)
-            num_str = f"{len(syllables)} " if self.prompt_length else ""
+            num_str = f"{len(syllables)} # " if self.prompt_length else ""
             verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
-            return num_str + verse_end + raw_text
+            metre_txt = f"{metre} # "
+            return num_str + verse_end + metre_txt + raw_text
         
-        def _construct_syllable_line(self, raw_text):
+        def _construct_syllable_line(self, raw_text, metre):
             """Construct individual content line as sequence of syllables
 
             Args:
@@ -284,9 +322,10 @@ class CorpusDatasetPytorch:
             """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             syllables = SyllableMaker.syllabify(raw_text)
-            num_str = f"{len(syllables)} " if self.prompt_length else ""
+            num_str = f"{len(syllables)} # " if self.prompt_length else ""
             verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
-            return num_str + verse_end + " ".join(syllables) + ending
+            metre_txt = f"{metre} # "
+            return num_str + verse_end +metre_txt + " ".join(syllables) + ending
             
             
                                                            
@@ -307,26 +346,31 @@ class CorpusDatasetPytorch:
                         body = []
                         body_syllabs = []
                         rhyme= []
+                        metres = []
                         i = 0
                         for text_line in part_line:
                             
                             # In rare cases multiple, but from searching only 1 metre per line
                             metre = METER_TRANSLATE.get(text_line["metre"][0]["type"], "N")
+                            metres +=  [metre]
+                            
+                            
 
                             rhyme.append(text_line["rhyme"])  
                             
                             scanned_text = TextManipulation._remove_most_nonchar(text_line["text"], self.lower_case)
 
-                            body.append(self._construct_line(scanned_text))
-                            body_syllabs.append(self._construct_syllable_line(scanned_text))
+                            body.append(self._construct_line(scanned_text,metre))
+                            body_syllabs.append(self._construct_syllable_line(scanned_text,metre))
                             
                             i+=1
                             
                             if i in self.verse_len:
+                                
                                 rhyme_str = TextManipulation._rhyme_string(rhyme)
                                 
-                                text = f"{rhyme_str} # {publish_year_text} # {metre}\n" + "\n".join(body) + "\n"
-                                syllable_text = f"{rhyme_str} # {publish_year_text} # {metre}\n" + "\n".join(body_syllabs) + "\n"
+                                text = f"{rhyme_str} # {publish_year_text}\n" + "\n".join(body) + "\n"
+                                syllable_text = f"{rhyme_str} # {publish_year_text}\n" + "\n".join(body_syllabs) + "\n"
                                 context_text= "\n".join(context)
                                 if np.random.rand() > self.val_data_rate:
                                     self.data.append({
@@ -334,7 +378,7 @@ class CorpusDatasetPytorch:
                                     "context_ids" : context_text,
                                     "year": publish_year_true,
                                     "rhyme":  rhyme_str,
-                                    "metre" : metre
+                                    "metre_ids" : metres.copy()
                                      })
                                 else:
                                     self.validation_data.append({
@@ -342,13 +386,15 @@ class CorpusDatasetPytorch:
                                     "context_ids" : context_text,
                                     "year": publish_year_true,
                                     "rhyme":  rhyme_str,
-                                    "metre" : metre
+                                    "metre_ids" : metres.copy()
                                      })
                                 
                                 if i == max(self.verse_len):
                                     context = body
                                     body = []
+                                    body_syllabs = []
                                     rhyme = []
+                                    metres = []
                                     i=0
                                 
         
@@ -490,7 +536,7 @@ class CorpusDatasetPytorch:
             "metre" : metre}
         
     @staticmethod
-    def collate_validator(batch, tokenizer: PreTrainedTokenizerBase,syllables:bool, is_syllable:bool = False,max_len = 1024):
+    def collate_validator(batch, tokenizer: PreTrainedTokenizerBase,syllables:bool, is_syllable:bool = False,max_len = 512):
         """Process data for use in LM for metre,rhyme and year prediction
 
         Args:
@@ -515,10 +561,6 @@ class CorpusDatasetPytorch:
         tokenized = tokenizer(data_ids, return_tensors='pt', truncation=True, padding=True)
         input_ids = tokenized['input_ids']
         attention = tokenized["attention_mask"]
-        
-        metre = None
-        if "metre" in batch[0].keys():       
-            metre = torch.tensor(np.asarray([TextAnalysis._metre_vector(text["metre"]) for text in batch], dtype=np.int32), dtype=torch.float32)
             
         rhyme=None
         if "rhyme" in batch[0].keys():
@@ -532,8 +574,39 @@ class CorpusDatasetPytorch:
             "input_ids": input_ids,
             "attention_mask": attention,
             "rhyme": rhyme,
-            "metre": metre,
+            "metre_ids": None,
             "year": year}
+    
+    @staticmethod
+    def collate_meter(batch, tokenizer: PreTrainedTokenizerBase, syllables:bool, is_syllable:bool = False, max_len = 512):
+        index = 1 if syllables and is_syllable else 0
+        tokenizer.model_max_length = max_len
+        data_ids = []
+        metre = []
+        for datum in batch:
+            data_ids += [
+                    " ".join(
+                    SyllableMaker.syllabify(line.split('#')[-1])
+                ) if (syllables and not is_syllable) else line.split('#')[-1] for line in datum['input_ids'][index].splitlines()[1:]
+                ]
+            if "metre_ids" in batch[0].keys():
+                metre += [TextAnalysis._metre_vector(one_metre) for one_metre in datum['metre_ids']]
+                
+        tokenized = tokenizer(data_ids, return_tensors='pt', truncation=True, padding=True)
+        input_ids = tokenized['input_ids']
+        attention = tokenized["attention_mask"]
+        
+        metre_ids = None
+        if len(metre) > 0:
+            metre_ids = torch.tensor(np.asarray(metre, dtype=np.int32), dtype=torch.float32)
+            
+        return  {
+            "input_ids": input_ids,
+            "attention_mask": attention,
+            "rhyme": None,
+            "metre_ids": metre_ids,
+            "year": None}
+        
     
         
     def __init__(self, data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir='./', 

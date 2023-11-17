@@ -337,7 +337,7 @@ class TextAnalysis:
         if metre in METER_TYPES:
             metre_vec[METER_TYPES.index(metre)] = 1
         else:
-            metre_vec[-2] = 1            
+            metre_vec[-1] = 1            
         return metre_vec
     
     @staticmethod
@@ -356,9 +356,7 @@ class TextAnalysis:
         poet_params = {}
         # Look for each possible parameter
         for param in line_striped.split():
-            if TextAnalysis._is_meter(param):
-                poet_params["METER"] = param
-            elif TextAnalysis._is_year(param):
+            if TextAnalysis._is_year(param):
                 # Year is Bucketized so to fit
                 poet_params["YEAR"] = TextManipulation._year_bucketor(param) 
             elif TextAnalysis._rhyme_like(param):
@@ -407,14 +405,16 @@ class TextAnalysis:
         # Look for parameters in Order LENGTH, END, TRUE_LENGTH, TRUE_END
         if TextAnalysis._is_line_length(line_striped.split()[0]):
             line_params["LENGTH"] = int(line_striped.split()[0])
-        if len(line_striped.split()) > 1 and TextAnalysis._is_line_end(line_striped.split()[1]):
-            line_params["END"] = line_striped.split()[1]        
-        if len(line_striped.split()) > 3:
-            line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(" ".join(line_striped.split()[3:])))
+        if len(line_striped.split()) > 2 and TextAnalysis._is_line_end(line_striped.split()[2]):
+            line_params["END"] = line_striped.split()[2]
+        if len(line_striped.split()) > 4 and TextAnalysis._is_meter(line_striped.split()[4]):
+            line_params["METER"] = line_striped.split()[4]
+        if len(line_striped.split()) > 6:
+            line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(" ".join(line_striped.split()[6:])))
         # TRUE_END needs only alpha chars, so all other chars are removed    
         line_only_char = TextManipulation._remove_all_nonchar(line_striped).strip()
         if len(line_only_char) > 2:
-            line_params["TRUE_END"] = SyllableMaker.syllabify(line_only_char)[-1]
+            line_params["TRUE_END"] = SyllableMaker.syllabify(" ".join(line_only_char.split()[-2:]))[-1]
         
         return line_params
     
@@ -432,7 +432,7 @@ class TextAnalysis:
         if not line_striped:
             return False
         small_analysis = TextAnalysis._first_line_analysis(line_striped)
-        return  "RHYME" in small_analysis.keys() or "METER" in small_analysis.keys() or "YEAR" in small_analysis.keys()
+        return  "RHYME" in small_analysis.keys() or "YEAR" in small_analysis.keys()
     
 # NON-Original code!
 # Taken from Barbora Štěpánková

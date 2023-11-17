@@ -30,7 +30,7 @@ parser.add_argument("--default_tokenizer", default="lchaloupsky/czech-gpt2-oscar
 parser.add_argument("--tokenizer_type", default="Unicode", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "Unicode"], help="What type of tokenize to train")
 parser.add_argument("--tokenizer_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"utils","tokenizers")),  type=str, help="Path to Model")
 parser.add_argument("--raw_data", default=False,  type=bool, help="If to use raw data")
-parser.add_argument("--syllables", default=False,  type=bool, help="If to use syllables")
+parser.add_argument("--syllables", default=True,  type=bool, help="If to use syllables")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 
