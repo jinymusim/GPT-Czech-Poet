@@ -53,7 +53,7 @@ parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of v
 
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "validators_acc.txt")), type=str, help="Result of Analysis File")
 
-def validate(model: ValidatorInterface, data, collate_fnc, device):
+def validate(model: ValidatorInterface, data, collate_fnc, device, val_str:str):
     """Validate model for accuracy on trained task
 
     Args:
@@ -65,19 +65,31 @@ def validate(model: ValidatorInterface, data, collate_fnc, device):
         float: Accuracy of model
     """
     model.eval()
+    per_value_accs = {}
+    req_val = 'metre' if 'met' in val_str else ('year' if 'year' in val_str else 'rhyme')
+    
     
     true_hits = 0
     for i in range(len(data)):
+        
         datum = collate_fnc([data[i]])
-        true_hits += model.validate(input_ids=datum["input_ids"].to(device),
+        res = model.validate(input_ids=datum["input_ids"].to(device),
                                     rhyme=datum["rhyme"], 
                                     metre=datum["metre"],
                                     year=datum['year'])['acc']
+        
+        
+        true_hits += res
+        per_value_accs[data[i][req_val]] = per_value_accs.get(data[i][req_val], []) + [res]
+        
     print(f"Validation acc: {true_hits/len(data)}")
+    
+    for key, value in per_value_accs.items():
+        per_value_accs[key] = sum(value) / len(value)
     
     model.train()
     
-    return true_hits/len(data)
+    return true_hits/len(data), per_value_accs
 
 
 def main(args):
@@ -166,8 +178,9 @@ def main(args):
         
     # Validate rhyme Validator on validation data
     rhyme_acc = 0
+    rhyme_val_acc = {}
     if args.epochs_rhyme > 0:
-        rhyme_acc =  validate(rhyme_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device)
+        rhyme_acc, rhyme_val_acc =  validate(rhyme_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device, 'rhyme')
     
         torch.save(rhyme_model.cpu(), os.path.abspath(os.path.join(args.model_path, "rhyme", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
@@ -209,8 +222,9 @@ def main(args):
                                    device=device).train()
     # Validate Metrum validator on validation data
     metre_acc = 0
+    metre_val_accs = {}
     if args.epochs_metre > 0:
-        metre_acc = validate(meter_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device)
+        metre_acc, metre_val_accs = validate(meter_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device, 'metre')
     
         torch.save(meter_model.cpu(), os.path.abspath(os.path.join(args.model_path, "meter", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
@@ -252,8 +266,9 @@ def main(args):
                                    device=device).train()
     
     year_acc = 0
+    year_val_accs = {}
     if args.epochs_year > 0:
-        year_acc = validate(year_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device)
+        year_acc, year_val_accs = validate(year_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device, 'year')
     
         torch.save(year_model.cpu(), os.path.abspath(os.path.join(args.model_path, "year", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
@@ -262,8 +277,11 @@ def main(args):
     with open(args.result_file, 'a') as file:
         print(f"### NEW FORMAT! ### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp} ### Syllable: {str(args.syllables)} ### SAM Training: {str(args.SAM)}", file=file)
         print(f"Rhyme Validator: {args.pretrained_model}, Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
+        print(f'{rhyme_val_acc}', file=file)
         print(f"Metre Validator: {args.pretrained_model}, Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
+        print(f'{metre_val_accs}', file=file)
         print(f"Year Validator: {args.pretrained_model}, Epochs: {args.epochs_year} Accuracy: {year_acc}", file=file)
+        print(f'{year_val_accs}', file=file)
     
     
 if __name__ == "__main__":
