@@ -75,13 +75,13 @@ def validate(model: ValidatorInterface, data, collate_fnc, device, val_str:str):
         
         datum = collate_fnc([data[i]])
         if req_val == 'metre_ids':
-            for i in range(datum['input_ids'].shape[0]):
-                res = model.validate(input_ids=datum["input_ids"][i,:].reshape(1,-1).to(device),
+            for j in range(datum['input_ids'].shape[0]):
+                res = model.validate(input_ids=datum["input_ids"][j,:].reshape(1,-1).to(device),
                                     rhyme=None, 
-                                    metre_ids=datum["metre_ids"][i,:].reshape(1,-1),
+                                    metre_ids=datum["metre_ids"][j,:].reshape(1,-1),
                                     year=None)['acc']
                 true_hits += res
-                per_value_accs[data[i][req_val][i]] = per_value_accs.get(data[i][req_val][i], []) + [res]
+                per_value_accs[datum[req_val][j]] = per_value_accs.get(datum[req_val][j], []) + [res]
                 count +=1
         else:      
             res = model.validate(input_ids=datum["input_ids"].to(device),
