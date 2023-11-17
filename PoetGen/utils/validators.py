@@ -275,7 +275,7 @@ class ValidatorTrainer:
         # SAM Values
         self.device = device      
         self.optimizer = SAM(self.model.parameters(), torch.optim.AdamW, lr=self.lr, weight_decay=self.weight_decay)
-        self.scheduler = transformers.get_constant_schedule_with_warmup(self.optimizer, len(train_dataset)//self.batch_size)
+        self.scheduler = transformers.get_constant_schedule_with_warmup(self.optimizer, 4 * len(train_dataset)//self.batch_size)
         
         # GSAM Value
         #self.device = device
