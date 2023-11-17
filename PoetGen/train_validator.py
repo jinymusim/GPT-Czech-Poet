@@ -133,7 +133,7 @@ def main(args):
             training_args = TrainingArguments(
                                       save_strategy  = "no",
                                       logging_steps = 500,
-                                      warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
+                                      warmup_steps = 4 *  len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
                                       weight_decay = 0.0,
                                       num_train_epochs = args.epochs_rhyme,
                                       learning_rate = args.learning_rate_rhyme,
@@ -177,7 +177,7 @@ def main(args):
         if args.epochs_metre > 0:
             training_args = TrainingArguments(
                                       save_strategy  = "no",
-                                      warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_metre,
+                                      warmup_steps = 4 *   len(train_data.pytorch_dataset_body)//args.batch_size_metre,
                                       logging_steps = 500,
                                       weight_decay = 0.0,
                                       num_train_epochs = args.epochs_metre,
@@ -220,7 +220,7 @@ def main(args):
         if args.epochs_year > 0:
             training_args = TrainingArguments(
                                       save_strategy  = "no",
-                                      warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_year,
+                                      warmup_steps = 4 *   len(train_data.pytorch_dataset_body)//args.batch_size_year,
                                       logging_steps = 500,
                                       weight_decay = 0.0,
                                       num_train_epochs = args.epochs_year,
