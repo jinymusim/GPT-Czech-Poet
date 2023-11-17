@@ -11,7 +11,7 @@ from functools import partial
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 from utils.validators import MeterValidator, RhymeValidator, YearValidator,ValidatorInterface, ValidatorTrainer
 
-from utils.poet_utils import VALID_CHARS, UNK, PAD, EOS, parse_boolean
+from utils.poet_utils import VALID_CHARS, UNK, PAD, EOS, parse_boolean, TextManipulation
 from utils.poet_model_utils import ModelManipulation
 
 parser = argparse.ArgumentParser()
@@ -90,7 +90,10 @@ def validate(model: ValidatorInterface, data, collate_fnc, device, val_str:str):
                                     metre_ids=None,
                                     year=datum['year'])['acc']
             true_hits += res
-            per_value_accs[data[i][req_val]] = per_value_accs.get(data[i][req_val], []) + [res]
+            if req_val == 'year':
+                per_value_accs[TextManipulation._year_bucketor(data[i][req_val])] = per_value_accs.get(TextManipulation._year_bucketor(data[i][req_val]), []) + [res]
+            else:
+                per_value_accs[data[i][req_val]] = per_value_accs.get(data[i][req_val], []) + [res]
             count +=1
         
         
