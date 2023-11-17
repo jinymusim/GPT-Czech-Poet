@@ -164,8 +164,8 @@ class MeterValidator(ValidatorInterface):
         
         return softmaxed
     
-    def validate(self, input_ids=None, metre_ids=None, k: int=2,*args, **kwargs):
-        outputs = self.model(input_ids=input_ids)
+    def validate(self, input_ids=None, metre_ids=None, attention_mask=None, k: int=2,*args, **kwargs):
+        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask )
         
         last_hidden = outputs['hidden_states'][-1]
         
