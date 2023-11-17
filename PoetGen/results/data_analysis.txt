@@ -36,8 +36,8 @@ XABABX, Presence: 0.23 %
 XABBAX, Presence: 0.19 %
 AAXXBB, Presence: 0.18 %
 AXABBX, Presence: 0.15 %
-ABABBX, Presence: 0.14 %
 XAAXBB, Presence: 0.14 %
+ABABBX, Presence: 0.14 %
 AAAA, Presence: 0.13 %
 XAAA, Presence: 0.12 %
 XAABXB, Presence: 0.12 %
@@ -89,8 +89,8 @@ AAAABB, Presence: 0.03 %
 ABBABX, Presence: 0.02 %
 ABCACB, Presence: 0.02 %
 ABBXAX, Presence: 0.02 %
-XAXXXA, Presence: 0.02 %
 AXBABX, Presence: 0.02 %
+XAXXXA, Presence: 0.02 %
 XAXXAX, Presence: 0.02 %
 XABXAB, Presence: 0.02 %
 AXAXAX, Presence: 0.02 %
@@ -164,9 +164,9 @@ XABBAB, Presence: 0.01 %
 ABXBXA, Presence: 0.01 %
 XXXAAA, Presence: 0.01 %
 ABBXXA, Presence: 0.01 %
+AABXAB, Presence: 0.01 %
 AXBXAB, Presence: 0.01 %
 AAXBAB, Presence: 0.01 %
-AABXAB, Presence: 0.01 %
 AAXAAA, Presence: 0.01 %
 AXXAXA, Presence: 0.00 %
 AXBBXA, Presence: 0.00 %
@@ -193,8 +193,8 @@ AXBXBA, Presence: 0.00 %
 ABXABB, Presence: 0.00 %
 AXAAXA, Presence: 0.00 %
 AAAXAA, Presence: 0.00 %
-XXAAAA, Presence: 0.00 %
 ABXABA, Presence: 0.00 %
+XXAAAA, Presence: 0.00 %
 AXAXAA, Presence: 0.00 %
 ABAXBB, Presence: 0.00 %
 AXXXAA, Presence: 0.00 %
@@ -208,9 +208,9 @@ AAAXAX, Presence: 0.00 %
 AABXBA, Presence: 0.00 %
 XAAAAA, Presence: 0.00 %
 ABBBAB, Presence: 0.00 %
-ABBBAA, Presence: 0.00 %
 XAAAXA, Presence: 0.00 %
 AAAAXA, Presence: 0.00 %
+ABBBAA, Presence: 0.00 %
 AXXAAA, Presence: 0.00 %
 ABBXBA, Presence: 0.00 %
 ABBBXA, Presence: 0.00 %
@@ -218,14 +218,14 @@ ABBBBA, Presence: 0.00 %
 AAAXXA, Presence: 0.00 %
 ABXBBA, Presence: 0.00 %
 === METRES ===
-J, Presence: 48.57 %
-T, Presence: 36.44 %
-N, Presence: 10.18 %
-D, Presence: 2.68 %
-X, Presence: 1.19 %
-A, Presence: 0.63 %
-H, Presence: 0.19 %
-Y, Presence: 0.11 %
+J, Presence: 48.65 %
+T, Presence: 36.38 %
+N, Presence: 10.02 %
+D, Presence: 2.76 %
+X, Presence: 1.23 %
+A, Presence: 0.64 %
+H, Presence: 0.18 %
+Y, Presence: 0.12 %
 P, Presence: 0.02 %
 === YEARS ===
 1896, Presence: 2.79 %
