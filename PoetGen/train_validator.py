@@ -74,7 +74,7 @@ def validate(model: ValidatorInterface, data, collate_fnc, device, val_str:str):
     for i in range(len(data)):
         
         datum = collate_fnc([data[i]])
-        if req_val == 'metre':
+        if req_val == 'metre_ids':
             for i in range(datum['input_ids'].shape[0]):
                 res = model.validate(input_ids=datum["input_ids"][i,:].reshape(1,-1).to(device),
                                     rhyme=None, 
