@@ -411,13 +411,13 @@ class TextAnalysis:
         if not line_striped:
             return {}
         line_params = {}
-        # Look for parameters in Order METER, END, LENGTH, TRUE_LENGTH, TRUE_END
+        # Look for parameters in Order METER, LENGTH, END, TRUE_LENGTH, TRUE_END
         if TextAnalysis._is_meter(line_striped.split()[0]):
             line_params["METER"] = line_striped.split()[0]
-        if len(line_striped.split()) > 2 and TextAnalysis._is_line_end(line_striped.split()[2]):
-            line_params["END"] = line_striped.split()[2]
-        if  len(line_striped.split()) > 4 and TextAnalysis._is_line_length(line_striped.split()[4]):
-            line_params["LENGTH"] = int(line_striped.split()[4])
+        if  len(line_striped.split()) > 2 and TextAnalysis._is_line_length(line_striped.split()[2]):
+            line_params["LENGTH"] = int(line_striped.split()[2])
+        if len(line_striped.split()) > 4 and TextAnalysis._is_line_end(line_striped.split()[4]):
+            line_params["END"] = line_striped.split()[4]
         if len(line_striped.split()) > 6:
             line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(" ".join(line_striped.split()[6:])))
         # TRUE_END needs only alpha chars, so all other chars are removed    

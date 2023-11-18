@@ -176,8 +176,8 @@ class PoetModelContextYear(PoetModelInterface):
             elif features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "X":
                 j=-1
             line_start = (f"{features_dict[f'METER_{j}'] } # " if f"METER_{j}" in features_dict.keys() else "") + \
-                (f"{features_dict[f'END_{j}'] } # " if  f"END_{j}" in features_dict.keys() else "") + \
-                (f"{features_dict[f'LENGTH_{j}']} # " if f"LENGTH_{j}" in features_dict.keys() else "" )
+                (f"{features_dict[f'LENGTH_{j}']} # " if f"LENGTH_{j}" in features_dict.keys() else "" ) + \
+                (f"{features_dict[f'END_{j}'] } # " if  f"END_{j}" in features_dict.keys() else "") 
             tokenized_poet_start = tokenizer.encode("\n".join(prompt_list) + "\n" + line_start,  return_tensors='pt')
             if sample:
                 out_line =  self.model.generate(tokenized_poet_start, 
@@ -211,10 +211,11 @@ class PoetModelContextYear(PoetModelInterface):
                 decoded_line: str = decoded_lines[-1]
             else:
                 decoded_line: str = decoded_lines[len(prompt_list)]
-            if  f"LENGTH_{j}" not in features_dict.keys() and len(decoded_line.split()) > 4 and j>=0:
-                features_dict[f'LENGTH_{j}'] = decoded_line.split()[4]
-                features_dict[f'END_{j}'] = decoded_line.split()[2]
+            if  f"END_{j}" not in features_dict.keys() and len(decoded_line.split()) > 4 and j>=0:
                 features_dict[f'METER_{j}'] = decoded_line.split()[0]
+                features_dict[f'LENGTH_{j}'] = decoded_line.split()[2]
+                features_dict[f'END_{j}'] = decoded_line.split()[4]
+                
             prompt_list.append(decoded_line)
         
         return "\n".join(prompt_list)
