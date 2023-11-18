@@ -306,8 +306,13 @@ class TextAnalysis:
         if publish_year == None:
             publish_vector[-1] = 1
         else:
-            distance_weighting = [1/(1 + abs(year - publish_year)) if abs(year - publish_year) <= 20 else 0 for year in POET_YEARS_BUCKETS[:-1]] + [0]
-            publish_vector = np.asarray(distance_weighting)/np.sum(distance_weighting)
+            # Distance Part
+            distance_weighting = [1/(1 + abs(year - publish_year)) for year in POET_YEARS_BUCKETS[:-1]] + [0]
+            publish_vector = np.asarray(distance_weighting)
+            # Correct class correction
+            publish_vector[np.argmin( abs(np.asarray(POET_YEARS_BUCKETS[:-1]) - publish_year))] += 1
+            # Normalize
+            publish_vector = publish_vector/np.sum(publish_vector)
         return publish_vector  
     
     @staticmethod
