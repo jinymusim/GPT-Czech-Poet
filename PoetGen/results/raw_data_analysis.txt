@@ -262,3 +262,5 @@ Hauner, Emanuel, Number of Lines: 106
 Leška, Štěpán, Number of Lines: 105
 Kalina, Josef Jaroslav, Number of Lines: 100
 Melichar, Josef Jaroslav, Number of Lines: 100
+=== SYLLAB UNIQUE ===
+87.90358064933223 % Syllable Uniqueness

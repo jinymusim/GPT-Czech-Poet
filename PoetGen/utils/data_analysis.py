@@ -2,7 +2,7 @@ import json
 import argparse
 import os
 
-from poet_utils import TextManipulation
+from poet_utils import TextManipulation, SyllableMaker
 
 parser = argparse.ArgumentParser()
 
@@ -56,6 +56,7 @@ with open(args.result_file, "w+") as file:
 
 writer_data = {}
 data_filenames = os.listdir(args.raw_data_files)
+syllable_uniqueness = []
 for filename in data_filenames:
     file_path = os.path.join(args.raw_data_files, filename)
     
@@ -69,8 +70,11 @@ for filename in data_filenames:
             author = book['b_author']['identity']
         line_count = 0
         for body_part in book['body']:
+            syllables = []
             for text_line in  body_part:
                 line_count +=1
+                syllables += SyllableMaker.syllabify(text_line['text'])
+            syllable_uniqueness += [len(set(syllables))/len(syllables)]
         writer_data[author] = writer_data.get(author, 0) + line_count
         
 writers = sorted(writer_data.items(), key=lambda x: x[1], reverse=True)
@@ -78,4 +82,6 @@ with open(args.raw_result_file, "w+", encoding="utf-8") as file:
     print("=== WRITERS ===", file=file)
     for writer in writers:
         print(f"{writer[0]}, Number of Lines: {writer[1]}", file=file)
+    print("=== SYLLAB UNIQUE ===", file=file)
+    print(f"{sum(syllable_uniqueness)/len(syllable_uniqueness) * 100} % Syllable Uniqueness", file=file)
     
