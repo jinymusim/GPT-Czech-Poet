@@ -204,7 +204,7 @@ class YearValidator(ValidatorInterface):
         
         self.year_regressor = torch.nn.Linear(self.model_size, len(POET_YEARS_BUCKETS)) # Meter Type
         
-        self.log_softmax = torch.nn.LogSoftmax()
+        self.loss_fnc = torch.nn.CrossEntropyLoss()
         
     def forward(self, input_ids=None, attention_mask=None, year=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
@@ -213,10 +213,10 @@ class YearValidator(ValidatorInterface):
         
         year_regression = self.year_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
         # Cross-Entropy from log softmax    
-        log_softmax =self.log_softmax(year_regression)
-        meter_loss = torch.mean(torch.sum(-year * log_softmax, 1))
+        softmaxed = torch.softmax(year_regression, dim=1)
+        meter_loss = self.loss_fnc(softmaxed, year)
         
-        return {"model_output" : log_softmax,
+        return {"model_output" : softmaxed,
                 "loss": meter_loss + outputs.loss}
         
     def predict(self, input_ids=None, *args, **kwargs):

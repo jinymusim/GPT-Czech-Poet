@@ -37,7 +37,7 @@ if "_LM" in args.model_path_full:
 else:
     model: PoetModelInterface= (torch.load(args.model_path_full, map_location=torch.device('cpu')))
 # Free model generation
-tokenized_poet_start = tokenizer.encode("ABAB", return_tensors='pt')
+tokenized_poet_start = tokenizer.encode("#", return_tensors='pt')
 
 if args.sample:
     out = model.model.generate(tokenized_poet_start, 
@@ -62,7 +62,7 @@ decoded_cont = tokenizer.decode(out[0], skip_special_tokens=True)
 # Print the result of generation
 print("### Basic Decoding! ###\n", decoded_cont)
 # Restricted generation 
-out_forced = model.generate_forced("ABBACC", tokenizer, verse_len=4, sample=args.sample)
+out_forced = model.generate_forced("#", tokenizer, verse_len=4, sample=args.sample)
 # Print the result of generation
 print("### Forced Decoding! ###\n", out_forced)
 # Store both types of generation as well as the name of used LM
