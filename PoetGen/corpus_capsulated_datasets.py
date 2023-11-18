@@ -180,7 +180,7 @@ class CorpusDatasetPytorch:
             num_str = f"{len(syllables)} # " if self.prompt_length else ""
             verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
-            return num_str + verse_end + metre_txt + raw_text
+            return metre_txt + num_str + verse_end  + raw_text
         
         def _construct_syllable_line(self, raw_text, metre):
             """Construct individual content line as sequence of syllables
@@ -196,7 +196,7 @@ class CorpusDatasetPytorch:
             num_str = f"{len(syllables)} # " if self.prompt_length else ""
             verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
-            return num_str + verse_end + metre_txt + " ".join(syllables) + ending
+            return  metre_txt+ num_str + verse_end + " ".join(syllables) + ending
                      
             
         def data_text_line_gen(self):
@@ -309,7 +309,7 @@ class CorpusDatasetPytorch:
             num_str = f"{len(syllables)} # " if self.prompt_length else ""
             verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
-            return num_str + verse_end + metre_txt + raw_text
+            return  metre_txt + num_str + verse_end  + raw_text
         
         def _construct_syllable_line(self, raw_text, metre):
             """Construct individual content line as sequence of syllables
@@ -325,7 +325,7 @@ class CorpusDatasetPytorch:
             num_str = f"{len(syllables)} # " if self.prompt_length else ""
             verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
-            return num_str + verse_end +metre_txt + " ".join(syllables) + ending
+            return metre_txt + num_str + verse_end + " ".join(syllables) + ending
             
             
                                                            
@@ -367,8 +367,8 @@ class CorpusDatasetPytorch:
                                 
                                 rhyme_str = TextManipulation._rhyme_string(rhyme)
                                 
-                                text = f"{rhyme_str} # {publish_year_text}\n" + "\n".join(body) + "\n"
-                                syllable_text = f"{rhyme_str} # {publish_year_text}\n" + "\n".join(body_syllabs) + "\n"
+                                text = f"# {rhyme_str} # {publish_year_text}\n" + "\n".join(body) + "\n"
+                                syllable_text = f"# {rhyme_str} # {publish_year_text}\n" + "\n".join(body_syllabs) + "\n"
                                 context_text= "\n".join(context)
                                 if np.random.rand() > self.val_data_rate:
                                     self.data.append({

@@ -41,7 +41,9 @@ class PoetModelHalfBase(PoetModelInterface):
     def save_LM(self, LM_path):
         self.model.save_pretrained(LM_path)
         
-    def analyze_prompt(self, prompt:str):
+    def analyze_prompt(self, prompt):
+        if isinstance(prompt, dict):
+            return prompt 
         features_dict = {}  
         lines = prompt.splitlines()
         lines = list(map(str.strip, lines))
@@ -63,12 +65,12 @@ class PoetModelHalfBase(PoetModelInterface):
         return features_dict
                    
     
-    def generate_forced(self, prompt:str, tokenizer: AutoTokenizer, verse_len:int = 4, sample: bool = False):
+    def generate_forced(self, prompt, tokenizer: AutoTokenizer, verse_len:int = 4, sample: bool = False):
         
         features_dict_init = self.analyze_prompt(prompt)
         prompt_list = prompt.splitlines()
         # GENERATE FOR POSSIBLE MISSING POET PARAM
-        token_gen_rhyme = tokenizer.encode("A", return_tensors='pt')
+        token_gen_rhyme = tokenizer.encode("#", return_tensors='pt')
         if sample:
             rhyme_line = self.model.generate(token_gen_rhyme, 
                                 max_new_tokens= 100,
@@ -93,7 +95,7 @@ class PoetModelHalfBase(PoetModelInterface):
         # BACKUP RHYME
         if "RHYME" not in features_dict.keys():
             features_dict["RHYME"] = random.choice(RHYME_SCHEMES[:-1])
-        poet_param_str = ""
+        poet_param_str = "# "
         if "RHYME" in features_dict.keys():
             poet_param_str += features_dict["RHYME"]
         if "YEAR" in features_dict.keys():
@@ -125,9 +127,9 @@ class PoetModelHalfBase(PoetModelInterface):
                 j = 3
             elif features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "X":
                 j=-1
-            line_start =  (features_dict[f"LENGTH_{j}"] if f"LENGTH_{j} # " in features_dict.keys() else "" )  + \
+            line_start = (f"{features_dict[f'METER_{j}'] } # " if f"METER_{j}" in features_dict.keys() else "") + \
                 (f"{features_dict[f'END_{j}'] } # " if  f"END_{j}" in features_dict.keys() else "") + \
-                (f"{features_dict[f'METER_{j}'] } # " if f"METER_{j}" in features_dict.keys() else "")
+                (f"{features_dict[f'LENGTH_{j}']} # " if f"LENGTH_{j}" in features_dict.keys() else "" )
             tokenized_poet_start = tokenizer.encode("\n".join(prompt_list) + "\n" + line_start,  return_tensors='pt')
             if sample:
                 out_line =  self.model.generate(tokenized_poet_start, 
@@ -161,10 +163,10 @@ class PoetModelHalfBase(PoetModelInterface):
                 decoded_line: str = decoded_lines[-1]
             else:
                 decoded_line: str = decoded_lines[len(prompt_list)]
-            if  f"METER_{j}" not in features_dict.keys() and len(decoded_line.split()) > 4 and j>=0:
-                features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
+            if  f"LENGTH_{j}" not in features_dict.keys() and len(decoded_line.split()) > 4 and j>=0:
+                features_dict[f'LENGTH_{j}'] = decoded_line.split()[4]
                 features_dict[f'END_{j}'] = decoded_line.split()[2]
-                features_dict[f'METER_{j}'] = decoded_line.split()[4]
+                features_dict[f'METER_{j}'] = decoded_line.split()[0]
             prompt_list.append(decoded_line)
         
         return "\n".join(prompt_list)

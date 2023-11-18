@@ -934,3 +934,51 @@ A
 11 ní # to naše štěstí, naše vykoupení.
 11 ní # to naše štěstí, naše vykoupení.
 11 ní # ó bože, bože! bože smilování!
+--- Model TestModel-e4e8_LM ---
+### Basic Decoding! ###
+ ABAB # 1880
+11 # ní # J # a přec se zdá mi, jakbych z nenadání
+10 # la # T # v náruč tvou se náhle přissávala,
+12 # ni # A # jak v objetí tvém bych tiskla tě na skráni
+9 # lá # Y # tak horoucně, něžně, spanilá.
+
+### Forced Decoding! ###
+ ABBACC # 1880
+11 # ní # J # a v tom, co v duši mé se náhle mění,
+10 # vní # A # jak v myšlénkách, dumách se probouzím v ní, 
+vní # A #  toť pohádka  pohádka životní
+ní # J #  a jak se tak dívám v tu dobu ranní,  
+9 # vá # Y # to pohádka smutná a snivá
+vá # Y #  ach, jak ta pohádka pravdivá!
+--- Model TestModel-e4e8_LM ---
+### Basic Decoding! ###
+ ABAB # 1880
+11 # ní # J # a přec se zdá mi, jakbych z nenadání
+10 # la # T # v náruč tvou se náhle přissávala,
+12 # ni # A # jak v objetí tvém bych tiskla tě na skráni
+9 # lá # Y # tak horoucně, něžně, spanilá.
+
+### Forced Decoding! ###
+ ABBACC # 1880
+11 # ní # J # a v tom, co v duši mé se náhle mění,
+10 # vní # A # jak v myšlénkách, dumách se probouzím v ní, 
+10 # vní # A #  ó, cítím, jak srdce mi buší v ni,  
+11 # ní # J #  to není sen, toť pohádka je o ní!
+9 # tí # D # to je ta pohádka o žití!    !
+9 # tí # D #  a já se zachvěl v blahém pohnutí.
+--- Model TestModel-e4e8_LM ---
+### Basic Decoding! ###
+ ABAB # 1880
+11 # ní # J # a přec se zdá mi, jakbych z nenadání
+10 # la # T # v náruč tvou se náhle přissávala,
+12 # ni # A # jak v objetí tvém bych tiskla tě na skráni
+9 # lá # Y # tak horoucně, něžně, spanilá.
+
+### Forced Decoding! ###
+ ABBACC # 1880
+11 # ní # J # a v tom, co v duši mé se náhle mění,
+10 # vní # A # jak v myšlénkách, dumách se probouzím v ní, 
+10 # vní # A #  ó, cítím, jak srdce mi buší v ni,  
+11 # ní # J #  to není sen, toť pohádka je o ní!
+9 # tí # D # to je ta pohádka o žití!    !
+9 # tí # D #  a já se zachvěl v blahém pohnutí.

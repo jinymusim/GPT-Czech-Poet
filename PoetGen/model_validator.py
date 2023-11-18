@@ -108,9 +108,13 @@ class ModelValidator:
         Returns:
             str: Generated Strophe
         """
-        start = f"{self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])}" 
+        
+        
+        
         
         if type  == "BASIC":
+            # Up to first meter
+            start = f"# {self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])}\n{self.validation_data[index]['metre_ids'][0]}" 
             tokenized_poet_start = self.tokenizer.encode(start, return_tensors='pt', truncation=True)
             if self.args.sample:
                 out = self.model.model.generate(tokenized_poet_start, 
@@ -132,7 +136,17 @@ class ModelValidator:
                 
             return self.tokenizer.decode(out[0], skip_special_tokens=True)
         if type == "FORCED":
-            return self.model.generate_forced(start, self.tokenizer, verse_len= len(self.validation_data[index]['rhyme']), sample=self.args.sample)
+            start_forced = {'RHYME': self.validation_data[index]['rhyme'],
+                            'YEAR': TextManipulation._year_bucketor(self.validation_data[index]['year'])}
+            for ch, id in zip(self.validation_data[index]['rhyme'], self.validation_data[index]['metre_ids']):
+                if ch == 'A':
+                    start_forced['METER_0'] = id
+                elif ch == 'B':
+                    start_forced['METER_1'] = id
+                elif ch == 'C':
+                    start_forced['METER_2'] = id
+            
+            return self.model.generate_forced(start_forced, self.tokenizer, verse_len= len(self.validation_data[index]['rhyme']), sample=self.args.sample)
             
             
             
