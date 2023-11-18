@@ -354,8 +354,6 @@ class CorpusDatasetPytorch:
                             metre = METER_TRANSLATE.get(text_line["metre"][0]["type"], "N")
                             metres +=  [metre]
                             
-                            
-
                             rhyme.append(text_line["rhyme"])  
                             
                             scanned_text = TextManipulation._remove_most_nonchar(text_line["text"], self.lower_case)
@@ -391,11 +389,12 @@ class CorpusDatasetPytorch:
                                 
                                 if i == max(self.verse_len):
                                     context = body
-                                    body = []
-                                    body_syllabs = []
-                                    rhyme = []
-                                    metres = []
-                                    i=0
+                                    # Carry over from largest to smallest
+                                    body = body[-(max(self.verse_len) - min(self.verse_len)):]
+                                    body_syllabs = body_syllabs[-(max(self.verse_len) - min(self.verse_len)):]
+                                    rhyme = rhyme[-(max(self.verse_len) - min(self.verse_len)):]
+                                    metres = metres[-(max(self.verse_len) - min(self.verse_len)):]
+                                    i=max(self.verse_len) - min(self.verse_len)
                                 
         
         def __len__(self):

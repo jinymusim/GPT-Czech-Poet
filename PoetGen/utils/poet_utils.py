@@ -195,14 +195,18 @@ class TextManipulation:
         Returns:
             str: Rhyme schema
         """
-        rhyme_list = curr_rhyme_list[:]
+        rhyme_list = curr_rhyme_list.copy()
         reference = None
         # Give None a blank -1 rhyme id
         for i in range(len(rhyme_list)):
             if rhyme_list[i] != None and reference == None:
                 reference = rhyme_list[i]
+            elif rhyme_list[i] != None and rhyme_list[i] < reference:
+                reference = rhyme_list[i]
             elif rhyme_list[i] == None:
                  rhyme_list[i] = -1
+        
+        # With more robust post processing, this is may not needed
                
         # if there is valid rhyme, normalize 
         if reference != None:
