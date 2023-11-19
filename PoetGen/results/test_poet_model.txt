@@ -982,3 +982,51 @@ vá # Y #  ach, jak ta pohádka pravdivá!
 11 # ní # J #  to není sen, toť pohádka je o ní!
 9 # tí # D # to je ta pohádka o žití!    !
 9 # tí # D #  a já se zachvěl v blahém pohnutí.
+--- Model TestModel-e4e8_LM ---
+### Basic Decoding! ###
+ # ABAB # 1900
+D # 7 # čí # co jest nám do zázračí,
+D # 6 # tí # než květ svůj rozvrátí?
+D # 7 # čí # nám stačí jen do křečí
+D # 6 # tí # a z těla vynutí!
+
+### Forced Decoding! ###
+ # XAXA # 1880
+J # 8 # ka # až v noci jednou u lůžka
+J # 7 # ne # sen duši mojí kyne,
+J # 8 # sten # jen tebe, dítě, tichý sten
+J # 7 # ne #  ó ne, jen tobě vpadne.
+--- Model TestModel-e4e8_LM ---
+### Basic Decoding! ###
+ # XXXXXX # 1900
+J # 10 # tu # se vrhal na stůl, ale v jistotu
+J # 9 #ávist # se mýlil, neboť sám sám byl svobod.
+J # 10 # ta # co mluvil o něm, toho prokleta
+J # 10 # lo # byl hádka obou, mnoho trpělo
+J # 10 # jen #Kategorie všechny, každý bez skrblic jen
+J # 10 # du # a hlavně žádný nechtěl zásadu
+
+### Forced Decoding! ###
+ # ABABCC # 1900
+T # 12 # jín # po polích se prohonil, kde v temný hájen
+T # 11 # les # bílý dvůr se tají. vedle kyprý les
+T # 12 # jín #  v pozadí dvůr  toť panský pole prozaháj 
+T # 11 # les #  kde snad kníže je? ach, co se to vše les
+T # 12 # jí # v dálku modrou valí!  jako vichr dují
+T # 12 # jí #  v dálce jenom havranové  jak se bojí,
+--- Model TestModel-e4e8_LM ---
+### Basic Decoding! ###
+ # XAABBX # 1900
+J # 6 # ný # a život zmařený   
+J # 12 # jen # kde bylo neštěstí, tam všechno zbývá jen,
+J # 14 # pen # bys ponejprv se navrátil a zrakem vystřídpen 
+J # 6 # je # však v srdci boly je,
+J # 4 # je # zřím naděje...
+J # 7 # ně # já věřím v jiné příšery  
+
+### Forced Decoding! ###
+ # ABBA # 1880
+J # 11 # ní # jak dítě v lese, tak  ve jarním vání
+J # 11 # ly # a v bujném sněhu stopy bílé byly 
+J # 11 # ly #  to vše je láska, kterou květy spaly,
+J # 11 # ní #  když vítr zavál  ve větru se pyšní.

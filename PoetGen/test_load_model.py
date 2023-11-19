@@ -13,7 +13,7 @@ parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os
 # bigscience/bloom-560m
 parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Original", "base_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "test_poet_model.txt")), type=str, help="Where to store the decoding efforts")
-parser.add_argument("--sample", default= False, type=bool, help="If to sample during generation")
+parser.add_argument("--sample", default=True, type=bool, help="If to sample during generation")
 
 
 if __name__ == "__main__":
