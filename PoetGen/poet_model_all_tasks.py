@@ -64,14 +64,14 @@ class PoetModelAllTasks(PoetModelInterface):
             full_loss = full_loss + 0.1*verse_loss
             
         metre_loss = None
-        if rhyme is not None:
+        if metre is not None:
             softmaxed = torch.softmax(metre_regression, dim=1)
             loss_fct = torch.nn.CrossEntropyLoss()
             metre_loss = loss_fct(softmaxed, metre)
             full_loss = full_loss + 0.1*metre_loss
         
         year_loss = None
-        if rhyme is not None:
+        if year is not None:
             softmaxed = torch.softmax(year_regression, dim=1)
             loss_fct = torch.nn.CrossEntropyLoss()
             year_loss = loss_fct(softmaxed, year)
