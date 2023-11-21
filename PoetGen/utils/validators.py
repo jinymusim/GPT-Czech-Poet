@@ -204,7 +204,7 @@ class YearValidator(ValidatorInterface):
         
         self.year_regressor = torch.nn.Linear(self.model_size, len(POET_YEARS_BUCKETS)) # Meter Type
         
-        self.loss_fnc = torch.nn.CrossEntropyLoss()
+        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.2)
         
     def forward(self, input_ids=None, attention_mask=None, year=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
