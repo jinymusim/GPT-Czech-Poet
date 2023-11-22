@@ -175,3 +175,6 @@ merges.txt
 
 #Possible keys
 *.key
+
+#
+SentimentAnalysis/*.csv
