@@ -33,7 +33,7 @@ parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is pr
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
-parser.add_argument("--syllables", default=True, type=parse_boolean, help="If to use syllable data")
+parser.add_argument("--syllables", default=False, type=parse_boolean, help="If to use syllable data")
 
 parser.add_argument("--SAM", default=False, type=parse_boolean, help='If to use Sharpness-Aware Minimazation')
 
@@ -80,7 +80,7 @@ def validate(model: ValidatorInterface, data, collate_fnc, device, val_str:str):
                                     attention_mask=datum['attention_mask'][j,:].reshape(1,-1).to(device),
                                     rhyme=None, 
                                     metre_ids=datum["metre_ids"][j,:].reshape(1,-1),
-                                    year=None)['acc']
+                                    year_bucket=None)['acc']
                 true_hits += res
                 per_value_accs[data[i][req_val][j]] = per_value_accs.get(data[i][req_val][j], []) + [res]
                 count +=1
@@ -88,7 +88,7 @@ def validate(model: ValidatorInterface, data, collate_fnc, device, val_str:str):
             res = model.validate(input_ids=datum["input_ids"].to(device),
                                     rhyme=datum["rhyme"], 
                                     metre_ids=None,
-                                    year=datum['year'])['acc']
+                                    year_bucket=datum['year_bucket'])['acc']
             true_hits += res
             if req_val == 'year':
                 per_value_accs[TextManipulation._year_bucketor(data[i][req_val])] = per_value_accs.get(TextManipulation._year_bucketor(data[i][req_val]), []) + [res]

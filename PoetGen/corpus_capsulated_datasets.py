@@ -565,16 +565,19 @@ class CorpusDatasetPytorch:
         if "rhyme" in batch[0].keys():
             rhyme = torch.tensor(np.asarray([TextAnalysis._rhyme_vector(text["rhyme"]) for text in batch], dtype=np.int32), dtype=torch.float32)
             
+        year_bucket = None
         year = None
         if "year" in batch[0].keys():      
-            year = torch.tensor(np.asarray([TextAnalysis._publish_year_vector(text["year"]) for text in batch], dtype=np.int32), dtype=torch.float32)
+            year_bucket = torch.tensor(np.asarray([TextAnalysis._publish_year_vector(text["year"]) for text in batch], dtype=np.int32), dtype=torch.float32)
+            year = torch.tensor(np.asarray([ [int(text['year'])] if text['year'] != 'NaN' else [0] for text in batch], dtype=np.int32), dtype=torch.float32)
         
         return  {
             "input_ids": input_ids,
             "attention_mask": attention,
             "rhyme": rhyme,
             "metre_ids": None,
-            "year": year}
+            "year_bucket": year_bucket,
+            'year':year}
     
     @staticmethod
     def collate_meter(batch, tokenizer: PreTrainedTokenizerBase, syllables:bool, is_syllable:bool = False, max_len = 512):
@@ -604,6 +607,7 @@ class CorpusDatasetPytorch:
             "attention_mask": attention,
             "rhyme": None,
             "metre_ids": metre_ids,
+            "year_bucket": None,
             "year": None}
         
     

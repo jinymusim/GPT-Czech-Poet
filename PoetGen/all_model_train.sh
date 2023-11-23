@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# EPOCH 4, EPOCH 8 
+# EPOCH 4, EPOCH 8 Effective batch 64, 48
 
 #qsub -N CZBaseTokenizerNormalTextGPTBaseTasksE4E8 -q gpu -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'EPOCHSLM=4,  EPOCHSPOET=8,  TOKENIZER=lchaloupsky/czech-gpt2-oscar,  MODELTYPE=base,  MODEL=./CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e8, HFMODEL=lchaloupsky/czech-gpt2-oscar'  all_model_train_helper.sh 
 #qsub -N CZBaseTokenizerNormalTextGPTAllTasksE4E8 -q gpu -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'EPOCHSLM=4,  EPOCHSPOET=8, TOKENIZER=lchaloupsky/czech-gpt2-oscar,  MODELTYPE=all,  MODEL=./CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-all-e4e8, HFMODEL=lchaloupsky/czech-gpt2-oscar'  all_model_train_helper.sh 

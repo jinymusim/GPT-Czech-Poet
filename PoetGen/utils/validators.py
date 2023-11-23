@@ -202,11 +202,15 @@ class YearValidator(ValidatorInterface):
         
         self.model_size = self.config.hidden_size
         
-        self.year_regressor = torch.nn.Linear(self.model_size, len(POET_YEARS_BUCKETS)) # Meter Type
+        self.year_regressor = torch.nn.Linear(self.model_size, len(POET_YEARS_BUCKETS)) # Year Bucket
+        
+        self.year_val = torch.nn.Linear(self.model_size, 1) # Year Value
         
         self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.2)
         
-    def forward(self, input_ids=None, attention_mask=None, year=None, *args, **kwargs):
+        self.loss_fnc_val = torch.nn.MSELoss()
+        
+    def forward(self, input_ids=None, attention_mask=None, year_bucket=None, year=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
         
         last_hidden = outputs['hidden_states'][-1]
@@ -214,10 +218,13 @@ class YearValidator(ValidatorInterface):
         year_regression = self.year_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
         # Cross-Entropy from log softmax    
         softmaxed = torch.softmax(year_regression, dim=1)
-        meter_loss = self.loss_fnc(softmaxed, year)
+        year_loss = self.loss_fnc(softmaxed, year_bucket)
+        
+        year_val = self.year_val((last_hidden[:,0,:].view(-1, self.model_size)))
+        year_val_loss = self.loss_fnc_val(year_val, year)
         
         return {"model_output" : softmaxed,
-                "loss": meter_loss + outputs.loss}
+                "loss": year_loss + year_val_loss + outputs.loss}
         
     def predict(self, input_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids)
@@ -230,7 +237,7 @@ class YearValidator(ValidatorInterface):
         
         return softmaxed
     
-    def validate(self, input_ids=None, year=None, k: int=2,*args, **kwargs):
+    def validate(self, input_ids=None, year_bucket=None, k: int=2,*args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
@@ -245,7 +252,7 @@ class YearValidator(ValidatorInterface):
         
         predicted_top_k = torch.topk(softmaxed, k).indices
         
-        label_val = torch.argmax(year.flatten())
+        label_val = torch.argmax(year_bucket.flatten())
         
         validation_true_val = (label_val == predicted_val).float().sum().numpy()
         top_k_presence = 0
@@ -295,6 +302,7 @@ class ValidatorTrainer:
                 loss = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
                                   rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
                                   metre_ids = None if batch["metre_ids"] == None else batch["metre_ids"].to(self.device),
+                                  year_bucket = None if batch["year_bucket"] == None else batch["year_bucket"].to(self.device),
                                   year = None if batch["year"] == None else batch["year"].to(self.device))['loss']
                 loss.backward()          
                 self.optimizer.first_step(zero_grad=True)
@@ -302,6 +310,7 @@ class ValidatorTrainer:
                 loss = self.model(input_ids=batch["input_ids"].to(self.device), attention_mask=batch["attention_mask"].to(self.device),
                                       rhyme = None if batch["rhyme"] == None else batch["rhyme"].to(self.device),
                                       metre_ids = None if batch["metre_ids"] == None else batch["metre_ids"].to(self.device),
+                                      year_bucket = None if batch["year_bucket"] == None else batch["year_bucket"].to(self.device),
                                       year = None if batch["year"] == None else batch["year"].to(self.device))['loss']
                 
                 loss.backward()
