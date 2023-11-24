@@ -3,6 +3,7 @@ import transformers
 import jellyfish
 from tqdm import tqdm
 from transformers import  AutoModelForMaskedLM
+import numpy as np
 from .poet_utils import RHYME_SCHEMES, METER_TYPES, POET_YEARS_BUCKETS
 
 from torch.utils.data import DataLoader, Dataset
@@ -202,11 +203,8 @@ class YearValidator(ValidatorInterface):
         
         self.model_size = self.config.hidden_size
         
-        self.year_regressor = torch.nn.Linear(self.model_size, len(POET_YEARS_BUCKETS)) # Year Bucket
         
-        self.year_val = torch.nn.Linear(self.model_size, 1) # Year Value
-        
-        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.2)
+        self.year_val = torch.nn.Linear(self.model_size, 1) # Year Value     
         
         self.loss_fnc_val = torch.nn.MSELoss()
         
@@ -215,42 +213,38 @@ class YearValidator(ValidatorInterface):
         
         last_hidden = outputs['hidden_states'][-1]
         
-        year_regression = self.year_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
-        # Cross-Entropy from log softmax    
-        softmaxed = torch.softmax(year_regression, dim=1)
-        year_loss = self.loss_fnc(softmaxed, year_bucket)
         
         year_val = self.year_val((last_hidden[:,0,:].view(-1, self.model_size)))
         year_val_loss = self.loss_fnc_val(year_val, year)
         
-        return {"model_output" : softmaxed,
-                "loss": year_loss + year_val_loss + outputs.loss}
+        return {"model_output" : year_val,
+                "loss":  year_val_loss + outputs.loss} # Is the model loss OK?
         
     def predict(self, input_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
         
-        year_regression = self.year_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
-            
-        softmaxed = torch.softmax(year_regression, dim=1)
+        year_val = self.year_val((last_hidden[:,0,:].view(-1, self.model_size)))
         
-        return softmaxed
+        return year_val
     
     def validate(self, input_ids=None, year_bucket=None, k: int=2,*args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
         
-        year_regression = self.year_regressor((last_hidden[:,0,:].view(-1, self.model_size)))
-            
-        softmaxed = torch.softmax(year_regression, dim=1)
+        year_val = self.year_val((last_hidden[:,0,:].view(-1, self.model_size)))
         
-        softmaxed = softmaxed.flatten().cpu()
+        year_val = year_val.detach().flatten().cpu().numpy()
         
-        predicted_val = torch.argmax(softmaxed)
+        publish_vector  = [1/(1 + abs(year - year_val[0])) for year in POET_YEARS_BUCKETS[:-1]] + [0]
+        publish_vector = torch.tensor( np.asarray(publish_vector)/np.sum(publish_vector))
         
-        predicted_top_k = torch.topk(softmaxed, k).indices
+        
+        predicted_val = torch.argmax(publish_vector)
+        
+        predicted_top_k = torch.topk(publish_vector, k).indices
         
         label_val = torch.argmax(year_bucket.flatten())
         
@@ -259,7 +253,7 @@ class YearValidator(ValidatorInterface):
         if label_val in predicted_top_k:
             top_k_presence = 1
         
-        hit_pred = softmaxed[label_val].detach().numpy()
+        hit_pred = publish_vector[label_val].detach().numpy()
         
         return {"acc" : validation_true_val,
                 "top_k" : top_k_presence,
