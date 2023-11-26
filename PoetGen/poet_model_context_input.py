@@ -91,7 +91,10 @@ class PoetModelContextInput(PoetModelInterface):
     def generate_forced(self, prompt, tokenizer: AutoTokenizer, verse_len:int = 4, sample: bool = False):
         
         features_dict_init = self.analyze_prompt(prompt)
-        prompt_list = prompt.splitlines()
+        if isinstance(prompt, dict):
+            prompt_list = []
+        else:
+            prompt_list = prompt.splitlines()
         # GENERATE FOR POSSIBLE MISSING POET PARAM
         token_gen_rhyme = tokenizer.encode("#", return_tensors='pt')
         if sample:
@@ -126,6 +129,8 @@ class PoetModelContextInput(PoetModelInterface):
         # REPLACE OR INSERT BASED ON PRESENCE
         if len(features_dict_init.keys()) == 0: # Wierd Input
             prompt_list = [poet_param_str]
+        elif len(prompt_list) == 0: # Inputed as Dict
+            prompt_list.append(poet_param_str)
         elif "RHYME" not in features_dict_init.keys():
             if "YEAR" in features_dict_init.keys(): # Replace the Uncomplete first line 
                 prompt_list[0] = poet_param_str
@@ -150,9 +155,9 @@ class PoetModelContextInput(PoetModelInterface):
                 j = 3
             elif features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "X":
                 j=-1
-            line_start = (f"{features_dict[f'METER_{j}'] } # " if f"METER_{j}" in features_dict.keys() else "") + \
-                (f"{features_dict[f'LENGTH_{j}']} # " if f"LENGTH_{j}" in features_dict.keys() else "" ) + \
-                (f"{features_dict[f'END_{j}'] } # " if  f"END_{j}" in features_dict.keys() else "") 
+            line_start = (f"{features_dict[f'METER_{j}'] } #" if f"METER_{j}" in features_dict.keys() else "") + \
+                (f" {features_dict[f'LENGTH_{j}']} #" if f"LENGTH_{j}" in features_dict.keys() else "" ) + \
+                (f" {features_dict[f'END_{j}'] } #" if  f"END_{j}" in features_dict.keys() else "") 
             tokenized_poet_start = tokenizer.encode("\n".join(prompt_list) + "\n" + line_start,  return_tensors='pt')
             if sample:
                 out_line =  self.model.generate(tokenized_poet_start, 
@@ -194,4 +199,3 @@ class PoetModelContextInput(PoetModelInterface):
             prompt_list.append(decoded_line)
         
         return "\n".join(prompt_list)
-            

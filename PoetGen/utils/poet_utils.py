@@ -407,7 +407,7 @@ class TextAnalysis:
             dict: Dictionary with analysis result
         """
         # Strip line of most separators and look if its empty
-        line_striped = TextManipulation._remove_most_nonchar(text).strip()
+        line_striped = TextManipulation._remove_most_nonchar(text, lower_case=False).strip()
         if not line_striped:
             return {}
         line_params = {}

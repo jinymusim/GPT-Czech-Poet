@@ -62,19 +62,47 @@ class ModelValidator:
             
 
             
-        # Load validator tokenizer
-        self.validator_tokenizer: PreTrainedTokenizerBase = None
-        if args.validator_tokenizer_model:
+        # Load Rhyme tokenizer
+        self.validator_tokenizer_rhyme: PreTrainedTokenizerBase = None
+        if args.validator_tokenizer_model_rhyme:
             try:
-                self.validator_tokenizer = AutoTokenizer.from_pretrained(args.validator_tokenizer_model)
+                self.validator_tokenizer_rhyme = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_rhyme)
             except:
-                self.validator_tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model)
-                self.validator_tokenizer.eos_token = EOS
-                self.validator_tokenizer.eos_token_id = 0
-                self.validator_tokenizer.pad_token = PAD
-                self.validator_tokenizer.pad_token_id = 1
-                self.validator_tokenizer.unk_token = UNK
-                self.validator_tokenizer.unk_token_id = 2
+                self.validator_tokenizer_rhyme: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_rhyme)
+                self.validator_tokenizer_rhyme.eos_token = EOS
+                self.validator_tokenizer_rhyme.eos_token_id = 0
+                self.validator_tokenizer_rhyme.pad_token = PAD
+                self.validator_tokenizer_rhyme.pad_token_id = 1
+                self.validator_tokenizer_rhyme.unk_token = UNK
+                self.validator_tokenizer_rhyme.unk_token_id = 2
+                
+        # Load Meter tokenizer
+        self.validator_tokenizer_meter: PreTrainedTokenizerBase = None
+        if args.validator_tokenizer_model_meter:
+            try:
+                self.validator_tokenizer_meter = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_meter)
+            except:
+                self.validator_tokenizer_meter: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_meter)
+                self.validator_tokenizer_meter.eos_token = EOS
+                self.validator_tokenizer_meter.eos_token_id = 0
+                self.validator_tokenizer_meter.pad_token = PAD
+                self.validator_tokenizer_meter.pad_token_id = 1
+                self.validator_tokenizer_meter.unk_token = UNK
+                self.validator_tokenizer_meter.unk_token_id = 2
+                
+        # Load Year tokenizer
+        self.validator_tokenizer_year: PreTrainedTokenizerBase = None
+        if args.validator_tokenizer_model_year:
+            try:
+                self.validator_tokenizer_year = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_year)
+            except:
+                self.validator_tokenizer_year: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_year)
+                self.validator_tokenizer_year.eos_token = EOS
+                self.validator_tokenizer_year.eos_token_id = 0
+                self.validator_tokenizer_year.pad_token = PAD
+                self.validator_tokenizer_year.pad_token_id = 1
+                self.validator_tokenizer_year.unk_token = UNK
+                self.validator_tokenizer_year.unk_token_id = 2
          
         # Load LM tokenizers       
         try:    
@@ -204,7 +232,7 @@ class ModelValidator:
                         
                         # Validate for Rhyme schema
                         if self.rhyme_model != None and "RHYME" in values.keys():
-                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], 'rhyme' : values["RHYME"]}],tokenizer=self.validator_tokenizer,
+                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], 'rhyme' : values["RHYME"]}],tokenizer=self.validator_tokenizer_rhyme,
                                                                            is_syllable=False, syllables=self.args.val_syllables_rhyme,
                                                                            max_len=self.rhyme_model.model.config.max_position_embeddings)
                             res = self.rhyme_model.validate(input_ids=data['input_ids'],
@@ -219,11 +247,11 @@ class ModelValidator:
                         
                         #Validate for Year
                         if self.year_model != None and "YEAR" in values.keys():
-                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], "year": values["YEAR"]}],tokenizer=self.validator_tokenizer,
+                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], "year": values["YEAR"]}],tokenizer=self.validator_tokenizer_year,
                                                                            is_syllable=False, syllables=self.args.val_syllables_meter,
                                                                            max_len=self.year_model.model.config.max_position_embeddings)
                             res = self.year_model.validate(input_ids=data['input_ids'],
-                                                                   year=data['year'],k=self.args.top_k)
+                                                                   year_bucket=data['year_bucket'],k=self.args.top_k)
                             
                             year_pos += res['acc']
                             year_top_k_pos += res['top_k']
@@ -250,11 +278,11 @@ class ModelValidator:
                     metre_top_k_all +=1
                     metre_label_all +=1
                     if self.meter_model != None and "METER" in line_analysis.keys():
-                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line], "metre": line_analysis["METER"]}],tokenizer=self.validator_tokenizer,
+                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line], "metre_ids": line_analysis["METER"]}],tokenizer=self.validator_tokenizer_meter,
                                                                        is_syllable=False, syllables=self.args.val_syllables_meter,
                                                                        max_len=self.meter_model.model.config.max_position_embeddings)
                         res = self.meter_model.validate(input_ids=data['input_ids'],
-                                                            metre_ids=data['metre'],k=self.args.top_k)
+                                                            metre_ids=data['metre_ids'],k=self.args.top_k)
                         
                         metre_pos += res['acc']
                         metre_top_k_pos += res['top_k']
@@ -336,13 +364,15 @@ parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=2, type=int, help="Number of runs on datasets")
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Processed-BPE-NormalText-gpt-cz-poetry-all-e4e16_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "TestModel-e4e8_LM")),  type=str, help="Path to Model")
 
-parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'BPE_validator_1697993440889')),  type=str, help="Path to Model")
-parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'BPE_validator_1697833311028')),  type=str, help="Path to Model")
-parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'roberta-base_BPE_validator_1699191075556')),  type=str, help="Path to Model")
+parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_syllable_BPE_validator_1700332961735')),  type=str, help="Path to Model")
+parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'distilroberta-base_BPE_validator_1700332961848')),  type=str, help="Path to Model")
+parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'distilroberta-base_BPE_validator_1700816425718')),  type=str, help="Path to Model")
 
-parser.add_argument("--validator_tokenizer_model", default='roberta-base', type=str, help="Validator tokenizer")
+parser.add_argument("--validator_tokenizer_model_rhyme", default='distilroberta-base', type=str, help="Validator tokenizer")
+parser.add_argument("--validator_tokenizer_model_meter", default='distilroberta-base', type=str, help="Validator tokenizer")
+parser.add_argument("--validator_tokenizer_model_year", default='distilroberta-base', type=str, help="Validator tokenizer")
 parser.add_argument("--val_syllables_rhyme", default=True, type=bool, help="Does validator use syllables")
 parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
 parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does validator use syllables")
