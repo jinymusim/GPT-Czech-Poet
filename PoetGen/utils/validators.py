@@ -152,7 +152,7 @@ class MeterValidator(ValidatorInterface):
         meter_loss = self.loss_fnc(softmaxed, metre_ids)
         
         return {"model_output" : softmaxed,
-                "loss": meter_loss} # No more output loss
+                "loss": meter_loss + outputs.loss}
         
     def predict(self, input_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids)
@@ -217,7 +217,7 @@ class YearValidator(ValidatorInterface):
         year_val_loss = self.loss_fnc_val(year_val, year)
         
         return {"model_output" : year_val,
-                "loss":  year_val_loss} # Is the model loss OK?
+                "loss":  year_val_loss + outputs.loss} # Is the model loss OK?
         
     def predict(self, input_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids)
