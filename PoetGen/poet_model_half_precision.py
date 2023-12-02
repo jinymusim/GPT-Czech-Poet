@@ -21,7 +21,8 @@ class PoetModelHalfBase(PoetModelInterface):
         #
 
         self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
-                                                        output_hidden_states=True, torch_dtype=torch.float16)
+                                                        output_hidden_states=True, torch_dtype=torch.float16,
+                                                        ignore_mismatched_sizes=True)
             
         model_config = self.model.config
         self.model_size = 1

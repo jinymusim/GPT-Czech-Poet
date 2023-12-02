@@ -11,7 +11,8 @@ class PoetModelBase(PoetModelInterface):
         super().__init__(*args, **kwargs)
 
         self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
-                                                        output_hidden_states=True)
+                                                        output_hidden_states=True,
+                                                        ignore_mismatched_sizes=True)
             
         model_config = self.model.config
         self.model_size = 1

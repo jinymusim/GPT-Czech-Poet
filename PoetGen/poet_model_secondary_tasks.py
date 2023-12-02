@@ -20,7 +20,8 @@ class PoetModelSecondaryTasks(PoetModelInterface):
         #                                                      max_memory = {i: torch.cuda.mem_get_info(i)[0] for i in range(torch.cuda.device_count())}, 
         #
         self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
-                                                            output_hidden_states=True)
+                                                            output_hidden_states=True,
+                                                            ignore_mismatched_sizes=True)
             
         model_config = self.model.config
         self.model_size = -1
