@@ -221,7 +221,9 @@ class ModelManipulation:
             new_embd_layer_out.weight.data = new_embd_in
         else:
             new_embd_layer_in.weight.data = new_embd_out
-
+            
+        
+        poet_model.model.set_input_embeddings(new_embd_layer_in)
         poet_model.model.set_output_embeddings(new_embd_layer_out)
         
         # Update LM config to reflect possible change in vocab size
