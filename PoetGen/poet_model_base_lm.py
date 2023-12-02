@@ -11,8 +11,7 @@ class PoetModelBase(PoetModelInterface):
         super().__init__(*args, **kwargs)
 
         self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
-                                                        output_hidden_states=True,
-                                                        ignore_mismatched_sizes=True)
+                                                        output_hidden_states=True)
             
         model_config = self.model.config
         self.model_size = 1
@@ -29,7 +28,7 @@ class PoetModelBase(PoetModelInterface):
         return ModelOutput(loss= outputs.loss, model_output=outputs) # {"model_output" : outputs,"loss" : outputs.loss}
     
     def save_LM(self, LM_path):
-        self.model.save_pretrained(LM_path)
+        self.model.save_pretrained(LM_path, safe_serialization=False)
         
         
     def analyze_prompt(self, prompt):
