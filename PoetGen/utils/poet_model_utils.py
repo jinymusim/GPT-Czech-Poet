@@ -220,7 +220,7 @@ class ModelManipulation:
         if mirror_imbed:
             new_embd_layer_out.weight.data = new_embd_in
         else:
-            new_embd_layer_in.weight.data = new_embd_out
+            new_embd_layer_out.weight.data = new_embd_out
             
         
         poet_model.model.set_input_embeddings(new_embd_layer_in)
