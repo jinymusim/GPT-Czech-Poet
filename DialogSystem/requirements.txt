@@ -1,7 +1,0 @@
-torch 
-torchvision 
-torchaudio
-transformers
-datasets
-soundfile
-diffusers==0.10.2

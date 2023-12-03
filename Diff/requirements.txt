@@ -1,7 +1,0 @@
-accelerate
-torch 
-torchvision 
-torchaudio
-transformers
-diffusers
-opencv-python
