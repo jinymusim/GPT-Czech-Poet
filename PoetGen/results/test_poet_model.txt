@@ -1046,3 +1046,19 @@ J # 10 # ly # v ráz z mrtvých květů barvy vzplanuly,
 J # 11 # se # však ještě živou duši nesly v jase.
 J # 13 # ná # tys k hvězdám sestoupil a s nimi duše zbožná.
 J # 13 # ná # ta, jež svůj oheň vdechla na křídla svá černá,
+--- Model CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e4e8_LM ---
+### Basic Decoding! ###
+ # XAXA # 1920
+T # 7 # let # co tu zbylo z vaš dob let!
+T # 7 # tí # vzpomněte si století!
+T # 8 # lá # vaše doba byla malá,
+T # 7 # květ # vy jste jak ten modrý květ,
+T # 7 # svět # pln jste rozkoše a svět
+T # 7 # let # pod kolena, nad svůj let,
+
+### Forced Decoding! ###
+ # ABAB # 1960
+T # 8 # te # co tak tesklivě si dlíte,
+T # 8 # le # obletujete dál pole,
+T # 8 # te # jakoby vás oplakate
+T # 8 # le # na jedinou vzali role,

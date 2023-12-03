@@ -22,10 +22,10 @@ class PoetModelHalfBase(PoetModelInterface):
 
         self.model = AutoModelForCausalLM.from_pretrained(pretrainedModel, 
                                                         output_hidden_states=True, torch_dtype=torch.float16,
-                                                        ignore_mismatched_sizes=True)
+                                                        )
             
         model_config = self.model.config
-        self.model_size = 1
+        self.model_size = -1
         # Check for Hidden layer size by Attribute Name
         if hasattr(model_config, "n_embd"):
             self.model_size = model_config.n_embd
