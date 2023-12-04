@@ -389,12 +389,11 @@ class CorpusDatasetPytorch:
                                 
                                 if i == max(self.verse_len):
                                     context = body
-                                    # Carry over from largest to smallest
-                                    body = body[-(max(self.verse_len) - min(self.verse_len)):]
-                                    body_syllabs = body_syllabs[-(max(self.verse_len) - min(self.verse_len)):]
-                                    rhyme = rhyme[-(max(self.verse_len) - min(self.verse_len)):]
-                                    metres = metres[-(max(self.verse_len) - min(self.verse_len)):]
-                                    i=max(self.verse_len) - min(self.verse_len)
+                                    body = []
+                                    body_syllabs = []
+                                    rhyme = []
+                                    metres = []
+                                    i=0
                                 
         
         def __len__(self):
