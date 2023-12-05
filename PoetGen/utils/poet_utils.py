@@ -1,4 +1,4 @@
-# Most Common Rhyme Schemas (Every Rhyme schema with presence over 0.1 %)
+# Most Common Rhyme Schemas (Every Rhyme schema with presence over 0.36 %)
 RHYME_SCHEMES = ['ABAB', 'XXXX',
                  'XAXA','AABB', 
                  'XXXXXX','ABBA', 
