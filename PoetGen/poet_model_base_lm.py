@@ -55,7 +55,7 @@ class PoetModelBase(PoetModelInterface):
         return features_dict
                    
     
-    def generate_forced(self, prompt, tokenizer: AutoTokenizer, verse_len:int = 4, sample: bool = False):
+    def generate_forced(self, prompt, tokenizer: AutoTokenizer, verse_len:int = 4, sample: bool = False, format: str = 'METER_VERSE'):
         
         features_dict_init = self.analyze_prompt(prompt)
         if isinstance(prompt, dict):
@@ -88,18 +88,29 @@ class PoetModelBase(PoetModelInterface):
         # BACKUP RHYME
         if "RHYME" not in features_dict.keys():
             features_dict["RHYME"] = random.choice(RHYME_SCHEMES[:-1])
-        poet_param_str = "# "
-        if "RHYME" in features_dict.keys():
-            poet_param_str += features_dict["RHYME"]
-        if "YEAR" in features_dict.keys():
-            poet_param_str += f" # {features_dict['YEAR']}"
+        #OLD
+        if format != 'METER_VERSE':
+            poet_param_str = "# "
+            if "RHYME" in features_dict.keys():
+                poet_param_str += features_dict["RHYME"]
+            if "YEAR" in features_dict.keys():
+                poet_param_str += f" # {features_dict['YEAR']}"
+            if 'STROPHE_METER' in features_dict.keys():
+                poet_param_str += f" # {features_dict['STROPHE_METER']}"
+        # NEW
+        else:
+            poet_param_str = "# "
+            if "RHYME" in features_dict.keys():
+                poet_param_str += features_dict["RHYME"]
+            if "YEAR" in features_dict.keys():
+                poet_param_str += f" # {features_dict['YEAR']}"
         # REPLACE OR INSERT BASED ON PRESENCE
         if len(features_dict_init.keys()) == 0: # Wierd Input
             prompt_list = [poet_param_str]
         elif len(prompt_list) == 0: # Inputed as Dict
             prompt_list.append(poet_param_str)
         elif "RHYME" not in features_dict_init.keys():
-            if "YEAR" in features_dict_init.keys(): # Replace the Uncomplete first line 
+            if "YEAR" in features_dict_init.keys() or 'STROPHE_METER' in features_dict_init.keys(): # Replace the Uncomplete first line 
                 prompt_list[0] = poet_param_str
             else:
                 prompt_list.insert(0, poet_param_str)
@@ -122,7 +133,14 @@ class PoetModelBase(PoetModelInterface):
                 j = 3
             elif features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "X":
                 j=-1
-            line_start = (f"{features_dict[f'METER_{j}'] } #" if f"METER_{j}" in features_dict.keys() else "") + \
+             #OLD
+            if format == 'BASIC':
+                line_start = ""
+            elif format == 'VERSE_PAR':
+                line_start = (f"{features_dict[f'LENGTH_{j}']} #" if f"LENGTH_{j}" in features_dict.keys() else "" ) + \
+                        (f" {features_dict[f'END_{j}'] } #" if  f"END_{j}" in features_dict.keys() else "") 
+            else:
+                line_start = (f"{features_dict[f'METER_{j}'] } #" if f"METER_{j}" in features_dict.keys() else "") + \
                 (f" {features_dict[f'LENGTH_{j}']} #" if f"LENGTH_{j}" in features_dict.keys() else "" ) + \
                 (f" {features_dict[f'END_{j}'] } #" if  f"END_{j}" in features_dict.keys() else "") 
             tokenized_poet_start = tokenizer.encode("\n".join(prompt_list) + "\n" + line_start,  return_tensors='pt')
@@ -158,12 +176,21 @@ class PoetModelBase(PoetModelInterface):
                 decoded_line: str = decoded_lines[-1]
             else:
                 decoded_line: str = decoded_lines[len(prompt_list)]
-            if  f"END_{j}" not in features_dict.keys() and len(decoded_line.split()) > 4 and j>=0:
-                features_dict[f'METER_{j}'] = decoded_line.split()[0]
-                features_dict[f'LENGTH_{j}'] = decoded_line.split()[2]
-                features_dict[f'END_{j}'] = decoded_line.split()[4]
+            #OLD
+            if format == 'VERSE_PAR':
+                if  f"END_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1 and j>=0 and decoded_line.count("#") <=1:
+                    features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
+                    features_dict[f'END_{j}'] = decoded_line.split()[1]
+                elif f"END_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1 and j>=0:
+                    features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
+                    features_dict[f'END_{j}'] = decoded_line.split()[2]
+            # NEW
+            elif format == 'METER_VERSE':    
+                if  f"END_{j}" not in features_dict.keys() and len(decoded_line.split()) > 4 and j>=0:
+                    features_dict[f'METER_{j}'] = decoded_line.split()[0]
+                    features_dict[f'LENGTH_{j}'] = decoded_line.split()[2]
+                    features_dict[f'END_{j}'] = decoded_line.split()[4]
                 
             prompt_list.append(decoded_line)
         
         return "\n".join(prompt_list)
-            

@@ -26,9 +26,9 @@ from utils.poet_utils import EOS, PAD, UNK, parse_boolean
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_LM", default=32, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=4, type=int, help="Number of epochs to run.")
+parser.add_argument("--epochs_LM", default=0, type=int, help="Number of epochs to run.")
 parser.add_argument("--batch_size_poet", default=24, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=8, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--epochs_poet", default=0, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.00, type=float, help="Rate of input masking")
@@ -68,14 +68,16 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 #TODO: SyllableTokenizer, all e4 e8, base e4 e8
 #TODO: ProcessedTokenizer, all e4 e8, base e4 e8
 
-parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
+#parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e8_LM' ), type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Unicode", "unicode_tokenizer.json")), type=str, help="Tokenizer to use")
-parser.add_argument("--tokenizer", default='lchaloupsky/czech-gpt2-oscar', type=str, help="Tokenizer to use")
+#parser.add_argument("--tokenizer", default='lchaloupsky/czech-gpt2-oscar', type=str, help="Tokenizer to use")
+parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e8_LM' ), type=str, help="Tokenizer to use")
 parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Base-Tokenizer-NormalText-gpt-cz-poetry-all-e4e8")),  type=str, help="Path to Model")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-basic-e0e2")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
-parser.add_argument("--context_max_len", default=8, type=int, help="Max length of context for tokenizer")
+parser.add_argument("--context_max_len", default=1, type=int, help="Max length of context for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
 
 
@@ -89,6 +91,8 @@ parser.add_argument("--lower_case", default=True, type=bool, help="If to lower c
 parser.add_argument("--mirror_imbed", default=True, type=bool, help="If to mirror input embedding to output ones")
 
 parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
+
+parser.add_argument("--model_input_format",  default="METER_VERSE", type=str, choices=["BASIC", "VERSE_PAR", 'METER_VERSE'], help="Input format to use for model")
 
 
 def main(args: argparse.Namespace):
@@ -146,7 +150,7 @@ def main(args: argparse.Namespace):
     
     # Partial Function to use as data collection with input masking
     collate = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer,max_len=args.max_len, 
-                      max_context=args.context_max_len, mask_rate=args.input_mask_rate, syllables=args.syllables)
+                      max_context=args.context_max_len, mask_rate=args.input_mask_rate, syllables=args.syllables, format=args.model_input_format)
     
 
     train_data = CorpusDatasetPytorch(data_dir=args.data_path, prompt_ending=args.prompt_ending, 
@@ -154,7 +158,8 @@ def main(args: argparse.Namespace):
                                       verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate)
     
     # Text Line Training
-    training_args = TrainingArguments(
+    if args.epochs_LM !=0:
+        training_args = TrainingArguments(
                                   save_strategy  = "no",
                                   warmup_steps = len(train_data.pytorch_dataset_text)//args.batch_size_LM,
                                   logging_steps = 500,
@@ -169,13 +174,14 @@ def main(args: argparse.Namespace):
                                   per_device_train_batch_size = args.batch_size_LM)
     
     
-    trainer = Trainer(model = model,
+        trainer = Trainer(model = model,
                            args = training_args,
                            train_dataset= train_data.pytorch_dataset_text,
                            data_collator=collate).train()
     
     # Verse Training
-    training_args = TrainingArguments(
+    if args.epochs_poet !=0:
+        training_args = TrainingArguments(
                                   save_strategy  = "no",
                                   warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_poet,
                                   logging_steps = 500,
@@ -190,7 +196,7 @@ def main(args: argparse.Namespace):
                                   per_device_train_batch_size = args.batch_size_poet)
     
     
-    trainer = Trainer(model = model,
+        trainer = Trainer(model = model,
                            args = training_args,
                            train_dataset= train_data.pytorch_dataset_body,
                            data_collator=collate).train()

@@ -1062,3 +1062,17 @@ T # 8 # te # co tak tesklivě si dlíte,
 T # 8 # le # obletujete dál pole,
 T # 8 # te # jakoby vás oplakate
 T # 8 # le # na jedinou vzali role,
+--- Model New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e8e16_LM ---
+### Basic Decoding! ###
+ ABAB # 1880 # J
+11 ni # tu v srdce bol se vkrádá teskné tísni,
+10 ti # a hlava stačí v dlaň své oběti
+11 ní # jsem stár a churav, nechci umírání,
+10 ti # a z jara třeba klidný paměti.
+
+### Forced Decoding! ###
+ ABAB # 1840 # T
+9 lo # proč to naříkání vázalo,
+10 sti # to mě hnalo k záhubě a k zlosti?
+9  lo # co se povědělo na sta   
+10  sti # jak se vypravoval onen kluk 

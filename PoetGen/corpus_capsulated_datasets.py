@@ -468,7 +468,7 @@ class CorpusDatasetPytorch:
         
         
     @staticmethod
-    def collate(batch, tokenizer: PreTrainedTokenizerBase ,max_len = 1024, max_context = 1024 ,mask_rate = 0.0, syllables: bool = False):
+    def collate(batch, tokenizer: PreTrainedTokenizerBase ,max_len = 1024, max_context = 1024 ,mask_rate = 0.0, syllables: bool = False, format: str = 'METER_VERSE'):
         """Process data for usage in LM
 
         Args:
@@ -485,13 +485,33 @@ class CorpusDatasetPytorch:
         index = 1 if syllables else 0
         
         tokenizer.model_max_length = max_len
-        tokenized = tokenizer([text['input_ids'][index] + tokenizer.eos_token for text in batch],return_tensors='pt', truncation=True, padding=True)
-        input_ids = tokenized['input_ids']
-        attention = tokenized["attention_mask"]
+        if batch[0]['input_ids'][0].startswith("#"):
+            
+            data = [text['input_ids'][index] for text in batch]
+            if format == "BASIC":
+                data =  ["\n".join
+                         (
+                        [line + f" # {datum.splitlines()[1].split()[0]}"
+                         if i==0 else line.split('#')[-1] for i, line in enumerate(datum.splitlines())] 
+                        ) + tokenizer.eos_token  for j, datum in enumerate(data) 
+                         ]
+            if format == "VERSE_PAR":
+                 data =  ["\n".join
+                         (
+                        [line + f" # {datum.splitlines()[1].split()[0]}"
+                         if i==0 else "#".join(line.split('#')[1:]) for i, line in enumerate(datum.splitlines())] 
+                        ) + tokenizer.eos_token for j, datum in enumerate(data) 
+                         ]
+                 
+            tokenized = tokenizer(data,return_tensors='pt', truncation=True, padding=True)
+            input_ids = tokenized['input_ids']
+            attention = tokenized["attention_mask"]
         
-        # Input Masking
-        mask = torch.rand(input_ids.shape) < 1 - mask_rate
-        input_ids = input_ids * mask.int()
+        else:
+            tokenized = tokenizer([text['input_ids'][index] + tokenizer.eos_token for text in batch],return_tensors='pt', truncation=True, padding=True)
+            input_ids = tokenized['input_ids']
+            attention = tokenized["attention_mask"]
+    
         
         nums = None
         if "nums" in batch[0].keys():

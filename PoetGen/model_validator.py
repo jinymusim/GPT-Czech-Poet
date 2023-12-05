@@ -142,7 +142,16 @@ class ModelValidator:
         
         if type  == "BASIC":
             # Up to first meter
-            start = f"# {self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])}\n{self.validation_data[index]['metre_ids'][0]}" 
+            FORMAT = "METER_VERSE"
+            if self.model_rel_name.startswith('CZ') or self.model_rel_name.startswith('ALT') or self.model_rel_name.startswith('EN') or self.model_rel_name.startswith('ENALT'):
+                start = f"# {self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])}\n{self.validation_data[index]['metre_ids'][0]}"
+                FORMAT = "METER_VERSE"
+            elif self.model_rel_name.startswith('gpt'):
+                start = f"# {self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])} # {self.validation_data[index]['metre_ids'][0]}"
+                FORMAT = "BASIC"
+            else:
+                start = f"# {self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])} # {self.validation_data[index]['metre_ids'][0]}"
+                FORMAT = "VERSE_PAR"
             tokenized_poet_start = self.tokenizer.encode(start, return_tensors='pt', truncation=True)
             if self.args.sample:
                 out = self.model.model.generate(tokenized_poet_start, 
@@ -164,17 +173,28 @@ class ModelValidator:
                 
             return self.tokenizer.decode(out[0], skip_special_tokens=True)
         if type == "FORCED":
+            
+            if self.model_rel_name.startswith('CZ') or self.model_rel_name.startswith('ALT') or self.model_rel_name.startswith('EN') or self.model_rel_name.startswith('ENALT'):
+                FORMAT = "METER_VERSE"
+            elif self.model_rel_name.startswith('gpt'):
+                FORMAT = "BASIC"
+            else:
+                FORMAT = "VERSE_PAR"
+            
             start_forced = {'RHYME': self.validation_data[index]['rhyme'],
                             'YEAR': TextManipulation._year_bucketor(self.validation_data[index]['year'])}
-            for ch, id in zip(self.validation_data[index]['rhyme'], self.validation_data[index]['metre_ids']):
-                if ch == 'A':
-                    start_forced['METER_0'] = id
-                elif ch == 'B':
-                    start_forced['METER_1'] = id
-                elif ch == 'C':
-                    start_forced['METER_2'] = id
+            if self.model_rel_name.startswith('CZ') or self.model_rel_name.startswith('ALT') or self.model_rel_name.startswith('EN') or self.model_rel_name.startswith('ENALT'):
+                for ch, id in zip(self.validation_data[index]['rhyme'], self.validation_data[index]['metre_ids']):
+                    if ch == 'A':
+                        start_forced['METER_0'] = id
+                    elif ch == 'B':
+                        start_forced['METER_1'] = id
+                    elif ch == 'C':
+                        start_forced['METER_2'] = id
+            else:
+                start_forced['STROPHE_METER'] = self.validation_data[index]['metre_ids'][0]
             
-            return self.model.generate_forced(start_forced, self.tokenizer, verse_len= len(self.validation_data[index]['rhyme']), sample=self.args.sample)
+            return self.model.generate_forced(start_forced, self.tokenizer, verse_len= len(self.validation_data[index]['rhyme']), sample=self.args.sample, format=FORMAT)
             
             
             
@@ -212,6 +232,7 @@ class ModelValidator:
                 # Get generated Strophe
                 decoded_cont:str = self.decode_helper(type,samples[i])
                 # Validate line by line
+                STROPHE_METER = 'J'
                 for line in decoded_cont.splitlines():
                     # Skip Empty lines
                     if not line.strip(): 
@@ -256,6 +277,9 @@ class ModelValidator:
                             year_pos += res['acc']
                             year_top_k_pos += res['top_k']
                             year_label_pos += res['predicted_label']
+                            
+                        if 'STROPHE_METER' in values.keys():
+                            STROPHE_METER = values['STROPHE_METER']
                                 
                         
                         # Measure Syllable uniqueness
@@ -279,6 +303,16 @@ class ModelValidator:
                     metre_label_all +=1
                     if self.meter_model != None and "METER" in line_analysis.keys():
                         data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line], "metre_ids": line_analysis["METER"]}],tokenizer=self.validator_tokenizer_meter,
+                                                                       is_syllable=False, syllables=self.args.val_syllables_meter,
+                                                                       max_len=self.meter_model.model.config.max_position_embeddings)
+                        res = self.meter_model.validate(input_ids=data['input_ids'],
+                                                            metre_ids=data['metre_ids'],k=self.args.top_k)
+                        
+                        metre_pos += res['acc']
+                        metre_top_k_pos += res['top_k']
+                        metre_label_pos += res['predicted_label']
+                    elif self.meter_model != None:
+                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line], "metre_ids": STROPHE_METER}],tokenizer=self.validator_tokenizer_meter,
                                                                        is_syllable=False, syllables=self.args.val_syllables_meter,
                                                                        max_len=self.meter_model.model.config.max_position_embeddings)
                         res = self.meter_model.validate(input_ids=data['input_ids'],
@@ -362,9 +396,9 @@ parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
-parser.add_argument("--num_runs", default=5, type=int, help="Number of runs on datasets")
+parser.add_argument("--num_runs", default=2, type=int, help="Number of runs on datasets")
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e8_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e8e16_LM")),  type=str, help="Path to Model")
 
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_syllable_BPE_validator_1700332961735')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'distilroberta-base_BPE_validator_1700332961848')),  type=str, help="Path to Model")
