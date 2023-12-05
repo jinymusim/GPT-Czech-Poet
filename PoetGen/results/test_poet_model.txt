@@ -1076,3 +1076,16 @@ T # 8 # le # na jedinou vzali role,
 10 sti # to mě hnalo k záhubě a k zlosti?
 9  lo # co se povědělo na sta   
 10  sti # jak se vypravoval onen kluk 
+--- Model CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-all-e4e16_LM ---
+### Basic Decoding! ###
+ # ABAB # 1980
+T # 12 # jat # vidíš město, kterak vlhký pohled babího přijat
+T # 1 # cí # jsi jak hvězda k nebi spějící,
+T # 10 # ný # znám tvůj smutek, znám trud tvé oči siný,
+T # 12 # cí # jest to cesta tůně zahradou, již voníce kou
+### Forced Decoding! ###
+ # ABAB # 1880
+T # 10 # lo # co tak živě v jeho skráni tkvělo,
+T # 9 # ní # na znamení že nenadání
+T # 10 # lo # göninovi i oldřichovi stálo.
+T # 9 # ní # prchl žebrák v krutém nadšení
