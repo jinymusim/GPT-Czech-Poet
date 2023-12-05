@@ -632,3 +632,136 @@ Metre Validator: roberta-base, Epochs: 16 Accuracy: 0.8845721934232467
 {'J': 0.9493799719232568, 'T': 0.9638279736536226, 'N': 0.6903303434697002, 'A': 0.0, 'X': 0.0, 'D': 0.0, 'Y': 0.0, 'H': 0.0, 'P': 0.0}
 Year Validator: roberta-base, Epochs: 0 Accuracy: 0
 {}
+### NEW NEW NEW FORMAT! ### BPE ### 1701016636250 ### Syllable: False ### SAM Training: False
+Rhyme Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+Year Validator: distilroberta-base, Epochs: 16 Accuracy: 0.2741897076332848
+{'1920': 0.5168554121675006, '1900': 0.3210891343436938, '1880': 0.08653846153846154, '1840': 0.29899607158446095, '1960': 0.031088082901554404, '1820': 0.07875894988066826, '1940': 0.3253012048192771, '1860': 0.10968921389396709, '1800': 0.006578947368421052, 'NaN': 0.0}
+### NEW NEW NEW FORMAT! ### BPE ### 1701026038038 ### Syllable: False ### SAM Training: False
+Rhyme Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+Year Validator: ufal/robeczech-base, Epochs: 16 Accuracy: 0.20092604841910305
+{'1920': 1.0, '1900': 0.0, '1880': 0.0, '1840': 0.0, '1960': 0.0, '1820': 0.0, '1940': 0.0, '1860': 0.0, '1800': 0.0, 'NaN': 0.0}
+### NEW NEW NEW FORMAT! ### BPE ### 1701034448376 ### Syllable: False ### SAM Training: False
+Rhyme Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
+Year Validator: roberta-base, Epochs: 16 Accuracy: 0.008043391983066544
+{'1920': 0.0, '1900': 0.0, '1880': 0.0, '1840': 0.0, '1960': 0.0, '1820': 0.0, '1940': 0.0, '1860': 0.0, '1800': 1.0, 'NaN': 0.0}
+### NEW NEW NEW FORMAT! ### BPE ### 1701048094555 ### Syllable: True ### SAM Training: False
+Rhyme Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: distilroberta-base, Epochs: 16 Accuracy: 0.10369899840061707
+{'J': 0.0, 'T': 0.0, 'N': 1.0, 'A': 0.0, 'X': 0.0, 'D': 0.0, 'Y': 0.0, 'H': 0.0, 'P': 0.0}
+Year Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+### NEW NEW NEW FORMAT! ### BPE ### 1700553651511 ### Syllable: True ### SAM Training: True
+Rhyme Validator: roberta-base, Epochs: 32 Accuracy: 0.18552718613573224
+{'ABAB': 1.0, 'XAXA': 0.0, 'AABXAB': 0.0, 'ABABXX': 0.0, 'XXAABB': 0.0, 'AAABBX': 0.0, 'AXAX': 0.0, 'XXAXAX': 0.0, 'ABBA': 0.0, 'AABBCC': 0.0, 'AABBXX': 0.0, 'XXAA': 0.0, 'ABAAXB': 0.0, 'ABABCC': 0.0, 'AAXX': 0.0, 'AAXA': 0.0, 'AABCBC': 0.0, 'AABB': 0.0, 'XXABAB': 0.0, 'AAXXBB': 0.0, 'AABCCB': 0.0, 'ABBACC': 0.0, 'XXAAXX': 0.0, 'ABAABX': 0.0, 'ABBAXX': 0.0, 'XAAX': 0.0, 'XXXXXX': 0.0, 'XXXX': 0.0, 'XXABBA': 0.0, 'ABBCAC': 0.0, 'ABBCCA': 0.0, 'XAABBX': 0.0, 'ABCCBA': 0.0, 'AXAA': 0.0, 'XABABX': 0.0, 'AAXBXB': 0.0, 'XAAXBB': 0.0, 'AXAXBB': 0.0, 'AAXBBX': 0.0, 'XAXABB': 0.0, 'XAAXXX': 0.0, 'XXAXXA': 0.0, 'XAAA': 0.0, 'ABABXA': 0.0, 'AXXA': 0.0, 'XAXAXX': 0.0, 'ABBAAX': 0.0, 'AABBAX': 0.0, 'ABABXB': 0.0, 'AAAX': 0.0, 'ABAAAB': 0.0, 'XAXAXA': 0.0, 'XABBXA': 0.0, 'XAXXXA': 0.0, 'XABBAX': 0.0, 'AABBAA': 0.0, 'ABBBAX': 0.0, 'ABABBX': 0.0, 'ABACCB': 0.0, 'ABCABC': 0.0, 'XAAXXA': 0.0, 'XAABXB': 0.0, 'XAXBAB': 0.0, 'XABABA': 0.0, 'AXABBX': 0.0, 'XABBAA': 0.0, 'AAAA': 0.0, 'AABABA': 0.0, 'AAABXB': 0.0, 'ABBABA': 0.0, 'ABAXBA': 0.0, 'AXBBAX': 0.0, 'ABAABB': 0.0, 'AXAABB': 0.0, 'AABBXB': 0.0, 'AABBBX': 0.0, 'AXXAXX': 0.0, 'AAXAXA': 0.0, 'AAAABB': 0.0, 'ABAABA': 0.0, 'XAABAB': 0.0, 'ABABAB': 0.0, 'AAXXXX': 0.0, 'XABXAB': 0.0, 'AXXABB': 0.0, 'AABXBX': 0.0, 'ABAXXB': 0.0, 'ABAXBX': 0.0, 'AXAXXX': 0.0, 'ABABAX': 0.0, 'AXAXAA': 0.0, 'XAABBA': 0.0, 'AXABXB': 0.0, 'XAABBB': 0.0, 'XAXBBA': 0.0, 'XXXAAX': 0.0, 'XAAABB': 0.0, 'ABABAA': 0.0, 'AAXAXX': 0.0, 'XXAXAA': 0.0, 'ABCBCA': 0.0, 'AXBABX': 0.0, 'ABXBAX': 0.0, 'ABACBC': 0.0, 'ABBXXA': 0.0, 'ABCACB': 0.0, 'AABBXA': 0.0, 'AXXAXA': 0.0, 'ABXBXA': 0.0, 'AAABBA': 0.0, 'AABAAB': 0.0, 'ABXAXB': 0.0, 'XABABB': 0.0, 'XAXAAX': 0.0, 'AAABBB': 0.0, 'ABBXAX': 0.0, 'XABBAB': 0.0, 'XABBBA': 0.0, 'AABBBA': 0.0, 'AAXBBA': 0.0, 'XXXAXA': 0.0, 'AABXXB': 0.0, 'AABBAB': 0.0, 'XXAAAX': 0.0, 'AAAAAA': 0.0, 'AXXBAB': 0.0, 'AAXABB': 0.0, 'XXAAAA': 0.0, 'XAXXAX': 0.0, 'AAXXAA': 0.0, 'AAXXAX': 0.0, 'AAXBBB': 0.0, 'ABBAAB': 0.0, 'ABXABX': 0.0, 'ABCCAB': 0.0, 'AAAXBB': 0.0, 'AABABX': 0.0, 'AABXBB': 0.0, 'ABBBBA': 0.0, 'AAABAB': 0.0, 'ABBABX': 0.0, 'AXABAB': 0.0, 'ABBAAA': 0.0, 'AXAAXA': 0.0, 'AXBBXA': 0.0, 'XABAAB': 0.0, 'AAAXXX': 0.0, 'AABAXB': 0.0, 'XXXXAA': 0.0, 'AAAAXA': 0.0, 'AAAAXX': 0.0, 'AXXXXA': 0.0, 'AXAAXX': 0.0, 'XXXAAA': 0.0, 'XABAXB': 0.0, 'XAXAAA': 0.0, 'XAAXAA': 0.0, 'AXXXAX': 0.0, 'ABBAXA': 0.0, 'AABBBB': 0.0, 'ABXABA': 0.0, 'AABABB': 0.0, 'XAAAXA': 0.0, 'AAXAAA': 0.0, 'AXBAXB': 0.0, 'AXBBAA': 0.0, 'AXBXBA': 0.0, 'ABCBAC': 0.0, 'ABBABB': 0.0, 'ABABBA': 0.0, 'ABABBB': 0.0, 'AXBAAB': 0.0, 'XABXBA': 0.0, 'ABBAXB': 0.0, 'ABBXAA': 0.0, 'AXBBBA': 0.0, 'AAXBAB': 0.0, 'AAAAAX': 0.0, 'ABBXBA': 0.0, 'ABXXAB': 0.0, 'XXAAXA': 0.0, 'AXABBB': 0.0, 'AXABBA': 0.0, 'AXBABB': 0.0, 'AXBXAB': 0.0, 'AXAXXA': 0.0, 'ABXBAA': 0.0, 'XAAXAX': 0.0, 'XAAAAA': 0.0, 'XAXXAA': 0.0, 'ABXABB': 0.0, 'ABXXBA': 0.0, 'AABXBA': 0.0, 'AAAXAX': 0.0, 'XAAAXX': 0.0, 'ABBBXA': 0.0, 'AXAXAX': 0.0, 'ABXAAB': 0.0}
+Metre Validator: roberta-base, Epochs: 32 Accuracy: 0.0008280493199786749
+{'J': 0.0, 'T': 0.0, 'N': 0.0, 'A': 0.0, 'X': 0.0, 'D': 0.0, 'Y': 1.0, 'H': 0.0, 'P': 0.0}
+Year Validator: roberta-base, Epochs: 32 Accuracy: 0.0006350046302420955
+{'1920': 0.0, '1900': 0.0, '1880': 0.0, '1840': 0.0, '1960': 0.0, '1820': 0.0, '1940': 0.0, '1860': 0.0, '1800': 0.0, 'NaN': 1.0}
+### NEW NEW NEW FORMAT! ### BPE ### 1701058266556 ### Syllable: True ### SAM Training: False
+Rhyme Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: ufal/robeczech-base, Epochs: 16 Accuracy: 0.10369899840061707
+{'J': 0.0, 'T': 0.0, 'N': 1.0, 'A': 0.0, 'X': 0.0, 'D': 0.0, 'Y': 0.0, 'H': 0.0, 'P': 0.0}
+Year Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+### NEW NEW NEW FORMAT! ### BPE ### 1701062382017 ### Syllable: True ### SAM Training: False
+Rhyme Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: roberta-base, Epochs: 16 Accuracy: 0.10369899840061707
+{'J': 0.0, 'T': 0.0, 'N': 1.0, 'A': 0.0, 'X': 0.0, 'D': 0.0, 'Y': 0.0, 'H': 0.0, 'P': 0.0}
+Year Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
+### NEW NEW NEW FORMAT! ### BPE ### 1701226013609 ### Syllable: False ### SAM Training: False
+Rhyme Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+Year Validator: distilroberta-base, Epochs: 32 Accuracy: 0.3400978965471623
+{'1920': 0.4752436133789834, '1900': 0.4895967120472643, '1880': 0.1423941227312014, '1840': 0.3697075512876473, '1960': 0.039378238341968914, '1820': 0.12291169451073986, '1940': 0.27748493975903615, '1860': 0.2152650822669104, '1800': 0.04276315789473684, 'NaN': 0.0}
+### NEW NEW NEW FORMAT! ### BPE ### 1701240529159 ### Syllable: False ### SAM Training: False
+Rhyme Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+Year Validator: ufal/robeczech-base, Epochs: 32 Accuracy: 0.30900912819155973
+{'1920': 0.0, '1900': 1.0, '1880': 0.0, '1840': 0.0, '1960': 0.0, '1820': 0.0, '1940': 0.0, '1860': 0.0, '1800': 0.0, 'NaN': 0.0}
+### NEW NEW NEW FORMAT! ### BPE ### 1701257822889 ### Syllable: False ### SAM Training: False
+Rhyme Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
+Year Validator: roberta-base, Epochs: 32 Accuracy: 0.20092604841910305
+{'1920': 1.0, '1900': 0.0, '1880': 0.0, '1840': 0.0, '1960': 0.0, '1820': 0.0, '1940': 0.0, '1860': 0.0, '1800': 0.0, 'NaN': 0.0}
+### NEW NEW NEW FORMAT! ### BPE ### 1701268102390 ### Syllable: True ### SAM Training: False
+Rhyme Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: distilroberta-base, Epochs: 64 Accuracy: 0.4487119862974852
+{'J': 0.0, 'T': 0.9416970166602092, 'N': 0.8824108510172829, 'A': 0.0, 'X': 0.0, 'D': 0.5001126887536624, 'Y': 0.0, 'H': 0.0, 'P': 0.0}
+Year Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+### NEW NEW NEW FORMAT! ### BPE ### 1701306220909 ### Syllable: True ### SAM Training: False
+Rhyme Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: ufal/robeczech-base, Epochs: 64 Accuracy: 0.5234009006454248
+{'J': 0.8839611605053814, 'T': 0.0, 'N': 0.9146795012032378, 'A': 0.0, 'X': 0.0, 'D': 0.0, 'Y': 0.0, 'H': 0.0, 'P': 0.0}
+Year Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+### NEW NEW NEW FORMAT! ### BPE ### 1701337265539 ### Syllable: True ### SAM Training: False
+Rhyme Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: roberta-base, Epochs: 64 Accuracy: 0.8802958291269184
+{'J': 0.9224145999064108, 'T': 0.9087640449438202, 'N': 0.7758696127761978, 'A': 0.0, 'X': 0.4862194487779511, 'D': 0.5871084065810233, 'Y': 0.0, 'H': 0.0, 'P': 0.0}
+Year Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
+### NEW NEW NEW FORMAT! ### BPE ### 1701503591335 ### Syllable: False ### SAM Training: False
+Rhyme Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+Year Validator: distilroberta-base, Epochs: 32 Accuracy: 0.3543855007276095
+{'1920': 0.42388727943112986, '1900': 0.5449952906926963, '1880': 0.11678910976663785, '1840': 0.4011348756001746, '1960': 0.0, '1820': 0.10978520286396182, '1940': 0.4567018072289157, '1860': 0.22943327239488118, '1800': 0.009868421052631578, 'NaN': 0.0}
+### NEW NEW NEW FORMAT! ### BPE ### 1701516980113 ### Syllable: False ### SAM Training: False
+Rhyme Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+Year Validator: ufal/robeczech-base, Epochs: 32 Accuracy: 0.47437491731710546
+{'1920': 0.4229654990782196, '1900': 0.6033907012586694, '1880': 0.4056828003457217, '1840': 0.5556525534701003, '1960': 0.0, '1820': 0.220763723150358, '1940': 0.5391566265060241, '1860': 0.453382084095064, '1800': 0.10855263157894737, 'NaN': 0.0}
+### NEW NEW NEW FORMAT! ### BPE ### 1701536007912 ### Syllable: False ### SAM Training: False
+Rhyme Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
+Year Validator: roberta-base, Epochs: 32 Accuracy: 0.3616615954491335
+{'1920': 0.38846457729786676, '1900': 0.5095470502611525, '1880': 0.1527657735522904, '1840': 0.4316892186817983, '1960': 0.0, '1820': 0.15035799522673032, '1940': 0.5421686746987951, '1860': 0.3610603290676417, '1800': 0.029605263157894735, 'NaN': 0.0}
+### NEW NEW NEW FORMAT! ### BPE ### 1701544874268 ### Syllable: True ### SAM Training: False
+Rhyme Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: distilroberta-base, Epochs: 64 Accuracy: 0.9094987465828787
+{'J': 0.961839026672906, 'T': 0.9709414955443626, 'N': 0.6867753226865019, 'A': 0.0, 'X': 0.0, 'D': 0.6617083615055217, 'Y': 0.0, 'H': 0.0, 'P': 0.0}
+Year Validator: distilroberta-base, Epochs: 0 Accuracy: 0
+{}
+### NEW NEW NEW FORMAT! ### BPE ### 1701575698812 ### Syllable: True ### SAM Training: False
+Rhyme Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: ufal/robeczech-base, Epochs: 64 Accuracy: 0.9205583094182103
+{'J': 0.9758773982218063, 'T': 0.9801782254939946, 'N': 0.7053161233865675, 'A': 0.0, 'X': 0.0, 'D': 0.6200135226504395, 'Y': 0.0, 'H': 0.0, 'P': 0.0}
+Year Validator: ufal/robeczech-base, Epochs: 0 Accuracy: 0
+{}
+### NEW NEW NEW FORMAT! ### BPE ### 1701584749334 ### Syllable: True ### SAM Training: False
+Rhyme Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
+Metre Validator: roberta-base, Epochs: 64 Accuracy: 0.9100885899340964
+{'J': 0.9639915769770706, 'T': 0.9723672994963193, 'N': 0.6856814701378254, 'A': 0.0, 'X': 0.0, 'D': 0.6274509803921569, 'Y': 0.0, 'H': 0.0, 'P': 0.0}
+Year Validator: roberta-base, Epochs: 0 Accuracy: 0
+{}
