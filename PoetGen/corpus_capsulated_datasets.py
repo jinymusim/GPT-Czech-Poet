@@ -340,7 +340,7 @@ class CorpusDatasetPytorch:
                 for data_line in datum:
                     publish_year_text = TextManipulation._year_bucketor(data_line["biblio"]["year"])
                     publish_year_true = data_line["biblio"]["year"] if TextAnalysis._is_year(data_line["biblio"]["year"]) else 'NaN'
-                    context = []
+                    context = ["NO CONTEXT"]
 
                     for part_line in data_line['body']:                                                        
                         body = []
@@ -351,7 +351,7 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             
                             # In rare cases multiple, but from searching only 1 metre per line
-                            metre = METER_TRANSLATE.get(text_line["metre"][0]["type"], "N")
+                            metre = METER_TRANSLATE.get(text_line["metre"][0]["type"], "J")
                             metres +=  [metre]
                             
                             rhyme.append(text_line["rhyme"])  
@@ -388,7 +388,6 @@ class CorpusDatasetPytorch:
                                      })
                                 
                                 if i == max(self.verse_len):
-                                    context = body
                                     body = []
                                     body_syllabs = []
                                     rhyme = []

@@ -140,7 +140,7 @@ class TextManipulation:
             str: rhyme indicator character
         """
         
-        return "X" if current_rhyme == None or rhyme_ref == None or current_rhyme < rhyme_ref or current_rhyme >= rhyme_ref + len(TextManipulation._RHYME_POS) else TextManipulation._RHYME_POS[current_rhyme - rhyme_ref]
+        return "X" if current_rhyme == None or current_rhyme== -1 or rhyme_ref == None or current_rhyme < rhyme_ref or current_rhyme >= rhyme_ref + len(TextManipulation._RHYME_POS) else TextManipulation._RHYME_POS[current_rhyme - rhyme_ref]
         
     @staticmethod
     def __post_process_rhyme(rhyme_str: str):
@@ -150,8 +150,10 @@ class TextManipulation:
             # Replace all, that ocurr only once with X
             if val == 1:
                 rhyme_str = re.sub(key, 'X', rhyme_str)
-            # Downscale higher to lower if lower not present
-            if val > 1:
+        # Downscale higher to lower if lower not present
+        marker_count = {marker: rhyme_str.count(marker) for marker in TextManipulation._RHYME_POS}
+        for key, val in marker_count.items():
+            if val > 1 and key != 'X':
                 key_index = TextManipulation._RHYME_POS.index(key)
                 replacements = {marker: rhyme_str.count(marker) for marker in TextManipulation._RHYME_POS[:key_index]}
                 for rep_key, rep_val in replacements.items():

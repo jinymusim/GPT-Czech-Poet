@@ -1089,3 +1089,19 @@ T # 10 # lo # co tak živě v jeho skráni tkvělo,
 T # 9 # ní # na znamení že nenadání
 T # 10 # lo # göninovi i oldřichovi stálo.
 T # 9 # ní # prchl žebrák v krutém nadšení
+--- Model CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e8_LM ---
+### Basic Decoding! ###
+ # XXXX # 1920
+N # 8 # mi # nejsme my už horami,
+N # 6 # je # ale jsou to naše kraje,
+N # 5 # je # kolem nás všecko zraje,
+N # 8 # mi # a vy v zemi, přilétli jste mi,
+N # 8 # je # a vy v srdci se raduje.
+N # 7 # nám # my spolu radosti pějem
+
+### Forced Decoding! ###
+ # XAXA # 1960
+D # 10 # noc # tak smutně, chladně dny plynou jen noc,
+D # 10 # sen # a vše je mrtvé a jako jen sen
+D # 11 # li # jen někdy na tebe vzpomínám v chvíli,
+D # 10 # sen # když bylas, má duše, tak sen,
