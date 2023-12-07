@@ -210,7 +210,7 @@ class YearValidator(ValidatorInterface):
         
         self.model_size = self.config.hidden_size
         
-        self.year_era = torch.nn.Linear(self.model_size, POET_YEARS_BUCKETS)
+        self.year_era = torch.nn.Linear(self.model_size, len(POET_YEARS_BUCKETS))
         
         self.year_val = torch.nn.Linear(self.model_size, 1) # Year Value     
         
