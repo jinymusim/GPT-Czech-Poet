@@ -210,9 +210,13 @@ class YearValidator(ValidatorInterface):
         
         self.model_size = self.config.hidden_size
         
+        self.year_era = torch.nn.Linear(self.model_size, POET_YEARS_BUCKETS)
+        
         self.year_val = torch.nn.Linear(self.model_size, 1) # Year Value     
         
-        self.loss_fnc_val = torch.nn.SmoothL1Loss()
+        self.loss_fnc_era = torch.nn.CrossEntropyLoss(weight=torch.tensor([0, 5, 3, 3, 1, 1, 1.5, 2, 5, 0]))
+        
+        self.loss_fnc_val = torch.nn.L1Loss()
         
     def forward(self, input_ids=None, attention_mask=None, year_bucket=None, year=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
@@ -223,8 +227,11 @@ class YearValidator(ValidatorInterface):
         year_val = self.year_val((last_hidden[:,0,:].view(-1, self.model_size)))
         year_val_loss = self.loss_fnc_val(year_val, year)
         
+        year_era = self.year_era((last_hidden[:,0,:].view(-1, self.model_size)))
+        year_era_loss =  self.loss_fnc_era(year_era, year_bucket)
+        
         return {"model_output" : year_val,
-                "loss":  year_val_loss + outputs.loss} # Is the model loss OK?
+                "loss":  year_val_loss + year_era_loss + outputs.loss} # Is the model loss OK?
         
     def predict(self, input_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids)
@@ -241,10 +248,14 @@ class YearValidator(ValidatorInterface):
         last_hidden = outputs['hidden_states'][-1]
         
         year_val = self.year_val((last_hidden[:,0,:].view(-1, self.model_size)))
+        year_era = self.year_era((last_hidden[:,0,:].view(-1, self.model_size)))
         
         year_val = year_val.detach().flatten().cpu().numpy()
+        year_era = year_era.detach().flatten().cpu().numpy()
         
         publish_vector  = [1/(1 + abs(year - year_val[0])) for year in POET_YEARS_BUCKETS[:-1]] + [0]
+        # Adding era prediction
+        publish_vector+= year_era[0]
         publish_vector = torch.tensor( np.asarray(publish_vector)/np.sum(publish_vector))
         
         
