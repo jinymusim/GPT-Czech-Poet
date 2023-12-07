@@ -146,7 +146,7 @@ class MeterValidator(ValidatorInterface):
         
         self.meter_regressor = torch.nn.Linear(self.model_size, len(METER_TYPES)) # Meter Type
         
-        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.0, weight=torch.tensor([1, 1.5, 10, 0, 10, 10, 10, 0, 0, 0]))
+        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.0, weight=torch.tensor([1, 1.5, 10, 20, 20, 0, 5, 0, 0, 0]))
         
     def forward(self, input_ids=None, attention_mask=None, metre_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
