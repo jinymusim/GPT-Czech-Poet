@@ -211,8 +211,10 @@ class YearValidator(ValidatorInterface):
         self.model_size = self.config.hidden_size
         
         self.year_era = torch.nn.Linear(self.model_size, len(POET_YEARS_BUCKETS))
+        self.softmax = torch.nn.Softmax(dim=-1)
         
         self.year_val = torch.nn.Linear(self.model_size, 1) # Year Value     
+        
         
         self.loss_fnc_era = torch.nn.CrossEntropyLoss(label_smoothing=0.0,weight=torch.tensor([0, 5, 3, 3, 1, 1, 1.5, 2, 5, 0]))
         
@@ -228,6 +230,7 @@ class YearValidator(ValidatorInterface):
         year_val_loss = self.loss_fnc_val(year_val, year)
         
         year_era = self.year_era((last_hidden[:,0,:].view(-1, self.model_size)))
+        year_era = self.softmax(year_era)
         year_era_loss =  self.loss_fnc_era(year_era, year_bucket)
         
         return {"model_output" : year_val,
@@ -251,6 +254,7 @@ class YearValidator(ValidatorInterface):
         year_val = self.year_val((last_hidden[:,0,:].view(-1, self.model_size)))
         if hasattr(self, 'year_era'):
             year_era = self.year_era((last_hidden[:,0,:].view(-1, self.model_size)))
+            year_era = self.softmax(year_era)
         
         year_val = year_val.detach().flatten().cpu().numpy()
         if hasattr(self, 'year_era'):
