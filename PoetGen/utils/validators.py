@@ -256,7 +256,7 @@ class YearValidator(ValidatorInterface):
         if hasattr(self, 'year_era'):
             year_era = year_era.detach().flatten().cpu().numpy()
         
-        publish_vector  = [1/(1 + abs(year - year_val)) for year in POET_YEARS_BUCKETS[:-1]] + [0]
+        publish_vector  = [1/(1 + abs(year - year_val[0])) for year in POET_YEARS_BUCKETS[:-1]] + [0]
         # Adding era prediction
         if hasattr(self, 'year_era'):
             publish_vector+= year_era
