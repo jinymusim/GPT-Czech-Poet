@@ -1105,3 +1105,34 @@ D # 10 # noc # tak smutně, chladně dny plynou jen noc,
 D # 10 # sen # a vše je mrtvé a jako jen sen
 D # 11 # li # jen někdy na tebe vzpomínám v chvíli,
 D # 10 # sen # když bylas, má duše, tak sen,
+--- Model CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e8_LM ---
+### Basic Decoding! ###
+ # ABAB # 1920
+T # 10 # ným # opodál za stínem keřem planým
+T # 6 # dá # děvče mladá sedá
+T # 10 # ným # s okem vypouleným, sladce tklivým,
+T # 6 # dá # nad nímž mlha šedá
+
+### Forced Decoding! ###
+ # XAXAXX # 1840
+T # 8 # né # jako děcko neviděné
+T # 7 # li # v lesní skrýši za chvíli
+T # 8 # cí # v lůno lesa se milující
+T # 7 # li # na procházku vydali 
+T # 8 # tí # jako dítě v obejmutí
+T # 7 # cí # v lesní temno spějící
+--- Model gpt-cz-poetry-basic-format-e0e4_LM ---
+### Basic Decoding! ###
+ # ABAB # 1900 # J
+ tak náhle zapadlo v to naše políbení,
+ tak v srdci každý okamžik,
+ jak moře, jež se divou bouří na březina,
+ když bouř se blíží z dalekých a dálných niv.
+### Forced Decoding! ###
+ # AABBCC # 1940 # J
+ jak v jiných světech prý to jinak bývá.
+ muž, jenž bil po sta let, když doba nová
+ se zdvihla, by dal klidným, silným stínům,
+ sám sebe shladit chtěl jak hříšné vinům,
+ jich zákonům a mravům kázal vzdoru
+ tak přišel konec hněvu, v srdci sporu
