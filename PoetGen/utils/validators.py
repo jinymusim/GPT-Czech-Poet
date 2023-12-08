@@ -67,14 +67,14 @@ class RhymeValidator(ValidatorInterface):
         
         self.rhyme_regressor = torch.nn.Linear(self.model_size, len(RHYME_SCHEMES)) # Common Rhyme Type
         
-        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.2, weight=torch.tensor([1, 1, 1.5, 1.5, 1.5, 1.5, 
-                                                                                 2, 2,   2,   3,   3,   3, 
-                                                                                 3, 3,   3,   3,   4,   4, 
-                                                                                 5, 5,   5,   5,   7,   7, 
-                                                                                 7, 7,   7,   8,   8,   8,
-                                                                                 9, 9,   9,  10,  10,  10,
-                                                                                 12,12, 12,  12,  12,  12,
-                                                                                 15,15,1.5]) )
+        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.2, weight=torch.tensor([1, 1,
+                                                                                            1.5, 2, 
+                                                                                            2, 3,
+                                                                                            3, 3,
+                                                                                            4, 4,
+                                                                                            5, 5,
+                                                                                            5, 6,
+                                                                                            6, 1]) )
                                                         
     def forward(self, input_ids=None, attention_mask=None, rhyme=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
