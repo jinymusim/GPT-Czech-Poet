@@ -243,19 +243,23 @@ class YearValidator(ValidatorInterface):
         return year_val
     
     def validate(self, input_ids=None, year_bucket=None, k: int=2,*args, **kwargs):
+        
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
         
         year_val = self.year_val((last_hidden[:,0,:].view(-1, self.model_size)))
-        year_era = self.year_era((last_hidden[:,0,:].view(-1, self.model_size)))
+        if hasattr(self, 'year_era'):
+            year_era = self.year_era((last_hidden[:,0,:].view(-1, self.model_size)))
         
         year_val = year_val.detach().flatten().cpu().numpy()
-        year_era = year_era.detach().flatten().cpu().numpy()
+        if hasattr(self, 'year_era'):
+            year_era = year_era.detach().flatten().cpu().numpy()
         
         publish_vector  = [1/(1 + abs(year - year_val[0])) for year in POET_YEARS_BUCKETS[:-1]] + [0]
         # Adding era prediction
-        publish_vector+= year_era[0]
+        if hasattr(self, 'year_era'):
+            publish_vector+= year_era[0]
         publish_vector = torch.tensor( np.asarray(publish_vector)/np.sum(publish_vector))
         
         
