@@ -292,7 +292,7 @@ def main(args):
     
     # Store result and model
     with open(args.result_file, 'a') as file:
-        print(f"### LESS RHYME SCHEMAS NEW NEW NEW FORMAT! ### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp} ### Syllable: {str(args.syllables)} ### SAM Training: {str(args.SAM)}", file=file)
+        print(f"### NEW NEW NEW FORMAT! ### {type(tokenizer.backend_tokenizer.model).__name__} ### {time_stamp} ### Syllable: {str(args.syllables)} ### SAM Training: {str(args.SAM)}", file=file)
         print(f"Rhyme Validator: {args.pretrained_model}, Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
         print(f'{rhyme_val_acc}', file=file)
         print(f"Metre Validator: {args.pretrained_model}, Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
