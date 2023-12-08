@@ -463,7 +463,7 @@ class TextAnalysis:
         if not line_striped:
             return False
         small_analysis = TextAnalysis._first_line_analysis(line_striped)
-        return  "RHYME" in small_analysis.keys() or "YEAR" in small_analysis.keys()
+        return  "RHYME" in small_analysis.keys() and "YEAR" in small_analysis.keys()
     
 # NON-Original code!
 # Taken from Barbora Štěpánková

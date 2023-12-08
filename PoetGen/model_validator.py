@@ -269,7 +269,7 @@ class ModelValidator:
                         #Validate for Year
                         if self.year_model != None and "YEAR" in values.keys():
                             data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], "year": values["YEAR"]}],tokenizer=self.validator_tokenizer_year,
-                                                                           is_syllable=False, syllables=self.args.val_syllables_meter,
+                                                                           is_syllable=False, syllables=self.args.val_syllables_year,
                                                                            max_len=self.year_model.model.config.max_position_embeddings)
                             res = self.year_model.validate(input_ids=data['input_ids'],
                                                                    year_bucket=data['year_bucket'],k=self.args.top_k)
