@@ -417,7 +417,7 @@ class TextAnalysis:
         line_params = {}
         # OLD MODEL
         if text.count('#') == 0: # BASIC
-            return {}
+            line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(line_striped.split('#')[-1]))
         elif text.count('#') == 1: # OLD MIDDLE FORMAT
             if TextAnalysis._is_line_length(line_striped.split()[0]):
                 line_params["LENGTH"] = int(line_striped.split()[0])

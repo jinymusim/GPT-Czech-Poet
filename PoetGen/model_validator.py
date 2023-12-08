@@ -333,21 +333,21 @@ class ModelValidator:
                     
                     
             # Store Results        
-            end_accuracy.append(end_pos/end_all)
-            sylab_accuracy.append(sylab_pos/sylab_all)
+            end_accuracy.append(0 if end_all == 0 else end_pos/end_all)
+            sylab_accuracy.append(0 if sylab_all==0 else sylab_pos/sylab_all)
             
-            rhyme_accuracy.append(rhyme_pos/rhyme_all)
-            rhyme_top_k.append(rhyme_top_k_pos/rhyme_top_k_all)
-            rhyme_label_acc.append(rhyme_label_pos/rhyme_label_all)
+            rhyme_accuracy.append(0 if rhyme_all==0 else rhyme_pos/rhyme_all)
+            rhyme_top_k.append(0 if rhyme_top_k_all == 0 else rhyme_top_k_pos/rhyme_top_k_all)
+            rhyme_label_acc.append(0 if rhyme_label_all==0 else rhyme_label_pos/rhyme_label_all)
             levenshtein_dist.append(0 if lev_distance_all == 0 else lev_distance/lev_distance_all)
             
-            metre_accuracy.append(metre_pos/metre_all)
-            metre_top_k.append(metre_top_k_pos/metre_top_k_all)
-            metre_label_acc.append(metre_label_pos/metre_label_all)
+            metre_accuracy.append(0 if metre_all==0 else metre_pos/metre_all)
+            metre_top_k.append(0 if metre_top_k_all==0 else  metre_top_k_pos/metre_top_k_all)
+            metre_label_acc.append(0 if metre_label_all==0 else metre_label_pos/metre_label_all)
             
-            year_accuracy.append(year_pos/year_all)
-            year_top_k.append(year_top_k_pos/year_top_k_all)
-            year_label_acc.append(year_label_pos/year_label_all)
+            year_accuracy.append(0 if year_all==0 else year_pos/year_all)
+            year_top_k.append(0 if year_top_k_all==0 else year_top_k_pos/year_top_k_all)
+            year_label_acc.append(0 if year_label_all==0 else year_label_pos/year_label_all)
             
             
         # Log all results and configuration
@@ -398,11 +398,11 @@ parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=2, type=int, help="Number of runs on datasets")
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e8_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-basic-format-e0e4_LM")),  type=str, help="Path to Model")
 
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_syllable_BPE_validator_1701872157853')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'ufal-robeczech-base_syllable_BPE_validator_1701575698812')),  type=str, help="Path to Model")
-parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'ufal-robeczech-base_BPE_validator_1701516980113')),  type=str, help="Path to Model")
+parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'ufal-robeczech-base_BPE_validator_1701938156314')),  type=str, help="Path to Model")
 
 parser.add_argument("--validator_tokenizer_model_rhyme", default='distilroberta-base', type=str, help="Validator tokenizer")
 parser.add_argument("--validator_tokenizer_model_meter", default='ufal/robeczech-base', type=str, help="Validator tokenizer")
