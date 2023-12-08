@@ -214,7 +214,7 @@ class YearValidator(ValidatorInterface):
         
         self.year_val = torch.nn.Linear(self.model_size, 1) # Year Value     
         
-        self.loss_fnc_era = torch.nn.CrossEntropyLoss(label_smoothing=0.2,weight=torch.tensor([0, 5, 3, 3, 1, 1, 1.5, 2, 5, 0]))
+        self.loss_fnc_era = torch.nn.CrossEntropyLoss(label_smoothing=0.0,weight=torch.tensor([0, 5, 3, 3, 1, 1, 1.5, 2, 5, 0]))
         
         self.loss_fnc_val = torch.nn.L1Loss()
         
@@ -257,6 +257,7 @@ class YearValidator(ValidatorInterface):
             year_era = year_era.detach().flatten().cpu().numpy()
         
         publish_vector  = [1/(1 + abs(year - year_val[0])) for year in POET_YEARS_BUCKETS[:-1]] + [0]
+        publish_vector = np.asarray(publish_vector)/np.sum(publish_vector)
         # Adding era prediction
         if hasattr(self, 'year_era'):
             publish_vector+= year_era
