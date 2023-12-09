@@ -613,8 +613,6 @@ class CorpusDatasetPytorch:
                 ]
             if "metre_ids" in batch[0].keys():
                 metre += [TextAnalysis._metre_vector(one_metre) for one_metre in datum['metre_ids']]
-        while "" in data_ids:
-            data_ids.remove("")
                 
         tokenized = tokenizer(data_ids, return_tensors='pt', truncation=True, padding=True)
         input_ids = tokenized['input_ids']
