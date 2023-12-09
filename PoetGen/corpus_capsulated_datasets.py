@@ -501,6 +501,8 @@ class CorpusDatasetPytorch:
                          if i==0 else "#".join(line.split('#')[1:]) for i, line in enumerate(datum.splitlines())] 
                         ) + tokenizer.eos_token for j, datum in enumerate(data) 
                          ]
+            else:
+                data = [text['input_ids'][index] + tokenizer.eos_token for text in batch]
                  
             tokenized = tokenizer(data,return_tensors='pt', truncation=True, padding=True)
             input_ids = tokenized['input_ids']
