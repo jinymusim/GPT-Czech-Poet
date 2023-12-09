@@ -255,7 +255,7 @@ class ModelValidator:
                         if self.rhyme_model != None and "RHYME" in values.keys():
                             data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], 'rhyme' : values["RHYME"]}],tokenizer=self.validator_tokenizer_rhyme,
                                                                            is_syllable=False, syllables=self.args.val_syllables_rhyme,
-                                                                           max_len=self.rhyme_model.model.config.max_position_embeddings)
+                                                                           max_len=self.rhyme_model.model.config.max_position_embeddings - 2)
                             res = self.rhyme_model.validate(input_ids=data['input_ids'],
                                                                    rhyme=data['rhyme'], k=self.args.top_k)
                             rhyme_pos += res['acc']
