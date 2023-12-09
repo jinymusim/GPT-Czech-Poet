@@ -270,7 +270,7 @@ class ModelValidator:
                         if self.year_model != None and "YEAR" in values.keys():
                             data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], "year": values["YEAR"]}],tokenizer=self.validator_tokenizer_year,
                                                                            is_syllable=False, syllables=self.args.val_syllables_year,
-                                                                           max_len=self.year_model.model.config.max_position_embeddings)
+                                                                           max_len=self.year_model.model.config.max_position_embeddings - 2)
                             res = self.year_model.validate(input_ids=data['input_ids'],
                                                                    year_bucket=data['year_bucket'],k=self.args.top_k)
                             
@@ -304,7 +304,7 @@ class ModelValidator:
                     if self.meter_model != None and "METER" in line_analysis.keys():
                         data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line], "metre_ids": line_analysis["METER"]}],tokenizer=self.validator_tokenizer_meter,
                                                                        is_syllable=False, syllables=self.args.val_syllables_meter,
-                                                                       max_len=self.meter_model.model.config.max_position_embeddings)
+                                                                       max_len=self.meter_model.model.config.max_position_embeddings - 2)
                         res = self.meter_model.validate(input_ids=data['input_ids'],
                                                             metre_ids=data['metre_ids'],k=self.args.top_k)
                         
@@ -314,7 +314,7 @@ class ModelValidator:
                     elif self.meter_model != None:
                         data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line], "metre_ids": STROPHE_METER}],tokenizer=self.validator_tokenizer_meter,
                                                                        is_syllable=False, syllables=self.args.val_syllables_meter,
-                                                                       max_len=self.meter_model.model.config.max_position_embeddings)
+                                                                       max_len=self.meter_model.model.config.max_position_embeddings - 2)
                         res = self.meter_model.validate(input_ids=data['input_ids'],
                                                             metre_ids=data['metre_ids'],k=self.args.top_k)
                         
