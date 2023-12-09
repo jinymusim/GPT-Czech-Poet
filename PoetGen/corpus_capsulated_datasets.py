@@ -571,7 +571,7 @@ class CorpusDatasetPytorch:
         data_ids = ["\n".join(
             [" ".join(
                     SyllableMaker.syllabify(line.split('#')[-1])
-                ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable) else line.split('#')[-1] for line in text['input_ids'][index].splitlines()[1:]] 
+                ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable and line) else line.split('#')[-1] for line in text['input_ids'][index].splitlines()[1:]] 
             ) for text in batch ]
         
         
@@ -607,7 +607,7 @@ class CorpusDatasetPytorch:
             data_ids += [
                     " ".join(
                     SyllableMaker.syllabify(line.split('#')[-1]) 
-                ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable) else line.split('#')[-1] for line in datum['input_ids'][index].splitlines()[1:]
+                ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable and line) else line.split('#')[-1] for line in datum['input_ids'][index].splitlines()[1:]
                 ]
             if "metre_ids" in batch[0].keys():
                 metre += [TextAnalysis._metre_vector(one_metre) for one_metre in datum['metre_ids']]
