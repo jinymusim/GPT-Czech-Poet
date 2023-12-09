@@ -27,7 +27,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # TheBloke/Llama-2-7B-fp16 4096
 # spital/gpt2-small-czech-cs 1024
 parser.add_argument("--default_tokenizer", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
-parser.add_argument("--tokenizer_type", default="BPE", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "Unicode"], help="What type of tokenize to train")
+parser.add_argument("--tokenizer_type", default="Unicode", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "Unicode"], help="What type of tokenize to train")
 parser.add_argument("--tokenizer_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"utils","tokenizers")),  type=str, help="Path to Model")
 parser.add_argument("--raw_data", default=False,  type=bool, help="If to use raw data")
 parser.add_argument("--syllables", default=False,  type=bool, help="If to use syllables")
@@ -103,9 +103,9 @@ def main(args):
         tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, f"unicode_tokenizer.json"))
         
     # Simple tokenizer test With some basic needs for Strophe generation
-    print("AABB # J # 1899\n strc prist # zkrz krk\n Hola hej")
-    print(tokenizer.encode("AABB # J # 1899\n strc prist # zkrz krk\n Hola hej").ids)
-    print(tokenizer.decode(tokenizer.encode("AABB # J # 1899\n strc prist # zkrz krk\n Hola hej").ids))
+    print(train_data.pytorch_dataset_body.data[0]['input_ids'][0])
+    print(tokenizer.encode(train_data.pytorch_dataset_body.data[0]['input_ids'][0]).ids)
+    print(tokenizer.decode(tokenizer.encode(train_data.pytorch_dataset_body.data[0]['input_ids'][0]).ids))
     
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
