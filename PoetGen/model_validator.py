@@ -398,7 +398,7 @@ parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=2, type=int, help="Number of runs on datasets")
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-basic-format-e0e4_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e8_LM")),  type=str, help="Path to Model")
 
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_syllable_BPE_validator_1701872157853')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'ufal-robeczech-base_syllable_BPE_validator_1701575698812')),  type=str, help="Path to Model")

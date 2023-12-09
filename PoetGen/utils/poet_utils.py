@@ -1,27 +1,14 @@
-# Most Common Rhyme Schemas (Every Rhyme schema with presence over 0.36 %)
-RHYME_SCHEMES = ['ABAB', 'XXXX',
-                 'XAXA','AABB', 
-                 'XXXXXX','ABBA', 
-                 'AAXX', 'AABBCC',
-                 'ABABCC','ABABXX',
-                 'AABCCB','XXAA', 
-                 'XAAX', 'AXAX', 
-                 'XAXAXX','XXABAB',
-                 'ABBACC','AXAA', 
-                 'XAABBX','AABCBC',
-                 'AABBXX','ABBAXX',
-                 'ABABAB','AAXA', 
-                 'AXXA','XAXABB',
-                 'XXAABB','XXAAXX',
-                 'ABABAX','XXABBA',
-                 'AAXBBX','XXXAXA',
-                 'AAAX','XABABX',
-                 'XABBAX','AAXXBB',
-                 'AXABBX','ABABBX',
-                 'XAAXBB','AAAA',
-                 'XAAA','XAABXB',
-                 'AXABXB','AXAXBB',
-                  None]
+# Most Common Rhyme Schemas (Every Rhyme schema with presence over 0.37 %)
+
+RHYME_SCHEMES = ['ABAB', 'XAXA', 'AABB' , 'ABBA'
+                'AABBCC', 'AAXX', 'ABABCC', 'ABABXX',
+                'AABCCB', 'XXAA', 'XAAX', 'XAXAXX',
+                'AXAX', 'XXABAB', 'ABBACC', 'XAABBX',
+                'AXAA', 'AABCBC', 'AABBXX',  'ABBAXX',
+                'ABABAB', 'AAXA', 'XAXABB', 'AXXA',
+                 None
+]
+
 
 NORMAL_SCHEMES = ["ABAB", "ABBA", "AABB", "AABBCC", "ABABCC", "ABBACC", "ABBAAB"]
 
@@ -464,15 +451,17 @@ class TextAnalysis:
             return False
         small_analysis = TextAnalysis._first_line_analysis(line_striped)
         return  "RHYME" in small_analysis.keys() and "YEAR" in small_analysis.keys()
-    
-# NON-Original code!
-# Taken from Barbora Štěpánková
+
 class SyllableMaker:
     """Static class with methods for separating string to list of Syllables
 
     Returns:
         list: List of syllables
     """
+    
+        
+# NON-Original code!
+# Taken from Barbora Štěpánková
 
     @staticmethod
     def syllabify(text : str) -> list[str]:
