@@ -190,7 +190,7 @@ class ModelManipulation:
             old_tokenizer (PreTrainedTokenizerBase): Old tokenization
         """
         # Get old Embeddings
-        old_embed_in = poet_model.model.get_input_embeddings().weight.clone().detach()
+        old_embed_in = poet_model.model.transformer.get_input_embeddings().weight.clone().detach()
         old_mean_in = old_embed_in.mean(0)
         # Generate new Embedding based on new tokenization
         new_embd_in = old_embed_in.new_zeros(new_tokenizer.vocab_size, old_embed_in.size(1))
@@ -210,7 +210,7 @@ class ModelManipulation:
         #Exchange Embeddings and Decoding
         new_embd_layer_in = torch.nn.Embedding(new_tokenizer.vocab_size, old_embed_in.size(1))
         new_embd_layer_in.weight.data = new_embd_in
-        poet_model.model.set_input_embeddings(new_embd_layer_in)
+        poet_model.model.transformer.set_input_embeddings(new_embd_layer_in)
         
         new_decoder = torch.nn.Linear( old_embed_in.size(1), new_tokenizer.vocab_size, bias=False)
         new_decoder.weight = poet_model.model.transformer.wte.weight
