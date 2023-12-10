@@ -217,7 +217,10 @@ class ModelManipulation:
         new_embd_layer_in.weight.data = new_embd_in
         poet_model.model.set_input_embeddings(new_embd_layer_in)
         
-        poet_model.model.lm_head.weight = poet_model.model.transformer.wte.weight
+        new_decoder = torch.nn.Linear( old_embed_in.size(1), new_tokenizer.vocab_size, bias=False)
+        new_decoder.weight = poet_model.model.transformer.wte.weight
+        poet_model.model.lm_head = new_decoder
+
         
         # Update LM config to reflect possible change in vocab size
         poet_model.model.config.vocab_size = new_tokenizer.vocab_size
