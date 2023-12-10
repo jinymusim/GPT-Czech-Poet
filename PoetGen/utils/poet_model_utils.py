@@ -192,11 +192,8 @@ class ModelManipulation:
         # Get old Embeddings
         old_embed_in = poet_model.model.get_input_embeddings().weight.clone().detach()
         old_mean_in = old_embed_in.mean(0)
-        old_embed_out = poet_model.model.get_output_embeddings().weight.clone().detach()
-        old_mean_out = old_embed_out.mean(0)
         # Generate new Embedding based on new tokenization
         new_embd_in = old_embed_in.new_zeros(new_tokenizer.vocab_size, old_embed_in.size(1))
-        new_embd_out = old_mean_out.new_zeros(new_tokenizer.vocab_size, old_embed_out.size(1))
         old_vocab = old_tokenizer.get_vocab()
         
         vocab_hit = 0
@@ -205,11 +202,9 @@ class ModelManipulation:
             idx_old = old_vocab.get(w, -1)
             if idx_old >= 0:
                 new_embd_in[idx_new] = old_embed_in[idx_old]
-                new_embd_out[idx_new] = old_embed_out[idx_old]
                 vocab_hit +=1
             else:
                 new_embd_in[idx_new] = old_mean_in
-                new_embd_out[idx_new] = old_mean_out
                 
         print(f"Vocab hit rate: {vocab_hit}/{old_tokenizer.vocab_size}")
         #Exchange Embeddings and Decoding
