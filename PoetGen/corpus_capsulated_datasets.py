@@ -494,7 +494,7 @@ class CorpusDatasetPytorch:
                          if i==0 else line.split('#')[-1] for i, line in enumerate(datum.splitlines())] 
                         ) + tokenizer.eos_token  for j, datum in enumerate(data) 
                          ]
-            if format == "VERSE_PAR":
+            elif format == "VERSE_PAR":
                  data =  ["\n".join
                          (
                         [line + f" # {datum.splitlines()[1].split()[0]}"
