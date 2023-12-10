@@ -153,7 +153,16 @@ class PoetModelAllTasks(PoetModelInterface):
         if "RHYME" not in features_dict.keys():
             features_dict["RHYME"] = random.choice(RHYME_SCHEMES[:-1])
         #OLD
-        if format != 'METER_VERSE':
+        if format == 'OLD':
+            poet_param_str = ""
+            if "RHYME" in features_dict.keys():
+                poet_param_str += features_dict["RHYME"]
+            if "YEAR" in features_dict.keys():
+                poet_param_str += f" # {features_dict['YEAR']}"
+            if 'STROPHE_METER' in features_dict.keys():
+                poet_param_str += f" # {features_dict['STROPHE_METER']}"
+            
+        elif format != 'METER_VERSE':
             poet_param_str = "# "
             if "RHYME" in features_dict.keys():
                 poet_param_str += features_dict["RHYME"]
@@ -197,9 +206,12 @@ class PoetModelAllTasks(PoetModelInterface):
                 j = 3
             elif features_dict["RHYME"][(len(prompt_list) - 1) % len(features_dict["RHYME"])] == "X":
                 j=-1
-             #OLD
+            #OLD
             if format == 'BASIC':
                 line_start = ""
+            elif format == 'OLD':
+                line_start = (f"{features_dict[f'LENGTH_{j}']} " if f"LENGTH_{j}" in features_dict.keys() else "" ) + \
+                        (f" {features_dict[f'END_{j}'] } #" if  f"END_{j}" in features_dict.keys() else "") 
             elif format == 'VERSE_PAR':
                 line_start = (f"{features_dict[f'LENGTH_{j}']} #" if f"LENGTH_{j}" in features_dict.keys() else "" ) + \
                         (f" {features_dict[f'END_{j}'] } #" if  f"END_{j}" in features_dict.keys() else "") 
@@ -241,15 +253,15 @@ class PoetModelAllTasks(PoetModelInterface):
             else:
                 decoded_line: str = decoded_lines[len(prompt_list)]
             #OLD
-            if format == 'VERSE_PAR':
+            if format == 'VERSE_PAR' or format == 'OLD':
                 if  f"END_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1 and j>=0 and decoded_line.count("#") <=1:
                     features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
                     features_dict[f'END_{j}'] = decoded_line.split()[1]
                 elif f"END_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1 and j>=0:
                     features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
-                    features_dict[f'END_{j}'] = decoded_line.split()[2]
+                    features_dict[f'END_{j}'] = decoded_line.split()[2]            
             # NEW
-            elif format == 'METER_VERSE':  
+            elif format == 'METER_VERSE':    
                 if  f"END_{j}" not in features_dict.keys() and len(decoded_line.split()) > 4 and j>=0:
                     features_dict[f'METER_{j}'] = decoded_line.split()[0]
                     features_dict[f'LENGTH_{j}'] = decoded_line.split()[2]

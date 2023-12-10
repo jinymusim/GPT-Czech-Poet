@@ -149,6 +149,9 @@ class ModelValidator:
             elif self.model_rel_name.startswith('gpt'):
                 start = f"# {self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])} # {self.validation_data[index]['metre_ids'][0]}"
                 FORMAT = "BASIC"
+            elif self.model_rel_name.startswith('New'):
+                start = f"{self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])} # {self.validation_data[index]['metre_ids'][0]}"
+                FORMAT = "OLD"
             else:
                 start = f"# {self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])} # {self.validation_data[index]['metre_ids'][0]}"
                 FORMAT = "VERSE_PAR"
@@ -178,8 +181,11 @@ class ModelValidator:
                 FORMAT = "METER_VERSE"
             elif self.model_rel_name.startswith('gpt'):
                 FORMAT = "BASIC"
+            elif self.model_rel_name.startswith('New'):
+                FORMAT = "OLD"
             else:
                 FORMAT = "VERSE_PAR"
+                
             
             start_forced = {'RHYME': self.validation_data[index]['rhyme'],
                             'YEAR': TextManipulation._year_bucketor(self.validation_data[index]['year'])}
@@ -398,7 +404,7 @@ parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=2, type=int, help="Number of runs on datasets")
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e8_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM")),  type=str, help="Path to Model")
 
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_syllable_BPE_validator_1701872157853')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'ufal-robeczech-base_syllable_BPE_validator_1701575698812')),  type=str, help="Path to Model")
