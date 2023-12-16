@@ -6,7 +6,7 @@ import re
 
 from utils.poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, VALID_CHARS, METER_TRANSLATE, SyllableMaker, TextAnalysis, TextManipulation
 from torch.utils.data import Dataset
-from transformers import PreTrainedTokenizerBase
+from transformers import PreTrainedTokenizerBase, PreTrainedModel
 #TODO: Maybe replace year of book being written for year Author was born
 class CorpusDatasetPytorch:
     """Dataset class responsible for data loading.
@@ -553,6 +553,26 @@ class CorpusDatasetPytorch:
             "verse_end" : verse_end,
             "year": year,
             "metre" : metre}
+        
+        
+    @staticmethod
+    def collate_distil(batch, tokenizer: PreTrainedTokenizerBase ,surrogate_model: PreTrainedModel = None,surrogate_model_device=None ,max_len = 1024):
+        tokenizer.model_max_length = max_len
+        tokenized = tokenizer([text['input_ids'][0] + tokenizer.eos_token for text in batch], return_tensors='pt', truncation=True, padding=True)
+        input_ids = tokenized['input_ids']
+        attention = tokenized["attention_mask"]
+        
+        with torch.no_grad():
+            model_hidden_states = surrogate_model(input_ids=input_ids.to(surrogate_model_device), 
+                                                  attention_mask=attention.to(surrogate_model_device), 
+                                                  labels=input_ids.type(torch.LongTensor).to(surrogate_model_device))['hidden_states']
+        
+        return {
+            "input_ids": input_ids,
+            "labels": input_ids.type(torch.LongTensor),
+            "attention_mask": attention,
+            "to_replicate_states": model_hidden_states
+         }
         
     @staticmethod
     def collate_validator(batch, tokenizer: PreTrainedTokenizerBase,syllables:bool, is_syllable:bool = False,max_len = 512):

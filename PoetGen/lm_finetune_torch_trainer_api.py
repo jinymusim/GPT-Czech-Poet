@@ -5,7 +5,7 @@ import argparse
 
 
 from accelerate import Accelerator
-from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
+from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase, AutoModelForCausalLM
 from functools import partial
 
 # Project Packages
@@ -16,6 +16,7 @@ from poet_model_verse_end import PoetModelVerseEnd
 from poet_model_context_input import PoetModelContextInput
 from poet_model_context_year import PoetModelContextYear
 from poet_model_all_tasks import PoetModelAllTasks
+from poet_model_distil import DistilModel
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 from utils.poet_model_utils import ModelManipulation
@@ -25,9 +26,9 @@ from utils.poet_utils import EOS, PAD, UNK, parse_boolean
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=48, type=int, help="Batch size.")
+parser.add_argument("--batch_size_LM", default=16, type=int, help="Batch size.")
 parser.add_argument("--epochs_LM", default=0, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=16, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=0, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
@@ -69,13 +70,13 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 #TODO: ProcessedTokenizer, all e4 e8, base e4 e8
 
 #parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
-parser.add_argument("--default_hf_model", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e8_LM' ), type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Unicode", "unicode_tokenizer.json")), type=str, help="Tokenizer to use")
 #parser.add_argument("--tokenizer", default='lchaloupsky/czech-gpt2-oscar', type=str, help="Tokenizer to use")
-parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e8_LM' ), type=str, help="Tokenizer to use")
-parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all"], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "gpt-basic-e0e2")),  type=str, help="Path to Model")
+parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Tokenizer to use")
+parser.add_argument("--model_type",  default="distil", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil'], help="What type of Model is to be constructed")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Unicode-Distil")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1, type=int, help="Max length of context for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
@@ -113,6 +114,8 @@ def main(args: argparse.Namespace):
             model = PoetModelContextYear(args.default_hf_model, args.context_max_len)
         elif args.model_type == "all":
             model = PoetModelAllTasks(args.default_hf_model)
+        elif args.model_type == 'distil':
+            model = DistilModel(args.default_hf_model)
         else:
             raise TypeError("Given model type doesn't exists")
         
@@ -149,7 +152,12 @@ def main(args: argparse.Namespace):
     model = accelerator.prepare(model)
     
     # Partial Function to use as data collection with input masking
-    collate = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer,max_len=args.max_len, 
+    if args.model_type == 'distil':
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        collate = partial(CorpusDatasetPytorch.collate_distil, tokenizer=tokenizer,
+                          surrogate_model=AutoModelForCausalLM.from_pretrained(args.default_hf_model,output_hidden_states=True).to(device), surrogate_model_device=device, max_len=args.max_len)
+    else:
+        collate = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer,max_len=args.max_len, 
                       max_context=args.context_max_len, mask_rate=args.input_mask_rate, syllables=args.syllables, format=args.model_input_format)
     
 
