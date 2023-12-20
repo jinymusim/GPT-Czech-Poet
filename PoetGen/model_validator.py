@@ -117,7 +117,7 @@ class ModelValidator:
             self.tokenizer.unk_token_id = 2
             
         self.dataset = CorpusDatasetPytorch(data_dir=args.data_path_poet)
-        self.validation_data = self.dataset.pytorch_dataset_body.validation_data
+        self.validation_data = self.dataset.val_pytorch_dataset_body.data
         
         # Store the Validation arguments  
         self.epochs = args.num_runs

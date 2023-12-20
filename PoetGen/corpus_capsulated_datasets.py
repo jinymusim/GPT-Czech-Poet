@@ -92,7 +92,7 @@ class CorpusDatasetPytorch:
             Dataset (_type_): Dataset is child of torch class for better integration with torch and huggingface
         """
         
-        def __init__(self, data_file_paths, prompt_length=True, prompt_ending=True, lower_case=True, val_data_rate: float = 0.1):
+        def __init__(self, data_file_paths, prompt_length=True, prompt_ending=True, lower_case=True, val_data_rate: float = 0.05, test_data_rate: float = 0.05):
             """Construct the class our given data files path and store variables
 
             Args:
@@ -100,7 +100,8 @@ class CorpusDatasetPytorch:
                 prompt_length (bool, optional): If to prompt the syllable count. Defaults to True.
                 prompt_ending (bool, optional): If to prompt verse ending. Defaults to True.
                 lower_case (bool, optional): If the string should be in lowercase. Defaults to True.
-                val_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.1.
+                val_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.05.
+                test_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.05.
             """
             self._data_file_paths = data_file_paths
             self.prompt_length = prompt_length
@@ -108,9 +109,11 @@ class CorpusDatasetPytorch:
             self.lower_case = lower_case
             
             self.val_data_rate = val_data_rate
+            self.test_data_rate = test_data_rate
             
             self.data = []
             self.validation_data = []
+            self.test_data = []
          
          
         def gen_files(self):
@@ -182,6 +185,12 @@ class CorpusDatasetPytorch:
             metre_txt = f"{metre} # "
             return metre_txt + num_str + verse_end  + raw_text
         
+        def _introduce_phonetics(self, raw_text:str, phonetics):
+            phonetic_text = raw_text
+            for word in phonetics['words']:
+                phonetic_text = phonetic_text.replace(f'{word["token_lc"]}', f'{word["phoebe"]}') if self.lower_case else phonetic_text.replace(f'{word["token"]}', f'{word["phoebe"]}')
+            return phonetic_text
+        
         def _construct_syllable_line(self, raw_text, metre):
             """Construct individual content line as sequence of syllables
 
@@ -213,22 +222,31 @@ class CorpusDatasetPytorch:
                             
                             scanned_text = TextManipulation._remove_most_nonchar(text_line['text'], self.lower_case)
                             
-                            text_line = self._construct_line(scanned_text, metre)
+                            text_line_scanned = self._construct_line(scanned_text, metre)
                             syllable_line = self._construct_syllable_line(scanned_text, metre)
+                            phonetic_text = self._introduce_phonetics(scanned_text, text_line)
                             
                             num_vowels, verse_end = self._vowels_and_endings(scanned_text)
                             
                             # Based on result of random chose proper set. Because data are large enough, will result in wanted split.
-                            if np.random.rand() > self.val_data_rate: 
+                            rand_split = np.random.rand()
+                            if rand_split > self.val_data_rate + self.test_data_rate: 
                                 self.data.append({
-                                "input_ids" : [text_line,syllable_line],
+                                "input_ids" : [text_line_scanned +f" # {phonetic_text}",syllable_line + f" # {phonetic_text}"],
+                                "nums": [num_vowels],
+                                "verse_end": verse_end,
+                                "metre": metre
+                                     })
+                            elif rand_split < self.test_data_rate:
+                                self.test_data.append({
+                                "input_ids" : [text_line_scanned +f" # {phonetic_text}",syllable_line + f" # {phonetic_text}"],
                                 "nums": [num_vowels],
                                 "verse_end": verse_end,
                                 "metre": metre
                                      })
                             else:
                                 self.validation_data.append({
-                                "input_ids" : [text_line,syllable_line],
+                                "input_ids" : [text_line_scanned +f" # {phonetic_text}",syllable_line + f" # {phonetic_text}"],
                                 "nums": [num_vowels],
                                 "verse_end": verse_end,
                                 "metre": metre
@@ -261,7 +279,7 @@ class CorpusDatasetPytorch:
             Dataset (_type_): Dataset is child of torch class for better integration with torch and huggingface
         """
         def __init__(self, data_file_paths,
-                     prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate: float = 0.1):
+                     prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate: float = 0.05, test_data_rate: float = 0.05):
             """Construct the class our given data files path and store variables
 
             Args:
@@ -271,7 +289,8 @@ class CorpusDatasetPytorch:
                 prompt_verse (bool, optional): If to prompt rhyme schema . Defaults to True.
                 verse_len (list, optional): Considered length of strophe. Defaults to [4,6].
                 lower_case (bool, optional): If the string should be in lowercase. Defaults to True.
-                val_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.1.
+                val_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.05.
+                test_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.05.
             """
             self._data_file_paths = data_file_paths
             self.prompt_length = prompt_length
@@ -279,10 +298,13 @@ class CorpusDatasetPytorch:
             self.prompt_verse = prompt_verse
             self.verse_len = verse_len
             self.lower_case = lower_case
+            
             self.val_data_rate = val_data_rate
+            self.test_data_rate = test_data_rate
             
             self.data = []
             self.validation_data = []
+            self.test_data = []
         
         def gen_files(self):
             """Get individual opened files
@@ -370,8 +392,17 @@ class CorpusDatasetPytorch:
                                 text = f"# {rhyme_str} # {publish_year_text}\n" + "\n".join(body) + "\n"
                                 syllable_text = f"# {rhyme_str} # {publish_year_text}\n" + "\n".join(body_syllabs) + "\n"
                                 context_text= "\n".join(context)
-                                if np.random.rand() > self.val_data_rate:
+                                rand_split = np.random.rand()
+                                if rand_split > self.val_data_rate + self.test_data_rate:
                                     self.data.append({
+                                    "input_ids" : [text,syllable_text],
+                                    "context_ids" : context_text,
+                                    "year": publish_year_true,
+                                    "rhyme":  rhyme_str,
+                                    "metre_ids" : metres.copy()
+                                     })
+                                elif rand_split < self.test_data_rate:
+                                    self.test_data.append({
                                     "input_ids" : [text,syllable_text],
                                     "context_ids" : context_text,
                                     "year": publish_year_true,
@@ -434,7 +465,7 @@ class CorpusDatasetPytorch:
             
         self.raw_dataset = CorpusDatasetPytorch.RawDataset(filenames, self.lower_case)
     
-    def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=[4,6], val_data_rate=0.1):
+    def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=[4,6], val_data_rate=0.05, test_data_rate=0.05):
         """Load Verse and Strophe datasets
 
         Args:
@@ -449,21 +480,43 @@ class CorpusDatasetPytorch:
         self.pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset(filenames, prompt_ending=prompt_ending, 
                                                     prompt_length=prompt_length, prompt_verse=prompt_verse, 
                                                     verse_len=verse_len, lower_case=self.lower_case, 
-                                                    val_data_rate=val_data_rate)
+                                                    val_data_rate=val_data_rate, test_data_rate=test_data_rate)
         self.pytorch_dataset_body.data_body_gen()
          
         
         self.pytorch_dataset_text = CorpusDatasetPytorch.TextDataset(filenames, prompt_ending=prompt_ending, 
                                                     prompt_length=prompt_length, lower_case=self.lower_case,
-                                                    val_data_rate=val_data_rate)
+                                                    val_data_rate=val_data_rate, test_data_rate=test_data_rate)
         
         self.pytorch_dataset_text.data_text_line_gen()
+        
+        self.val_pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset([])
+        self.val_pytorch_dataset_text = CorpusDatasetPytorch.TextDataset([])
+        
+        self.val_pytorch_dataset_body.data = self.pytorch_dataset_body.validation_data
+        self.val_pytorch_dataset_text.data = self.pytorch_dataset_text.validation_data
+        
+        self.pytorch_dataset_text.validation_data = []
+        self.pytorch_dataset_body.validation_data = []
+        
+        self.test_pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset([])
+        self.test_pytorch_dataset_text = CorpusDatasetPytorch.TextDataset([])
+        
+        self.test_pytorch_dataset_body.data = self.pytorch_dataset_body.test_data
+        self.test_pytorch_dataset_text.data = self.pytorch_dataset_text.test_data
+        
+        self.pytorch_dataset_text.test_data = []
+        self.pytorch_dataset_body.test_data = []
         
     def create_empty(self):
         """Create empty holder for possible load of processed data from file
         """
         self.pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset([])
         self.pytorch_dataset_text = CorpusDatasetPytorch.TextDataset([])
+        self.val_pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset([])
+        self.val_pytorch_dataset_text = CorpusDatasetPytorch.TextDataset([])
+        self.test_pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset([])
+        self.test_pytorch_dataset_text = CorpusDatasetPytorch.TextDataset([])
         
         
     @staticmethod
@@ -655,7 +708,7 @@ class CorpusDatasetPytorch:
     
         
     def __init__(self, data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir='./', 
-                 prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate=0.05):
+                 prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate=0.05, test_data_rate=0.05):
         """Construct the Dataloader and create Datasets
 
         Args:
@@ -671,18 +724,23 @@ class CorpusDatasetPytorch:
         self.lower_case = lower_case
         self.data_dir = data_dir
         if  os.path.isfile(os.path.join(cache_dir, "body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "text_poet_data.json")) \
-            and os.path.isfile(os.path.join(cache_dir, "val_body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "val_text_poet_data.json")):
+            and os.path.isfile(os.path.join(cache_dir, "val_body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "val_text_poet_data.json")) \
+            and os.path.isfile(os.path.join(cache_dir, "test_body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "test_text_poet_data.json")) :
             self.create_empty()
             self.pytorch_dataset_body.data =list(json.load( open( os.path.join(cache_dir, "body_poet_data.json"), 'r')))
             self.pytorch_dataset_text.data =list(json.load( open( os.path.join(cache_dir, "text_poet_data.json"), 'r')))
-            self.pytorch_dataset_body.validation_data = list(json.load( open( os.path.join(cache_dir, "val_body_poet_data.json"), 'r')))
-            self.pytorch_dataset_text.data = list(json.load( open( os.path.join(cache_dir, "val_text_poet_data.json"), 'r')))
+            self.val_pytorch_dataset_body.data = list(json.load( open( os.path.join(cache_dir, "val_body_poet_data.json"), 'r')))
+            self.val_pytorch_dataset_text.data = list(json.load( open( os.path.join(cache_dir, "val_text_poet_data.json"), 'r')))
+            self.test_pytorch_dataset_body.data = list(json.load( open( os.path.join(cache_dir, "test_body_poet_data.json"), 'r')))
+            self.test_pytorch_dataset_text.data = list(json.load( open( os.path.join(cache_dir, "test_text_poet_data.json"), 'r')))
         else:
-            self.load_json_filenames(prompt_length, prompt_ending, prompt_verse, verse_len=verse_len, val_data_rate=val_data_rate)
+            self.load_json_filenames(prompt_length, prompt_ending, prompt_verse, verse_len=verse_len, val_data_rate=val_data_rate, test_data_rate=test_data_rate)
             json.dump(self.pytorch_dataset_body.data, open( os.path.join(cache_dir, "body_poet_data.json"), 'w+'), indent = 6)
             json.dump(self.pytorch_dataset_text.data, open( os.path.join(cache_dir, "text_poet_data.json"), 'w+'), indent = 6)
-            json.dump(self.pytorch_dataset_body.validation_data, open( os.path.join(cache_dir, "val_body_poet_data.json"), 'w+'), indent = 6)
-            json.dump(self.pytorch_dataset_text.validation_data, open( os.path.join(cache_dir, "val_text_poet_data.json"), 'w+'), indent = 6)
+            json.dump(self.val_pytorch_dataset_body.data, open( os.path.join(cache_dir, "val_body_poet_data.json"), 'w+'), indent = 6)
+            json.dump(self.val_pytorch_dataset_text.data, open( os.path.join(cache_dir, "val_text_poet_data.json"), 'w+'), indent = 6)
+            json.dump(self.test_pytorch_dataset_body.data, open( os.path.join(cache_dir, "test_body_poet_data.json"), 'w+'), indent = 6)
+            json.dump(self.test_pytorch_dataset_text.data, open( os.path.join(cache_dir, "test_text_poet_data.json"), 'w+'), indent = 6)
             
         self.load_raw_()
         

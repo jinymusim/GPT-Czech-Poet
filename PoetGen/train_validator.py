@@ -4,7 +4,7 @@ import os
 import argparse
 import time
 
-from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
+from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase, IntervalStrategy, EarlyStoppingCallback
 from functools import partial
 
 
@@ -50,6 +50,7 @@ parser.add_argument("--epochs_year", default=0, type=int, help="Number of epochs
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
 parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
+parser.add_argument("--test_data_rate", default=0.05, type=float, help="Rate of test data")
 
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "validators_acc.txt")), type=str, help="Result of Analysis File")
 
@@ -155,28 +156,41 @@ def main(args):
     
     train_data = CorpusDatasetPytorch(data_dir=args.data_path, prompt_ending=args.prompt_ending, 
                                       prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
-                                      verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate)
+                                      verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate, test_data_rate=args.test_data_rate)
     
     if torch.cuda.device_count() > 1 or not args.SAM:
         if args.epochs_rhyme > 0:
-            training_args = TrainingArguments(
-                                      save_strategy  = "no",
-                                      logging_steps = 500,
-                                      warmup_steps = 4 *  len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
-                                      weight_decay = 0.0,
-                                      num_train_epochs = args.epochs_rhyme,
-                                      learning_rate = args.learning_rate_rhyme,
-                                      fp16 = True if torch.cuda.is_available() else False,
-                                      ddp_backend = "nccl",
-                                      lr_scheduler_type="cosine",
-                                      logging_dir = './logs',
-                                      output_dir = './results',
-                                      per_device_train_batch_size = args.batch_size_rhyme)
+            
+            training_args =  TrainingArguments(
+                                  output_dir=os.path.join(args.model_path, "TEMP_RHYME"),
+                                  save_strategy  = IntervalStrategy.EPOCH,
+                                  save_total_limit=1,
+                                  warmup_steps = 4 * len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
+                                  do_eval = True,
+                                  evaluation_strategy=IntervalStrategy.EPOCH,
+                                  logging_steps = 500,
+                                  weight_decay = 0.01,
+                                  num_train_epochs = args.epochs_rhyme,
+                                  learning_rate = args.learning_rate_rhyme,
+                                  fp16 = True if torch.cuda.is_available() else False,
+                                  optim='adamw_torch',
+                                  ddp_backend = "nccl",
+                                  lr_scheduler_type="cosine",
+                                  logging_dir = './logs',
+                                  metric_for_best_model='eval_loss',
+                                  per_device_train_batch_size = args.batch_size_rhyme,
+                                  per_device_eval_batch_size = args.batch_size_rhyme,
+                                  load_best_model_at_end=True,
+                                  greater_is_better=False)
+            
 
             trainer = Trainer(model = rhyme_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
-                               data_collator=collate).train()
+                               eval_dataset = train_data.val_pytorch_dataset_body,
+                               data_collator=collate,
+                               callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]).train()
+            
     elif args.epochs_rhyme > 0:
         
         
@@ -197,7 +211,7 @@ def main(args):
     rhyme_acc = 0
     rhyme_val_acc = {}
     if args.epochs_rhyme > 0:
-        rhyme_acc, rhyme_val_acc =  validate(rhyme_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device, 'rhyme')
+        rhyme_acc, rhyme_val_acc =  validate(rhyme_model.to(device), train_data.val_pytorch_dataset_body.data, collate, device, 'rhyme')
     
         torch.save(rhyme_model.cpu(), os.path.abspath(os.path.join(args.model_path, "rhyme", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
@@ -205,25 +219,38 @@ def main(args):
     
     if torch.cuda.device_count() >  1 or not args.SAM:
         if args.epochs_metre > 0:
-            training_args = TrainingArguments(
-                                      save_strategy  = "no",
-                                      warmup_steps = 4 *   len(train_data.pytorch_dataset_body)//args.batch_size_metre,
-                                      logging_steps = 500,
-                                      weight_decay = 0.0,
-                                      num_train_epochs = args.epochs_metre,
-                                      learning_rate = args.learning_rate_metre,
-                                      fp16 = True if torch.cuda.is_available() else False,
-                                      ddp_backend = "nccl",
-                                      lr_scheduler_type="cosine",
-                                      logging_dir = './logs',
-                                      output_dir = './results',
-                                      per_device_train_batch_size = args.batch_size_metre)
-
+            
+            training_args =  TrainingArguments(
+                                  output_dir=os.path.join(args.model_path, "TEMP_METER"),
+                                  save_strategy  = IntervalStrategy.EPOCH,
+                                  save_total_limit=1,
+                                  warmup_steps = 4 * len(train_data.pytorch_dataset_body)//args.batch_size_metre,
+                                  do_eval = True,
+                                  evaluation_strategy=IntervalStrategy.EPOCH,
+                                  logging_steps = 500,
+                                  weight_decay = 0.01,
+                                  num_train_epochs = args.epochs_metre,
+                                  learning_rate = args.learning_rate_metre,
+                                  fp16 = True if torch.cuda.is_available() else False,
+                                  optim='adamw_torch',
+                                  ddp_backend = "nccl",
+                                  lr_scheduler_type="cosine",
+                                  logging_dir = './logs',
+                                  metric_for_best_model='eval_loss',
+                                  per_device_train_batch_size = args.batch_size_metre,
+                                  per_device_eval_batch_size = args.batch_size_metre,
+                                  load_best_model_at_end=True,
+                                  greater_is_better=False)
+            
 
             trainer = Trainer(model = meter_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
-                               data_collator=collate_metre).train()
+                               eval_dataset = train_data.val_pytorch_dataset_body,
+                               data_collator=collate_metre,
+                               callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]).train()
+            
+
     elif args.epochs_metre > 0:
         
         training_args = {"lr" : args.learning_rate_metre,
@@ -241,7 +268,7 @@ def main(args):
     metre_acc = 0
     metre_val_accs = {}
     if args.epochs_metre > 0:
-        metre_acc, metre_val_accs = validate(meter_model.to(device), train_data.pytorch_dataset_body.validation_data, collate_metre, device, 'metre')
+        metre_acc, metre_val_accs = validate(meter_model.to(device), train_data.val_pytorch_dataset_body.data, collate_metre, device, 'metre')
     
         torch.save(meter_model.cpu(), os.path.abspath(os.path.join(args.model_path, "meter", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
@@ -249,25 +276,39 @@ def main(args):
     
     if torch.cuda.device_count() >  1 or not args.SAM:
         if args.epochs_year > 0:
-            training_args = TrainingArguments(
-                                      save_strategy  = "no",
-                                      warmup_steps = 4 *   len(train_data.pytorch_dataset_body)//args.batch_size_year,
-                                      logging_steps = 500,
-                                      weight_decay = 0.0,
-                                      num_train_epochs = args.epochs_year,
-                                      learning_rate = args.learning_rate_year,
-                                      fp16 = True if torch.cuda.is_available() else False,
-                                      ddp_backend = "nccl",
-                                      lr_scheduler_type="cosine",
-                                      logging_dir = './logs',
-                                      output_dir = './results',
-                                      per_device_train_batch_size = args.batch_size_year)
-
+            
+            training_args =  TrainingArguments(
+                                  output_dir=os.path.join(args.model_path, "TEMP_YEAR"),
+                                  save_strategy  = IntervalStrategy.EPOCH,
+                                  save_total_limit=1,
+                                  warmup_steps = 4 * len(train_data.pytorch_dataset_body)//args.batch_size_year,
+                                  do_eval = True,
+                                  evaluation_strategy=IntervalStrategy.EPOCH,
+                                  logging_steps = 500,
+                                  weight_decay = 0.01,
+                                  num_train_epochs = args.epochs_year,
+                                  learning_rate = args.learning_rate_year,
+                                  fp16 = True if torch.cuda.is_available() else False,
+                                  optim='adamw_torch',
+                                  ddp_backend = "nccl",
+                                  lr_scheduler_type="cosine",
+                                  logging_dir = './logs',
+                                  metric_for_best_model='eval_loss',
+                                  per_device_train_batch_size = args.batch_size_year,
+                                  per_device_eval_batch_size = args.batch_size_year,
+                                  load_best_model_at_end=True,
+                                  greater_is_better=False)
+            
 
             trainer = Trainer(model = year_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
-                               data_collator=collate).train()
+                               eval_dataset = train_data.val_pytorch_dataset_body,
+                               data_collator=collate,
+                               callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]).train()
+            
+
+
     elif args.epochs_year > 0:
         
         training_args = {"lr" : args.learning_rate_year,
@@ -285,7 +326,7 @@ def main(args):
     year_acc = 0
     year_val_accs = {}
     if args.epochs_year > 0:
-        year_acc, year_val_accs = validate(year_model.to(device), train_data.pytorch_dataset_body.validation_data, collate, device, 'year')
+        year_acc, year_val_accs = validate(year_model.to(device), train_data.val_pytorch_dataset_body.data, collate, device, 'year')
     
         torch.save(year_model.cpu(), os.path.abspath(os.path.join(args.model_path, "year", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     

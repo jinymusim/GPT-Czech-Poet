@@ -5,7 +5,7 @@ import argparse
 
 
 from accelerate import Accelerator
-from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase, AutoModelForCausalLM
+from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase, AutoModelForCausalLM, EarlyStoppingCallback, IntervalStrategy
 from functools import partial
 
 # Project Packages
@@ -26,13 +26,13 @@ from utils.poet_utils import EOS, PAD, UNK, parse_boolean
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=16, type=int, help="Batch size.")
+parser.add_argument("--batch_size_LM", default=48, type=int, help="Batch size.")
 parser.add_argument("--epochs_LM", default=0, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=16, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=32, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=0, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
-parser.add_argument("--input_mask_rate", default=0.00, type=float, help="Rate of input masking")
+parser.add_argument("--input_mask_rate", default=0.0, type=float, help="Rate of input masking")
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
@@ -70,13 +70,13 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 #TODO: ProcessedTokenizer, all e4 e8, base e4 e8
 
 #parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
-parser.add_argument("--default_hf_model", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default='lchaloupsky/czech-gpt2-oscar', type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Unicode", "unicode_tokenizer.json")), type=str, help="Tokenizer to use")
-#parser.add_argument("--tokenizer", default='lchaloupsky/czech-gpt2-oscar', type=str, help="Tokenizer to use")
-parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Tokenizer to use")
-parser.add_argument("--model_type",  default="distil", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil'], help="What type of Model is to be constructed")
-parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Unicode-Distil")),  type=str, help="Path to Model")
+parser.add_argument("--tokenizer", default='lchaloupsky/czech-gpt2-oscar', type=str, help="Tokenizer to use")
+#parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Tokenizer to use")
+parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil'], help="What type of Model is to be constructed")
+parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Test-Model")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1, type=int, help="Max length of context for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
@@ -92,6 +92,7 @@ parser.add_argument("--lower_case", default=True, type=bool, help="If to lower c
 parser.add_argument("--mirror_imbed", default=True, type=bool, help="If to mirror input embedding to output ones")
 
 parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
+parser.add_argument("--test_data_rate", default=0.05, type=float, help="Rate of test data")
 
 parser.add_argument("--model_input_format",  default="METER_VERSE", type=str, choices=["BASIC", "VERSE_PAR", 'METER_VERSE'], help="Input format to use for model")
 
@@ -163,50 +164,75 @@ def main(args: argparse.Namespace):
 
     train_data = CorpusDatasetPytorch(data_dir=args.data_path, prompt_ending=args.prompt_ending, 
                                       prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
-                                      verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate)
+                                      verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate, test_data_rate=args.test_data_rate)
     
     # Text Line Training
     if args.epochs_LM !=0:
         training_args = TrainingArguments(
-                                  save_strategy  = "no",
+                                  output_dir=os.path.join(args.model_path, "TEMP"),
+                                  overwrite_output_dir= True,
+                                  save_strategy  = IntervalStrategy.EPOCH,
+                                  save_total_limit=1,
                                   warmup_steps = len(train_data.pytorch_dataset_text)//args.batch_size_LM,
+                                  do_eval = True,
+                                  evaluation_strategy=IntervalStrategy.EPOCH,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_LM,
                                   learning_rate = args.learning_rate,
                                   fp16 = True if torch.cuda.is_available() else False,
+                                  optim='adamw_torch',
                                   ddp_backend = "nccl",
                                   lr_scheduler_type="cosine",
                                   logging_dir = './logs',
-                                  output_dir = './results',
-                                  per_device_train_batch_size = args.batch_size_LM)
+                                  metric_for_best_model='eval_loss',
+                                  per_device_train_batch_size = args.batch_size_LM,
+                                  per_device_eval_batch_size = args.batch_size_LM,
+                                  group_by_length = True,
+                                  length_column_name ='nums',
+                                  load_best_model_at_end=True,
+                                  greater_is_better=False)
     
     
         trainer = Trainer(model = model,
                            args = training_args,
                            train_dataset= train_data.pytorch_dataset_text,
-                           data_collator=collate).train()
+                           eval_dataset = train_data.val_pytorch_dataset_text,
+                           data_collator=collate,
+                           callbacks=[EarlyStoppingCallback(early_stopping_patience=2)]).train()
     
     # Verse Training
     if args.epochs_poet !=0:
         training_args = TrainingArguments(
-                                  save_strategy  = "no",
+                                  output_dir=os.path.join(args.model_path, "TEMP"),
+                                  overwrite_output_dir= True,
+                                  save_strategy  = IntervalStrategy.EPOCH,
+                                  save_total_limit=1,
                                   warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_poet,
+                                  do_eval = True,
+                                  evaluation_strategy=IntervalStrategy.EPOCH,
                                   logging_steps = 500,
-                                  weight_decay = 0.0,
+                                  weight_decay = 0.01,
                                   num_train_epochs = args.epochs_poet,
                                   learning_rate = args.learning_rate,
-                                  fp16 =  True if torch.cuda.is_available() else False,
+                                  fp16 = True if torch.cuda.is_available() else False,
+                                  optim='adamw_torch',
                                   ddp_backend = "nccl",
                                   lr_scheduler_type="cosine",
                                   logging_dir = './logs',
-                                  output_dir = './results',
-                                  per_device_train_batch_size = args.batch_size_poet)
+                                  metric_for_best_model='eval_loss',
+                                  per_device_train_batch_size = args.batch_size_poet,
+                                  per_device_eval_batch_size = args.batch_size_poet,
+                                  group_by_length = True,
+                                  load_best_model_at_end=True,
+                                  greater_is_better=False)
     
     
         trainer = Trainer(model = model,
                            args = training_args,
                            train_dataset= train_data.pytorch_dataset_body,
+                           eval_dataset= train_data.val_pytorch_dataset_body,
+                           callbacks=[EarlyStoppingCallback(early_stopping_patience=2)],
                            data_collator=collate).train()
     
     

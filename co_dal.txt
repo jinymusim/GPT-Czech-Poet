@@ -1,0 +1,6 @@
+Do dat fonetika (Do radku)
+
+Early stopping na validation loss. + Pridat test set
+
+Kdybychom delali dalsi sloky, tak spojit Unicode a Syllable tokenizer (Dohromady pod 28 000 tokenu) 
+a kodovat Syllable s posunem o len(Unicode). Kontext Syllable tokenizrem, aktualni sloka Unicodem.
