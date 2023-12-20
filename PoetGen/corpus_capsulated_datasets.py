@@ -563,9 +563,11 @@ class CorpusDatasetPytorch:
         attention = tokenized["attention_mask"]
         
         with torch.no_grad():
+            # This is Tuple
             model_hidden_states = surrogate_model(input_ids=input_ids.to(surrogate_model_device), 
                                                   attention_mask=attention.to(surrogate_model_device), 
                                                   labels=input_ids.type(torch.LongTensor).to(surrogate_model_device))['hidden_states']
+        model_hidden_states = [hidden.cpu().detach() for hidden in model_hidden_states]
         
         return {
             "input_ids": input_ids,

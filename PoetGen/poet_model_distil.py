@@ -27,7 +27,7 @@ class DistilModel(PoetModelInterface):
         # Because of Inserted Layer, Head Masks don't match => Add 1 more
         self.model.base_model.config.n_layer = len(self.kept_states)
         
-        self.loss_fnc = torch.nn.CrossEntropyLoss()
+        self.loss_fnc = torch.nn.MSELoss()
         
     def forward(self, input_ids=None, labels=None, attention_mask=None, to_replicate_states= None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, labels=labels, attention_mask=attention_mask)

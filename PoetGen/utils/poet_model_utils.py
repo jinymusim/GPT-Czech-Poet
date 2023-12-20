@@ -190,7 +190,10 @@ class ModelManipulation:
             old_tokenizer (PreTrainedTokenizerBase): Old tokenization
         """
         # Get old Embeddings
-        old_embed_in = poet_model.model.transformer.get_input_embeddings().weight.clone().detach()
+        if hasattr(poet_model.model, "transformer"):
+            old_embed_in = poet_model.model.transformer.get_input_embeddings().weight.clone().detach()
+        else:
+            old_embed_in = poet_model.model.get_input_embeddings().weight.clone().detach()
         old_mean_in = old_embed_in.mean(0)
         # Generate new Embedding based on new tokenization
         new_embd_in = old_embed_in.new_zeros(new_tokenizer.vocab_size, old_embed_in.size(1))
@@ -210,11 +213,20 @@ class ModelManipulation:
         #Exchange Embeddings and Decoding
         new_embd_layer_in = torch.nn.Embedding(new_tokenizer.vocab_size, old_embed_in.size(1))
         new_embd_layer_in.weight.data = new_embd_in
-        poet_model.model.transformer.set_input_embeddings(new_embd_layer_in)
+        if hasattr(poet_model.model, "transformer"):
+            poet_model.model.transformer.set_input_embeddings(new_embd_layer_in)
+        else:
+            poet_model.model.set_input_embeddings(new_embd_layer_in)
         
         new_decoder = torch.nn.Linear( old_embed_in.size(1), new_tokenizer.vocab_size, bias=False)
-        new_decoder.weight = poet_model.model.transformer.wte.weight
-        poet_model.model.lm_head = new_decoder
+        if hasattr(poet_model.model, "transformer"):
+            new_decoder.weight = poet_model.model.transformer.wte.weight
+        else:
+            new_decoder.weight = poet_model.model.base_model.embeddings.weight
+        if hasattr(poet_model.model, "lm_head"):
+            poet_model.model.lm_head = new_decoder
+        else:
+            poet_model.model.head = new_decoder
 
         
         # Update LM config to reflect possible change in vocab size
