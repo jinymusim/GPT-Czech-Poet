@@ -2,7 +2,7 @@
 
 # TEST MODEL
 
-#qsub -N TestModelE2E2 -q gpu -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'EPOCHSLM=2,  EPOCHSPOET=2,  TOKENIZER=lchaloupsky/czech-gpt2-oscar,  MODELTYPE=base,  MODEL=./Test-Model-e2e2, HFMODEL=lchaloupsky/czech-gpt2-oscar'  all_model_train_helper.sh 
+#qsub -N TestModelE2E2 -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'EPOCHSLM=2,  EPOCHSPOET=2,  TOKENIZER=lchaloupsky/czech-gpt2-oscar,  MODELTYPE=base,  MODEL=./Test-Model-e2e2, HFMODEL=lchaloupsky/czech-gpt2-oscar'  all_model_train_helper.sh 
 
 # EPOCH 4, EPOCH 8 Effective batch 64, 48
 
