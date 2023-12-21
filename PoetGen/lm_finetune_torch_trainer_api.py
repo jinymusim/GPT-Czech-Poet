@@ -169,7 +169,7 @@ def main(args: argparse.Namespace):
     # Text Line Training
     if args.epochs_LM !=0:
         training_args = TrainingArguments(
-                                  output_dir=os.path.join(args.model_path, "TEMP"),
+                                  output_dir=args.model_path + "TEMP",
                                   overwrite_output_dir= True,
                                   save_strategy  = IntervalStrategy.EPOCH,
                                   save_total_limit=1,
@@ -204,7 +204,7 @@ def main(args: argparse.Namespace):
     # Verse Training
     if args.epochs_poet !=0:
         training_args = TrainingArguments(
-                                  output_dir=os.path.join(args.model_path, "TEMP"),
+                                  output_dir=args.model_path + "TEMP",
                                   overwrite_output_dir= True,
                                   save_strategy  = IntervalStrategy.EPOCH,
                                   save_total_limit=1,
@@ -237,7 +237,7 @@ def main(args: argparse.Namespace):
     
     
     
-    torch.save(model, args.model_path)
+    torch.save(model, args.model_path + ".model")
     model.save_LM(f"{args.model_path}_LM")
     tokenizer.save_pretrained(f"{args.model_path}_LM")
       
