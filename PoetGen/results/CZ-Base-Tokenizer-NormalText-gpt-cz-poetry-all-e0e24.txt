@@ -61,3 +61,4 @@ Year Accuracy: 0.3722 +- 0.0181
 Year top 2 presence: 0.7186 +- 0.0165
 Year label presence: 0.2736 +- 0.0077
 
+# NEW TRAIN
