@@ -124,8 +124,8 @@ qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20
 qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./gpt-cz-poetry-basic-format-e4e8_LM all_model_val_helper.sh
 qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Base-Tokenizer-gpt-cz-poetry-verse-param-format-e4e8_LM all_model_val_helper.sh
 
-qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Base-Tokenizer-gpt-cz-poetry-verse-param-format-e0e4_LM all_model_val_helper.sh
-qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./gpt-cz-poetry-basic-format-e0e4_LM all_model_val_helper.sh
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Base-Tokenizer-gpt-cz-poetry-verse-param-format-e0e4-pretrained_LM all_model_val_helper.sh
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./gpt-cz-poetry-basic-format-e0e4-pretrained_LM all_model_val_helper.sh
 
 # RNN
 
