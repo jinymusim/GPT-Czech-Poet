@@ -212,7 +212,7 @@ def main(args: argparse.Namespace):
                                   do_eval = True,
                                   evaluation_strategy=IntervalStrategy.EPOCH,
                                   logging_steps = 500,
-                                  weight_decay = 0.01,
+                                  weight_decay = 0.0,
                                   num_train_epochs = args.epochs_poet,
                                   learning_rate = args.learning_rate,
                                   fp16 = True if torch.cuda.is_available() else False,
