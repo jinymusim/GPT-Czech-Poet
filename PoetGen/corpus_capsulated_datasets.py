@@ -224,7 +224,7 @@ class CorpusDatasetPytorch:
                             
                             text_line_scanned = self._construct_line(scanned_text, metre)
                             syllable_line = self._construct_syllable_line(scanned_text, metre)
-                            phonetic_text = self._introduce_phonetics(scanned_text, text_line)
+                            #phonetic_text = self._introduce_phonetics(scanned_text, text_line)
                             
                             num_vowels, verse_end = self._vowels_and_endings(scanned_text)
                             
@@ -232,21 +232,21 @@ class CorpusDatasetPytorch:
                             rand_split = np.random.rand()
                             if rand_split > self.val_data_rate + self.test_data_rate: 
                                 self.data.append({
-                                "input_ids" : [text_line_scanned +f" # {phonetic_text}",syllable_line + f" # {phonetic_text}"],
+                                "input_ids" : [text_line_scanned,syllable_line],
                                 "nums": [num_vowels],
                                 "verse_end": verse_end,
                                 "metre": metre
                                      })
                             elif rand_split < self.test_data_rate:
                                 self.test_data.append({
-                                "input_ids" : [text_line_scanned +f" # {phonetic_text}",syllable_line + f" # {phonetic_text}"],
+                                "input_ids" : [text_line_scanned,syllable_line],
                                 "nums": [num_vowels],
                                 "verse_end": verse_end,
                                 "metre": metre
                                      })
                             else:
                                 self.validation_data.append({
-                                "input_ids" : [text_line_scanned +f" # {phonetic_text}",syllable_line + f" # {phonetic_text}"],
+                                "input_ids" : [text_line_scanned,syllable_line],
                                 "nums": [num_vowels],
                                 "verse_end": verse_end,
                                 "metre": metre
