@@ -406,9 +406,9 @@ parser.add_argument("--num_runs", default=2, type=int, help="Number of runs on d
 
 parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM")),  type=str, help="Path to Model")
 
-parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_syllable_BPE_validator_1701872157853')),  type=str, help="Path to Model")
-parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'ufal-robeczech-base_syllable_BPE_validator_1701575698812')),  type=str, help="Path to Model")
-parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'ufal-robeczech-base_BPE_validator_1701938156314')),  type=str, help="Path to Model")
+parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_syllable_BPE_validator_1702665903087')),  type=str, help="Path to Model")
+parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'ufal-robeczech-base_syllable_BPE_validator_1702489033354')),  type=str, help="Path to Model")
+parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'ufal-robeczech-base_BPE_validator_1702393305267')),  type=str, help="Path to Model")
 
 parser.add_argument("--validator_tokenizer_model_rhyme", default='distilroberta-base', type=str, help="Validator tokenizer")
 parser.add_argument("--validator_tokenizer_model_meter", default='ufal/robeczech-base', type=str, help="Validator tokenizer")
