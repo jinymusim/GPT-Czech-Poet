@@ -4,7 +4,7 @@ import os
 import argparse
 import time
 
-from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase, IntervalStrategy, EarlyStoppingCallback
+from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
 from functools import partial
 
 
@@ -197,8 +197,7 @@ def main(args):
             trainer = Trainer(model = rhyme_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
-                               data_collator=collate,
-                               callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]).train()
+                               data_collator=collate).train()
             
     elif args.epochs_rhyme > 0:
         
@@ -260,8 +259,7 @@ def main(args):
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
                                eval_dataset = train_data.val_pytorch_dataset_body,
-                               data_collator=collate_metre,
-                               callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]).train()
+                               data_collator=collate_metre).train()
             
 
     elif args.epochs_metre > 0:
@@ -319,8 +317,7 @@ def main(args):
             trainer = Trainer(model = year_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
-                               data_collator=collate,
-                               callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]).train()
+                               data_collator=collate).train()
             
 
 
