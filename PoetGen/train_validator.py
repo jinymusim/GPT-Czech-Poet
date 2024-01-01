@@ -162,7 +162,8 @@ def main(args):
         if args.epochs_rhyme > 0:
             
             training_args =  TrainingArguments(
-                                  output_dir=os.path.join(args.model_path, "TEMP_RHYME"),
+                                  output_dir=args.model_path +f"_{time_stamp}_" + "TEMP_RHYME",
+                                  overwrite_output_dir= True,
                                   save_strategy  = IntervalStrategy.EPOCH,
                                   save_total_limit=1,
                                   warmup_steps = 2* len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
@@ -221,7 +222,8 @@ def main(args):
         if args.epochs_metre > 0:
             
             training_args =  TrainingArguments(
-                                  output_dir=os.path.join(args.model_path, "TEMP_METER"),
+                                  output_dir=args.model_path +f"_{time_stamp}_" + "TEMP_METER",
+                                  overwrite_output_dir= True,
                                   save_strategy  = IntervalStrategy.EPOCH,
                                   save_total_limit=1,
                                   warmup_steps = 2 * len(train_data.pytorch_dataset_body)//args.batch_size_metre,
@@ -278,7 +280,8 @@ def main(args):
         if args.epochs_year > 0:
             
             training_args =  TrainingArguments(
-                                  output_dir=os.path.join(args.model_path, "TEMP_YEAR"),
+                                  output_dir=args.model_path +f"_{time_stamp}_" + "TEMP_YEAR",
+                                  overwrite_output_dir= True,
                                   save_strategy  = IntervalStrategy.EPOCH,
                                   save_total_limit=1,
                                   warmup_steps = 2 * len(train_data.pytorch_dataset_body)//args.batch_size_year,
