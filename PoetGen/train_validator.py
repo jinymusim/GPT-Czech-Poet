@@ -14,9 +14,6 @@ from utils.validators import MeterValidator, RhymeValidator, YearValidator,Valid
 from utils.poet_utils import VALID_CHARS, UNK, PAD, EOS, parse_boolean, TextManipulation
 from utils.poet_model_utils import ModelManipulation
 
-# Parallel Plugin
-from accelerate import FullyShardedDataParallelPlugin, Accelerator
-from torch.distributed.fsdp.fully_sharded_data_parallel import FullOptimStateDictConfig, FullStateDictConfig
 
 parser = argparse.ArgumentParser()
 
@@ -165,16 +162,6 @@ def main(args):
     if torch.cuda.device_count() > 1 or not args.SAM:
         if args.epochs_rhyme > 0:
             
-
-
-            fsdp_plugin = FullyShardedDataParallelPlugin(
-                state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
-                optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
-                )
-
-            accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
-            rhyme_model = accelerator.prepare(rhyme_model)
-            
             training_args =  TrainingArguments(
                                   output_dir='./outputs',
                                   overwrite_output_dir= True,
@@ -228,14 +215,6 @@ def main(args):
     if torch.cuda.device_count() >  1 or not args.SAM:
         if args.epochs_metre > 0:
             
-            fsdp_plugin = FullyShardedDataParallelPlugin(
-                state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
-                optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
-                )
-
-            accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
-            meter_model = accelerator.prepare(meter_model)
-            
             training_args =  TrainingArguments(
                                   output_dir='./outputs',
                                   overwrite_output_dir= True,
@@ -287,14 +266,6 @@ def main(args):
     
     if torch.cuda.device_count() >  1 or not args.SAM:
         if args.epochs_year > 0:
-            
-            fsdp_plugin = FullyShardedDataParallelPlugin(
-                state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
-                optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
-                )
-
-            accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
-            year_model = accelerator.prepare(year_model)
             
             training_args =  TrainingArguments(
                                   output_dir='./outputs',
