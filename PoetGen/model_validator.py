@@ -262,7 +262,7 @@ class ModelValidator:
                             data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], 'rhyme' : values["RHYME"]}],tokenizer=self.validator_tokenizer_rhyme,
                                                                            is_syllable=False, syllables=self.args.val_syllables_rhyme,
                                                                            max_len=self.rhyme_model.model.config.max_position_embeddings - 2)
-                            res = self.rhyme_model.validate(input_ids=data['input_ids'],
+                            res = self.rhyme_model.validate_model(input_ids=data['input_ids'],
                                                                    rhyme=data['rhyme'], k=self.args.top_k)
                             rhyme_pos += res['acc']
                             rhyme_top_k_pos += res['top_k']
@@ -277,7 +277,7 @@ class ModelValidator:
                             data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], "year": values["YEAR"]}],tokenizer=self.validator_tokenizer_year,
                                                                            is_syllable=False, syllables=self.args.val_syllables_year,
                                                                            max_len=self.year_model.model.config.max_position_embeddings - 2)
-                            res = self.year_model.validate(input_ids=data['input_ids'],
+                            res = self.year_model.validate_model(input_ids=data['input_ids'],
                                                                    year_bucket=data['year_bucket'],k=self.args.top_k)
                             
                             year_pos += res['acc']
@@ -311,7 +311,7 @@ class ModelValidator:
                         data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line], "metre_ids": line_analysis["METER"]}],tokenizer=self.validator_tokenizer_meter,
                                                                        is_syllable=False, syllables=self.args.val_syllables_meter,
                                                                        max_len=self.meter_model.model.config.max_position_embeddings - 2)
-                        res = self.meter_model.validate(input_ids=data['input_ids'],
+                        res = self.meter_model.validate_model(input_ids=data['input_ids'],
                                                             metre_ids=data['metre_ids'],k=self.args.top_k)
                         
                         metre_pos += res['acc']
@@ -321,7 +321,7 @@ class ModelValidator:
                         data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line], "metre_ids": STROPHE_METER}],tokenizer=self.validator_tokenizer_meter,
                                                                        is_syllable=False, syllables=self.args.val_syllables_meter,
                                                                        max_len=self.meter_model.model.config.max_position_embeddings - 2)
-                        res = self.meter_model.validate(input_ids=data['input_ids'],
+                        res = self.meter_model.validate_model(input_ids=data['input_ids'],
                                                             metre_ids=data['metre_ids'],k=self.args.top_k)
                         
                         metre_pos += res['acc']

@@ -3,6 +3,7 @@ import transformers
 import jellyfish
 from tqdm import tqdm
 from transformers import  AutoModelForMaskedLM
+from transformers.utils import ModelOutput
 import numpy as np
 from .poet_utils import RHYME_SCHEMES, METER_TYPES, POET_YEARS_BUCKETS
 
@@ -32,7 +33,7 @@ class ValidatorInterface(torch.nn.Module):
         """
         raise NotImplementedError()
     
-    def predict(self, input_ids=None, *args, **kwargs):
+    def predict_state(self, input_ids=None, *args, **kwargs):
         """Compute model outputs
 
         Args:
@@ -43,7 +44,7 @@ class ValidatorInterface(torch.nn.Module):
         """
         raise NotImplementedError()
     
-    def validate(self, input_ids=None, *args, **kwargs):
+    def validate_model(self, input_ids=None, *args, **kwargs):
         """Validate model given some labels, Doesn't use loss
 
         Args:
@@ -86,10 +87,9 @@ class RhymeValidator(ValidatorInterface):
         softmaxed = torch.softmax(rhyme_regression, dim=1)
         rhyme_loss = self.loss_fnc(softmaxed, rhyme)
         
-        return {"model_output" : softmaxed,
-                "loss": rhyme_loss + outputs.loss}
+        return ModelOutput(loss=rhyme_loss + outputs.loss, model_output=softmaxed)
         
-    def predict(self, input_ids=None, *args, **kwargs):
+    def predict_state(self, input_ids=None, *args, **kwargs):
         
         outputs = self.model(input_ids=input_ids)
         
@@ -101,7 +101,7 @@ class RhymeValidator(ValidatorInterface):
         
         return softmaxed
     
-    def validate(self, input_ids=None, rhyme=None, k:int = 2,*args, **kwargs):
+    def validate_model(self, input_ids=None, rhyme=None, k:int = 2,*args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
@@ -158,10 +158,9 @@ class MeterValidator(ValidatorInterface):
         softmaxed = torch.softmax(meter_regression, dim=1)
         meter_loss = self.loss_fnc(softmaxed, metre_ids)
         
-        return {"model_output" : softmaxed,
-                "loss": meter_loss + outputs.loss}
+        return ModelOutput(loss=meter_loss + outputs.loss, model_output=softmaxed)
         
-    def predict(self, input_ids=None, *args, **kwargs):
+    def predict_state(self, input_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
@@ -172,7 +171,7 @@ class MeterValidator(ValidatorInterface):
         
         return softmaxed
     
-    def validate(self, input_ids=None, metre_ids=None, attention_mask=None, k: int=2,*args, **kwargs):
+    def validate_model(self, input_ids=None, metre_ids=None, attention_mask=None, k: int=2,*args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask )
         
         last_hidden = outputs['hidden_states'][-1]
@@ -233,10 +232,9 @@ class YearValidator(ValidatorInterface):
         year_era = self.softmax(year_era)
         year_era_loss =  self.loss_fnc_era(year_era, year_bucket)
         
-        return {"model_output" : year_val,
-                "loss":  year_val_loss + year_era_loss + outputs.loss} # Is the model loss OK?
+        return ModelOutput(loss=year_val_loss + year_era_loss  + outputs.loss, model_output=(year_val, year_era))
         
-    def predict(self, input_ids=None, *args, **kwargs):
+    def predict_state(self, input_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids)
         
         last_hidden = outputs['hidden_states'][-1]
@@ -245,7 +243,7 @@ class YearValidator(ValidatorInterface):
         
         return year_val
     
-    def validate(self, input_ids=None, year_bucket=None, k: int=2,*args, **kwargs):
+    def validate_model(self, input_ids=None, year_bucket=None, k: int=2,*args, **kwargs):
         
         outputs = self.model(input_ids=input_ids)
         
