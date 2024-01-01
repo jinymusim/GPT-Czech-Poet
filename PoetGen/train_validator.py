@@ -178,11 +178,9 @@ def main(args):
             training_args =  TrainingArguments(
                                   output_dir=args.model_path +f"_{time_stamp}_" + "TEMP_RHYME",
                                   overwrite_output_dir= True,
-                                  save_strategy  = IntervalStrategy.EPOCH,
-                                  save_total_limit=1,
+                                  save_strategy  = 'no',
                                   warmup_steps = 2* len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
-                                  do_eval = True,
-                                  evaluation_strategy=IntervalStrategy.EPOCH,
+                                  do_eval = False,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_rhyme,
@@ -192,17 +190,13 @@ def main(args):
                                   ddp_backend = "nccl",
                                   lr_scheduler_type="cosine",
                                   logging_dir = './logs',
-                                  metric_for_best_model='eval_loss',
-                                  per_device_train_batch_size = args.batch_size_rhyme,
-                                  per_device_eval_batch_size = args.batch_size_rhyme,
-                                  load_best_model_at_end=True,
-                                  greater_is_better=False)
+                                  per_device_train_batch_size = args.batch_size_rhyme
+                                  )
             
 
             trainer = Trainer(model = rhyme_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
-                               eval_dataset = train_data.val_pytorch_dataset_body,
                                data_collator=collate,
                                callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]).train()
             
@@ -246,11 +240,9 @@ def main(args):
             training_args =  TrainingArguments(
                                   output_dir=args.model_path +f"_{time_stamp}_" + "TEMP_METER",
                                   overwrite_output_dir= True,
-                                  save_strategy  = IntervalStrategy.EPOCH,
-                                  save_total_limit=1,
+                                  save_strategy  = 'no',
                                   warmup_steps = 2 * len(train_data.pytorch_dataset_body)//args.batch_size_metre,
-                                  do_eval = True,
-                                  evaluation_strategy=IntervalStrategy.EPOCH,
+                                  do_eval = False,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_metre,
@@ -260,11 +252,8 @@ def main(args):
                                   ddp_backend = "nccl",
                                   lr_scheduler_type="cosine",
                                   logging_dir = './logs',
-                                  metric_for_best_model='eval_loss',
-                                  per_device_train_batch_size = args.batch_size_metre,
-                                  per_device_eval_batch_size = args.batch_size_metre,
-                                  load_best_model_at_end=True,
-                                  greater_is_better=False)
+                                  per_device_train_batch_size = args.batch_size_metre
+                                  )
             
 
             trainer = Trainer(model = meter_model,
@@ -312,11 +301,9 @@ def main(args):
             training_args =  TrainingArguments(
                                   output_dir=args.model_path +f"_{time_stamp}_" + "TEMP_YEAR",
                                   overwrite_output_dir= True,
-                                  save_strategy  = IntervalStrategy.EPOCH,
-                                  save_total_limit=1,
+                                  save_strategy  = 'no',
                                   warmup_steps = 2 * len(train_data.pytorch_dataset_body)//args.batch_size_year,
-                                  do_eval = True,
-                                  evaluation_strategy=IntervalStrategy.EPOCH,
+                                  do_eval = False,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_year,
@@ -326,17 +313,12 @@ def main(args):
                                   ddp_backend = "nccl",
                                   lr_scheduler_type="cosine",
                                   logging_dir = './logs',
-                                  metric_for_best_model='eval_loss',
-                                  per_device_train_batch_size = args.batch_size_year,
-                                  per_device_eval_batch_size = args.batch_size_year,
-                                  load_best_model_at_end=True,
-                                  greater_is_better=False)
+                                  per_device_train_batch_size = args.batch_size_year)
             
 
             trainer = Trainer(model = year_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
-                               eval_dataset = train_data.val_pytorch_dataset_body,
                                data_collator=collate,
                                callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]).train()
             
