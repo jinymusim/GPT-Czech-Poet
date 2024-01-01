@@ -176,7 +176,7 @@ def main(args):
             rhyme_model = accelerator.prepare(rhyme_model)
             
             training_args =  TrainingArguments(
-                                  output_dir=args.model_path +f"_{time_stamp}_" + "TEMP_RHYME",
+                                  output_dir='./outputs',
                                   overwrite_output_dir= True,
                                   save_strategy  = 'no',
                                   warmup_steps = 2* len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
@@ -237,7 +237,7 @@ def main(args):
             meter_model = accelerator.prepare(meter_model)
             
             training_args =  TrainingArguments(
-                                  output_dir=args.model_path +f"_{time_stamp}_" + "TEMP_METER",
+                                  output_dir='./outputs',
                                   overwrite_output_dir= True,
                                   save_strategy  = 'no',
                                   warmup_steps = 2 * len(train_data.pytorch_dataset_body)//args.batch_size_metre,
@@ -297,7 +297,7 @@ def main(args):
             year_model = accelerator.prepare(year_model)
             
             training_args =  TrainingArguments(
-                                  output_dir=args.model_path +f"_{time_stamp}_" + "TEMP_YEAR",
+                                  output_dir='./outputs',
                                   overwrite_output_dir= True,
                                   save_strategy  = 'no',
                                   warmup_steps = 2 * len(train_data.pytorch_dataset_body)//args.batch_size_year,
