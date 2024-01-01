@@ -135,7 +135,7 @@ qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20
 
 # Distil Models
 
-qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Base-gpt-cz-poetry-e8e8_LM all_model_val_helper.sh
-qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Processed-gpt-cz-poetry-e8e8_LM all_model_val_helper.sh
-qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Syllable-gpt-cz-poetry-e8e8_LM all_model_val_helper.sh
-qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Unicode-gpt-cz-poetry-e8e8_LM all_model_val_helper.sh
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Base-gpt-cz-poetry-e4e16_LM all_model_val_helper.sh
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Processed-gpt-cz-poetry-e4e16_LM all_model_val_helper.sh
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Syllable-gpt-cz-poetry-e4e16_LM all_model_val_helper.sh
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=24gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Unicode-gpt-cz-poetry-e4e16_LM all_model_val_helper.sh
