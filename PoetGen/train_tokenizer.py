@@ -10,12 +10,12 @@ from tokenizers.models import BPE, Unigram, WordLevel, WordPiece
 from tokenizers.trainers import BpeTrainer, UnigramTrainer, WordLevelTrainer, WordPieceTrainer
 
 from tokenizers.pre_tokenizers import ByteLevel as BytePre, Whitespace
-from tokenizers.processors import ByteLevel as BytePost
+from tokenizers.processors import ByteLevel as BytePost, RobertaProcessing
 from tokenizers.decoders import ByteLevel as ByteDec, WordPiece as WordDec
 
 from tokenizers.normalizers import NFD
 
-from utils.poet_utils import METER_TYPES, RHYME_SCHEMES, EOS, PAD, UNK
+from utils.poet_utils import METER_TYPES, RHYME_SCHEMES, EOS, PAD, UNK, CLS
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
@@ -27,52 +27,65 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # TheBloke/Llama-2-7B-fp16 4096
 # spital/gpt2-small-czech-cs 1024
 parser.add_argument("--default_tokenizer", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
-parser.add_argument("--tokenizer_type", default="BPE", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "Unicode"], help="What type of tokenize to train")
+parser.add_argument("--tokenizer_type", default="Unicode", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "Unicode"], help="What type of tokenize to train")
 parser.add_argument("--tokenizer_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"utils","tokenizers")),  type=str, help="Path to Model")
 parser.add_argument("--raw_data", default=False,  type=bool, help="If to use raw data")
-parser.add_argument("--syllables", default=True,  type=bool, help="If to use syllables")
+parser.add_argument("--syllables", default=False,  type=bool, help="If to use syllables")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
+parser.add_argument("--class_token", default=True, type=bool, help="If to add class token")
 
 
 def main(args):
+    special_token_map = [EOS, PAD, UNK]
+    if args.class_token:
+        special_token_map += [CLS]
     
     # Create tokenizer based on arguments. Keep the structural parameters (vocabulary size) from default tokenizer
     tok = AutoTokenizer.from_pretrained(args.default_tokenizer)
     if args.tokenizer_type == "BPE":
         tokenizer = Tokenizer(BPE())
-        trainer = BpeTrainer(special_tokens=[EOS, PAD, UNK], vocab_size = tok.vocab_size, min_frequency=2,
+        trainer = BpeTrainer(special_tokens=special_token_map, vocab_size = tok.vocab_size, min_frequency=2,
                              initial_alphabet= ["#"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
-        tokenizer.post_processor = BytePost(trim_offsets=False)
+        if args.class_token:
+            tokenizer.post_processor = RobertaProcessing((EOS, 0), (CLS, 3), trim_offsets=False, add_prefix_space=False)
+        else:
+            tokenizer.post_processor = BytePost(trim_offsets=False)
     elif args.tokenizer_type == "Unigram":
         tokenizer = Tokenizer(Unigram())
-        trainer = UnigramTrainer(unk_token=UNK,special_tokens=[EOS, PAD, UNK], vocab_size = tok.vocab_size,
+        trainer = UnigramTrainer(unk_token=UNK,special_tokens=special_token_map, vocab_size = tok.vocab_size,
                                  initial_alphabet= ["#"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
-        tokenizer.post_processor = BytePost(trim_offsets=False)
+        if args.class_token:
+            tokenizer.post_processor = RobertaProcessing((EOS, 0), (CLS, 3), trim_offsets=False, add_prefix_space=False)
+        else:
+            tokenizer.post_processor = BytePost(trim_offsets=False)
     elif args.tokenizer_type == "Unicode":
         tokenizer = Tokenizer(Unigram())
-        trainer = UnigramTrainer(unk_token=UNK,special_tokens=[EOS, PAD, UNK], vocab_size = tok.vocab_size,
+        trainer = UnigramTrainer(unk_token=UNK,special_tokens=special_token_map, vocab_size = tok.vocab_size,
                                  initial_alphabet= ["#"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1], max_piece_length=1)
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
-        tokenizer.post_processor = BytePost(trim_offsets=False)
+        if args.class_token:
+            tokenizer.post_processor = RobertaProcessing((EOS, 0), (CLS, 3), trim_offsets=False, add_prefix_space=False)
+        else:
+            tokenizer.post_processor = BytePost(trim_offsets=False)
     
     elif args.tokenizer_type == "WordLevel":
         tokenizer = Tokenizer(WordLevel(unk_token=UNK))
-        trainer = WordLevelTrainer(special_tokens=[EOS, PAD, UNK], vocab_size = tok.vocab_size, min_frequency=2)
+        trainer = WordLevelTrainer(special_tokens=special_token_map, vocab_size = tok.vocab_size, min_frequency=2)
         
         tokenizer.normalizer = NFD()
         tokenizer.pre_tokenizer = Whitespace()
     elif args.tokenizer_type == "WordPiece":
         tokenizer = Tokenizer(WordPiece(unk_token=UNK))
-        trainer = WordPieceTrainer(special_tokens=[EOS, PAD, UNK] , vocab_size = tok.vocab_size, min_frequency=2, 
+        trainer = WordPieceTrainer(special_tokens=special_token_map , vocab_size = tok.vocab_size, min_frequency=2, 
                                    initial_alphabet= ["#"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
         tokenizer.normalizer = NFD()
         tokenizer.decoder = WordDec()
@@ -106,9 +119,9 @@ def main(args):
     if not os.path.exists(os.path.join(args.tokenizer_path ,args.tokenizer_type)):
         os.makedirs(os.path.join(args.tokenizer_path, args.tokenizer_type))
     if args.tokenizer_type not in ["Unicode"]:
-        tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, f"new_{'syllabs_' if args.syllables else ''}{'raw' if args.raw_data else 'processed'}_tokenizer.json"))
+        tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, f"new_{'class_' if args.class_token else ''}{'syllabs_' if args.syllables else ''}{'raw' if args.raw_data else 'processed'}_tokenizer.json"))
     elif args.tokenizer_type == "Unicode":
-        tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, f"unicode_tokenizer.json"))
+        tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, f"{'class_' if args.class_token else ''}unicode_tokenizer.json"))
         
     # Simple tokenizer test With some basic needs for Strophe generation
     print(train_data.pytorch_dataset_body.data[0]['input_ids'][0])

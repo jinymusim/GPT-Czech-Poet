@@ -11,7 +11,7 @@ from functools import partial
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 from utils.validators import MeterValidator, RhymeValidator, YearValidator,ValidatorInterface, ValidatorTrainer
 
-from utils.poet_utils import VALID_CHARS, UNK, PAD, EOS, parse_boolean, TextManipulation
+from utils.poet_utils import VALID_CHARS, UNK, PAD, EOS, CLS, parse_boolean, TextManipulation
 from utils.poet_model_utils import ModelManipulation
 
 
@@ -24,8 +24,8 @@ parser.add_argument("--learning_rate_metre", default=5e-5, type=float, help="Lea
 parser.add_argument("--learning_rate_year", default=5e-5, type=float, help="Learning Rate for Finetuning")
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
-#parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "syllabs_processed_tokenizer.json")), type=str, help="Tokenizer to use")
-parser.add_argument("--tokenizer", default="roberta-base", type=str, help="Tokenizer to use")
+parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_class_processed_tokenizer.json")), type=str, help="Tokenizer to use")
+#parser.add_argument("--tokenizer", default="roberta-base", type=str, help="Tokenizer to use")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "validators")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=512, type=int, help="Max length for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
@@ -40,13 +40,13 @@ parser.add_argument("--SAM", default=False, type=parse_boolean, help='If to use 
 
 parser.add_argument("--pretrained_model", default="roberta-base", type=str, help="Roberta Model")
 
-parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
+parser.add_argument("--batch_size_metre", default=1, type=int, help="Batch size.")
 parser.add_argument("--epochs_metre", default=0, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size.")
-parser.add_argument("--epochs_rhyme", default=0, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_rhyme", default=1, type=int, help="Batch size.")
+parser.add_argument("--epochs_rhyme", default=1, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--batch_size_year", default=64, type=int, help="Batch size.")
+parser.add_argument("--batch_size_year", default=1, type=int, help="Batch size.")
 parser.add_argument("--epochs_year", default=0, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
@@ -143,9 +143,13 @@ def main(args):
         tokenizer.pad_token_id = 1
         tokenizer.unk_token = UNK
         tokenizer.unk_token_id = 2
+        tokenizer.cls_token = CLS
+        tokenizer.cls_token_id = 3
+        tokenizer.sep_token = EOS
+        tokenizer.sep_token_id = 0 
         
         ModelManipulation.exchange_embedding_roberta(meter_model, new_tokenizer=tokenizer, old_tokenizer=AutoTokenizer.from_pretrained(args.pretrained_model))
-        ModelManipulation.exchange_embedding_roberta(rhyme_acc, new_tokenizer=tokenizer, old_tokenizer=AutoTokenizer.from_pretrained(args.pretrained_model))
+        ModelManipulation.exchange_embedding_roberta(rhyme_model, new_tokenizer=tokenizer, old_tokenizer=AutoTokenizer.from_pretrained(args.pretrained_model))
         ModelManipulation.exchange_embedding_roberta(year_model, new_tokenizer=tokenizer, old_tokenizer=AutoTokenizer.from_pretrained(args.pretrained_model))
         
       
@@ -166,7 +170,7 @@ def main(args):
                                   output_dir='./outputs',
                                   overwrite_output_dir= True,
                                   save_strategy  = 'no',
-                                  warmup_steps = 2* len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
+                                  warmup_steps =  len(train_data.pytorch_dataset_body)//args.batch_size_rhyme,
                                   do_eval = False,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
@@ -219,7 +223,7 @@ def main(args):
                                   output_dir='./outputs',
                                   overwrite_output_dir= True,
                                   save_strategy  = 'no',
-                                  warmup_steps = 2 * len(train_data.pytorch_dataset_body)//args.batch_size_metre,
+                                  warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_metre,
                                   do_eval = False,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
@@ -237,7 +241,6 @@ def main(args):
             trainer = Trainer(model = meter_model,
                                args = training_args,
                                train_dataset= train_data.pytorch_dataset_body,
-                               eval_dataset = train_data.val_pytorch_dataset_body,
                                data_collator=collate_metre).train()
             
 
@@ -271,7 +274,7 @@ def main(args):
                                   output_dir='./outputs',
                                   overwrite_output_dir= True,
                                   save_strategy  = 'no',
-                                  warmup_steps = 2 * len(train_data.pytorch_dataset_body)//args.batch_size_year,
+                                  warmup_steps = len(train_data.pytorch_dataset_body)//args.batch_size_year,
                                   do_eval = False,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
@@ -313,6 +316,8 @@ def main(args):
     
         torch.save(year_model.cpu(), os.path.abspath(os.path.join(args.model_path, "year", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
+    
+    _, tok_name = os.path.split(args.tokenizer)
     
     # Store result and model
     with open(args.result_file, 'a') as file:

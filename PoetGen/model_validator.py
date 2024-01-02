@@ -7,7 +7,7 @@ import numpy as np
 
 from tqdm import tqdm
 from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase, AutoModelForCausalLM
-from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, UNK, EOS, PAD, NORMAL_SCHEMES, SyllableMaker
+from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, UNK, EOS, PAD, CLS, SyllableMaker
 from utils.poet_model_utils import PoetModelInterface
 from utils.validators import ValidatorInterface
 
@@ -75,6 +75,10 @@ class ModelValidator:
                 self.validator_tokenizer_rhyme.pad_token_id = 1
                 self.validator_tokenizer_rhyme.unk_token = UNK
                 self.validator_tokenizer_rhyme.unk_token_id = 2
+                self.validator_tokenizer_rhyme.cls_token = CLS
+                self.validator_tokenizer_rhyme.cls_token_id = 3
+                self.validator_tokenizer_rhyme.sep_token = EOS
+                self.validator_tokenizer_rhyme.sep_token_id = 0
                 
         # Load Meter tokenizer
         self.validator_tokenizer_meter: PreTrainedTokenizerBase = None
@@ -89,6 +93,10 @@ class ModelValidator:
                 self.validator_tokenizer_meter.pad_token_id = 1
                 self.validator_tokenizer_meter.unk_token = UNK
                 self.validator_tokenizer_meter.unk_token_id = 2
+                self.validator_tokenizer_meter.cls_token = CLS
+                self.validator_tokenizer_meter.cls_token_id = 3
+                self.validator_tokenizer_meter.sep_token = EOS
+                self.validator_tokenizer_meter.sep_token_id = 0
                 
         # Load Year tokenizer
         self.validator_tokenizer_year: PreTrainedTokenizerBase = None
@@ -103,6 +111,10 @@ class ModelValidator:
                 self.validator_tokenizer_year.pad_token_id = 1
                 self.validator_tokenizer_year.unk_token = UNK
                 self.validator_tokenizer_year.unk_token_id = 2
+                self.validator_tokenizer_year.cls_token = CLS
+                self.validator_tokenizer_year.cls_token_id = 3
+                self.validator_tokenizer_year.sep_token = EOS
+                self.validator_tokenizer_year.sep_token_id = 0
          
         # Load LM tokenizers       
         try:    

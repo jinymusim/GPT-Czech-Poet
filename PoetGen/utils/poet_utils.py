@@ -58,6 +58,7 @@ METER_TRANSLATE = {
 PAD = "<|PAD|>"
 UNK = "<|UNK|>"
 EOS = "<|EOS|>"
+CLS = "<|CLS|>"
 # Basic Characters to consider in rhyme and syllables (43)
 VALID_CHARS = [""," ",'a','á','b','c','č','d','ď','e','é','ě',
                'f','g','h','i','í','j','k','l','m','n','ň',
