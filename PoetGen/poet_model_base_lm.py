@@ -193,7 +193,7 @@ class PoetModelBase(PoetModelInterface):
                 if  f"END_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1 and j>=0 and decoded_line.count("#") <=1:
                     features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
                     features_dict[f'END_{j}'] = decoded_line.split()[1]
-                elif f"END_{j}" not in features_dict.keys() and len(decoded_line.split()) > 1 and j>=0:
+                elif f"END_{j}" not in features_dict.keys() and len(decoded_line.split()) > 2 and j>=0:
                     features_dict[f'LENGTH_{j}'] = decoded_line.split()[0]
                     features_dict[f'END_{j}'] = decoded_line.split()[2]            
             # NEW
