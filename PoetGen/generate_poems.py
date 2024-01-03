@@ -16,15 +16,15 @@ parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "generated_poems.txt")), type=str, help="Where to store the decoding efforts")
 parser.add_argument("--sample", default=True, type=bool, help="If to sample during generation")
 
-parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_syllable_BPE_validator_1702665903087')),  type=str, help="Path to Model")
-parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'ufal-robeczech-base_syllable_BPE_validator_1702489033354')),  type=str, help="Path to Model")
+parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_BPE_validator_1704126399565')),  type=str, help="Path to Model")
+parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'ufal-robeczech-base_BPE_validator_1704126400265')),  type=str, help="Path to Model")
 parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'ufal-robeczech-base_BPE_validator_1702393305267')),  type=str, help="Path to Model")
 
 parser.add_argument("--validator_tokenizer_model_rhyme", default='distilroberta-base', type=str, help="Validator tokenizer")
 parser.add_argument("--validator_tokenizer_model_meter", default='ufal/robeczech-base', type=str, help="Validator tokenizer")
 parser.add_argument("--validator_tokenizer_model_year", default='ufal/robeczech-base', type=str, help="Validator tokenizer")
-parser.add_argument("--val_syllables_rhyme", default=True, type=bool, help="Does validator use syllables")
-parser.add_argument("--val_syllables_meter", default=True, type=bool, help="Does validator use syllables")
+parser.add_argument("--val_syllables_rhyme", default=False, type=bool, help="Does validator use syllables")
+parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
 parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does validator use syllables")
 
 parser.add_argument("--runs_per_setting", default=5, type=int, help="Number of runs per setting")
