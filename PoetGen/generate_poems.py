@@ -12,7 +12,7 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e4e16_LM")),  type=str, help="Path to Model")
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "generated_poems.txt")), type=str, help="Where to store the decoding efforts")
 parser.add_argument("--sample", default=True, type=bool, help="If to sample during generation")
 
