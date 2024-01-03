@@ -210,7 +210,7 @@ def main(args):
     rhyme_acc = 0
     rhyme_val_acc = {}
     if args.epochs_rhyme > 0:
-        rhyme_acc, rhyme_val_acc =  validate(rhyme_model.to(device), train_data.val_pytorch_dataset_body.data, collate, device, 'rhyme')
+        rhyme_acc, rhyme_val_acc =  validate(rhyme_model.to(device), train_data.test_pytorch_dataset_body.data, collate, device, 'rhyme')
     
         torch.save(rhyme_model.cpu(), os.path.abspath(os.path.join(args.model_path, "rhyme", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
@@ -261,7 +261,7 @@ def main(args):
     metre_acc = 0
     metre_val_accs = {}
     if args.epochs_metre > 0:
-        metre_acc, metre_val_accs = validate(meter_model.to(device), train_data.val_pytorch_dataset_body.data, collate_metre, device, 'metre')
+        metre_acc, metre_val_accs = validate(meter_model.to(device), train_data.test_pytorch_dataset_body.data, collate_metre, device, 'metre')
     
         torch.save(meter_model.cpu(), os.path.abspath(os.path.join(args.model_path, "meter", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
@@ -312,7 +312,7 @@ def main(args):
     year_acc = 0
     year_val_accs = {}
     if args.epochs_year > 0:
-        year_acc, year_val_accs = validate(year_model.to(device), train_data.val_pytorch_dataset_body.data, collate, device, 'year')
+        year_acc, year_val_accs = validate(year_model.to(device), train_data.test_pytorch_dataset_body.data, collate, device, 'year')
     
         torch.save(year_model.cpu(), os.path.abspath(os.path.join(args.model_path, "year", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     

@@ -226,7 +226,7 @@ class ModelValidator:
         end_accuracy, sylab_accuracy = [], []
         rhyme_accuracy, rhyme_top_k, rhyme_label_acc, levenshtein_dist = [], [], [], []
         metre_accuracy, metre_top_k, metre_label_acc  = [], [], []
-        year_accuracy, year_top_k, year_label_acc  = [], [], []
+        year_accuracy, year_top_k, year_label_acc, year_distance_dist  = [], [], [], []
         
         syllable_running_ration = []
         # Run the requested amount of evaluations
@@ -235,13 +235,13 @@ class ModelValidator:
             end_all, sylab_all  = 0,0
             rhyme_all, rhyme_top_k_all, rhyme_label_all, lev_distance_all = 0,0,0,0
             metre_all, metre_top_k_all, metre_label_all = 0,0,0
-            year_all, year_top_k_all, year_label_all = 0,0,0
+            year_all, year_top_k_all, year_label_all, year_distance_all = 0,0,0,0
             
             
             end_pos, sylab_pos = 0, 0
             rhyme_pos, rhyme_top_k_pos, rhyme_label_pos, lev_distance = 0,0,0,0
             metre_pos, metre_top_k_pos, metre_label_pos  = 0,0,0
-            year_pos, year_top_k_pos, year_label_pos = 0,0,0
+            year_pos, year_top_k_pos, year_label_pos, year_distance = 0,0,0,0
             
             
             samples = random.choices(list(range(len(self.validation_data))), k=self.runs_per_epoch)
@@ -268,6 +268,7 @@ class ModelValidator:
                         year_all +=1
                         year_top_k_all +=1
                         year_label_all +=1
+                        year_distance_all +=1
                         
                         # Validate for Rhyme schema
                         if self.rhyme_model != None and "RHYME" in values.keys():
@@ -295,6 +296,8 @@ class ModelValidator:
                             year_pos += res['acc']
                             year_top_k_pos += res['top_k']
                             year_label_pos += res['predicted_label']
+                            if res['acc'] < 0.5:
+                                year_distance += res['distance']
                             
                         if 'STROPHE_METER' in values.keys():
                             STROPHE_METER = values['STROPHE_METER']
@@ -366,6 +369,7 @@ class ModelValidator:
             year_accuracy.append(0 if year_all==0 else year_pos/year_all)
             year_top_k.append(0 if year_top_k_all==0 else year_top_k_pos/year_top_k_all)
             year_label_acc.append(0 if year_label_all==0 else year_label_pos/year_label_all)
+            year_distance_dist.append(0 if year_distance_all == 0 else year_distance/year_distance_all)
             
             
         # Log all results and configuration
@@ -391,7 +395,9 @@ class ModelValidator:
             print(f"Year model: {self.year_model_name}, Syllable {str(self.args.val_syllables_year)}", file=file)
             print(f"Year Accuracy: {np.mean(year_accuracy):.4f} +- {np.std(year_accuracy, ddof=1):.4f}", file=file)
             print(f"Year top {self.args.top_k} presence: {np.mean(year_top_k):.4f} +- {np.std(year_top_k, ddof=1):.4f}", file=file)
-            print(f"Year label presence: {np.mean(year_label_acc):.4f} +- {np.std(year_label_acc, ddof=1):.4f}\n", file=file)
+            print(f"Year label presence: {np.mean(year_label_acc):.4f} +- {np.std(year_label_acc, ddof=1):.4f}", file=file)
+            # Measure average distance on wrong examples
+            print(f"Year predict distance: {np.mean(year_distance_dist):.4f} +- {np.std(year_distance_dist, ddof=1):.4f}\n", file=file)
                     
             
     def full_validate(self):
