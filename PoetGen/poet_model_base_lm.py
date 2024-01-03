@@ -5,6 +5,7 @@ from utils.poet_utils import TextAnalysis, RHYME_SCHEMES
 from transformers.utils import ModelOutput
 
 import random
+import torch
 
 class PoetModelBase(PoetModelInterface):
     def __init__(self, pretrainedModel, *args, **kwargs) -> None:
@@ -55,7 +56,7 @@ class PoetModelBase(PoetModelInterface):
         return features_dict
                    
     
-    def generate_forced(self, prompt, tokenizer: AutoTokenizer, verse_len:int = 4, sample: bool = False, format: str = 'METER_VERSE'):
+    def generate_forced(self, prompt, tokenizer: AutoTokenizer, verse_len:int = 4, sample: bool = False, format: str = 'METER_VERSE', device= torch.device('cpu')):
         
         features_dict_init = self.analyze_prompt(prompt)
         if isinstance(prompt, dict):
@@ -65,7 +66,7 @@ class PoetModelBase(PoetModelInterface):
         # GENERATE FOR POSSIBLE MISSING POET PARAM
         token_gen_rhyme = tokenizer.encode("#", return_tensors='pt')
         if sample:
-            rhyme_line = self.model.generate(token_gen_rhyme, 
+            rhyme_line = self.model.generate(token_gen_rhyme.to(device), 
                                 max_new_tokens= 100,
                                 do_sample=True,
                                 top_k=50,
@@ -73,14 +74,14 @@ class PoetModelBase(PoetModelInterface):
                                 pad_token_id=tokenizer.pad_token_id,
                                 eos_token_id=tokenizer.eos_token_id)
         else:
-            rhyme_line = self.model.generate(token_gen_rhyme, 
+            rhyme_line = self.model.generate(token_gen_rhyme.to(device), 
                                 max_new_tokens= 100,
                                 num_beams=8,
                                 no_repeat_ngram_size=2,
                                 early_stopping=True,
                                 pad_token_id=tokenizer.pad_token_id,
                                 eos_token_id=tokenizer.eos_token_id)
-        rhyme_dec = tokenizer.decode(rhyme_line[0], skip_special_tokens=True).splitlines()[0]
+        rhyme_dec = tokenizer.decode(rhyme_line.cpu()[0], skip_special_tokens=True).splitlines()[0]
         features_dict= TextAnalysis._first_line_analysis(rhyme_dec)
         for key, value in features_dict_init.items():
             features_dict[key] = value
@@ -157,7 +158,7 @@ class PoetModelBase(PoetModelInterface):
                 (f" {features_dict[f'END_{j}'] } #" if  f"END_{j}" in features_dict.keys() else "") 
             tokenized_poet_start = tokenizer.encode("\n".join(prompt_list) + "\n" + line_start,  return_tensors='pt')
             if sample:
-                out_line =  self.model.generate(tokenized_poet_start, 
+                out_line =  self.model.generate(tokenized_poet_start.to(device), 
                                 max_new_tokens= 100,
                                 do_sample=True,
                                 top_k=50,
@@ -165,14 +166,14 @@ class PoetModelBase(PoetModelInterface):
                                 pad_token_id=tokenizer.pad_token_id,
                                 eos_token_id=tokenizer.eos_token_id)
             else:
-                out_line =  self.model.generate(tokenized_poet_start, 
+                out_line =  self.model.generate(tokenized_poet_start.to(device), 
                                 max_new_tokens= 100,
                                 num_beams=2,
                                 no_repeat_ngram_size=2,
                                 early_stopping=True,
                                 pad_token_id=tokenizer.pad_token_id,
                                 eos_token_id=tokenizer.eos_token_id)
-            decoded_lines = tokenizer.decode(out_line[0], skip_special_tokens=True).splitlines()
+            decoded_lines = tokenizer.decode(out_line.cpu()[0], skip_special_tokens=True).splitlines()
             # Repetition catcher
            
             # Possible 
