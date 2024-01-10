@@ -3,13 +3,13 @@ import os
 import argparse
 
 from transformers import  AutoTokenizer, PreTrainedTokenizerBase, PreTrainedTokenizerFast
-from poet_model_base_lm import PoetModelBase
+from utils.base_poet_models import PoetModelBase
 from utils.poet_model_utils import PoetModelInterface
-from utils.poet_utils import UNK, PAD, EOS
+from utils.poet_utils import Tokens
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "gpt-cz-poetry-basic-format-e0e4_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM")),  type=str, help="Path to Model")
 # bigscience/bloom-560m
 parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Original", "base_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "test_poet_model.txt")), type=str, help="Where to store the decoding efforts")
@@ -24,12 +24,12 @@ try:
     tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.model_path_full)
 except: 
     tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.backup_tokenizer_model)
-    tokenizer.eos_token = EOS
-    tokenizer.eos_token_id = 0
-    tokenizer.pad_token = PAD
-    tokenizer.pad_token_id = 1
-    tokenizer.unk_token = UNK
-    tokenizer.unk_token_id = 2
+    tokenizer.eos_token = Tokens.EOS
+    tokenizer.eos_token_id = Tokens.EOS_ID
+    tokenizer.pad_token = Tokens.PAD
+    tokenizer.pad_token_id = Tokens.PAD_ID
+    tokenizer.unk_token = Tokens.UNK
+    tokenizer.unk_token_id = Tokens.UNK_ID
 
 # Load model
 if "_LM" in args.model_path_full:
@@ -67,7 +67,7 @@ if os.path.split(args.model_path_full)[1].startswith('gpt'):
     FORMAT="BASIC"
 if os.path.split(args.model_path_full)[1].startswith('NEW') or os.path.split(args.model_path_full)[1].startswith('BASE'):
     FORMAT='VERSE_PAR'
-out_forced = model.generate_forced("#", tokenizer, verse_len=4, sample=args.sample, format=FORMAT)
+out_forced = model.generate_forced("#", tokenizer, sample=args.sample, format=FORMAT)
 # Print the result of generation
 print("### Forced Decoding! ###\n", out_forced)
 # Store both types of generation as well as the name of used LM

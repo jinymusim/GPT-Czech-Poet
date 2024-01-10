@@ -1136,3 +1136,19 @@ T # 7 # cí # v lesní temno spějící
  sám sebe shladit chtěl jak hříšné vinům,
  jich zákonům a mravům kázal vzdoru
  tak přišel konec hněvu, v srdci sporu
+--- Model CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM ---
+### Basic Decoding! ###
+ # AABCCB # 1880
+J # 8 # svět # v své ruce sochu. v šírý svět
+J # 8 # vlet # se pustili jsme pro ni, v let,
+J # 7 # ci # neb ona má je v moci
+J # 8 # ti # a ona umí v závrati
+J # 8 # ti # pod listím snít a mlčeti,
+J # 7 # ci # a zpívat slavnou noci.
+
+### Forced Decoding! ###
+ # ABBA # 1840
+T # 10 # vu # milostného nábožného stavu 
+T # 9 # dy # k poslednímu seřadění škody
+T # 9 # dy # podajíc se s láskou národy
+T # 10 # vu # odřeklo se mužně zeměpávu

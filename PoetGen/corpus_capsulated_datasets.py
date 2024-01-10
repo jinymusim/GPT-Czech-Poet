@@ -2,9 +2,8 @@ import os
 import json
 import numpy as np
 import torch
-import re
 
-from utils.poet_utils import RHYME_SCHEMES, VERSE_ENDS, POET_YEARS_BUCKETS, METER_TYPES, VALID_CHARS, METER_TRANSLATE, SyllableMaker, TextAnalysis, TextManipulation
+from utils.poet_utils import StropheParams, SyllableMaker, TextAnalysis, TextManipulation
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizerBase, PreTrainedModel
 #TODO: Maybe replace year of book being written for year Author was born
@@ -150,9 +149,9 @@ class CorpusDatasetPytorch:
             Returns:
                 numpy.ndarray: One-hot encoded vector of ending syllable
             """
-            verse_end_vector = np.zeros(len(VERSE_ENDS))
-            if end in VERSE_ENDS:
-                verse_end_vector[VERSE_ENDS.index(end)] = 1
+            verse_end_vector = np.zeros(len(StropheParams.ENDS))
+            if end in StropheParams.ENDS[:-1]:
+                verse_end_vector[StropheParams.ENDS.index(end)] = 1
             else:
                 verse_end_vector[-1] = 1
             return verse_end_vector
@@ -218,7 +217,7 @@ class CorpusDatasetPytorch:
                 for data_line in datum:
                     for part_line in data_line['body']:
                         for text_line in part_line:
-                            metre = METER_TRANSLATE.get(text_line["metre"][0]["type"], "N")
+                            metre = StropheParams.METER_TRANSLATE.get(text_line["metre"][0]["type"], "N")
                             
                             scanned_text = TextManipulation._remove_most_nonchar(text_line['text'], self.lower_case)
                             
@@ -373,7 +372,7 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             
                             # In rare cases multiple, but from searching only 1 metre per line
-                            metre = METER_TRANSLATE.get(text_line["metre"][0]["type"], "J")
+                            metre = StropheParams.METER_TRANSLATE.get(text_line["metre"][0]["type"], "J")
                             metres +=  [metre]
                             
                             rhyme.append(text_line["rhyme"])  

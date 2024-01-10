@@ -58,7 +58,7 @@ class PoetModelInterface(torch.nn.Module):
     
 
 from transformers import GPT2Config, GPT2Model
-from .poet_utils import POET_YEARS_BUCKETS
+from .poet_utils import StropheParams
 
 class ContextModule(torch.nn.Module):
     """Module for understanding poet context
@@ -130,9 +130,9 @@ class PoetTypeModule(torch.nn.Module):
         self.config = GPT2Config(n_positions=input_size, n_head=(n_embd//(768//12)),n_embd=n_embd, 
                                  n_layer=block_count, output_hidden_states=True,  output_attentions =True)
         self.type_model = GPT2Model(self.config)
-        self.type_predict = torch.nn.Linear(n_embd, len(POET_YEARS_BUCKETS))
+        self.type_predict = torch.nn.Linear(n_embd, len(StropheParams.YEAR))
         self.softmax = torch.nn.Softmax()
-        self.linear_scale = torch.nn.Linear(len(POET_YEARS_BUCKETS), output_size)
+        self.linear_scale = torch.nn.Linear(len(StropheParams.YEAR), output_size)
         self.input_size = input_size
         self.n_embd = n_embd
         self.output_size = output_size
@@ -153,7 +153,7 @@ class PoetTypeModule(torch.nn.Module):
         Returns:
             _type_: GPT2Block structured output (hidden states, layer past, attention, keys)
         """
-        type_prob = torch.zeros((hidden_states.shape[0], len(POET_YEARS_BUCKETS))).to("cuda" if torch.cuda.is_available() else "cpu")
+        type_prob = torch.zeros((hidden_states.shape[0], len(StropheParams.YEAR))).to("cuda" if torch.cuda.is_available() else "cpu")
         model_output = None
         # Sometimes there might be no context
         if self.context_ids != None:

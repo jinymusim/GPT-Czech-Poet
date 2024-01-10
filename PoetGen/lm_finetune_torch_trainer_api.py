@@ -9,19 +9,13 @@ from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedT
 from functools import partial
 
 # Project Packages
-from poet_model_base_lm import PoetModelBase
-from poet_model_secondary_tasks import PoetModelSecondaryTasks
-from poet_model_half_precision import PoetModelHalfBase
-from poet_model_verse_end import PoetModelVerseEnd
-from poet_model_context_input import PoetModelContextInput
-from poet_model_context_year import PoetModelContextYear
-from poet_model_all_tasks import PoetModelAllTasks
-from poet_model_distil import DistilModel
+from utils.base_poet_models import PoetModelBase, PoetModelSecondaryTasks, PoetModelHalfBase, PoetModelVerseEnd, PoetModelContextInput, PoetModelContextYear, PoetModelAllTasks, DistilModel
+
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 from utils.poet_model_utils import ModelManipulation
 
-from utils.poet_utils import EOS, PAD, UNK, parse_boolean
+from utils.poet_utils import Tokens
 
 
 parser = argparse.ArgumentParser()
@@ -47,7 +41,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # stabilityai/StableBeluga-7B 4096 Large
 # RWKV/rwkv-4-169m-pile 1024 RNN
 
-#TODO: Introduce Layered Model, Best done by modifiing 
+# Introduce Layered Model, Best done by modifiing 
 # self.h = nn.ModuleList([GPT2Block(config) for _ in range(config.num_hidden_layers)])
 
 # This gives Model only 5 blocks
@@ -63,11 +57,6 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # model.base_model.h.extend([torch.nn.Linear(768,1)])
 # model.base_model.h.append(torch.nn.Linear(1,768))
 # model.base_model.h.insert(7,torch.nn.Linear(768,768))
-
-#TODO: BaseTokenize, all e4 e8, base e4 e8
-#TODO: UnicodeTokenizer, all e4 e8, base e4 e8
-#TODO: SyllableTokenizer, all e4 e8, base e4 e8
-#TODO: ProcessedTokenizer, all e4 e8, base e4 e8
 
 #parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
 parser.add_argument("--default_hf_model", default='lchaloupsky/czech-gpt2-oscar', type=str, help="Default Model from HF to use")
@@ -128,12 +117,12 @@ def main(args: argparse.Namespace):
                 
         except: #TODO: Need model to update embedding matrix
             tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.tokenizer)
-            tokenizer.eos_token = EOS
-            tokenizer.eos_token_id = 0
-            tokenizer.pad_token = PAD
-            tokenizer.pad_token_id = 1
-            tokenizer.unk_token = UNK
-            tokenizer.unk_token_id = 2
+            tokenizer.eos_token = Tokens.EOS
+            tokenizer.eos_token_id = Tokens.EOS_ID
+            tokenizer.pad_token = Tokens.PAD
+            tokenizer.pad_token_id = Tokens.PAD_ID
+            tokenizer.unk_token = Tokens.UNK
+            tokenizer.unk_token_id = Tokens.UNK_ID
             
             ModelManipulation.exchange_embedding(model, tokenizer, AutoTokenizer.from_pretrained(args.default_hf_model), args.mirror_imbed)
     else:

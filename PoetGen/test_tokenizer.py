@@ -8,7 +8,7 @@ from tqdm import tqdm
 from transformers import AutoTokenizer, PreTrainedTokenizerBase, PreTrainedTokenizerFast
 from datasets import load_dataset
 
-from utils.poet_utils import UNK, EOS, PAD
+from utils.poet_utils import Tokens
 
 parser = argparse.ArgumentParser()
 
@@ -29,12 +29,12 @@ try:
     tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.default_tokenizer_model)
 except:
     tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.default_tokenizer_model)
-    tokenizer.eos_token = EOS
-    tokenizer.eos_token_id = 0
-    tokenizer.pad_token = PAD
-    tokenizer.pad_token_id = 1
-    tokenizer.unk_token = UNK
-    tokenizer.unk_token_id = 2
+    tokenizer.eos_token = Tokens.EOS
+    tokenizer.eos_token_id = Tokens.EOS_ID
+    tokenizer.pad_token = Tokens.PAD
+    tokenizer.pad_token_id = Tokens.PAD_ID
+    tokenizer.unk_token = Tokens.UNK
+    tokenizer.unk_token_id = Tokens.UNK_ID
 
 def poet_samples(args, shuffle=True):
     """Collect samples of verses

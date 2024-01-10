@@ -6,16 +6,14 @@ import argparse
 import numpy as np
 
 from tqdm import tqdm
-from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase, AutoModelForCausalLM
-from utils.poet_utils import RHYME_SCHEMES, TextAnalysis, TextManipulation, UNK, EOS, PAD, CLS, SyllableMaker
+from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
+
+from utils.poet_utils import TextAnalysis, TextManipulation, Tokens, SyllableMaker
 from utils.poet_model_utils import PoetModelInterface
 from utils.validators import ValidatorInterface
-
-from poet_model_base_lm import PoetModelBase
-
+from utils.base_poet_models import PoetModelBase
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
-#TODO: Add Year Validator to the mix
 
 class ModelValidator:
     """Class to Validate LMs using Validators and Analysis
@@ -69,16 +67,16 @@ class ModelValidator:
                 self.validator_tokenizer_rhyme = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_rhyme)
             except:
                 self.validator_tokenizer_rhyme: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_rhyme)
-                self.validator_tokenizer_rhyme.eos_token = EOS
-                self.validator_tokenizer_rhyme.eos_token_id = 0
-                self.validator_tokenizer_rhyme.pad_token = PAD
-                self.validator_tokenizer_rhyme.pad_token_id = 1
-                self.validator_tokenizer_rhyme.unk_token = UNK
-                self.validator_tokenizer_rhyme.unk_token_id = 2
-                self.validator_tokenizer_rhyme.cls_token = CLS
-                self.validator_tokenizer_rhyme.cls_token_id = 3
-                self.validator_tokenizer_rhyme.sep_token = EOS
-                self.validator_tokenizer_rhyme.sep_token_id = 0
+                self.validator_tokenizer_rhyme.eos_token = Tokens.EOS
+                self.validator_tokenizer_rhyme.eos_token_id = Tokens.EOS_ID
+                self.validator_tokenizer_rhyme.pad_token = Tokens.PAD
+                self.validator_tokenizer_rhyme.pad_token_id = Tokens.PAD_ID
+                self.validator_tokenizer_rhyme.unk_token = Tokens.UNK
+                self.validator_tokenizer_rhyme.unk_token_id = Tokens.UNK_ID
+                self.validator_tokenizer_rhyme.cls_token = Tokens.CLS
+                self.validator_tokenizer_rhyme.cls_token_id = Tokens.CLS_ID
+                self.validator_tokenizer_rhyme.sep_token = Tokens.SEP
+                self.validator_tokenizer_rhyme.sep_token_id = Tokens.SEP_ID
                 
         # Load Meter tokenizer
         self.validator_tokenizer_meter: PreTrainedTokenizerBase = None
@@ -87,16 +85,16 @@ class ModelValidator:
                 self.validator_tokenizer_meter = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_meter)
             except:
                 self.validator_tokenizer_meter: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_meter)
-                self.validator_tokenizer_meter.eos_token = EOS
-                self.validator_tokenizer_meter.eos_token_id = 0
-                self.validator_tokenizer_meter.pad_token = PAD
-                self.validator_tokenizer_meter.pad_token_id = 1
-                self.validator_tokenizer_meter.unk_token = UNK
-                self.validator_tokenizer_meter.unk_token_id = 2
-                self.validator_tokenizer_meter.cls_token = CLS
-                self.validator_tokenizer_meter.cls_token_id = 3
-                self.validator_tokenizer_meter.sep_token = EOS
-                self.validator_tokenizer_meter.sep_token_id = 0
+                self.validator_tokenizer_meter.eos_token = Tokens.EOS
+                self.validator_tokenizer_meter.eos_token_id = Tokens.EOS_ID
+                self.validator_tokenizer_meter.pad_token = Tokens.PAD
+                self.validator_tokenizer_meter.pad_token_id = Tokens.PAD_ID
+                self.validator_tokenizer_meter.unk_token = Tokens.UNK
+                self.validator_tokenizer_meter.unk_token_id = Tokens.UNK_ID
+                self.validator_tokenizer_meter.cls_token = Tokens.CLS
+                self.validator_tokenizer_meter.cls_token_id = Tokens.CLS_ID
+                self.validator_tokenizer_meter.sep_token = Tokens.SEP
+                self.validator_tokenizer_meter.sep_token_id = Tokens.SEP_ID
                 
         # Load Year tokenizer
         self.validator_tokenizer_year: PreTrainedTokenizerBase = None
@@ -105,28 +103,28 @@ class ModelValidator:
                 self.validator_tokenizer_year = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_year)
             except:
                 self.validator_tokenizer_year: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_year)
-                self.validator_tokenizer_year.eos_token = EOS
-                self.validator_tokenizer_year.eos_token_id = 0
-                self.validator_tokenizer_year.pad_token = PAD
-                self.validator_tokenizer_year.pad_token_id = 1
-                self.validator_tokenizer_year.unk_token = UNK
-                self.validator_tokenizer_year.unk_token_id = 2
-                self.validator_tokenizer_year.cls_token = CLS
-                self.validator_tokenizer_year.cls_token_id = 3
-                self.validator_tokenizer_year.sep_token = EOS
-                self.validator_tokenizer_year.sep_token_id = 0
+                self.validator_tokenizer_year.eos_token = Tokens.EOS
+                self.validator_tokenizer_year.eos_token_id = Tokens.EOS_ID
+                self.validator_tokenizer_year.pad_token = Tokens.PAD
+                self.validator_tokenizer_year.pad_token_id = Tokens.PAD_ID
+                self.validator_tokenizer_year.unk_token = Tokens.UNK
+                self.validator_tokenizer_year.unk_token_id = Tokens.UNK_ID
+                self.validator_tokenizer_year.cls_token = Tokens.CLS
+                self.validator_tokenizer_year.cls_token_id = Tokens.CLS_ID
+                self.validator_tokenizer_year.sep_token = Tokens.SEP
+                self.validator_tokenizer_year.sep_token_id = Tokens.SEP_ID
          
         # Load LM tokenizers       
         try:    
             self.tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(self.model_name)
         except:
             self.tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.backup_tokenizer_model)
-            self.tokenizer.eos_token = EOS
-            self.tokenizer.eos_token_id = 0
-            self.tokenizer.pad_token = PAD
-            self.tokenizer.pad_token_id = 1
-            self.tokenizer.unk_token = UNK
-            self.tokenizer.unk_token_id = 2
+            self.tokenizer.eos_token = Tokens.EOS
+            self.tokenizer.eos_token_id = Tokens.EOS_ID
+            self.tokenizer.pad_token = Tokens.PAD
+            self.tokenizer.pad_token_id = Tokens.PAD_ID
+            self.tokenizer.unk_token = Tokens.UNK
+            self.tokenizer.unk_token_id = Tokens.UNK_ID
             
         self.dataset = CorpusDatasetPytorch(data_dir=args.data_path_poet)
         self.validation_data = self.dataset.test_pytorch_dataset_body.data
@@ -148,9 +146,6 @@ class ModelValidator:
         Returns:
             str: Generated Strophe
         """
-        
-        
-        
         
         if type  == "BASIC":
             # Up to first meter
@@ -212,7 +207,7 @@ class ModelValidator:
             else:
                 start_forced['STROPHE_METER'] = self.validation_data[index]['metre_ids'][0]
             
-            return self.model.generate_forced(start_forced, self.tokenizer, verse_len= len(self.validation_data[index]['rhyme']), sample=self.args.sample, format=FORMAT)
+            return self.model.generate_forced(start_forced, self.tokenizer, sample=self.args.sample, format=FORMAT)
             
             
             

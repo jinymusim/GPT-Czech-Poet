@@ -3,9 +3,9 @@ import os
 import torch
 import numpy as np
 
-from transformers import AutoTokenizer, PreTrainedTokenizerBase, PreTrainedTokenizerFast, AutoModelForCausalLM
-from utils.poet_utils import RHYME_SCHEMES, METER_TYPES, POET_YEARS_BUCKETS, EOS, PAD, UNK, CLS, TextManipulation, TextAnalysis
-from poet_model_base_lm import PoetModelBase
+from transformers import AutoTokenizer, PreTrainedTokenizerBase, PreTrainedTokenizerFast
+from utils.poet_utils import StropheParams, Tokens, TextManipulation, TextAnalysis
+from utils.base_poet_models import PoetModelBase
 from utils.validators import ValidatorInterface
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
@@ -62,16 +62,16 @@ if args.validator_tokenizer_model_rhyme:
         validator_tokenizer_rhyme = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_rhyme)
     except:
         validator_tokenizer_rhyme: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_rhyme)
-        validator_tokenizer_rhyme.eos_token = EOS
-        validator_tokenizer_rhyme.eos_token_id = 0
-        validator_tokenizer_rhyme.pad_token = PAD
-        validator_tokenizer_rhyme.pad_token_id = 1
-        validator_tokenizer_rhyme.unk_token = UNK
-        validator_tokenizer_rhyme.unk_token_id = 2
-        validator_tokenizer_rhyme.cls_token = CLS
-        validator_tokenizer_rhyme.cls_token_id = 3
-        validator_tokenizer_rhyme.sep_token = EOS
-        validator_tokenizer_rhyme.sep_token_id = 0
+        validator_tokenizer_rhyme.eos_token = Tokens.EOS
+        validator_tokenizer_rhyme.eos_token_id = Tokens.EOS_ID
+        validator_tokenizer_rhyme.pad_token = Tokens.PAD
+        validator_tokenizer_rhyme.pad_token_id = Tokens.PAD_ID
+        validator_tokenizer_rhyme.unk_token = Tokens.UNK
+        validator_tokenizer_rhyme.unk_token_id = Tokens.UNK_ID
+        validator_tokenizer_rhyme.cls_token = Tokens.CLS
+        validator_tokenizer_rhyme.cls_token_id = Tokens.CLS_ID
+        validator_tokenizer_rhyme.sep_token = Tokens.SEP
+        validator_tokenizer_rhyme.sep_token_id = Tokens.SEP_ID
         
 # Load Meter tokenizer
 validator_tokenizer_meter: PreTrainedTokenizerBase = None
@@ -80,16 +80,16 @@ if args.validator_tokenizer_model_meter:
         validator_tokenizer_meter = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_meter)
     except:
         validator_tokenizer_meter: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_meter)
-        validator_tokenizer_meter.eos_token = EOS
-        validator_tokenizer_meter.eos_token_id = 0
-        validator_tokenizer_meter.pad_token = PAD
-        validator_tokenizer_meter.pad_token_id = 1
-        validator_tokenizer_meter.unk_token = UNK
-        validator_tokenizer_meter.unk_token_id = 2
-        validator_tokenizer_meter.cls_token = CLS
-        validator_tokenizer_meter.cls_token_id = 3
-        validator_tokenizer_meter.sep_token = EOS
-        validator_tokenizer_meter.sep_token_id = 0
+        validator_tokenizer_meter.eos_token = Tokens.EOS
+        validator_tokenizer_meter.eos_token_id = Tokens.EOS_ID
+        validator_tokenizer_meter.pad_token = Tokens.PAD
+        validator_tokenizer_meter.pad_token_id = Tokens.PAD_ID
+        validator_tokenizer_meter.unk_token = Tokens.UNK
+        validator_tokenizer_meter.unk_token_id = Tokens.UNK_ID
+        validator_tokenizer_meter.cls_token = Tokens.CLS
+        validator_tokenizer_meter.cls_token_id = Tokens.CLS_ID
+        validator_tokenizer_meter.sep_token = Tokens.SEP
+        validator_tokenizer_meter.sep_token_id = Tokens.SEP_ID
         
 # Load Year tokenizer
 validator_tokenizer_year: PreTrainedTokenizerBase = None
@@ -98,16 +98,16 @@ if args.validator_tokenizer_model_year:
         validator_tokenizer_year = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_year)
     except:
         validator_tokenizer_year: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_year)
-        validator_tokenizer_year.eos_token = EOS
-        validator_tokenizer_year.eos_token_id = 0
-        validator_tokenizer_year.pad_token = PAD
-        validator_tokenizer_year.pad_token_id = 1
-        validator_tokenizer_year.unk_token = UNK
-        validator_tokenizer_year.unk_token_id = 2
-        validator_tokenizer_year.cls_token = CLS
-        validator_tokenizer_year.cls_token_id = 3
-        validator_tokenizer_year.sep_token = EOS
-        validator_tokenizer_year.sep_token_id = 0
+        validator_tokenizer_year.eos_token = Tokens.EOS
+        validator_tokenizer_year.eos_token_id = Tokens.EOS_ID
+        validator_tokenizer_year.pad_token = Tokens.PAD
+        validator_tokenizer_year.pad_token_id = Tokens.PAD_ID
+        validator_tokenizer_year.unk_token = Tokens.UNK
+        validator_tokenizer_year.unk_token_id = Tokens.UNK_ID
+        validator_tokenizer_year.cls_token = Tokens.CLS
+        validator_tokenizer_year.cls_token_id = Tokens.CLS_ID
+        validator_tokenizer_year.sep_token = Tokens.SEP
+        validator_tokenizer_year.sep_token_id = Tokens.SEP_ID
  
 # Load LM tokenizers       
 tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.model_path_full)
@@ -130,7 +130,7 @@ def decoder_helper(type, rhyme, year, meter):
                         'METER_0': meter}
         return model.generate_forced(start_forced, tokenizer, verse_len=len(rhyme), sample=True, device=device)
     
-for rhyme in RHYME_SCHEMES[:10]:
+for rhyme in StropheParams.RHYME[:10]:
     for year in [1900, 1880, 1920, 1940, 1860, 1840]:
         for meter in ['J', 'T', 'N', 'D']:
             for type in ['BASIC', 'FORCED']:
@@ -151,7 +151,7 @@ for rhyme in RHYME_SCHEMES[:10]:
                             data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[generated_poem]}],tokenizer=validator_tokenizer_rhyme,
                                                                                is_syllable=False, syllables=args.val_syllables_rhyme,
                                                                                max_len=rhyme_model.model.config.max_position_embeddings - 2)
-                            rhyme_pred =RHYME_SCHEMES[np.argmax(rhyme_model.predict_state(input_ids=data['input_ids'].to(device)).detach().flatten().cpu().numpy())]
+                            rhyme_pred =StropheParams.RHYME[np.argmax(rhyme_model.predict_state(input_ids=data['input_ids'].to(device)).detach().flatten().cpu().numpy())]
 
                             data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[generated_poem]}],tokenizer=validator_tokenizer_year,
                                                                                is_syllable=False, syllables=args.val_syllables_year,
@@ -163,7 +163,7 @@ for rhyme in RHYME_SCHEMES[:10]:
                                                                            is_syllable=False, syllables=args.val_syllables_meter,
                                                                            max_len=meter_model.model.config.max_position_embeddings - 2)
                         meters.append(
-                            METER_TYPES[np.argmax(meter_model.predict_state(input_ids=data['input_ids'].to(device)).detach().flatten().cpu().numpy())]
+                            StropheParams.METER[np.argmax(meter_model.predict_state(input_ids=data['input_ids'].to(device)).detach().flatten().cpu().numpy())]
                         )
 
                     with open(args.result_file, 'a', encoding="utf-8") as file:

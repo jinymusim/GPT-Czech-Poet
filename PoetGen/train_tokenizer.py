@@ -15,7 +15,7 @@ from tokenizers.decoders import ByteLevel as ByteDec, WordPiece as WordDec
 
 from tokenizers.normalizers import NFD
 
-from utils.poet_utils import METER_TYPES, RHYME_SCHEMES, EOS, PAD, UNK, CLS
+from utils.poet_utils import StropheParams, Tokens
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
@@ -37,56 +37,56 @@ parser.add_argument("--class_token", default=True, type=bool, help="If to add cl
 
 
 def main(args):
-    special_token_map = [EOS, PAD, UNK]
+    special_token_map = [Tokens.EOS, Tokens.PAD, Tokens.UNK]
     if args.class_token:
-        special_token_map += [CLS]
+        special_token_map += [Tokens.CLS]
     
     # Create tokenizer based on arguments. Keep the structural parameters (vocabulary size) from default tokenizer
     tok = AutoTokenizer.from_pretrained(args.default_tokenizer)
     if args.tokenizer_type == "BPE":
         tokenizer = Tokenizer(BPE())
         trainer = BpeTrainer(special_tokens=special_token_map, vocab_size = tok.vocab_size, min_frequency=2,
-                             initial_alphabet= ["#"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
+                             initial_alphabet= ["#"] + StropheParams.METER_TYPES[:-1] + StropheParams.RHYME_SCHEMES[:-1])
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
         if args.class_token:
-            tokenizer.post_processor = RobertaProcessing((EOS, 0), (CLS, 3), trim_offsets=False, add_prefix_space=False)
+            tokenizer.post_processor = RobertaProcessing((Tokens.EOS, 0), (Tokens.CLS, 3), trim_offsets=False, add_prefix_space=False)
         else:
             tokenizer.post_processor = BytePost(trim_offsets=False)
     elif args.tokenizer_type == "Unigram":
         tokenizer = Tokenizer(Unigram())
-        trainer = UnigramTrainer(unk_token=UNK,special_tokens=special_token_map, vocab_size = tok.vocab_size,
-                                 initial_alphabet= ["#"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
+        trainer = UnigramTrainer(unk_token=Tokens.UNK,special_tokens=special_token_map, vocab_size = tok.vocab_size,
+                                 initial_alphabet= ["#"] + StropheParams.METER_TYPES[:-1] + StropheParams.RHYME_SCHEMES[:-1])
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
         if args.class_token:
-            tokenizer.post_processor = RobertaProcessing((EOS, 0), (CLS, 3), trim_offsets=False, add_prefix_space=False)
+            tokenizer.post_processor = RobertaProcessing((Tokens.EOS, 0), (Tokens.CLS, 3), trim_offsets=False, add_prefix_space=False)
         else:
             tokenizer.post_processor = BytePost(trim_offsets=False)
     elif args.tokenizer_type == "Unicode":
         tokenizer = Tokenizer(Unigram())
-        trainer = UnigramTrainer(unk_token=UNK,special_tokens=special_token_map, vocab_size = tok.vocab_size,
-                                 initial_alphabet= ["#"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1], max_piece_length=1)
+        trainer = UnigramTrainer(unk_token=Tokens.UNK,special_tokens=special_token_map, vocab_size = tok.vocab_size,
+                                 initial_alphabet= ["#"] + StropheParams.METER_TYPES[:-1] + StropheParams.RHYME_SCHEMES[:-1], max_piece_length=1)
         
         tokenizer.pre_tokenizer = BytePre(add_prefix_space=False)
         tokenizer.decoder = ByteDec()
         if args.class_token:
-            tokenizer.post_processor = RobertaProcessing((EOS, 0), (CLS, 3), trim_offsets=False, add_prefix_space=False)
+            tokenizer.post_processor = RobertaProcessing((Tokens.EOS, 0), (Tokens.CLS, 3), trim_offsets=False, add_prefix_space=False)
         else:
             tokenizer.post_processor = BytePost(trim_offsets=False)
     
     elif args.tokenizer_type == "WordLevel":
-        tokenizer = Tokenizer(WordLevel(unk_token=UNK))
+        tokenizer = Tokenizer(WordLevel(unk_token=Tokens.UNK))
         trainer = WordLevelTrainer(special_tokens=special_token_map, vocab_size = tok.vocab_size, min_frequency=2)
         
         tokenizer.normalizer = NFD()
         tokenizer.pre_tokenizer = Whitespace()
     elif args.tokenizer_type == "WordPiece":
-        tokenizer = Tokenizer(WordPiece(unk_token=UNK))
+        tokenizer = Tokenizer(WordPiece(unk_token=Tokens.UNK))
         trainer = WordPieceTrainer(special_tokens=special_token_map , vocab_size = tok.vocab_size, min_frequency=2, 
-                                   initial_alphabet= ["#"] + METER_TYPES[:-1] + RHYME_SCHEMES[:-1])
+                                   initial_alphabet= ["#"] + StropheParams.METER_TYPES[:-1] + StropheParams.RHYME_SCHEMES[:-1])
         tokenizer.normalizer = NFD()
         tokenizer.decoder = WordDec()
     else:

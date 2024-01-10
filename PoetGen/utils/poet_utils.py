@@ -1,5 +1,8 @@
-# Most Common Rhyme Schemas (Every Rhyme schema with presence over 0.36 %)
-RHYME_SCHEMES = ['ABAB', 'XXXX',
+class StropheParams:
+    
+
+    # Most Common Rhyme Schemas (Every Rhyme schema with presence over 0.36 %)
+    RHYME_SCHEMES = ['ABAB', 'XXXX',
                  'XAXA','AABB', 
                  'XXXXXX','ABBA', 
                  'AAXX', 'AABBCC',
@@ -22,12 +25,14 @@ RHYME_SCHEMES = ['ABAB', 'XXXX',
                  'XAAA','XAABXB',
                  'AXABXB','AXAXBB',
                   None]
+    
+    RHYME = RHYME_SCHEMES
 
 
-NORMAL_SCHEMES = ["ABAB", "ABBA", "AABB", "AABBCC", "ABABCC", "ABBACC", "ABBAAB"]
+    NORMAL_SCHEMES = ["ABAB", "ABBA", "AABB", "AABBCC", "ABABCC", "ABBACC", "ABBAAB"]
 
-# First 200 Most common endings
-VERSE_ENDS = ['ní', 'la', 'je', 'tí', 'ce', 'ti', 'ky', 'ku', 'li', 'jí', 'ně', 'né', 'vá', 'se', 'ny', 'ly', 'na', 'ne', 'nou', 
+    # First 200 Most common endings
+    VERSE_ENDS = ['ní', 'la', 'je', 'tí', 'ce', 'ti', 'ky', 'ku', 'li', 'jí', 'ně', 'né', 'vá', 'se', 'ny', 'ly', 'na', 'ne', 'nou', 
               'lo', 'ci', 'mi', 'ný', 'sti', 'ka', 'le', 'cí', 'ná', 'ží', 'čí', 'ho', 'dí', 'ší', 'du', 'lí', 'dy', 'nu', 'ří', 
               'ji', 'ru', 'tě', 'ře', 'stí', 'vy', 'ká', 'še', 'dá', 'ni', 'te', 'ví', 'mu', 'tu', 'ta', 'vé', 'val', 'va', 'lý', 
               'tá', 'že', 'ty', 'no', 'vu', 'lá', 'kem', 'chu', 'ků', 'bě', 'vý', 'sy', 'me', 'zí', 'hu', 'vě', 'lu', 'da', 'ry', 
@@ -38,32 +43,55 @@ VERSE_ENDS = ['ní', 'la', 'je', 'tí', 'ce', 'ti', 'ky', 'ku', 'li', 'jí', 'n�
               'hlas', 'pí', 'čas', 'dil', 'let', 'cích', 'lů', 'žil', 'mů', 'dál', 'cha', 'byl', 'nost', 'ček', 'zy', 'hý', 'nám', 'di', 
               'bou', 'tím', 'ži', 'tek', 'vil', 'jsem', 'sů', 'dech', 'men', 'tla', 'sá', 'zrak', 'chy', 'vám', 'vi', 'dý', 'rád', 'svou', 
               'ném', 've', 'py', 'vo', 'vým', 'nek', 'již', 'víc', 'kal', 'mé', 'dů', 'stá', 'dnes', 'sty', 'ven', None]
-# Years to bucket to
-POET_YEARS_BUCKETS = [1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, None]
-# Possible Meter Types
-METER_TYPES = ["J","T","D","A","X","Y","N","H","P", None]
-# Translation of Meter to one char types
-METER_TRANSLATE = {
-    "J":"J",
-    "T":"T",
-    "D":"D",
-    "A":"A",
-    "X":"X",
-    "Y":"Y",
-    "hexameter": "H",
-    "pentameter": "P",
-    "N":"N"
-}
-# Tokenizers Special Tokens
-PAD = "<|PAD|>"
-UNK = "<|UNK|>"
-EOS = "<|EOS|>"
-CLS = "<|CLS|>"
-# Basic Characters to consider in rhyme and syllables (43)
-VALID_CHARS = [""," ",'a','á','b','c','č','d','ď','e','é','ě',
+    ENDS = VERSE_ENDS
+    # Years to bucket to
+    POET_YEARS_BUCKETS = [1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, None]
+    POET_YEARS = POET_YEARS_BUCKETS
+    YEAR = POET_YEARS_BUCKETS
+    # Possible Meter Types
+    METER_TYPES = ["J","T","D","A","X","Y","N","H","P", None]
+    METER = METER_TYPES
+    # Translation of Meter to one char types
+    METER_TRANSLATE = {
+        "J":"J",
+        "T":"T",
+        "D":"D",
+        "A":"A",
+        "X":"X",
+        "Y":"Y",
+        "hexameter": "H",
+        "pentameter": "P",
+        "N":"N"
+    }
+    
+    # Basic Characters to consider in rhyme and syllables (43)
+    VALID_CHARS = [""," ",'a','á','b','c','č','d','ď','e','é','ě',
                'f','g','h','i','í','j','k','l','m','n','ň',
                'o','ó','p','q','r','ř','s','š','t','ť','u',
                'ú','ů','v','w','x','y','ý','z','ž']
+    CHARS = VALID_CHARS
+class Tokens:
+# Tokenizers Special Tokens
+    EOS = "<|EOS|>"
+    EOS_ID = 0
+    PAD = "<|PAD|>"
+    PAD_ID = 1
+    UNK = "<|UNK|>"
+    UNK_ID = 2
+    CLS = "<|CLS|>"
+    CLS_ID = 3
+    # SEP Token is EOS Token
+    SEP = EOS
+    SEP_ID = 0
+    
+    ALL_TOKENS = {
+        EOS : 0,
+        PAD : 1,
+        UNK : 2,
+        CLS : 3,
+    }
+
+
 
 import re
 import numpy as np
@@ -123,8 +151,8 @@ class TextManipulation:
             _type_: Bucketized year string
         """
         if TextAnalysis._is_year(raw_year) and raw_year != "NaN":
-            year_index = np.argmin(np.abs(np.asarray(POET_YEARS_BUCKETS[:-1]) - int(raw_year)))
-            return str(POET_YEARS_BUCKETS[year_index])
+            year_index = np.argmin(np.abs(np.asarray(StropheParams.YEAR[:-1]) - int(raw_year)))
+            return str(StropheParams.YEAR[year_index])
         else:
             return "NaN"
         
@@ -249,7 +277,7 @@ class TextAnalysis:
         Returns:
             bool: If string is meter type
         """
-        return meter in METER_TYPES[:-1]
+        return meter in StropheParams.METER[:-1]
     
     @staticmethod
     def _is_year(year:str):
@@ -286,9 +314,9 @@ class TextAnalysis:
             numpy.ndarray: One-hot encoded rhyme schema vector
         """
         
-        rhyme_vec = np.zeros(len(RHYME_SCHEMES))
-        if rhyme in RHYME_SCHEMES:
-            rhyme_vec[RHYME_SCHEMES.index(rhyme)] = 1
+        rhyme_vec = np.zeros(len(StropheParams.RHYME))
+        if rhyme in StropheParams.RHYME:
+            rhyme_vec[StropheParams.RHYME.index(rhyme)] = 1
         else:
             rhyme_vec[-1] = 1
             
@@ -306,7 +334,7 @@ class TextAnalysis:
             numpy.ndarray: Vector of bucketized One-hot encoded publish year
         """
         publish_year = None if not year_string.isdigit() else int(year_string)
-        publish_vector = np.zeros(len(POET_YEARS_BUCKETS))
+        publish_vector = np.zeros(len(StropheParams.YEAR))
         if publish_year == None:
             publish_vector[-1] = 1
         else:
@@ -314,7 +342,7 @@ class TextAnalysis:
             #distance_weighting = [1/(1 + abs(year - publish_year)) for year in POET_YEARS_BUCKETS[:-1]] + [0]
             #publish_vector = np.asarray(distance_weighting)
             # Correct class correction
-            publish_vector[np.argmin( abs(np.asarray(POET_YEARS_BUCKETS[:-1]) - publish_year))] += 1
+            publish_vector[np.argmin( abs(np.asarray(StropheParams.YEAR[:-1]) - publish_year))] += 1
             # Normalize
             #publish_vector = publish_vector/np.sum(publish_vector)
         return publish_vector  
@@ -330,7 +358,7 @@ class TextAnalysis:
             numpy.ndarray: Boolean flag vector
         """
         rhyme_vector = np.zeros(2)
-        if rhyme_str in RHYME_SCHEMES:
+        if rhyme_str in StropheParams.RHYME:
             rhyme_vector[0] = 1
         else:
             rhyme_vector[1] = 1
@@ -346,9 +374,9 @@ class TextAnalysis:
         Returns:
             numpy.ndarray: One-hot encoded metre vector
         """
-        metre_vec = np.zeros(len(METER_TYPES))
-        if metre in METER_TYPES:
-            metre_vec[METER_TYPES.index(metre)] = 1
+        metre_vec = np.zeros(len(StropheParams.METER))
+        if metre in StropheParams.METER:
+            metre_vec[StropheParams.METER.index(metre)] = 1
         else:
             metre_vec[-1] = 1            
         return metre_vec

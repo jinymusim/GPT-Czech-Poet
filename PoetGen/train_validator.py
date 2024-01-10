@@ -11,7 +11,7 @@ from functools import partial
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 from utils.validators import MeterValidator, RhymeValidator, YearValidator,ValidatorInterface, ValidatorTrainer
 
-from utils.poet_utils import VALID_CHARS, UNK, PAD, EOS, CLS, parse_boolean, TextManipulation
+from utils.poet_utils import  Tokens, parse_boolean, TextManipulation
 from utils.poet_model_utils import ModelManipulation
 
 
@@ -137,16 +137,16 @@ def main(args):
         tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.tokenizer)
     except:
         tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.tokenizer)
-        tokenizer.eos_token = EOS
-        tokenizer.eos_token_id = 0
-        tokenizer.pad_token = PAD
-        tokenizer.pad_token_id = 1
-        tokenizer.unk_token = UNK
-        tokenizer.unk_token_id = 2
-        tokenizer.cls_token = CLS
-        tokenizer.cls_token_id = 3
-        tokenizer.sep_token = EOS
-        tokenizer.sep_token_id = 0 
+        tokenizer.eos_token = Tokens.EOS
+        tokenizer.eos_token_id = Tokens.EOS_ID
+        tokenizer.pad_token = Tokens.PAD
+        tokenizer.pad_token_id = Tokens.PAD_ID
+        tokenizer.unk_token = Tokens.UNK
+        tokenizer.unk_token_id = Tokens.UNK_ID
+        tokenizer.cls_token = Tokens.CLS
+        tokenizer.cls_token_id = Tokens.CLS_ID
+        tokenizer.sep_token = Tokens.SEP
+        tokenizer.sep_token_id = Tokens.SEP_ID
         
         ModelManipulation.exchange_embedding_roberta(meter_model, new_tokenizer=tokenizer, old_tokenizer=AutoTokenizer.from_pretrained(args.pretrained_model))
         ModelManipulation.exchange_embedding_roberta(rhyme_model, new_tokenizer=tokenizer, old_tokenizer=AutoTokenizer.from_pretrained(args.pretrained_model))
