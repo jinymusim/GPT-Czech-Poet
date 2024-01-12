@@ -166,4 +166,110 @@ Year Accuracy: 0.3469 +- nan
 Year top 2 presence: 0.6196 +- nan
 Year label presence: 0.2472 +- nan
 
-# NEW TRAIN
+# NEW TRAIN ===== BASIC Decoding Validation: Epochs: 5, Runs per epoch: 1000, SAMPLING: True =====
+Num Sylabs Accuracy: 0.9129 +- 0.0016
+Endings Accuracy: 0.9227 +- 0.0017
+Unique Syllable Ratio: 0.8983 +- 0.0548
+
+Rhyme model: distilroberta-base_syllable_BPE_validator_1702665903087, Syllable True
+Rhyme Accuracy: 0.6564 +- 0.0115
+Rhyme top 2 presence: 0.6738 +- 0.0133
+Rhyme label presence: 0.6560 +- 0.0116
+Rhyme Levenshtein distance: 3.5197 +- 0.1138
+
+Metre model: ufal-robeczech-base_syllable_BPE_validator_1702489033354, Syllable True
+Metre Accuracy: 0.8346 +- 0.0129
+Metre top 2 presence: 0.8693 +- 0.0090
+Metre label presence: 0.8340 +- 0.0126
+
+Year model: ufal-robeczech-base_BPE_validator_1702393305267, Syllable False
+Year Accuracy: 0.3574 +- 0.0266
+Year top 2 presence: 0.5832 +- 0.0211
+Year label presence: 0.2905 +- 0.0151
+
+ ===== FORCED Decoding Validation: Epochs: 5, Runs per epoch: 1000, SAMPLING: True =====
+Num Sylabs Accuracy: 0.9830 +- 0.0013
+Endings Accuracy: 0.9896 +- 0.0008
+Unique Syllable Ratio: 0.8731 +- 0.0581
+
+Rhyme model: distilroberta-base_syllable_BPE_validator_1702665903087, Syllable True
+Rhyme Accuracy: 0.8276 +- 0.0147
+Rhyme top 2 presence: 0.8394 +- 0.0130
+Rhyme label presence: 0.8277 +- 0.0146
+Rhyme Levenshtein distance: 3.2628 +- 0.1513
+
+Metre model: ufal-robeczech-base_syllable_BPE_validator_1702489033354, Syllable True
+Metre Accuracy: 0.8680 +- 0.0040
+Metre top 2 presence: 0.8989 +- 0.0040
+Metre label presence: 0.8673 +- 0.0041
+
+Year model: ufal-robeczech-base_BPE_validator_1702393305267, Syllable False
+Year Accuracy: 0.3764 +- 0.0111
+Year top 2 presence: 0.6030 +- 0.0104
+Year label presence: 0.3037 +- 0.0097
+
+ ===== BASIC Decoding Validation: Epochs: 5, Runs per epoch: 1000, SAMPLING: False =====
+Num Sylabs Accuracy: 0.0000 +- 0.0000
+Endings Accuracy: 0.0000 +- 0.0000
+Unique Syllable Ratio: 0.9930 +- 0.0125
+
+Rhyme model: distilroberta-base_syllable_BPE_validator_1702665903087, Syllable True
+Rhyme Accuracy: 0.1076 +- 0.0114
+Rhyme top 2 presence: 0.1308 +- 0.0167
+Rhyme label presence: 0.1082 +- 0.0112
+Rhyme Levenshtein distance: 3.7223 +- 0.0436
+
+Metre model: ufal-robeczech-base_syllable_BPE_validator_1702489033354, Syllable True
+Metre Accuracy: 0.2093 +- 0.0068
+Metre top 2 presence: 0.2511 +- 0.0076
+Metre label presence: 0.2049 +- 0.0069
+
+Year model: ufal-robeczech-base_BPE_validator_1702393305267, Syllable False
+Year Accuracy: 0.2820 +- 0.0149
+Year top 2 presence: 0.5234 +- 0.0249
+Year label presence: 0.2450 +- 0.0093
+
+ ===== BASIC Decoding Validation: Epochs: 5, Runs per epoch: 1000, SAMPLING: True =====
+Num Sylabs Accuracy: 0.9148 +- 0.0042
+Endings Accuracy: 0.9219 +- 0.0042
+Unique Syllable Ratio: 0.8967 +- 0.0553
+
+Rhyme model: distilroberta-base_BPE_validator_1704126399565, Syllable False
+Rhyme Accuracy: 0.6438 +- 0.0040
+Rhyme top 2 presence: 0.6944 +- 0.0083
+Rhyme label presence: 0.6442 +- 0.0037
+Rhyme Levenshtein distance: 3.3769 +- 0.0884
+
+Metre model: ufal-robeczech-base_BPE_validator_1704126400265, Syllable False
+Metre Accuracy: 0.8176 +- 0.0085
+Metre top 2 presence: 0.8725 +- 0.0044
+Metre label presence: 0.8158 +- 0.0080
+
+Year model: ufal-robeczech-base_BPE_validator_1702393305267, Syllable False
+Year Accuracy: 0.3620 +- 0.0039
+Year top 2 presence: 0.5934 +- 0.0058
+Year label presence: 0.2944 +- 0.0033
+Year predict distance: 0.9746 +- 0.0093
+
+ ===== FORCED Decoding Validation: Epochs: 5, Runs per epoch: 1000, SAMPLING: True =====
+Num Sylabs Accuracy: 0.9815 +- 0.0023
+Endings Accuracy: 0.9886 +- 0.0010
+Unique Syllable Ratio: 0.8725 +- 0.0573
+
+Rhyme model: distilroberta-base_BPE_validator_1704126399565, Syllable False
+Rhyme Accuracy: 0.8236 +- 0.0081
+Rhyme top 2 presence: 0.8612 +- 0.0123
+Rhyme label presence: 0.8238 +- 0.0084
+Rhyme Levenshtein distance: 3.2978 +- 0.1241
+
+Metre model: ufal-robeczech-base_BPE_validator_1704126400265, Syllable False
+Metre Accuracy: 0.8432 +- 0.0060
+Metre top 2 presence: 0.8956 +- 0.0056
+Metre label presence: 0.8419 +- 0.0061
+
+Year model: ufal-robeczech-base_BPE_validator_1702393305267, Syllable False
+Year Accuracy: 0.3714 +- 0.0153
+Year top 2 presence: 0.6080 +- 0.0025
+Year label presence: 0.2991 +- 0.0125
+Year predict distance: 0.9646 +- 0.0280
+
