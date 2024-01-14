@@ -5,10 +5,10 @@ from tqdm import tqdm
 from transformers import  AutoModelForMaskedLM
 from transformers.utils import ModelOutput
 import numpy as np
-from .poet_utils import RHYME_SCHEMES, METER_TYPES, POET_YEARS_BUCKETS
+from .poet_utils import StropheParams
 
 from torch.utils.data import DataLoader, Dataset
-from pytorch_optimizer import SAM,GSAM, ProportionScheduler, AdamP
+from pytorch_optimizer import SAM
 
 class ValidatorInterface(torch.nn.Module):
     """Pytorch Model Interface. Abstract class for all validators
@@ -66,7 +66,7 @@ class RhymeValidator(ValidatorInterface):
         
         self.model_size = self.config.hidden_size 
         
-        self.rhyme_regressor = torch.nn.Linear(self.model_size, len(RHYME_SCHEMES)) # Common Rhyme Type
+        self.rhyme_regressor = torch.nn.Linear(self.model_size, len(StropheParams.RHYME)) # Common Rhyme Type
         
         self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.0, weight=torch.tensor([1, 1, 1.5, 1.5, 1.5, 1.5, 
                                                                                  2, 2,   2,   3,   3,   3, 
@@ -123,7 +123,7 @@ class RhymeValidator(ValidatorInterface):
         if label_val in predicted_top_k:
             top_k_presence = 1
             
-        levenshtein = jellyfish.levenshtein_distance(RHYME_SCHEMES[predicted_val] if RHYME_SCHEMES[predicted_val] != None else "", RHYME_SCHEMES[label_val] if  RHYME_SCHEMES[label_val] != None else "")
+        levenshtein = jellyfish.levenshtein_distance(StropheParams.RHYME[predicted_val] if StropheParams.RHYME[predicted_val] != None else "", StropheParams.RHYME[label_val] if  StropheParams.RHYME[label_val] != None else "")
         
         hit_pred = softmaxed[label_val].detach().numpy()
         
@@ -144,7 +144,7 @@ class MeterValidator(ValidatorInterface):
         
         self.model_size = self.config.hidden_size
         
-        self.meter_regressor = torch.nn.Linear(self.model_size, len(METER_TYPES)) # Meter Type
+        self.meter_regressor = torch.nn.Linear(self.model_size, len(StropheParams.METER)) # Meter Type
         
         self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.0, weight=torch.tensor([1, 1.5, 5, 10, 10, 20, 5, 20, 20, 0]))
         
@@ -209,7 +209,7 @@ class YearValidator(ValidatorInterface):
         
         self.model_size = self.config.hidden_size
         
-        self.year_era = torch.nn.Linear(self.model_size, len(POET_YEARS_BUCKETS))
+        self.year_era = torch.nn.Linear(self.model_size, len(StropheParams.YEAR))
         self.softmax = torch.nn.Softmax(dim=-1)
         
         self.year_val = torch.nn.Linear(self.model_size, 1) # Year Value     
@@ -258,7 +258,7 @@ class YearValidator(ValidatorInterface):
         if hasattr(self, 'year_era'):
             year_era = year_era.detach().flatten().cpu().numpy()
         
-        publish_vector  = [1/(1 + abs(year - year_val[0])) for year in POET_YEARS_BUCKETS[:-1]] + [0]
+        publish_vector  = [1/(1 + abs(year - year_val[0])) for year in StropheParams.YEAR[:-1]] + [0]
         publish_vector = np.asarray(publish_vector)/np.sum(publish_vector)
         # Adding era prediction
         if hasattr(self, 'year_era'):
