@@ -428,7 +428,7 @@ class TextAnalysis:
         Returns:
             bool: If string is valid ending syllable/sequence parameter
         """
-        return end.isalpha()  and len(end) <= 5 
+        return end.isalpha() and end.islower() and len(end) <= 5
     
     @staticmethod
     def _continuos_line_analysis(text:str):
@@ -447,32 +447,19 @@ class TextAnalysis:
         line_params = {}
         # OLD MODEL
         if text.count('#') == 0: # BASIC
-            line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(line_striped.split('#')[-1]))
-        elif text.count('#') == 1: # OLD MIDDLE FORMAT
-            if TextAnalysis._is_line_length(line_striped.split()[0]):
-                line_params["LENGTH"] = int(line_striped.split()[0])
-            if len(line_striped.split()) > 1 and TextAnalysis._is_line_end(line_striped.split()[1]):
-                line_params["END"] = line_striped.split()[1]
-            if len(line_striped.split()) > 2:
-                line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(line_striped.split('#')[-1]))
-        elif text.count('#') == 2: # NEW MIDDLE FORMAT
-            if TextAnalysis._is_line_length(line_striped.split()[0]):
-                line_params["LENGTH"] = int(line_striped.split()[0])
-            if len(line_striped.split()) > 2 and TextAnalysis._is_line_end(line_striped.split()[2]):
-                line_params["END"] = line_striped.split()[2]
-            if len(line_striped.split()) > 3:
-                line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(line_striped.split('#')[-1]))
-        else: # ADVANCED FORMAT
-            # Look for parameters in Order METER, LENGTH, END, TRUE_LENGTH, TRUE_END
-            if TextAnalysis._is_meter(line_striped.split()[0]):
-                line_params["METER"] = line_striped.split()[0]
-            if  len(line_striped.split()) > 2 and TextAnalysis._is_line_length(line_striped.split()[2]):
-                line_params["LENGTH"] = int(line_striped.split()[2])
-            if len(line_striped.split()) > 4 and TextAnalysis._is_line_end(line_striped.split()[4]):
-                line_params["END"] = line_striped.split()[4]
-            if len(line_striped.split()) > 6:
-                line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(line_striped.split('#')[-1]))
-        # TRUE_END needs only alpha chars, so all other chars are removed    
+            pass
+        else:
+            for param_group in text.split('#')[:-1]:
+                for param in param_group.split():
+                    if TextAnalysis._is_meter(param.strip()):
+                        line_params["METER"] = param.strip()
+                    elif TextAnalysis._is_line_length(param.strip()):
+                        line_params["LENGTH"] = int(param.strip())
+                    elif TextAnalysis._is_line_end(param.strip()):
+                        line_params["END"] = param.strip()
+                    
+                        
+        line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(line_striped.split('#')[-1]))     
         line_only_char = TextManipulation._remove_all_nonchar(line_striped).strip()
         if len(line_only_char) > 2:
             line_params["TRUE_END"] = SyllableMaker.syllabify(" ".join(line_only_char.split()[-2:]))[-1]

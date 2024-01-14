@@ -3,6 +3,8 @@ import os
 import torch
 import numpy as np
 
+import sys
+
 from transformers import AutoTokenizer, PreTrainedTokenizerBase, PreTrainedTokenizerFast
 from utils.poet_utils import StropheParams, Tokens, TextManipulation, TextAnalysis
 from utils.base_poet_models import PoetModelBase
@@ -135,7 +137,7 @@ while True:
     while True:
         curr_line =  input(">").strip()
         if curr_line == 'EXIT':
-            break
+            sys.exit()
         elif curr_line == "HELP":
             print(help)
             continue

@@ -146,7 +146,17 @@ class PoetModelFunctionalInterface(PoetModelInterface):
         
         # Finish possible not completed lines
         base_prompt_len = len(prompt_list)
-        for i in range(1,base_prompt_len + 1):
+        for i in range(2,base_prompt_len + 1):
+            rhyme_char = 0
+            if features_dict["RHYME"][(i - 2) % len(features_dict["RHYME"])] == "B":
+                rhyme_char = 1
+            elif features_dict["RHYME"][(i - 2) % len(features_dict["RHYME"])] == "C":
+                rhyme_char = 2
+            elif features_dict["RHYME"][(i - 2) % len(features_dict["RHYME"])] == "D":
+                rhyme_char = 3
+            elif features_dict["RHYME"][(i - 2) % len(features_dict["RHYME"])] == "X":
+                rhyme_char = -1
+            
             token_gen_finish = tokenizer.encode("\n".join(prompt_list[:i]), return_tensors='pt')
             if sample:
                 finish_line = self.model.generate(token_gen_finish.to(device), 
@@ -164,7 +174,27 @@ class PoetModelFunctionalInterface(PoetModelInterface):
                                     early_stopping=True,
                                     pad_token_id=tokenizer.pad_token_id,
                                     eos_token_id=tokenizer.eos_token_id)
-            prompt_list[:i] = tokenizer.decode(finish_line.cpu()[0], skip_special_tokens=True).splitlines()[:i]
+            decoded = tokenizer.decode(finish_line.cpu()[0], skip_special_tokens=True).splitlines()
+            to_dec = min(i, len(decoded))
+            prompt_list[:to_dec] = decoded[:to_dec] 
+            
+            if to_dec - 1 < len(prompt_list):
+                dec_line = prompt_list[to_dec-1]
+                #OLD
+                if format == 'VERSE_PAR' or format == 'OLD':
+                    if  f"END_{rhyme_char}" not in features_dict.keys() and len(dec_line.split()) > 1 and rhyme_char>=0 and dec_line.count("#") <=1:
+                        features_dict[f'LENGTH_{rhyme_char}'] = dec_line.split()[0]
+                        features_dict[f'END_{rhyme_char}'] = dec_line.split()[1]
+                    elif f"END_{rhyme_char}" not in features_dict.keys() and len(dec_line.split()) > 2 and rhyme_char>=0:
+                        features_dict[f'LENGTH_{rhyme_char}'] = dec_line.split()[0]
+                        features_dict[f'END_{rhyme_char}'] = dec_line.split()[2]            
+                # NEW
+                elif format == 'METER_VERSE':    
+                    if  f"END_{rhyme_char}" not in features_dict.keys() and len(dec_line.split()) > 4 and rhyme_char>=0:
+                        features_dict[f'METER_{rhyme_char}'] = dec_line.split()[0]
+                        features_dict[f'LENGTH_{rhyme_char}'] = dec_line.split()[2]
+                        features_dict[f'END_{rhyme_char}'] = dec_line.split()[4]
+                
         
         
         # Generating 4 verse rhymes
