@@ -147,15 +147,6 @@ class PoetModelFunctionalInterface(PoetModelInterface):
         # Finish possible not completed lines
         base_prompt_len = len(prompt_list)
         for i in range(2,base_prompt_len + 1):
-            rhyme_char = 0
-            if features_dict["RHYME"][(i - 2) % len(features_dict["RHYME"])] == "B":
-                rhyme_char = 1
-            elif features_dict["RHYME"][(i - 2) % len(features_dict["RHYME"])] == "C":
-                rhyme_char = 2
-            elif features_dict["RHYME"][(i - 2) % len(features_dict["RHYME"])] == "D":
-                rhyme_char = 3
-            elif features_dict["RHYME"][(i - 2) % len(features_dict["RHYME"])] == "X":
-                rhyme_char = -1
             
             token_gen_finish = tokenizer.encode("\n".join(prompt_list[:i]), return_tensors='pt')
             if sample:
@@ -177,6 +168,17 @@ class PoetModelFunctionalInterface(PoetModelInterface):
             decoded = tokenizer.decode(finish_line.cpu()[0], skip_special_tokens=True).splitlines()
             to_dec = min(i, len(decoded))
             prompt_list[:to_dec] = decoded[:to_dec] 
+            
+            
+            rhyme_char = 0
+            if features_dict["RHYME"][(to_dec - 2) % len(features_dict["RHYME"])] == "B":
+                rhyme_char = 1
+            elif features_dict["RHYME"][(to_dec - 2) % len(features_dict["RHYME"])] == "C":
+                rhyme_char = 2
+            elif features_dict["RHYME"][(to_dec - 2) % len(features_dict["RHYME"])] == "D":
+                rhyme_char = 3
+            elif features_dict["RHYME"][(to_dec - 2) % len(features_dict["RHYME"])] == "X":
+                rhyme_char = -1
             
             if to_dec - 1 < len(prompt_list):
                 dec_line = prompt_list[to_dec-1]
