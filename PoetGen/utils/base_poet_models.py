@@ -43,9 +43,20 @@ class PoetModelFunctionalInterface(PoetModelInterface):
                 for key, value in TextAnalysis._first_line_analysis(line).items():
                     features_dict[key] = value
             else:
+                val = cont_line
+                if "RHYME" in features_dict.keys() and cont_line < len(features_dict['RHYME']):
+                    if features_dict["RHYME"][cont_line] == "A":
+                        val = 0
+                    elif features_dict["RHYME"][cont_line] == "B":
+                        val = 1
+                    elif features_dict["RHYME"][cont_line] == "C":
+                        val = 2
+                    elif features_dict["RHYME"][cont_line] == "D":
+                        val = 3
                 for key, value in TextAnalysis._continuos_line_analysis(line).items():
-                    features_dict[f"{key}_{cont_line}"] = value
-                    cont_line += 1
+                    features_dict[f"{key}_{val}"] = value
+                cont_line += 1
+                
         return features_dict
                    
     def generate_forced(self, prompt, tokenizer: AutoTokenizer, sample: bool = True, format: str = 'METER_VERSE', device= torch.device('cpu'), *args, **kwargs) -> str:
@@ -132,6 +143,28 @@ class PoetModelFunctionalInterface(PoetModelInterface):
             prompt_list[0] = poet_param_str
             
         verse_len = len(features_dict["RHYME"])
+        
+        # Finish possible not completed lines
+        base_prompt_len = len(prompt_list)
+        for i in range(1,base_prompt_len + 1):
+            token_gen_finish = tokenizer.encode("\n".join(prompt_list[:i]), return_tensors='pt')
+            if sample:
+                finish_line = self.model.generate(token_gen_finish.to(device), 
+                                    max_new_tokens= 100,
+                                    do_sample=True,
+                                    top_k=50,
+                                    early_stopping=True,
+                                    pad_token_id=tokenizer.pad_token_id,
+                                    eos_token_id=tokenizer.eos_token_id)
+            else:
+                finish_line = self.model.generate(token_gen_finish.to(device), 
+                                    max_new_tokens= 100,
+                                    num_beams=8,
+                                    no_repeat_ngram_size=2,
+                                    early_stopping=True,
+                                    pad_token_id=tokenizer.pad_token_id,
+                                    eos_token_id=tokenizer.eos_token_id)
+            prompt_list[:i] = tokenizer.decode(finish_line.cpu()[0], skip_special_tokens=True).splitlines()[:i]
         
         
         # Generating 4 verse rhymes

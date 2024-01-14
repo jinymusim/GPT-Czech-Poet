@@ -131,18 +131,27 @@ print("Welcome to simple czech strophe generation.", help)
   
 while True:
     
-    user_input = input(">").strip()
-    if user_input == 'EXIT':
-        break
-    elif user_input == "HELP":
-        print(help)
-        continue
-    elif user_input == "BASIC":
-        generation = 'BASIC'
-        continue
-    elif user_input == "FORCED":
-        generation = "FORCED"
-        continue
+    user_input = ""
+    while True:
+        curr_line =  input(">").strip()
+        if curr_line == 'EXIT':
+            break
+        elif curr_line == "HELP":
+            print(help)
+            continue
+        elif curr_line == "BASIC":
+            print("Changed to BASIC")
+            generation = 'BASIC'
+            continue
+        elif curr_line == "FORCED":
+            print("Changed to FORCED")
+            generation = "FORCED"
+            continue
+        if not curr_line:
+            break
+        user_input +=  curr_line + "\n"
+        
+    user_input = user_input.strip()
     user_reqs = model.analyze_prompt(user_input)
     
     if "RHYME" not in user_reqs.keys() and generation == "BASIC":
