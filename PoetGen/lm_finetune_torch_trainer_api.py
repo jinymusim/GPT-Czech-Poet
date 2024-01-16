@@ -9,7 +9,7 @@ from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedT
 from functools import partial
 
 # Project Packages
-from utils.base_poet_models import PoetModelBase, PoetModelSecondaryTasks, PoetModelHalfBase, PoetModelVerseEnd, PoetModelContextInput, PoetModelContextYear, PoetModelAllTasks, DistilModel
+from utils.base_poet_models import PoetModelBase, PoetModelSecondaryTasks, PoetModelHalfBase, PoetModelVerseEnd, PoetModelContextInput, PoetModelContextYear, PoetModelAllTasks, DistilModel, PoetModelSmall
 
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
@@ -20,9 +20,9 @@ from utils.poet_utils import Tokens
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=48, type=int, help="Batch size.")
+parser.add_argument("--batch_size_LM", default=1024, type=int, help="Batch size.")
 parser.add_argument("--epochs_LM", default=0, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=1024, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=0, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
@@ -64,7 +64,7 @@ parser.add_argument("--use_default_model",  default=True, type=bool, help="Use D
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Unicode", "unicode_tokenizer.json")), type=str, help="Tokenizer to use")
 parser.add_argument("--tokenizer", default='lchaloupsky/czech-gpt2-oscar', type=str, help="Tokenizer to use")
 #parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Tokenizer to use")
-parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil'], help="What type of Model is to be constructed")
+parser.add_argument("--model_type",  default="small", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil', 'small'], help="What type of Model is to be constructed")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Test-Model")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1, type=int, help="Max length of context for tokenizer")
@@ -106,6 +106,8 @@ def main(args: argparse.Namespace):
             model = PoetModelAllTasks(args.default_hf_model)
         elif args.model_type == 'distil':
             model = DistilModel(args.default_hf_model)
+        elif args.model_type == 'small':
+            model = PoetModelSmall()
         else:
             raise TypeError("Given model type doesn't exists")
         
@@ -114,6 +116,8 @@ def main(args: argparse.Namespace):
             if tokenizer.pad_token == None:
                 tokenizer.pad_token = tokenizer.eos_token
                 tokenizer.pad_token_id = tokenizer.eos_token_id
+            if args.model_type == 'small':
+                ModelManipulation.exchange_embedding(model, tokenizer, AutoTokenizer.from_pretrained(args.default_hf_model), args.mirror_imbed)
                 
         except: #TODO: Need model to update embedding matrix
             tokenizer: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.tokenizer)

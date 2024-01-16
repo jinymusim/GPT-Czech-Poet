@@ -689,3 +689,25 @@ class PoetModelVerseEnd(PoetModelFunctionalInterface):
     
     def save_LM(self, LM_path):
         self.model.save_pretrained(LM_path)
+        
+    
+    
+from transformers import GPT2Config, GPT2LMHeadModel
+class PoetModelSmall(PoetModelFunctionalInterface):
+    def __init__(self, n_embd=32, input_size= 1024, n_layer=12,*args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        
+        model_config = GPT2Config(n_positions=input_size, n_head=1 , n_embd=n_embd, 
+                                 n_layer=n_layer, output_hidden_states=True)
+        
+        self.model = GPT2LMHeadModel(model_config)
+        self.model_size = n_embd
+        
+    def forward(self, input_ids=None, labels=None, attention_mask=None, *args, **kwargs):
+        outputs = self.model(input_ids=input_ids, labels=labels, attention_mask=attention_mask)
+        
+        return {"model_output" : outputs,
+                "loss" : outputs.loss}
+    
+    def save_LM(self, LM_path):
+        self.model.save_pretrained(LM_path)
