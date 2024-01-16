@@ -127,7 +127,23 @@ def decoder_helper(type, user_input):
     if type=="FORCED":
         return model.generate_forced(user_input, tokenizer, sample=True, device=device)
     
-help = f"Current setting is {generation} generating.\nChange it by writing FORCED/BASIC to input. type HELP for HELP.\nType EXIT to exit."
+help = f"""Current setting is {generation} generating.
+        Change it by writing FORCED/BASIC to input.
+        Type HELP for HELP.
+        Type EXIT to exit.
+        
+        Supported input consist of:
+        # RHYME_SCHEMA # YEAR
+        METER # NUM_SYLLABLES # ENDING #
+        
+        FORCED generation supports incomplete verse input of
+        J # 13 #
+        D # 11 # na #
+        
+        Each verse parameter must be followed by # to be properly analyzed.
+        
+        IMPORTANT! After inputing prompt (Excluding HELP/EXIT/FORCED/BASIC), user MUST input empty line to finish the prompt!
+"""
   
 print("Welcome to simple czech strophe generation.", help)
   
@@ -156,9 +172,12 @@ while True:
     user_input = user_input.strip()
     user_reqs = model.analyze_prompt(user_input)
     
-    if "RHYME" not in user_reqs.keys() and generation == "BASIC":
+    if "RHYME" not in user_reqs.keys() and generation == "BASIC" and user_input:
         print("BASIC generation can't work with imputed format.", help)
         print("User input is substituted for #")
+        user_input = '#'
+    if not user_input:
+        print("No input, reverting to #")
         user_input = '#'
     
     generated_poem:str = decoder_helper(generation, user_input)
