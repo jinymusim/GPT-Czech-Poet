@@ -240,9 +240,11 @@ def main(args: argparse.Namespace):
     
     if not args.size_test:
         train_model(model, tokenizer, train_data, collate, args)
-        torch.save(model, args.model_path + ".model")
+        
+        torch.save(model.cpu(), args.model_path + ".model")
         model.save_LM(f"{args.model_path}_LM")
         tokenizer.save_pretrained(f"{args.model_path}_LM")
+        
     else:
         base_lm_epochs = args.epochs_LM
         base_poet_epochs = args.epochs_poet
@@ -252,9 +254,12 @@ def main(args: argparse.Namespace):
             args.epochs_LM = int(base_lm_epochs/size)
             args.epochs_poet =  int(base_poet_epochs/size)
             train_model(model, tokenizer, train_data, collate, args)
-            torch.save(model, args.model_path + f"_data_size={size}.model")
+            torch.save(model.cpu(), args.model_path + f"_data_size={size}.model")
+            
             model.save_LM(f"{args.model_path}_data_size={size}_LM")
             tokenizer.save_pretrained(f"{args.model_path}_data_size={size}_LM")
+            
+            torch.cuda.empty_cache()
             
             model, tokenizer = create_model_and_tokenizer(args)
       
