@@ -113,6 +113,8 @@ class CorpusDatasetPytorch:
             self.data = []
             self.validation_data = []
             self.test_data = []
+            
+            self.custom_size = 1
          
          
         def gen_files(self):
@@ -258,7 +260,7 @@ class CorpusDatasetPytorch:
             Returns:
                 int: length of training data
             """
-            return len(self.data)
+            return int(len(self.data) * self.custom_size)
         
         def __getitem__(self, index):
             """return indexed item
@@ -270,6 +272,16 @@ class CorpusDatasetPytorch:
                 dict: dict with indexed data
             """
             return self.data[index]
+        
+        def change_custom_size(self,float_size:float = 1):
+            if float_size > 1:
+                print("Improper size, revert to full size")
+                self.custom_size = 1
+            elif float_size <= 0:
+                print("Size must be positive, revert to full size")
+                self.custom_size = 1
+            else:
+                self.custom_size = float_size
         
     class BodyDataset(Dataset):
         """Dataset of preprocessed strophe
@@ -304,6 +316,8 @@ class CorpusDatasetPytorch:
             self.data = []
             self.validation_data = []
             self.test_data = []
+            
+            self.custom_size = 1
         
         def gen_files(self):
             """Get individual opened files
@@ -314,7 +328,6 @@ class CorpusDatasetPytorch:
             for filename in self._data_file_paths:
                  yield open(filename, 'r')
                  
-   
                      
         
         def _construct_line(self, raw_text, metre):
@@ -431,7 +444,7 @@ class CorpusDatasetPytorch:
             Returns:
                 int: length of training data
             """
-            return len(self.data)
+            return int(len(self.data) * self.custom_size)
         
         def __getitem__(self, index):
             """return indexed item
@@ -443,6 +456,16 @@ class CorpusDatasetPytorch:
                 dict: dict with indexed data
             """
             return self.data[index]
+        
+        def change_custom_size(self,float_size:float = 1):
+            if float_size > 1:
+                print("Improper size, revert to full size")
+                self.custom_size = 1
+            elif float_size <= 0:
+                print("Size must be positive, revert to full size")
+                self.custom_size = 1
+            else:
+                self.custom_size = float_size
         
     def get_filenames(self):
         """Get paths of data files
