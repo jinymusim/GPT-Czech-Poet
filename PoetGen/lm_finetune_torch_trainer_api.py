@@ -30,6 +30,13 @@ parser.add_argument("--input_mask_rate", default=0.0, type=float, help="Rate of 
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 
+#TODO: Join syllabification by better symbol (maybe extra space arround)
+#TODO: Make meter validator with context
+#   NO_MARK verse       
+#   MARK    verse     <- Predicting this METER
+#   NO_MARK verse
+#   NO_MARK verse
+
 # huggyllama/llama-7b 4096
 # bigscience/bloom-560m 2048
 # TheBloke/Llama-2-7B-fp16 4096

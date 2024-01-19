@@ -24,8 +24,8 @@ parser.add_argument("--learning_rate_metre", default=5e-5, type=float, help="Lea
 parser.add_argument("--learning_rate_year", default=5e-5, type=float, help="Learning Rate for Finetuning")
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
-parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_class_processed_tokenizer.json")), type=str, help="Tokenizer to use")
-#parser.add_argument("--tokenizer", default="roberta-base", type=str, help="Tokenizer to use")
+#parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_class_processed_tokenizer.json")), type=str, help="Tokenizer to use")
+parser.add_argument("--tokenizer", default="roberta-base", type=str, help="Tokenizer to use")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "validators")),  type=str, help="Path to Model")
 parser.add_argument("--max_len", default=512, type=int, help="Max length for tokenizer")
 parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
@@ -40,13 +40,13 @@ parser.add_argument("--SAM", default=False, type=parse_boolean, help='If to use 
 
 parser.add_argument("--pretrained_model", default="roberta-base", type=str, help="Roberta Model")
 
-parser.add_argument("--batch_size_metre", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_metre", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_metre", default=0, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--batch_size_rhyme", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_rhyme", default=16, type=int, help="Batch size.")
 parser.add_argument("--epochs_rhyme", default=0, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--batch_size_year", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_year", default=64, type=int, help="Batch size.")
 parser.add_argument("--epochs_year", default=0, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
@@ -54,6 +54,8 @@ parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of v
 parser.add_argument("--test_data_rate", default=0.05, type=float, help="Rate of test data")
 
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "validators_acc.txt")), type=str, help="Result of Analysis File")
+
+parser.add_argument("--train_with_context", default=True, type=parse_boolean, help="If to train meter validator with context")
 
 def validate(model: ValidatorInterface, data, collate_fnc, device, val_str:str):
     """Validate model for accuracy on trained task
@@ -154,7 +156,7 @@ def main(args):
         
       
     collate  = partial(CorpusDatasetPytorch.collate_validator, tokenizer=tokenizer, max_len=args.max_len, syllables=args.syllables, is_syllable=True)  
-    collate_metre  = partial(CorpusDatasetPytorch.collate_meter, tokenizer=tokenizer, max_len=args.max_len, syllables=args.syllables, is_syllable=True)  
+    collate_metre  = partial(CorpusDatasetPytorch.collate_meter_context if args.train_with_context else CorpusDatasetPytorch.collate_meter, tokenizer=tokenizer, max_len=args.max_len, syllables=args.syllables, is_syllable=True)  
    
     # Train Rhyme Validator 
 
@@ -263,7 +265,7 @@ def main(args):
     if args.epochs_metre > 0:
         metre_acc, metre_val_accs = validate(meter_model.to(device), train_data.test_pytorch_dataset_body.data, collate_metre, device, 'metre')
     
-        torch.save(meter_model.cpu(), os.path.abspath(os.path.join(args.model_path, "meter", f"{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
+        torch.save(meter_model.cpu(), os.path.abspath(os.path.join(args.model_path, "meter", f"{'Context_' if args.train_with_context else ''}{'SAM_Train_' if args.SAM else ''}{args.pretrained_model.replace('/', '-')}_{'syllable_' if args.syllables else ''}{type(tokenizer.backend_tokenizer.model).__name__}_validator_{time_stamp}")) )
     
     # Train Year Validator
     

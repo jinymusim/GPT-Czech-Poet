@@ -727,6 +727,45 @@ class CorpusDatasetPytorch:
             "year_bucket": None,
             "year": None}
         
+    @staticmethod
+    def collate_meter_context(batch, tokenizer: PreTrainedTokenizerBase, syllables:bool, is_syllable:bool = False, max_len = 512):
+        index = 1 if syllables and is_syllable else 0
+        tokenizer.model_max_length = max_len
+        data_ids = []
+        
+        metre = []
+        for datum in batch:
+            base_datums = []
+            base_datums += [
+                    " ".join(
+                    SyllableMaker.syllabify(line.split('#')[-1]) 
+                ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable and line) else line.split('#')[-1] for line in datum['input_ids'][index].splitlines()[1:]
+                ]
+            i = 0
+            for i in range(len(base_datums)):
+                data_ids.append(
+                    "\n".join(base_datums[:i] + ['# ' + base_datums[i]] + base_datums[i+1:])
+                    ) 
+            if "metre_ids" in batch[0].keys():
+                metre += [TextAnalysis._metre_vector(one_metre) for one_metre in datum['metre_ids']]
+                
+        tokenized = tokenizer(data_ids, return_tensors='pt', truncation=True, padding=True)
+        input_ids = tokenized['input_ids']
+        attention = tokenized["attention_mask"]
+        
+        metre_ids = None
+        if len(metre) > 0:
+            metre_ids = torch.tensor(np.asarray(metre, dtype=np.int32), dtype=torch.float32)
+            
+        return  {
+            "input_ids": input_ids,
+            "attention_mask": attention,
+            "rhyme": None,
+            "metre_ids": metre_ids,
+            "year_bucket": None,
+            "year": None}
+        
+        
     
         
     def __init__(self, data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir='./', 

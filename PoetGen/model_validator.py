@@ -255,6 +255,7 @@ class ModelValidator:
                 decoded_cont:str = self.decode_helper(type,samples[i])
                 # Validate line by line
                 STROPHE_METER = 'J'
+                PRESENT_METERS = []
                 for line in decoded_cont.splitlines():
                     # Skip Empty lines
                     if not line.strip(): 
@@ -322,30 +323,16 @@ class ModelValidator:
                     if len(line_analysis.keys()) == 0:
                         continue
                     
-                    # Validate for Metrum
+                    
                     metre_all +=1
                     metre_top_k_all +=1
                     metre_label_all +=1
                     if self.meter_model != None and "METER" in line_analysis.keys():
-                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line], "metre_ids": line_analysis["METER"]}],tokenizer=self.validator_tokenizer_meter,
-                                                                       is_syllable=False, syllables=self.args.val_syllables_meter,
-                                                                       max_len=self.meter_model.model.config.max_position_embeddings - 2)
-                        res = self.meter_model.validate_model(input_ids=data['input_ids'],
-                                                            metre_ids=data['metre_ids'],k=self.args.top_k)
-                        
-                        metre_pos += res['acc']
-                        metre_top_k_pos += res['top_k']
-                        metre_label_pos += res['predicted_label']
+                        PRESENT_METERS.append(line_analysis["METER"])
                     elif self.meter_model != None:
-                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line], "metre_ids": STROPHE_METER}],tokenizer=self.validator_tokenizer_meter,
-                                                                       is_syllable=False, syllables=self.args.val_syllables_meter,
-                                                                       max_len=self.meter_model.model.config.max_position_embeddings - 2)
-                        res = self.meter_model.validate_model(input_ids=data['input_ids'],
-                                                            metre_ids=data['metre_ids'],k=self.args.top_k)
+                        PRESENT_METERS.append(STROPHE_METER)
                         
-                        metre_pos += res['acc']
-                        metre_top_k_pos += res['top_k']
-                        metre_label_pos += res['predicted_label']
+                        
                         
                     
                     end_all += 1
@@ -355,6 +342,30 @@ class ModelValidator:
                     sylab_all +=1
                     if "LENGTH" in line_analysis.keys() and "TRUE_LENGTH" in line_analysis.keys() and line_analysis["LENGTH"] == line_analysis["TRUE_LENGTH"]:
                         sylab_pos +=1
+                        
+                # Validate for Metrum
+                if self.meter_model != None:
+                    if self.args.train_with_context:
+                        data = CorpusDatasetPytorch.collate_meter_context([{"input_ids" :[decoded_cont], "metre_ids": PRESENT_METERS}],tokenizer=self.validator_tokenizer_meter,
+                                                                       is_syllable=False, syllables=self.args.val_syllables_meter,
+                                                                       max_len=self.meter_model.model.config.max_position_embeddings - 2)
+                    else:
+                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :[decoded_cont], "metre_ids": PRESENT_METERS}],tokenizer=self.validator_tokenizer_meter,
+                                                                       is_syllable=False, syllables=self.args.val_syllables_meter,
+                                                                       max_len=self.meter_model.model.config.max_position_embeddings - 2)
+                    
+                    for j in range(data['input_ids'].shape[0]):
+                        res = self.meter_model.validate_model(input_ids=data["input_ids"][j,:].reshape(1,-1),
+                                    attention_mask=data['attention_mask'][j,:].reshape(1,-1),
+                                    rhyme=None, 
+                                    metre_ids=data["metre_ids"][j,:].reshape(1,-1),
+                                    year_bucket=None)
+                        
+                        metre_pos += res['acc']
+                        metre_top_k_pos += res['top_k']
+                        metre_label_pos += res['predicted_label']
+                        
+                
                     
                     
             # Store Results        
@@ -437,6 +448,8 @@ parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Doe
 parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does validator use syllables")
 
 parser.add_argument("--top_k", default=2, type=int, help="Top k number")
+
+parser.add_argument("--train_with_context", default=False, type=bool, help="If meter validator was trained with context in mind.")
 
 def main(args):
     val = ModelValidator(args)
