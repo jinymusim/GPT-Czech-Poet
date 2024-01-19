@@ -20,9 +20,9 @@ from utils.poet_utils import Tokens, parse_boolean
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=48, type=int, help="Batch size.")
+parser.add_argument("--batch_size_LM", default=32, type=int, help="Batch size.")
 parser.add_argument("--epochs_LM", default=0, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=24, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=0, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
@@ -265,6 +265,8 @@ def main(args: argparse.Namespace):
             
             model.save_LM(f"{args.model_path}_data_size={size}_LM")
             tokenizer.save_pretrained(f"{args.model_path}_data_size={size}_LM")
+            # Try to force all model data out
+            model = None
             
             torch.cuda.empty_cache()
             
