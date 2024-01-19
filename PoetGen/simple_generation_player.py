@@ -27,6 +27,8 @@ parser.add_argument("--val_syllables_rhyme", default=False, type=bool, help="Doe
 parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
 parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does validator use syllables")
 
+parser.add_argument("--meter_with_context", default=False, type=bool, help="If meter validator was trained with context in mind")
+
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
@@ -202,13 +204,23 @@ while True:
                                                                is_syllable=False, syllables=args.val_syllables_year,
                                                                max_len=year_model.model.config.max_position_embeddings - 2)
             year_pred = round(year_model.predict_state(input_ids=data['input_ids'].to(device)).detach().flatten().cpu().numpy()[0])
-            continue
-        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line]}],tokenizer=validator_tokenizer_meter,
-                                                           is_syllable=False, syllables=args.val_syllables_meter,
-                                                           max_len=meter_model.model.config.max_position_embeddings - 2)
+            break
+    
+    
+    if args.meter_with_context:
+        data = CorpusDatasetPytorch.collate_meter_context([{"input_ids" :[generated_poem]}],tokenizer=validator_tokenizer_meter,
+                                                    is_syllable=False, syllables=args.val_syllables_meter,
+                                                    max_len=meter_model.model.config.max_position_embeddings - 2)
+    else:
+        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :[generated_poem]}],tokenizer=validator_tokenizer_meter,
+                                                    is_syllable=False, syllables=args.val_syllables_meter,
+                                                    max_len=meter_model.model.config.max_position_embeddings - 2)
+    for j in range(data['input_ids'].shape[0]):
         meters.append(
-            StropheParams.METER[np.argmax(meter_model.predict_state(input_ids=data['input_ids'].to(device)).detach().flatten().cpu().numpy())]
+            StropheParams.METER[np.argmax(meter_model.predict_state(input_ids=data['input_ids'][j,:].reshape(1,-1).to(device)).detach().flatten().cpu().numpy())]
         )
+    
+        
     print(f"REQUESTED: {user_reqs}, GENERATED USING: {generation}\n")
     print(generated_poem.strip())
     print(f"PREDICTED: {rhyme_pred}, {year_pred}, {meters}\n\n")
