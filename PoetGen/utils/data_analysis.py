@@ -73,7 +73,7 @@ for filename in data_filenames:
             syllables = []
             for text_line in  body_part:
                 line_count +=1
-                syllables += SyllableMaker.syllabify(text_line['text'])
+                syllables += [syl for syl_word in SyllableMaker.syllabify(text_line['text']) for syl in syl_word] 
             syllable_uniqueness += [len(set(syllables))/len(syllables)]
         writer_data[author] = writer_data.get(author, 0) + line_count
         

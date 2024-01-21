@@ -311,7 +311,7 @@ class ModelValidator:
                         # Measure Syllable uniqueness
                         all_sylabs = []
                         for line in decoded_cont.splitlines()[1:]:
-                            all_sylabs += SyllableMaker.syllabify(line.split("#")[-1])
+                            all_sylabs += [syl for syl_word in SyllableMaker.syllabify(line.split("#")[-1]) for syl in syl_word]
                         if len(all_sylabs)  != 0:
                             syllable_running_ration.append(len(set(all_sylabs))/len(all_sylabs))
                         

@@ -44,7 +44,7 @@ def poet_samples(args):
                         # r'[^a-zA-Z\s]+' Will also match í,ě and others, so not usable
                         # r'[^\w\s"]+' Doesn't work better than current regex
                         whitening = TextManipulation._remove_all_nonchar(TextManipulation._remove_most_nonchar(text_line['text'])).strip() 
-                        text_lines_poet.append(SyllableMaker.syllabify( " ".join(whitening.split()[-2:]))[-1])
+                        text_lines_poet.append(SyllableMaker.syllabify( " ".join(whitening.split()[-2:]))[-1][-1])
         i += 1
         if i % 500 == 0:
             print(f"Processing file {i}")

@@ -34,19 +34,19 @@ parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is pr
 parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
 parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
-parser.add_argument("--syllables", default=False, type=parse_boolean, help="If to use syllable data")
+parser.add_argument("--syllables", default=True, type=parse_boolean, help="If to use syllable data")
 
 parser.add_argument("--SAM", default=False, type=parse_boolean, help='If to use Sharpness-Aware Minimazation')
 
 parser.add_argument("--pretrained_model", default="roberta-base", type=str, help="Roberta Model")
 
-parser.add_argument("--batch_size_metre", default=16, type=int, help="Batch size.")
-parser.add_argument("--epochs_metre", default=0, type=int, help="Number of epochs to run.")
+parser.add_argument("--batch_size_metre", default=1, type=int, help="Batch size.")
+parser.add_argument("--epochs_metre", default=1, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--batch_size_rhyme", default=64, type=int, help="Batch size.")
+parser.add_argument("--batch_size_rhyme", default=1, type=int, help="Batch size.")
 parser.add_argument("--epochs_rhyme", default=0, type=int, help="Number of epochs to run.")
 
-parser.add_argument("--batch_size_year", default=64, type=int, help="Batch size.")
+parser.add_argument("--batch_size_year", default=1, type=int, help="Batch size.")
 parser.add_argument("--epochs_year", default=0, type=int, help="Number of epochs to run.")
 
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")

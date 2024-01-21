@@ -459,10 +459,10 @@ class TextAnalysis:
                         line_params["END"] = param.strip()
                     
                         
-        line_params["TRUE_LENGTH"] = len(SyllableMaker.syllabify(line_striped.split('#')[-1]))     
+        line_params["TRUE_LENGTH"] = sum(map(len, SyllableMaker.syllabify(line_striped.split('#')[-1]) )) 
         line_only_char = TextManipulation._remove_all_nonchar(line_striped).strip()
         if len(line_only_char) > 2:
-            line_params["TRUE_END"] = SyllableMaker.syllabify(" ".join(line_only_char.split()[-2:]))[-1]
+            line_params["TRUE_END"] = SyllableMaker.syllabify(" ".join(line_only_char.split()[-2:]))[-1][-1]
         
         return line_params
     
@@ -494,9 +494,9 @@ class SyllableMaker:
 # Taken from Barbora Štěpánková
 
     @staticmethod
-    def syllabify(text : str) -> list[str]:
+    def syllabify(text : str) -> list[list[str]]:
         words = re.findall(r"[aábcčdďeéěfghiíjklmnňoópqrřsštťuúůvwxyýzžAÁBCČDĎEÉĚFGHIÍJKLMNŇOÓPQRŘSŠTŤUÚŮVWXYÝZŽäöüÄÜÖ]+", text)
-        syllables : list[str] = []
+        syllables : list[list[str]] = []
 
         i = 0
         while i < len(words):
@@ -507,19 +507,20 @@ class SyllableMaker:
                 word = word + words[i]
 
             letter_counter = 0
-
+            _syllable = []
             # Get syllables: mask the word and split the mask
             for syllable_mask in SyllableMaker.__split_mask(SyllableMaker.__create_word_mask(word)):
                 word_syllable = ""
                 for character in syllable_mask:
                     word_syllable += word[letter_counter]
                     letter_counter += 1
-
-                syllables.append(word_syllable)
+                _syllable.append(word_syllable)
 
             i += 1
+            
+            syllables.append(_syllable)
 
-        return syllables
+        return list(filter(lambda x: len(x) > 0, syllables))
 
 
     @staticmethod

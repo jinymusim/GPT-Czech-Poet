@@ -137,8 +137,8 @@ class CorpusDatasetPytorch:
                 tuple: number of syllables, ending syllable
             """
             syllabs = SyllableMaker.syllabify(raw_text)
-            vowels = len(syllabs) #INFO: Now counts the number of syllables
-            ending = syllabs[-1]
+            vowels = sum(map(len, syllabs)) #INFO: Now counts the number of syllables
+            ending = syllabs[-1][-1]
             return vowels, ending
         
         @staticmethod
@@ -169,7 +169,7 @@ class CorpusDatasetPytorch:
                 str: Verse line as sequence of syllables
             """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
-            return " ".join(SyllableMaker.syllabify(raw_text)) + ending
+            return "  ".join([" ".join(syl) for syl in  SyllableMaker.syllabify(raw_text)]) + ending
         
         def _construct_line(self, raw_text, metre):
             """Construct individual content line
@@ -181,8 +181,8 @@ class CorpusDatasetPytorch:
                 str: Processed verse line with line parameters
             """
             syllables = SyllableMaker.syllabify(raw_text)
-            num_str = f"{len(syllables)} # " if self.prompt_length else ""
-            verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
+            num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
+            verse_end = f"{syllables[-1][-1]} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
             return metre_txt + num_str + verse_end  + raw_text
         
@@ -203,10 +203,10 @@ class CorpusDatasetPytorch:
             """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             syllables = SyllableMaker.syllabify(raw_text)
-            num_str = f"{len(syllables)} # " if self.prompt_length else ""
-            verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
+            num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
+            verse_end = f"{syllables[-1][-1]} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
-            return  metre_txt+ num_str + verse_end + " ".join(syllables) + ending
+            return  metre_txt+ num_str + verse_end + "  ".join([" ".join(syl) for syl in syllables]) + ending
                      
             
         def data_text_line_gen(self):
@@ -340,8 +340,8 @@ class CorpusDatasetPytorch:
                 str: Processed verse line with line parameters
             """
             syllables = SyllableMaker.syllabify(raw_text)
-            num_str = f"{len(syllables)} # " if self.prompt_length else ""
-            verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
+            num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
+            verse_end = f"{syllables[-1][-1]} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
             return  metre_txt + num_str + verse_end  + raw_text
         
@@ -356,10 +356,10 @@ class CorpusDatasetPytorch:
             """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             syllables = SyllableMaker.syllabify(raw_text)
-            num_str = f"{len(syllables)} # " if self.prompt_length else ""
-            verse_end = f"{syllables[-1]} # " if self.prompt_ending else ""
+            num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
+            verse_end = f"{syllables[-1][-1]} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
-            return metre_txt + num_str + verse_end + " ".join(syllables) + ending
+            return metre_txt + num_str + verse_end + "  ".join([" ".join(syl) for syl in syllables]) + ending
             
             
                                                            
@@ -668,8 +668,8 @@ class CorpusDatasetPytorch:
         index = 1 if syllables and is_syllable else 0
         tokenizer.model_max_length = max_len
         data_ids = ["\n".join(
-            [" ".join(
-                    SyllableMaker.syllabify(line.split('#')[-1])
+            ["  ".join(
+                   [" ".join(syl) for syl in SyllableMaker.syllabify(line.split('#')[-1])]
                 ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable and line) else line.split('#')[-1] for line in text['input_ids'][index].splitlines()[1:]] 
             ) for text in batch ]
         
@@ -704,8 +704,8 @@ class CorpusDatasetPytorch:
         metre = []
         for datum in batch:
             data_ids += [
-                    " ".join(
-                    SyllableMaker.syllabify(line.split('#')[-1]) 
+                    "  ".join(
+                    [" ".join(syl) for syl in SyllableMaker.syllabify(line.split('#')[-1])]
                 ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable and line) else line.split('#')[-1] for line in datum['input_ids'][index].splitlines()[1:]
                 ]
             if "metre_ids" in batch[0].keys():
@@ -737,8 +737,8 @@ class CorpusDatasetPytorch:
         for datum in batch:
             base_datums = []
             base_datums += [
-                    " ".join(
-                    SyllableMaker.syllabify(line.split('#')[-1]) 
+                    "  ".join(
+                    [" ".join(syl) for syl in SyllableMaker.syllabify(line.split('#')[-1])]
                 ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable and line) else line.split('#')[-1] for line in datum['input_ids'][index].splitlines()[1:]
                 ]
             i = 0

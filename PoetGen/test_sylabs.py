@@ -22,7 +22,7 @@ sylables = set()
 i = 0
 # Try syllabify text and store the found syllables
 for text in train_data.raw_dataset.get_text():
-    for item in SyllableMaker.syllabify(text):
+    for item in [syl for syl_word in SyllableMaker.syllabify(text) for syl in syl_word ]:
         sylables.add(item)
     i+=1
     if i > 500_000:
