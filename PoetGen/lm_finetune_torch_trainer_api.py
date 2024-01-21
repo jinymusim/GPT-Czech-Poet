@@ -20,9 +20,9 @@ from utils.poet_utils import Tokens, parse_boolean
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=32, type=int, help="Batch size.")
+parser.add_argument("--batch_size_LM", default=48, type=int, help="Batch size.")
 parser.add_argument("--epochs_LM", default=0, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=24, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=32, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=0, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
@@ -93,7 +93,7 @@ parser.add_argument("--test_data_rate", default=0.05, type=float, help="Rate of 
 parser.add_argument("--model_input_format",  default="METER_VERSE", type=str, choices=["BASIC", "VERSE_PAR", 'METER_VERSE'], help="Input format to use for model")
 
 parser.add_argument("--size_test", default=False, type=parse_boolean, help='If to conduct size test on data')
-parser.add_argument("--sizes_to_test", default=[1, 0.5, 0.25, 0.1 , 0.05, 0.025, 0.01, 0.005])
+parser.add_argument("--sizes_to_test", default=1, type=float, help='Size to test on')
 
 def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,dataset: CorpusDatasetPytorch, collate_fnc, args: argparse.Namespace):
     
@@ -253,24 +253,16 @@ def main(args: argparse.Namespace):
         tokenizer.save_pretrained(f"{args.model_path}_LM")
         
     else:
-        base_lm_epochs = args.epochs_LM
-        base_poet_epochs = args.epochs_poet
-        for size in args.sizes_to_test:
-            train_data.pytorch_dataset_body.change_custom_size(size)
-            train_data.pytorch_dataset_text.change_custom_size(size)
-            args.epochs_LM = int(base_lm_epochs/size)
-            args.epochs_poet =  int(base_poet_epochs/size)
-            train_model(model, tokenizer, train_data, collate, args)
-            torch.save(model.cpu(), args.model_path + f"_data_size={size}.model")
-            
-            model.save_LM(f"{args.model_path}_data_size={size}_LM")
-            tokenizer.save_pretrained(f"{args.model_path}_data_size={size}_LM")
-            # Try to force all model data out
-            model = None
-            
-            torch.cuda.empty_cache()
-            
-            model, tokenizer = create_model_and_tokenizer(args)
+        train_data.pytorch_dataset_body.change_custom_size(args.sizes_to_test)
+        train_data.pytorch_dataset_text.change_custom_size(args.sizes_to_test)
+        # Size compensation
+        args.epochs_LM = int(args.epochs_LM/args.sizes_to_test)
+        args.epochs_poet =  int(args.epochs_poet/args.sizes_to_test)
+        train_model(model, tokenizer, train_data, collate, args)
+        
+        torch.save(model.cpu(), args.model_path + f"_data_size={args.sizes_to_test}.model")
+        model.save_LM(f"{args.model_path}_data_size={args.sizes_to_test}_LM")
+        tokenizer.save_pretrained(f"{args.model_path}_data_size={args.sizes_to_test}_LM")
       
 
 

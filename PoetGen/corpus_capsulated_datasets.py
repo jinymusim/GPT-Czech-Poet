@@ -282,6 +282,8 @@ class CorpusDatasetPytorch:
                 self.custom_size = 1
             else:
                 self.custom_size = float_size
+                
+            np.random.shuffle(self.data)
         
     class BodyDataset(Dataset):
         """Dataset of preprocessed strophe
@@ -466,6 +468,8 @@ class CorpusDatasetPytorch:
                 self.custom_size = 1
             else:
                 self.custom_size = float_size
+            
+            np.random.shuffle(self.data)
         
     def get_filenames(self):
         """Get paths of data files
