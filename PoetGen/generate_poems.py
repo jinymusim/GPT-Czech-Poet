@@ -12,12 +12,13 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default='jinymusim/gpt-czech-poet',  type=str, help="Path to Model")
-parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "generated_poems.txt")), type=str, help="Where to store the decoding efforts")
+#parser.add_argument("--model_path_full", default='jinymusim/gpt-czech-poet',  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'backup_LMS', 'CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-all-e4e16_LM')),  type=str, help="Path to Model")
+parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "unicode_generated_poems.txt")), type=str, help="Where to store the decoding efforts")
 parser.add_argument("--sample", default=True, type=bool, help="If to sample during generation")
 
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_BPE_validator_1704126399565')),  type=str, help="Path to Model")
-parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'ufal-robeczech-base_BPE_validator_1704126400265')),  type=str, help="Path to Model")
+parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'Context_ufal-robeczech-base_BPE_validator_1705689955968')),  type=str, help="Path to Model")
 parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'ufal-robeczech-base_BPE_validator_1702393305267')),  type=str, help="Path to Model")
 
 parser.add_argument("--validator_tokenizer_model_rhyme", default='distilroberta-base', type=str, help="Validator tokenizer")
@@ -27,7 +28,9 @@ parser.add_argument("--val_syllables_rhyme", default=False, type=bool, help="Doe
 parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
 parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does validator use syllables")
 
-parser.add_argument("--runs_per_setting", default=5, type=int, help="Number of runs per setting")
+parser.add_argument("--meter_with_context", default=True, type=bool, help="Does Meter uses context")
+
+parser.add_argument("--runs_per_setting", default=1, type=int, help="Number of runs per setting")
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
@@ -125,13 +128,11 @@ def decoder_helper(type, rhyme, year, meter):
                                         pad_token_id= tokenizer.pad_token_id)
         return tokenizer.decode(out.cpu()[0], skip_special_tokens=True)
     if type=="FORCED":
-        start_forced = {'RHYME': rhyme,
-                        'YEAR': year,
-                        'METER_0': meter}
+        start_forced = f"# {rhyme} # {year}\n{meter} #"
         return model.generate_forced(start_forced, tokenizer, verse_len=len(rhyme), sample=True, device=device)
     
-for rhyme in StropheParams.RHYME[:10]:
-    for year in [1900, 1880, 1920, 1940, 1860, 1840]:
+for rhyme in StropheParams.RHYME[7:8]:
+    for year in [1900, 1880]:
         for meter in ['J', 'T', 'N', 'D']:
             for type in ['BASIC', 'FORCED']:
                 for _ in range(args.runs_per_setting):
@@ -159,14 +160,23 @@ for rhyme in StropheParams.RHYME[:10]:
                             year_pred = round(year_model.predict_state(input_ids=data['input_ids'].to(device)).detach().flatten().cpu().numpy()[0])
                             continue
                         
-                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :["FIRST LINE SKIP!\n" + line]}],tokenizer=validator_tokenizer_meter,
-                                                                           is_syllable=False, syllables=args.val_syllables_meter,
-                                                                           max_len=meter_model.model.config.max_position_embeddings - 2)
+                    if args.meter_with_context:
+                        data = CorpusDatasetPytorch.collate_meter_context([{"input_ids" :[generated_poem]}],tokenizer=validator_tokenizer_meter,
+                                                    is_syllable=False, syllables=args.val_syllables_meter,
+                                                    max_len=meter_model.model.config.max_position_embeddings - 2)
+                    else:
+                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :[generated_poem]}],tokenizer=validator_tokenizer_meter,
+                                                    is_syllable=False, syllables=args.val_syllables_meter,
+                                                    max_len=meter_model.model.config.max_position_embeddings - 2)
+                    for j in range(data['input_ids'].shape[0]):
                         meters.append(
-                            StropheParams.METER[np.argmax(meter_model.predict_state(input_ids=data['input_ids'].to(device)).detach().flatten().cpu().numpy())]
+                            StropheParams.METER[np.argmax(meter_model.predict_state(input_ids=data['input_ids'][j,:].reshape(1,-1).to(device)).detach().flatten().cpu().numpy())]
                         )
 
                     with open(args.result_file, 'a', encoding="utf-8") as file:
                         print(f"REQUESTED: {rhyme}, {year}, {meter}, GENERATED USING: {type}\n", file=file)
                         print(generated_poem, file=file)
                         print(f"PREDICTED: {rhyme_pred}, {year_pred}, {meters}\n\n", file=file)
+                    print(f"REQUESTED: {rhyme}, {year}, {meter}, GENERATED USING: {type}\n")
+                    print(generated_poem)
+                    print(f"PREDICTED: {rhyme_pred}, {year_pred}, {meters}\n\n")
