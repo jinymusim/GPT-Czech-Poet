@@ -1,16 +1,16 @@
 # E4E16
 
-#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-all-e4e16_LM shell_scripts/all_model_val_helper.sh 
-#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM shell_scripts/all_model_val_helper.sh 
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-all-e4e16_LM shell_scripts/all_model_val_helper.sh 
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM shell_scripts/all_model_val_helper.sh 
 
-#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-all-e4e16_LM shell_scripts/all_model_val_helper.sh 
-#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM shell_scripts/all_model_val_helper.sh  
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-all-e4e16_LM shell_scripts/all_model_val_helper.sh 
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM shell_scripts/all_model_val_helper.sh  
 
-#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e4e16_LM shell_scripts/all_model_val_helper.sh 
-#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM shell_scripts/all_model_val_helper.sh  
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e4e16_LM shell_scripts/all_model_val_helper.sh 
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM shell_scripts/all_model_val_helper.sh  
 
-#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-all-e4e16_LM shell_scripts/all_model_val_helper.sh  
-#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM shell_scripts/all_model_val_helper.sh
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-all-e4e16_LM shell_scripts/all_model_val_helper.sh  
+qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM shell_scripts/all_model_val_helper.sh
 
 
 #qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./ALT-Base-Tokenizer-NormalText-gpt-cz-poetry-all-e4e16_LM shell_scripts/all_model_val_helper.sh  
@@ -140,7 +140,7 @@
 #qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Syllable-gpt-cz-poetry-e4e16_LM shell_scripts/all_model_val_helper.sh
 #qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Unicode-gpt-cz-poetry-e4e16_LM shell_scripts/all_model_val_helper.sh
 
-qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Base-gpt-cz-poetry-e16e32_LM shell_scripts/all_model_val_helper.sh
-qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Processed-gpt-cz-poetry-e16e32_LM shell_scripts/all_model_val_helper.sh
-qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Syllable-gpt-cz-poetry-e16e32_LM shell_scripts/all_model_val_helper.sh
-qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Unicode-gpt-cz-poetry-e16e32_LM shell_scripts/all_model_val_helper.sh
+#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Base-gpt-cz-poetry-e16e32_LM shell_scripts/all_model_val_helper.sh
+#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Processed-gpt-cz-poetry-e16e32_LM shell_scripts/all_model_val_helper.sh
+#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Syllable-gpt-cz-poetry-e16e32_LM shell_scripts/all_model_val_helper.sh
+#qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=72:00:00 -v MODEL=./Distil-Unicode-gpt-cz-poetry-e16e32_LM shell_scripts/all_model_val_helper.sh
