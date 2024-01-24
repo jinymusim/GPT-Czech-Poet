@@ -354,7 +354,7 @@ class ModelValidator:
                                                                        is_syllable=False, syllables=self.args.val_syllables_meter,
                                                                        max_len=self.meter_model.model.config.max_position_embeddings - 2)
                     
-                    for j in range(data['input_ids'].shape[0]):
+                    for j in range(min(data['input_ids'].shape[0], data['metre_ids'].shape[0])):
                         res = self.meter_model.validate_model(input_ids=data["input_ids"][j,:].reshape(1,-1),
                                     attention_mask=data['attention_mask'][j,:].reshape(1,-1),
                                     rhyme=None, 
