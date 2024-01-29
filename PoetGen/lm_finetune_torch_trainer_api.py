@@ -167,6 +167,17 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
 
 
 def create_model_and_tokenizer(args: argparse.Namespace):
+    """Create Model and Tokenizer, put model on best device
+
+    Args:
+        args (argparse.Namespace): Arguments of the model and tokenizer
+
+    Raises:
+        TypeError: Model type not recognized
+
+    Returns:
+        tuple: tuple of model and tokenizer
+    """
     if args.use_default_model:
         if args.model_type == "base":         
             model = PoetModelBase(args.default_hf_model)

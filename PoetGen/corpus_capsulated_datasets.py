@@ -187,6 +187,15 @@ class CorpusDatasetPytorch:
             return metre_txt + num_str + verse_end  + raw_text
         
         def _introduce_phonetics(self, raw_text:str, phonetics):
+            """Construct phonetic line by replaced words with their phonemes
+
+            Args:
+                raw_text (str): Verse line
+                phonetics (_type_): Phonetics dict
+
+            Returns:
+                str: Phonetic verse
+            """
             phonetic_text = raw_text
             for word in phonetics['words']:
                 phonetic_text = phonetic_text.replace(f'{word["token_lc"]}', f'{word["phoebe"]}') if self.lower_case else phonetic_text.replace(f'{word["token"]}', f'{word["phoebe"]}')
@@ -274,6 +283,11 @@ class CorpusDatasetPytorch:
             return self.data[index]
         
         def change_custom_size(self,float_size:float = 1):
+            """Customize the size of used dataset + shuffle it.
+
+            Args:
+                float_size (float, optional): Portion of new dataset. Defaults to 1.
+            """
             if float_size > 1:
                 print("Improper size, revert to full size")
                 self.custom_size = 1
@@ -636,6 +650,18 @@ class CorpusDatasetPytorch:
         
     @staticmethod
     def collate_distil(batch, tokenizer: PreTrainedTokenizerBase ,surrogate_model: PreTrainedModel = None,surrogate_model_device=None ,max_len = 1024):
+        """Process data for usage in distilled training
+
+        Args:
+            batch (_type_): Batch with selected data points
+            tokenizer (PreTrainedTokenizerBase):  tokenizer to tokenize input text
+            surrogate_model (PreTrainedModel, optional): Model to base the hidden layers data. Defaults to None.
+            surrogate_model_device (_type_, optional): Device to compute the hidden layer data on. Defaults to None.
+            max_len (int, optional): Maximum length of tokenization. Defaults to 1024.
+
+        Returns:
+            dict: tokenized and processed to tensors data
+        """
         tokenizer.model_max_length = max_len
         tokenized = tokenizer([text['input_ids'][0] + tokenizer.eos_token for text in batch], return_tensors='pt', truncation=True, padding=True)
         input_ids = tokenized['input_ids']
@@ -664,7 +690,7 @@ class CorpusDatasetPytorch:
             tokenizer (PreTrainedTokenizerBase): tokenizer to tokenize input text   
             syllables (bool): If to use sequence of syllables as input text
             is_syllable (bool, optional): Signal if the preprocessed inputs contain syllable data. Defaults to False.
-            max_len (int, optional): Maximum length of tokenization. Defaults to 1024.
+            max_len (int, optional): Maximum length of tokenization. Defaults to 512.
 
         Returns:
             dict: tokenized and processed to tensors data
@@ -702,6 +728,18 @@ class CorpusDatasetPytorch:
     
     @staticmethod
     def collate_meter(batch, tokenizer: PreTrainedTokenizerBase, syllables:bool, is_syllable:bool = False, max_len = 512):
+        """Collate for Isolated Meter Training
+
+        Args:
+            batch (_type_): Batch with selected data points
+            tokenizer (PreTrainedTokenizerBase): tokenizer to tokenize input text   
+            syllables (bool): If to use sequence of syllables as input text
+            is_syllable (bool, optional): Signal if the preprocessed inputs contain syllable data. Defaults to False.
+            max_len (int, optional): Maximum length of tokenization. Defaults to 512.
+
+        Returns:
+            dict: tokenized and processed to tensors data
+        """
         index = 1 if syllables and is_syllable else 0
         tokenizer.model_max_length = max_len
         data_ids = []
@@ -733,6 +771,18 @@ class CorpusDatasetPytorch:
         
     @staticmethod
     def collate_meter_context(batch, tokenizer: PreTrainedTokenizerBase, syllables:bool, is_syllable:bool = False, max_len = 512):
+        """Collate for Context Meter Training
+
+        Args:
+            batch (_type_): Batch with selected data points
+            tokenizer (PreTrainedTokenizerBase): tokenizer to tokenize input text   
+            syllables (bool): If to use sequence of syllables as input text
+            is_syllable (bool, optional): Signal if the preprocessed inputs contain syllable data. Defaults to False.
+            max_len (int, optional): Maximum length of tokenization. Defaults to 512.
+
+        Returns:
+            dict: tokenized and processed to tensors data
+        """
         index = 1 if syllables and is_syllable else 0
         tokenizer.model_max_length = max_len
         data_ids = []
