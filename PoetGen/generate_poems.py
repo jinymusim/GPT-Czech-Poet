@@ -131,7 +131,7 @@ def decoder_helper(type, rhyme, year, meter):
         start_forced = f"# {rhyme} # {year}\n{meter} #"
         return model.generate_forced(start_forced, tokenizer, verse_len=len(rhyme), sample=True, device=device)
     
-for rhyme in StropheParams.RHYME[1:10]:
+for rhyme in StropheParams.RHYME[:10]:
     for year in [1900, 1880, 1920]:
         for meter in ['J', 'T', 'A', 'D']:
             for type in ['BASIC', 'FORCED']:
