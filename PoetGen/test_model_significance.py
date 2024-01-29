@@ -17,8 +17,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--base_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'backup_LMS', 'CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-all-e4e16_LM' )),  type=str, help="Path to Model")
 parser.add_argument("--improved_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'backup_LMS', 'CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e4e16_LM')),  type=str, help="Path to Model")
 
-parser.add_argument("--base_generate", default='BASIC', choices=['BASIC', 'FORCED'], help='Generation type done')
-parser.add_argument("--improved_generate", default='BASIC', choices=['BASIC', 'FORCED'], help='Generation type done')
+parser.add_argument("--base_generate", default='BASIC', type=str, choices=['BASIC', 'FORCED'], help='Generation type done')
+parser.add_argument("--improved_generate", default='BASIC', type=str, choices=['BASIC', 'FORCED'], help='Generation type done')
+
+parser.add_argument("--base_input_type", default='METER_VERSE', type=str, choices=['BASIC', 'VERSE_PAR', 'METER_VERSE'], help='Input Format type ')
+parser.add_argument("--improved_input_type", default='METER_VERSE', type=str, choices=['BASIC', 'VERSE_PAR', 'METER_VERSE'], help='Input Format type ')
 
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_BPE_validator_1704126399565')),  type=str, help="Path to Model")
 parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'Context_ufal-robeczech-base_BPE_validator_1705689955968')),  type=str, help="Path to Model")
@@ -129,9 +132,12 @@ improved_tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(arg
 
 dataset = CorpusDatasetPytorch(data_dir=args.data_path_poet)
 
-def decoder_helper(type, rhyme, year, meter, tokenizer: PreTrainedTokenizerBase, model: PoetModelBase):
+def decoder_helper(type, rhyme, year, meter, tokenizer: PreTrainedTokenizerBase, model: PoetModelBase, input_type:str):
     if type == "BASIC":
-        start = f"# {rhyme} # {year}\n{meter}"
+        if input_type == 'METER_VERSE':
+            start = f"# {rhyme} # {year}\n{meter}"
+        else:
+            start = f"# {rhyme} # {year} # {meter}"
         tokenized = tokenizer.encode(start, return_tensors='pt', truncation=True)
         out = model.model.generate(tokenized.to(device), 
                                         max_length=512,
@@ -142,7 +148,10 @@ def decoder_helper(type, rhyme, year, meter, tokenizer: PreTrainedTokenizerBase,
                                         pad_token_id= tokenizer.pad_token_id)
         return tokenizer.decode(out.cpu()[0], skip_special_tokens=True)
     if type=="FORCED":
-        start_forced = f"# {rhyme} # {year}\n{meter} #"
+        if input_type == 'METER_VERSE':
+            start_forced = f"# {rhyme} # {year}\n{meter} #"
+        else:
+            start_forced = f"# {rhyme} # {year} # {meter}"
         return model.generate_forced(start_forced, tokenizer, verse_len=len(rhyme), sample=True, device=device)
     
 def do_eval(generated_strophe):
@@ -230,8 +239,8 @@ def do_epoch():
         rhyme = dataset.test_pytorch_dataset_body[samples[i]]['rhyme']
         meter = dataset.test_pytorch_dataset_body[samples[i]]['metre_ids'][0]
         year = dataset.test_pytorch_dataset_body[samples[i]]['year']
-        base_decode:str = decoder_helper(args.base_generate, rhyme, year, meter, base_tokenizer, base_model)
-        improved_decode:str = decoder_helper(args.improved_generate, rhyme, year, meter, improved_tokenizer, improved_model) 
+        base_decode:str = decoder_helper(args.base_generate, rhyme, year, meter, base_tokenizer, base_model, args.base_input_type)
+        improved_decode:str = decoder_helper(args.improved_generate, rhyme, year, meter, improved_tokenizer, improved_model, args.improved_input_type) 
         
         base_rhyme, base_meter, base_year = do_eval(base_decode)
         improved_rhyme, improved_meter, improved_year = do_eval(improved_decode)
@@ -260,6 +269,7 @@ lows_results_year = np.percentile(betterment_list_year, lows)
 with open(args.result_file, 'a',  encoding="utf-8") as file:
     print("\n",file=file)
     print(f"### Comparision of BASE: {base_model_name}, IMPROVED: {improved_model_name}, Repetitions: {args.num_repetitions} ###", file=file)
+    print(f"### Generation: BASE: {args.base_generate} IMPROVED: {args.improved_generate}, Input Type: BASE: {args.base_input_type} IMPROVED: {args.improved_input_type} ###", file=file)
     print(f"Tested Lows: {lows}, Results Rhyme: {lows_results_rhyme}, Results Meter: {lows_results_meter}, Results Year: {lows_results_year}", file=file)
     print(f"RAW DATA", file=file)
     print(f'{betterment_list_rhyme}', file=file)
