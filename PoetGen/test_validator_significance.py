@@ -150,7 +150,7 @@ for _ in tqdm(range(args.num_repetitions), desc=f"Comparision"):
 import numpy as np
 
 # Lows in percentile
-lows = [1, 5]
+lows = [1, 5, 95, 99]
 lows_results = np.percentile(betterment_list, lows)
 with open(args.result_file, 'a',  encoding="utf-8") as file:
     print("\n",file=file)
