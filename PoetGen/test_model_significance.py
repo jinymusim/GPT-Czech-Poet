@@ -221,7 +221,7 @@ def do_eval(generated_strophe):
                     attention_mask=data['attention_mask'][j,:].reshape(1,-1).to(device),
                     rhyme=None, 
                     metre_ids=data["metre_ids"][j,:].reshape(1,-1),
-                    year_bucket=None)['acc']
+                    year_bucket=None)['acc']/min(data['input_ids'].shape[0], data['metre_ids'].shape[0])
         
     return res_rhyme, res_meter, res_year       
     
@@ -230,9 +230,9 @@ def do_eval(generated_strophe):
 def do_epoch():
     samples = random.choices(list(range(len(dataset.test_pytorch_dataset_body.data))), k=args.per_repetitions)
     
-    is_better_equal_rhyme = 0
-    is_better_equal_meter = 0
-    is_better_equal_year = 0
+    rhyme_res = 0
+    meter_res = 0
+    year_res = 0
     
     for i in range(args.per_repetitions):
         # Get generated Strophe
@@ -242,38 +242,42 @@ def do_epoch():
         base_decode:str = decoder_helper(args.base_generate, rhyme, year, meter, base_tokenizer, base_model, args.base_input_type)
         improved_decode:str = decoder_helper(args.improved_generate, rhyme, year, meter, improved_tokenizer, improved_model, args.improved_input_type) 
         
-        base_rhyme, base_meter, base_year = do_eval(base_decode)
-        improved_rhyme, improved_meter, improved_year = do_eval(improved_decode)
+        if random.random() < 0.5:
+            rhyme_one, meter_one, year_one = do_eval(base_decode)
+        else:
+            rhyme_one, meter_one, year_one = do_eval(improved_decode)
         
-        is_better_equal_rhyme += 1 if improved_rhyme >= base_rhyme else 0
-        is_better_equal_meter += 1 if improved_meter >= base_meter else 0
-        is_better_equal_year += 1 if improved_year >= base_year else 0
+        rhyme_res += rhyme_one
+        meter_res += meter_one
+        year_res += year_one
         
-    return is_better_equal_rhyme/args.per_repetitions, is_better_equal_meter/args.per_repetitions, is_better_equal_year/args.per_repetitions
+        
+        
+    return rhyme_res/args.per_repetitions, meter_res/args.per_repetitions, year_res/args.per_repetitions
 
 
-betterment_list_rhyme, betterment_list_meter, betterment_list_year = [], [], []
+uniform_list_rhyme, uniform_list_meter, uniform_list_year = [], [], []
 for i in tqdm(range(args.num_repetitions), desc=f"Comparision"):
     better_rhyme, better_meter, better_year = do_epoch()
-    betterment_list_rhyme.append(better_rhyme)
-    betterment_list_meter.append(better_meter)
-    betterment_list_year.append(better_year)
+    uniform_list_rhyme.append(better_rhyme)
+    uniform_list_meter.append(better_meter)
+    uniform_list_year.append(better_year)
      
 import numpy as np
 
 # Lows in percentile
 lows = [1, 5, 95, 99]
-lows_results_rhyme = np.percentile(betterment_list_rhyme, lows)
-lows_results_meter = np.percentile(betterment_list_meter, lows)
-lows_results_year = np.percentile(betterment_list_year, lows)
+lows_results_rhyme = np.percentile(uniform_list_rhyme, lows)
+lows_results_meter = np.percentile(uniform_list_meter, lows)
+lows_results_year = np.percentile(uniform_list_year, lows)
 with open(args.result_file, 'a',  encoding="utf-8") as file:
     print("\n",file=file)
     print(f"### Comparision of BASE: {base_model_name}, IMPROVED: {improved_model_name}, Repetitions: {args.num_repetitions} ###", file=file)
     print(f"### Generation: BASE: {args.base_generate} IMPROVED: {args.improved_generate}, Input Type: BASE: {args.base_input_type} IMPROVED: {args.improved_input_type} ###", file=file)
     print(f"Tested Lows: {lows}, Results Rhyme: {lows_results_rhyme}, Results Meter: {lows_results_meter}, Results Year: {lows_results_year}", file=file)
     print(f"RAW DATA", file=file)
-    print(f'{betterment_list_rhyme}', file=file)
-    print(f'{betterment_list_meter}', file=file)
-    print(f'{betterment_list_year}\n', file=file)
+    print(f'{uniform_list_rhyme}', file=file)
+    print(f'{uniform_list_meter}', file=file)
+    print(f'{uniform_list_year}\n', file=file)
         
        

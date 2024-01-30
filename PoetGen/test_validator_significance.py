@@ -1,13 +1,14 @@
 import os
 import argparse
 import torch
+import random
 
 from tqdm import tqdm
 from functools import partial
 from transformers import AutoTokenizer, PreTrainedTokenizerBase, PreTrainedTokenizerFast
 
 from utils.validators import YearValidator, RhymeValidator, MeterValidator, ValidatorInterface
-from utils.poet_utils import StropheParams, Tokens, TextManipulation, TextAnalysis
+from utils.poet_utils import StropheParams, Tokens, TextManipulation, TextAnalysis, parse_boolean
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
@@ -20,10 +21,11 @@ parser.add_argument("--validator_type", default='rhyme', type=str, choices=['rhy
 parser.add_argument("--base_validator_tokenizer_model", default='roberta-base', type=str, help="Validator tokenizer")
 parser.add_argument("--improved_validator_tokenizer_model", default='roberta-base', type=str, help="Validator tokenizer")
 
-parser.add_argument("--base_val_syllables", default=False, type=bool, help="Does validator use syllables")
-parser.add_argument("--improved_val_syllables", default=True, type=bool, help="Does validator use syllables")
+parser.add_argument("--base_val_syllables", default=False, type=parse_boolean, help="Does validator use syllables")
+parser.add_argument("--improved_val_syllables", default=True, type=parse_boolean, help="Does validator use syllables")
 
 parser.add_argument("--num_repetitions", default=100, type=int, help="Number of repetitions of validator")
+parser.add_argument("--per_repetitions", default=1000, type=int, help="Number of repetitions of validator")
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "validator_significance_test.txt")), type=str, help="Where to store the result of significance test")
 
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
@@ -37,7 +39,7 @@ def validate(base_model: ValidatorInterface, improved_model: ValidatorInterface 
     req_val = 'metre_ids' if 'meter' in val_str else ('year' if 'year' in val_str else 'rhyme')
     
     
-    is_better_or_equal = 0
+    result = 0
     count = 0
     for i in range(len(data)):
         
@@ -45,38 +47,39 @@ def validate(base_model: ValidatorInterface, improved_model: ValidatorInterface 
         improved_datum = improved_collate([data[i]])
         if req_val == 'metre_ids':
             for j in range(base_datum['input_ids'].shape[0]):
-                res_base = base_model.validate_model(input_ids=base_datum["input_ids"][j,:].reshape(1,-1).to(device),
+                if random.random() < 0.5:
+                    result += base_model.validate_model(input_ids=base_datum["input_ids"][j,:].reshape(1,-1).to(device),
                                     attention_mask=base_datum['attention_mask'][j,:].reshape(1,-1).to(device),
                                     rhyme=None, 
                                     metre_ids=base_datum["metre_ids"][j,:].reshape(1,-1),
                                     year_bucket=None)['acc']
-                res_improved = improved_model.validate_model(input_ids=improved_datum["input_ids"][j,:].reshape(1,-1).to(device),
+                else:
+                    result += improved_model.validate_model(input_ids=improved_datum["input_ids"][j,:].reshape(1,-1).to(device),
                                     attention_mask=improved_datum['attention_mask'][j,:].reshape(1,-1).to(device),
                                     rhyme=None, 
                                     metre_ids=improved_datum["metre_ids"][j,:].reshape(1,-1),
                                     year_bucket=None)['acc']
                 
-                is_better_or_equal += 1 if res_improved >= res_base else 0 
                 count +=1
         else:      
-            
-            res_base = base_model.validate_model(input_ids=base_datum["input_ids"].to(device),
+            if random.random() < 0.5:
+                result += base_model.validate_model(input_ids=base_datum["input_ids"].to(device),
                                     rhyme=base_datum["rhyme"], 
                                     metre_ids=None,
                                     year_bucket=base_datum['year_bucket'])['acc']
-            res_improved = improved_model.validate_model(input_ids=improved_datum["input_ids"].to(device),
+            else:
+                result += improved_model.validate_model(input_ids=improved_datum["input_ids"].to(device),
                                     rhyme=improved_datum["rhyme"], 
                                     metre_ids=None,
                                     year_bucket=improved_datum['year_bucket'])['acc']
-            is_better_or_equal += 1 if res_improved >= res_base else 0 
             count +=1
         
         
         
-    print(f"Improved Betterment ratio: {is_better_or_equal/count}")
+    print(f"Uniform Result: {result/count}")
     
     
-    return is_better_or_equal/count
+    return result/count
     
     
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -141,20 +144,20 @@ else:
     base_collate = partial(CorpusDatasetPytorch.collate_meter, tokenizer=base_validator_tokenizer, max_len=512, syllables=args.base_val_syllables, is_syllable=True)  
     improved_collate = partial(CorpusDatasetPytorch.collate_meter, tokenizer=improved_validator_tokenizer, max_len=512, syllables=args.improved_val_syllables, is_syllable=True) 
     
-betterment_list = []
+uniform_list = []
 for _ in tqdm(range(args.num_repetitions), desc=f"Comparision"):
-    betterment_list.append(
-        validate(base_model, improved_model, dataset.test_pytorch_dataset_body.data, base_collate, improved_collate, device, args.validator_type)
+    uniform_list.append(
+        validate(base_model, improved_model, random.sample(dataset.test_pytorch_dataset_body.data, args.per_repetitions), base_collate, improved_collate, device, args.validator_type)
     )
     
 import numpy as np
 
 # Lows in percentile
 lows = [1, 5, 95, 99]
-lows_results = np.percentile(betterment_list, lows)
+lows_results = np.percentile(uniform_list, lows)
 with open(args.result_file, 'a',  encoding="utf-8") as file:
     print("\n",file=file)
     print(f"### Comparision of BASE: {base_model_name}, IMPROVED: {improved_model_name}, Repetitions: {args.num_repetitions} ###", file=file)
     print(f"Tested Lows: {lows}, Results: {lows_results}", file=file)
     print(f"RAW DATA", file=file)
-    print(f'{betterment_list}\n', file=file)
+    print(f'{uniform_list}\n', file=file)
