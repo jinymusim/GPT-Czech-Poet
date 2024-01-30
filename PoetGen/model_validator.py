@@ -353,17 +353,17 @@ class ModelValidator:
                         data = CorpusDatasetPytorch.collate_meter([{"input_ids" :[decoded_cont], "metre_ids": PRESENT_METERS}],tokenizer=self.validator_tokenizer_meter,
                                                                        is_syllable=False, syllables=self.args.val_syllables_meter,
                                                                        max_len=self.meter_model.model.config.max_position_embeddings - 2)
-                    
-                    for j in range(min(data['input_ids'].shape[0], data['metre_ids'].shape[0])):
-                        res = self.meter_model.validate_model(input_ids=data["input_ids"][j,:].reshape(1,-1),
-                                    attention_mask=data['attention_mask'][j,:].reshape(1,-1),
-                                    rhyme=None, 
-                                    metre_ids=data["metre_ids"][j,:].reshape(1,-1),
-                                    year_bucket=None)
-                        
-                        metre_pos += res['acc']
-                        metre_top_k_pos += res['top_k']
-                        metre_label_pos += res['predicted_label']
+                    if data['input_ids'] != None and  data['metre_ids'] != None:
+                        for j in range(min(data['input_ids'].shape[0], data['metre_ids'].shape[0])):
+                            res = self.meter_model.validate_model(input_ids=data["input_ids"][j,:].reshape(1,-1),
+                                        attention_mask=data['attention_mask'][j,:].reshape(1,-1),
+                                        rhyme=None, 
+                                        metre_ids=data["metre_ids"][j,:].reshape(1,-1),
+                                        year_bucket=None)
+                            
+                            metre_pos += res['acc']
+                            metre_top_k_pos += res['top_k']
+                            metre_label_pos += res['predicted_label']
                         
                 
                     

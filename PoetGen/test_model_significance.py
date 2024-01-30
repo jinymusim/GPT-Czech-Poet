@@ -215,13 +215,13 @@ def do_eval(generated_strophe):
         data = CorpusDatasetPytorch.collate_meter([{"input_ids" :[generated_strophe], "metre_ids": PRESENT_METERS}],tokenizer=validator_tokenizer_meter,
                                                        is_syllable=False, syllables=args.val_syllables_meter,
                                                        max_len=512)
-    
-    for j in range(min(data['input_ids'].shape[0], data['metre_ids'].shape[0])):
-        res_meter += meter_model.validate_model(input_ids=data["input_ids"][j,:].reshape(1,-1).to(device),
-                    attention_mask=data['attention_mask'][j,:].reshape(1,-1).to(device),
-                    rhyme=None, 
-                    metre_ids=data["metre_ids"][j,:].reshape(1,-1),
-                    year_bucket=None)['acc']/min(data['input_ids'].shape[0], data['metre_ids'].shape[0])
+    if data['input_ids'] != None and data['metre_ids'] != None:
+        for j in range(min(data['input_ids'].shape[0], data['metre_ids'].shape[0])):
+            res_meter += meter_model.validate_model(input_ids=data["input_ids"][j,:].reshape(1,-1).to(device),
+                        attention_mask=data['attention_mask'][j,:].reshape(1,-1).to(device),
+                        rhyme=None, 
+                        metre_ids=data["metre_ids"][j,:].reshape(1,-1),
+                        year_bucket=None)['acc']/min(data['input_ids'].shape[0], data['metre_ids'].shape[0])
         
     return res_rhyme, res_meter, res_year       
     
