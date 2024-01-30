@@ -36,8 +36,8 @@ parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does
 
 parser.add_argument("--meter_with_context", default=True, type=bool, help="Does Meter uses context")
 
-parser.add_argument("--num_repetitions", default=1000, type=int, help="Number of repetitions")
-parser.add_argument("--per_repetitions", default=100, type=int, help="Number of samples")
+parser.add_argument("--num_repetitions", default=100, type=int, help="Number of repetitions")
+parser.add_argument("--per_repetitions", default=500, type=int, help="Number of samples")
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "model_significance_test.txt")), type=str, help="Where to store the result of significance test")
 
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
@@ -152,7 +152,7 @@ def decoder_helper(type, rhyme, year, meter, tokenizer: PreTrainedTokenizerBase,
             start_forced = f"# {rhyme} # {year}\n{meter} #"
         else:
             start_forced = f"# {rhyme} # {year} # {meter}"
-        return model.generate_forced(start_forced, tokenizer, verse_len=len(rhyme), sample=True, device=device)
+        return model.generate_forced(start_forced, tokenizer, verse_len=len(rhyme), sample=True, device=device, format=input_type)
     
 def do_eval(generated_strophe):
     res_rhyme = 0
