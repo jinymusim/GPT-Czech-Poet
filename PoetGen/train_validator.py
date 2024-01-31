@@ -53,7 +53,7 @@ parser.add_argument("--lower_case", default=True, type=bool, help="If to lower c
 parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
 parser.add_argument("--test_data_rate", default=0.05, type=float, help="Rate of test data")
 
-parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "validators_acc.txt")), type=str, help="Result of Analysis File")
+parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results_new', "validators_acc.txt")), type=str, help="Result of Analysis File")
 
 parser.add_argument("--train_with_context", default=True, type=parse_boolean, help="If to train meter validator with context")
 

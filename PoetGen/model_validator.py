@@ -19,7 +19,7 @@ class ModelValidator:
     """Class to Validate LMs using Validators and Analysis
     """
     def __init__(self, args: argparse.Namespace,
-                 result_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__),"results"))) -> None:
+                 result_dir: str = os.path.abspath(os.path.join(os.path.dirname(__file__),"results_new"))) -> None:
         """Construct Validators using given arguments. Save the requested number of repeats
 
         Args:
