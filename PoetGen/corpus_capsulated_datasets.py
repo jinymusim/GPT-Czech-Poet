@@ -750,7 +750,7 @@ class CorpusDatasetPytorch:
                     [" ".join(syl) for syl in SyllableMaker.syllabify(line.split('#')[-1])]
                 ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable and line) else line.split('#')[-1] for line in datum['input_ids'][index].splitlines()[1:]
                 ]
-            if "metre_ids" in batch[0].keys():
+            if "metre_ids" in datum.keys():
                 metre += [TextAnalysis._metre_vector(one_metre) for one_metre in datum['metre_ids']]
                 
         tokenized = tokenizer(data_ids, return_tensors='pt', truncation=True, padding=True)
@@ -789,8 +789,7 @@ class CorpusDatasetPytorch:
         
         metre = []
         for datum in batch:
-            base_datums = []
-            base_datums += [
+            base_datums = [
                     "  ".join(
                     [" ".join(syl) for syl in SyllableMaker.syllabify(line.split('#')[-1])]
                 ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable and line) else line.split('#')[-1] for line in datum['input_ids'][index].splitlines()[1:]
@@ -800,7 +799,7 @@ class CorpusDatasetPytorch:
                 data_ids.append(
                     "\n".join(base_datums[:i] + ['# ' + base_datums[i]] + base_datums[i+1:])
                     ) 
-            if "metre_ids" in batch[0].keys():
+            if "metre_ids" in datum.keys():
                 metre += [TextAnalysis._metre_vector(one_metre) for one_metre in datum['metre_ids']]
                 
         tokenized = tokenizer(data_ids, return_tensors='pt', truncation=True, padding=True)
