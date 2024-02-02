@@ -6,4 +6,4 @@ pip install --target=$SCRATCHDIR torch torchvision torchaudio --index-url https:
 pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/requirements.txt
 export PYTHONPATH="${PYTHONPATH}:${TMPDIR}"
 cd /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen
-python3 train_validator.py --epochs_metre=$EPMETER --epochs_rhyme=$EPRHYME --epochs_year=$EPYEAR --tokenizer="$TOK" --pretrained_model="$MODEL" --syllables=$SYLAB --SAM=$SAM
+python3 train_validator.py --epochs_metre=$EPMETER --epochs_rhyme=$EPRHYME --epochs_year=$EPYEAR --tokenizer="$TOK" --pretrained_model="$MODEL" --syllables=$SYLAB --SAM=$SAM --train_with_context=$CONTEXT

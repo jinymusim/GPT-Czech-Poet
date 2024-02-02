@@ -55,7 +55,7 @@ parser.add_argument("--test_data_rate", default=0.05, type=float, help="Rate of 
 
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results_new', "validators_acc.txt")), type=str, help="Result of Analysis File")
 
-parser.add_argument("--train_with_context", default=True, type=parse_boolean, help="If to train meter validator with context")
+parser.add_argument("--train_with_context", default=False, type=parse_boolean, help="If to train meter validator with context")
 
 def validate(model: ValidatorInterface, data, collate_fnc, device, val_str:str):
     """Validate model for accuracy on trained task
@@ -324,7 +324,7 @@ def main(args):
     # Store result and model
     with open(args.result_file, 'a') as file:
         print("\n",file=file)
-        print(f"### LESS RHYME NEW NEW NEW FORMAT! ### {tok_name} ### {time_stamp} ### Syllable: {str(args.syllables)} ### SAM Training: {str(args.SAM)}", file=file)
+        print(f"### !Context Check! ### {tok_name} ### {time_stamp} ### Syllable: {str(args.syllables)} ### Context {str(args.train_with_context)}", file=file)
         print(f"Rhyme Validator: {args.pretrained_model}, Epochs: {args.epochs_rhyme} Accuracy: {rhyme_acc}", file=file)
         print(f'{rhyme_val_acc}', file=file)
         print(f"Metre Validator: {args.pretrained_model}, Epochs: {args.epochs_metre} Accuracy: {metre_acc}", file=file)
