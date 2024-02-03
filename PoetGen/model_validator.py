@@ -64,9 +64,6 @@ class ModelValidator:
         self.validator_tokenizer_rhyme: PreTrainedTokenizerBase = None
         if args.validator_tokenizer_model_rhyme:
             try:
-                if 'ufal' in args.validator_tokenizer_model_rhyme:
-                    self.validator_tokenizer_rhyme = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_rhyme, revision='v1.0')
-                else:
                     self.validator_tokenizer_rhyme = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_rhyme)
             except:
                 self.validator_tokenizer_rhyme: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_rhyme)
@@ -85,9 +82,6 @@ class ModelValidator:
         self.validator_tokenizer_meter: PreTrainedTokenizerBase = None
         if args.validator_tokenizer_model_meter:
             try:
-                if 'ufal' in args.validator_tokenizer_model_meter:
-                    self.validator_tokenizer_meter = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_meter, revision='v1.0')
-                else:
                     self.validator_tokenizer_meter = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_meter)
             except:
                 self.validator_tokenizer_meter: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_meter)
@@ -106,9 +100,6 @@ class ModelValidator:
         self.validator_tokenizer_year: PreTrainedTokenizerBase = None
         if args.validator_tokenizer_model_year:
             try:
-                if 'ufal' in args.validator_tokenizer_model_year:
-                    self.validator_tokenizer_year = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_year, revision='v1.0')
-                else:
                     self.validator_tokenizer_year = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_year)
             except:
                 self.validator_tokenizer_year: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_year)

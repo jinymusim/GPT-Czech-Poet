@@ -22,7 +22,10 @@ parser.add_argument("--base_validator_tokenizer_model", default='roberta-base', 
 parser.add_argument("--improved_validator_tokenizer_model", default='roberta-base', type=str, help="Validator tokenizer")
 
 parser.add_argument("--base_val_syllables", default=False, type=parse_boolean, help="Does validator use syllables")
-parser.add_argument("--improved_val_syllables", default=True, type=parse_boolean, help="Does validator use syllables")
+parser.add_argument("--improved_val_syllables", default=False, type=parse_boolean, help="Does validator use syllables")
+
+parser.add_argument("--base_meter_context", default=False, type=parse_boolean, help="Does validator use Context input for meter")
+parser.add_argument("--improved_meter_context", default=False, type=parse_boolean, help="Does validator use Context input for meter")
 
 parser.add_argument("--num_repetitions", default=100, type=int, help="Number of repetitions of validator")
 parser.add_argument("--per_repetitions", default=1000, type=int, help="Number of repetitions of validator")
@@ -141,8 +144,8 @@ if args.validator_type in ['rhyme', 'year']:
     base_collate = partial(CorpusDatasetPytorch.collate_validator, tokenizer=base_validator_tokenizer, max_len=512, syllables=args.base_val_syllables, is_syllable=True) 
     improved_collate = partial(CorpusDatasetPytorch.collate_validator, tokenizer=improved_validator_tokenizer, max_len=512, syllables=args.improved_val_syllables, is_syllable=True)
 else:
-    base_collate = partial(CorpusDatasetPytorch.collate_meter, tokenizer=base_validator_tokenizer, max_len=512, syllables=args.base_val_syllables, is_syllable=True)  
-    improved_collate = partial(CorpusDatasetPytorch.collate_meter, tokenizer=improved_validator_tokenizer, max_len=512, syllables=args.improved_val_syllables, is_syllable=True) 
+    base_collate = partial(CorpusDatasetPytorch.collate_meter_context if args.base_meter_context else CorpusDatasetPytorch.collate_meter, tokenizer=base_validator_tokenizer, max_len=512, syllables=args.base_val_syllables, is_syllable=True)  
+    improved_collate = partial(CorpusDatasetPytorch.collate_meter_context if args.improved_meter_context else CorpusDatasetPytorch.collate_meter, tokenizer=improved_validator_tokenizer, max_len=512, syllables=args.improved_val_syllables, is_syllable=True) 
     
 uniform_list = []
 for _ in tqdm(range(args.num_repetitions), desc=f"Comparision"):

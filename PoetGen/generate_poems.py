@@ -80,7 +80,7 @@ if args.validator_tokenizer_model_rhyme:
 validator_tokenizer_meter: PreTrainedTokenizerBase = None
 if args.validator_tokenizer_model_meter:
     try:
-        validator_tokenizer_meter = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_meter, revision='v1.0')
+        validator_tokenizer_meter = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_meter)
     except:
         validator_tokenizer_meter: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_meter)
         validator_tokenizer_meter.eos_token = Tokens.EOS
@@ -98,7 +98,7 @@ if args.validator_tokenizer_model_meter:
 validator_tokenizer_year: PreTrainedTokenizerBase = None
 if args.validator_tokenizer_model_year:
     try:
-        validator_tokenizer_year = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_year, revision='v1.0')
+        validator_tokenizer_year = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_year)
     except:
         validator_tokenizer_year: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_year)
         validator_tokenizer_year.eos_token = Tokens.EOS
