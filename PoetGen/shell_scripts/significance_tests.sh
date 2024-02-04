@@ -41,14 +41,17 @@ qsub -N TestSignif -q gpu -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scra
 
 # Signif Test Difference RHYME
 
+qsub -N TestSignifVal -q gpu -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'BASE=./utils/validators/rhyme/ufal-robeczech-base_BPE_validator_1706753939607, IMPROVED=./utils/validators/rhyme/ufal-robeczech-base_syllable_BPE_validator_1706824640849, BASETOK=ufal/robeczech-base, IMPROVEDTOK=ufal/robeczech-base, BASESYL=false, IMPROVEDSYL=true, TYPE=rhyme, BASECONTEXT=false, IMPROVEDCONTEXT=false'  shell_scripts/significance_test_helper.sh
+qsub -N TestSignifVal -q gpu -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'BASE=./utils/validators/rhyme/distilroberta-base_BPE_validator_1706752010848, IMPROVED=./utils/validators/rhyme/distilroberta-base_syllable_BPE_validator_1706818163442, BASETOK=distilroberta-base, IMPROVEDTOK=distilroberta-base, BASESYL=false, IMPROVEDSYL=true, TYPE=rhyme, BASECONTEXT=false, IMPROVEDCONTEXT=false'  shell_scripts/significance_test_helper.sh
+qsub -N TestSignifVal -q gpu -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'BASE=./utils/validators/rhyme/ufal-robeczech-base_syllable_BPE_validator_1706824640849, IMPROVED=./utils/validators/rhyme/distilroberta-base_syllable_BPE_validator_1706818163442, BASETOK=ufal/robeczech-base, IMPROVEDTOK=distilroberta-base, BASESYL=true, IMPROVEDSYL=true, TYPE=rhyme, BASECONTEXT=false, IMPROVEDCONTEXT=false'  shell_scripts/significance_test_helper.sh
+
 # Signif Test Difference METER
+
+qsub -N TestSignifVal -q gpu -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'BASE=./utils/validators/meter/distilroberta-base_syllable_BPE_validator_1706946309024, IMPROVED=./utils/validators/meter/Context_distilroberta-base_syllable_BPE_validator_1706818163442, BASETOK=distilroberta-base, IMPROVEDTOK=distilroberta-base, BASESYL=true, IMPROVEDSYL=true, TYPE=meter, BASECONTEXT=false, IMPROVEDCONTEXT=true'  shell_scripts/significance_test_helper.sh
+qsub -N TestSignifVal -q gpu -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'BASE=./utils/validators/meter/distilroberta-base_BPE_validator_1706908625326, IMPROVED=./utils/validators/meter/distilroberta-base_syllable_BPE_validator_1706946309024, BASETOK=distilroberta-base, IMPROVEDTOK=distilroberta-base, BASESYL=false, IMPROVEDSYL=true, TYPE=meter, BASECONTEXT=false, IMPROVEDCONTEXT=false'  shell_scripts/significance_test_helper.sh
+qsub -N TestSignifVal -q gpu -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'BASE=./utils/validators/meter/Context_roberta-base_syllable_BPE_validator_1706876234643, IMPROVED=./utils/validators/meter/Context_distilroberta-base_syllable_BPE_validator_1706818163442, BASETOK=roberta-base, IMPROVEDTOK=distilroberta-base, BASESYL=true, IMPROVEDSYL=true, TYPE=meter, BASECONTEXT=true, IMPROVEDCONTEXT=true'  shell_scripts/significance_test_helper.sh
 
 # Signif Test Difference YEAR
 
-# Signif Test Syllable RHYME
-
-# Signif Test Syllable METER
-
-# Signif Test Syllable YEAR
-
-# Signif Test Context METER
+qsub -N TestSignifVal -q gpu -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'BASE=./utils/validators/year/ufal-robeczech-base_syllable_BPE_validator_1706824640849, IMPROVED=./utils/validators/year/ufal-robeczech-base_BPE_validator_1706753939607, BASETOK=ufal/robeczech-base, IMPROVEDTOK=ufal/robeczech-base, BASESYL=true, IMPROVEDSYL=false, TYPE=year, BASECONTEXT=false, IMPROVEDCONTEXT=false'  shell_scripts/significance_test_helper.sh
+qsub -N TestSignifVal -q gpu -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v 'BASE=./utils/validators/year/roberta-base_BPE_validator_1706764637259, IMPROVED=./utils/validators/year/ufal-robeczech-base_BPE_validator_1706753939607, BASETOK=roberta-base, IMPROVEDTOK=ufal/robeczech-base, BASESYL=false, IMPROVEDSYL=false, TYPE=year, BASECONTEXT=false, IMPROVEDCONTEXT=false'  shell_scripts/significance_test_helper.sh
