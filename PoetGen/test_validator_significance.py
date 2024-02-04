@@ -28,7 +28,7 @@ parser.add_argument("--base_meter_context", default=False, type=parse_boolean, h
 parser.add_argument("--improved_meter_context", default=False, type=parse_boolean, help="Does validator use Context input for meter")
 
 parser.add_argument("--num_repetitions", default=100, type=int, help="Number of repetitions of validator")
-parser.add_argument("--per_repetitions", default=1000, type=int, help="Number of repetitions of validator")
+parser.add_argument("--per_repetitions", default=10_000, type=int, help="Number of repetitions of validator")
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results_new', "validator_significance_test.txt")), type=str, help="Where to store the result of significance test")
 
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
