@@ -427,20 +427,22 @@ parser.add_argument("--num_runs", default=2, type=int, help="Number of runs on d
 
 parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM")),  type=str, help="Path to Model")
 
-parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_BPE_validator_1704522935060')),  type=str, help="Path to Model")
-parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'Context_ufal-robeczech-base_BPE_validator_1705689955968')),  type=str, help="Path to Model")
-parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'xlm-roberta-base_Unigram_validator_1705427662743')),  type=str, help="Path to Model")
-
+parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_BPE_validator_1706752010848')),  type=str, help="Path to Model")
 parser.add_argument("--validator_tokenizer_model_rhyme", default='distilroberta-base', type=str, help="Validator tokenizer")
-parser.add_argument("--validator_tokenizer_model_meter", default='ufal/robeczech-base', type=str, help="Validator tokenizer")
-parser.add_argument("--validator_tokenizer_model_year", default='xlm-roberta-base', type=str, help="Validator tokenizer")
 parser.add_argument("--val_syllables_rhyme", default=False, type=bool, help="Does validator use syllables")
+
+parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'Context_distilroberta-base_BPE_validator_1706752010848')),  type=str, help="Path to Model")
+parser.add_argument("--validator_tokenizer_model_meter", default='distilroberta-base', type=str, help="Validator tokenizer")
 parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
+parser.add_argument("--train_with_context", default=True, type=bool, help="If meter validator was trained with context in mind.")
+
+parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'ufal-robeczech-base_BPE_validator_1706753939607')),  type=str, help="Path to Model")
+parser.add_argument("--validator_tokenizer_model_year", default='ufal/robeczech-base', type=str, help="Validator tokenizer")
 parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does validator use syllables")
 
 parser.add_argument("--top_k", default=2, type=int, help="Top k number")
 
-parser.add_argument("--train_with_context", default=True, type=bool, help="If meter validator was trained with context in mind.")
+
 
 def main(args):
     val = ModelValidator(args)

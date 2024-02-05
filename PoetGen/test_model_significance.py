@@ -23,18 +23,19 @@ parser.add_argument("--improved_generate", default='BASIC', type=str, choices=['
 parser.add_argument("--base_input_type", default='METER_VERSE', type=str, choices=['BASIC', 'VERSE_PAR', 'METER_VERSE'], help='Input Format type ')
 parser.add_argument("--improved_input_type", default='METER_VERSE', type=str, choices=['BASIC', 'VERSE_PAR', 'METER_VERSE'], help='Input Format type ')
 
-parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_BPE_validator_1704126399565')),  type=str, help="Path to Model")
-parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'Context_ufal-robeczech-base_BPE_validator_1705689955968')),  type=str, help="Path to Model")
-parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'ufal-robeczech-base_BPE_validator_1702393305267')),  type=str, help="Path to Model")
-
+parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_BPE_validator_1706752010848')),  type=str, help="Path to Model")
 parser.add_argument("--validator_tokenizer_model_rhyme", default='distilroberta-base', type=str, help="Validator tokenizer")
-parser.add_argument("--validator_tokenizer_model_meter", default='ufal/robeczech-base', type=str, help="Validator tokenizer")
-parser.add_argument("--validator_tokenizer_model_year", default='ufal/robeczech-base', type=str, help="Validator tokenizer")
 parser.add_argument("--val_syllables_rhyme", default=False, type=bool, help="Does validator use syllables")
+
+parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'Context_distilroberta-base_BPE_validator_1706752010848')),  type=str, help="Path to Model")
+parser.add_argument("--validator_tokenizer_model_meter", default='distilroberta-base', type=str, help="Validator tokenizer")
 parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
+parser.add_argument("--meter_with_context", default=True, type=bool, help="Does Meter uses context")
+
+parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'ufal-robeczech-base_BPE_validator_1706753939607')),  type=str, help="Path to Model")
+parser.add_argument("--validator_tokenizer_model_year", default='ufal/robeczech-base', type=str, help="Validator tokenizer")
 parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does validator use syllables")
 
-parser.add_argument("--meter_with_context", default=True, type=bool, help="Does Meter uses context")
 
 parser.add_argument("--num_repetitions", default=100, type=int, help="Number of repetitions")
 parser.add_argument("--per_repetitions", default=100, type=int, help="Number of samples")
@@ -239,13 +240,13 @@ def do_epoch():
         rhyme = dataset.test_pytorch_dataset_body[samples[i]]['rhyme']
         meter = dataset.test_pytorch_dataset_body[samples[i]]['metre_ids'][0]
         year = dataset.test_pytorch_dataset_body[samples[i]]['year']
-        base_decode:str = decoder_helper(args.base_generate, rhyme, year, meter, base_tokenizer, base_model, args.base_input_type)
-        improved_decode:str = decoder_helper(args.improved_generate, rhyme, year, meter, improved_tokenizer, improved_model, args.improved_input_type) 
-        
         if random.random() < 0.5:
+            base_decode:str = decoder_helper(args.base_generate, rhyme, year, meter, base_tokenizer, base_model, args.base_input_type)
             rhyme_one, meter_one, year_one = do_eval(base_decode)
         else:
+            improved_decode:str = decoder_helper(args.improved_generate, rhyme, year, meter, improved_tokenizer, improved_model, args.improved_input_type) 
             rhyme_one, meter_one, year_one = do_eval(improved_decode)
+            
         
         rhyme_res += rhyme_one
         meter_res += meter_one

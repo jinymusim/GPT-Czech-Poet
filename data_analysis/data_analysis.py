@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 
 FILENAME = os.path.join(os.path.dirname(__file__), 'significance_test_data.csv')
 
-def display_comparision(comparision_header: str, rhyme_data: np.ndarray, meter_data: np.ndarray, year_data:np.ndarray, 
+def display_comparision(comparision_header: str, rhyme_data: np.ndarray = None, meter_data: np.ndarray = None, year_data:np.ndarray =None, 
                         rhyme_base:float = None, rhyme_improved:float = None, meter_base:float = None, meter_improved:float = None, 
                         year_base:float = None, year_improved:float = None, p_value_checks:list = [1, 5, 25, 50, 75, 95, 99]):
     # CMAP
@@ -16,29 +16,47 @@ def display_comparision(comparision_header: str, rhyme_data: np.ndarray, meter_d
     SLICED_CMAP = _CMAP(np.linspace(0, 1, len(p_value_checks) + 1))
 
     # Plot Rhyme Data
-    sns.histplot(data=pd.DataFrame({'rhyme_acc': rhyme_data}), x='rhyme_acc').set(title=comparision_header)
-    rhyme_lows_pos = np.percentile(rhyme_data, p_value_checks)
-    for i, (p_value, value) in enumerate(zip(p_value_checks, rhyme_lows_pos)):
-        plt.axvline(x=value, color= SLICED_CMAP[i], ls='--', label= f'{p_value} %')
-    if rhyme_base != None and rhyme_improved != None:
-        percentiles = stats.percentileofscore(rhyme_data, [rhyme_base, rhyme_improved])
-        plt.axvline(x=rhyme_base, color='r' , ls='--', label=f'BASE: {percentiles[0]} %')
-        plt.axvline(x=rhyme_improved, color='black' , ls='--', label=f'IMPROVED: {percentiles[1]} %')
-    plt.legend()
-    plt.show()
-    plt.figure()
+    if not rhyme_data is  None:
+        sns.histplot(data=pd.DataFrame({'rhyme_acc': rhyme_data}), x='rhyme_acc').set(title=f'RHYME {comparision_header}')
+        rhyme_lows_pos = np.percentile(rhyme_data, p_value_checks)
+        for i, (p_value, value) in enumerate(zip(p_value_checks, rhyme_lows_pos)):
+            plt.axvline(x=value, color= SLICED_CMAP[i], ls='--', label= f'{p_value} %')
+        if rhyme_base != None and rhyme_improved != None:
+            percentiles = stats.percentileofscore(rhyme_data, [rhyme_base, rhyme_improved])
+            plt.axvline(x=rhyme_base, color='r' , ls='--', label=f'BASE: {percentiles[0]} %')
+            plt.axvline(x=rhyme_improved, color='black' , ls='--', label=f'IMPROVED: {percentiles[1]} %')
+        plt.legend()
+        plt.show()
+        plt.figure()
 
     # Plot Meter Data
-    sns.histplot(data=pd.DataFrame({'meter_acc': meter_data}), x='meter_acc').set(title=comparision_header)
-    meter_lows_pos = np.percentile(meter_data, p_value_checks)
-    for i, (p_value, value) in enumerate(zip(p_value_checks, meter_lows_pos)):
-        plt.axvline(x=value, color= SLICED_CMAP[i], ls='--', label= f'{p_value} %')
-    if meter_base != None and meter_improved != None:
-        percentiles = stats.percentileofscore(meter_data, [meter_base, meter_improved])
-        plt.axvline(x=meter_base, color='r' , ls='--', label=f'BASE: {percentiles[0]} %')
-        plt.axvline(x=meter_improved, color='black' , ls='--', label=f'IMPROVED: {percentiles[1]} %')
-    plt.legend()
-    plt.show()
+    if  not meter_data is None:
+        sns.histplot(data=pd.DataFrame({'meter_acc': meter_data}), x='meter_acc').set(title=f'METER {comparision_header}')
+        meter_lows_pos = np.percentile(meter_data, p_value_checks)
+        for i, (p_value, value) in enumerate(zip(p_value_checks, meter_lows_pos)):
+            plt.axvline(x=value, color= SLICED_CMAP[i], ls='--', label= f'{p_value} %')
+        if meter_base != None and meter_improved != None:
+            percentiles = stats.percentileofscore(meter_data, [meter_base, meter_improved])
+            plt.axvline(x=meter_base, color='r' , ls='--', label=f'BASE: {percentiles[0]} %')
+            plt.axvline(x=meter_improved, color='black' , ls='--', label=f'IMPROVED: {percentiles[1]} %')
+        plt.legend()
+        plt.show()
+        plt.figure()
+
+    # Plot Year Data
+    if not year_data is None:
+        sns.histplot(data=pd.DataFrame({'year_acc': year_data}), x='year_acc').set(title=f'YEAR {comparision_header}')
+        year_lows_pos = np.percentile(year_data, p_value_checks)
+        for i, (p_value, value) in enumerate(zip(p_value_checks, year_lows_pos)):
+            plt.axvline(x=value, color= SLICED_CMAP[i], ls='--', label= f'{p_value} %')
+        if year_base != None and year_improved != None:
+            percentiles = stats.percentileofscore(year_data, [year_base, year_improved])
+            plt.axvline(x=year_base, color='r' , ls='--', label=f'BASE: {percentiles[0]} %')
+            plt.axvline(x=year_improved, color='black' , ls='--', label=f'IMPROVED: {percentiles[1]} %')
+        plt.legend()
+        plt.show()
+        plt.figure()
+
 
 
 with open(FILENAME, 'r') as file:
@@ -46,8 +64,33 @@ with open(FILENAME, 'r') as file:
     spamreader = csv.reader(file, delimiter=',')
     for row in spamreader:
         rows.append(row)
-    # Display Raw to Pretrained
+    # Display RHYME Distil RAW to Disil Syllable 
     display_comparision(comparision_header= rows[0][1], 
-                        rhyme_data=np.asarray( list(map(float,rows[0][2:])) ), rhyme_base=0.3544, rhyme_improved=0.5732,
-                        meter_data=np.asarray( list(map(float,rows[1][2:])) ), meter_base= 0.8453, meter_improved=0.8537,
-                        year_data=np.asarray( list(map(float,rows[2][2:])) ),)
+                        rhyme_data=np.asarray( list(map(float,rows[0][2:])) ), rhyme_base=0.9682, rhyme_improved=0.9689)
+    # Display RHYME RobeCzech RAW to RobeCzech Syllable 
+    display_comparision(comparision_header= rows[1][1],
+                        rhyme_data=np.asarray( list(map(float,rows[1][2:])) ), rhyme_base=0.4806, rhyme_improved=0.9468)
+    # Display RHYME RobeCzech SYLLABLE to Disil Syllable 
+    display_comparision(comparision_header= rows[2][1],
+                        rhyme_data=np.asarray( list(map(float,rows[2][2:])) ), rhyme_base=0.9468, rhyme_improved=0.9689)
+    # Display YEAR RobeCzech SYLLABLE to RobeCzech Raw 
+    display_comparision(comparision_header= rows[3][1],
+                        year_data=np.asarray( list(map(float,rows[3][2:])) ), year_base=0.4255, year_improved=0.4745)
+    # Display YEAR Roberta Raw to RobeCzech Raw 
+    display_comparision(comparision_header= rows[4][1],
+                        year_data=np.asarray( list(map(float,rows[4][2:])) ), year_base=0.4315, year_improved=0.4745)
+    # Display RHYME Roberta Raw Unweighted to Roberta Raw Weighted
+    display_comparision(comparision_header= rows[5][1],
+                        rhyme_data=np.asarray( list(map(float,rows[5][2:])) ), rhyme_base=0.9678, rhyme_improved=0.9693)
+    # Display METER Distil RAW to Disil Syllable 
+    display_comparision(comparision_header= rows[6][1],
+                        meter_data=np.asarray( list(map(float,rows[6][2:])) ), meter_base=0.8987, meter_improved=0.8952)
+    # Display METER Distil Syllable to Disil Syllable Context
+    display_comparision(comparision_header= rows[7][1],
+                        meter_data=np.asarray( list(map(float,rows[7][2:])) ), meter_base=0.8952, meter_improved=0.9494)
+    # Display METER Roberta Syllable Context to Disil Syllable Context
+    display_comparision(comparision_header= rows[8][1],
+                        meter_data=np.asarray( list(map(float,rows[8][2:])) ), meter_base=0.9434, meter_improved=0.9494)
+    # Display METER Roberta Raw Unweighted to Roberta Raw Weighted
+    display_comparision(comparision_header= rows[9][1],
+                        meter_data=np.asarray( list(map(float,rows[9][2:])) ), meter_base=0.8973, meter_improved=0.8928)
