@@ -37,8 +37,8 @@ parser.add_argument("--validator_tokenizer_model_year", default='ufal/robeczech-
 parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does validator use syllables")
 
 
-parser.add_argument("--num_repetitions", default=100, type=int, help="Number of repetitions")
-parser.add_argument("--per_repetitions", default=250, type=int, help="Number of samples")
+parser.add_argument("--num_repetitions", default=25, type=int, help="Number of repetitions")
+parser.add_argument("--per_repetitions", default=2500, type=int, help="Number of samples")
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results_new', "model_significance_test.txt")), type=str, help="Where to store the result of significance test")
 
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
