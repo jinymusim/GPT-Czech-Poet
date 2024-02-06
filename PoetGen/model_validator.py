@@ -9,9 +9,8 @@ from tqdm import tqdm
 from transformers import  AutoTokenizer, PreTrainedTokenizerFast, PreTrainedTokenizerBase
 
 from utils.poet_utils import TextAnalysis, TextManipulation, Tokens, SyllableMaker
-from utils.poet_model_utils import PoetModelInterface
 from utils.validators import ValidatorInterface
-from utils.base_poet_models import PoetModelBase
+from utils.base_poet_models import PoetModelBase, PoetModelFunctionalInterface
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 
@@ -26,6 +25,8 @@ class ModelValidator:
             args (argparse.Namespace): Arguments of Validation
             result_dir (str, optional): Directory to store results. Defaults to os.path.abspath(os.path.join(os.path.dirname(__file__),"results")).
         """
+
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         self.args = args
         
@@ -35,26 +36,26 @@ class ModelValidator:
         # Load Model as Pickle file or as stored LM 
         if "_LM" in self.model_rel_name:
             self.model_rel_name = re.sub("_LM", "", self.model_rel_name)
-            self.model: PoetModelInterface = PoetModelBase(self.model_name)
+            self.model: PoetModelFunctionalInterface = PoetModelBase(self.model_name).to(self.device)
         else:
-            self.model: PoetModelInterface= (torch.load(self.model_name, map_location=torch.device('cpu')))
+            self.model: PoetModelFunctionalInterface= (torch.load(self.model_name, map_location=torch.device('cpu'))).to(self.device)
         self.model.eval()
         
         # Load validators 
         self.rhyme_model, self.meter_model, self.year_model = None, None, None
         self.rhyme_model_name, self.meter_model_name, self.year_model_name = "", "", ""
         if args.rhyme_model_path_full:
-            self.rhyme_model: ValidatorInterface = (torch.load(args.rhyme_model_path_full, map_location=torch.device('cpu')))
+            self.rhyme_model: ValidatorInterface = (torch.load(args.rhyme_model_path_full, map_location=torch.device('cpu'))).to(self.device)
             self.rhyme_model.eval()
             _,  self.rhyme_model_name = os.path.split(args.rhyme_model_path_full)
         
         if args.metre_model_path_full:
-            self.meter_model: ValidatorInterface = (torch.load(args.metre_model_path_full, map_location=torch.device('cpu')))
+            self.meter_model: ValidatorInterface = (torch.load(args.metre_model_path_full, map_location=torch.device('cpu'))).to(self.device)
             self.meter_model.eval()
             _, self.meter_model_name = os.path.split(args.metre_model_path_full)
             
         if args.year_model_path_full:
-            self.year_model: ValidatorInterface = (torch.load(args.year_model_path_full, map_location=torch.device('cpu')))
+            self.year_model: ValidatorInterface = (torch.load(args.year_model_path_full, map_location=torch.device('cpu'))).to(self.device)
             self.year_model.eval()
             _,  self.year_model_name = os.path.split(args.year_model_path_full)
             
@@ -164,7 +165,7 @@ class ModelValidator:
                 FORMAT = "VERSE_PAR"
             tokenized_poet_start = self.tokenizer.encode(start, return_tensors='pt', truncation=True)
             if self.args.sample:
-                out = self.model.model.generate(tokenized_poet_start, 
+                out = self.model.model.generate(tokenized_poet_start.to(self.device), 
                                         max_length=256,
                                         do_sample=True,
                                         top_k=50,
@@ -173,7 +174,7 @@ class ModelValidator:
                                         pad_token_id=self.tokenizer.pad_token_id)
                 
             else:
-                out = self.model.model.generate(tokenized_poet_start, 
+                out = self.model.model.generate(tokenized_poet_start.to(self.device), 
                                         max_length=256,
                                         num_beams=8,
                                         no_repeat_ngram_size=2,
@@ -181,7 +182,7 @@ class ModelValidator:
                                         early_stopping=True,
                                         pad_token_id=self.tokenizer.pad_token_id)
                 
-            return self.tokenizer.decode(out[0], skip_special_tokens=True)
+            return self.tokenizer.decode(out.cpu()[0], skip_special_tokens=True)
         if type == "FORCED":
             
             if self.model_rel_name.startswith('CZ') or self.model_rel_name.startswith('ALT') or self.model_rel_name.startswith('EN') or self.model_rel_name.startswith('ENALT'):
@@ -207,7 +208,7 @@ class ModelValidator:
             else:
                 start_forced['STROPHE_METER'] = self.validation_data[index]['metre_ids'][0]
             
-            return self.model.generate_forced(start_forced, self.tokenizer, sample=self.args.sample, format=FORMAT)
+            return self.model.generate_forced(start_forced, self.tokenizer, sample=self.args.sample, format=FORMAT, device=self.device)
             
             
             
@@ -271,7 +272,7 @@ class ModelValidator:
                             data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], 'rhyme' : values["RHYME"]}],tokenizer=self.validator_tokenizer_rhyme,
                                                                            is_syllable=False, syllables=self.args.val_syllables_rhyme,
                                                                            max_len=self.rhyme_model.model.config.max_position_embeddings - 2)
-                            res = self.rhyme_model.validate_model(input_ids=data['input_ids'],
+                            res = self.rhyme_model.validate_model(input_ids=data['input_ids'].to(self.device),
                                                                    rhyme=data['rhyme'], k=self.args.top_k)
                             rhyme_pos += res['acc']
                             rhyme_top_k_pos += res['top_k']
@@ -286,7 +287,7 @@ class ModelValidator:
                             data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], "year": values["YEAR"]}],tokenizer=self.validator_tokenizer_year,
                                                                            is_syllable=False, syllables=self.args.val_syllables_year,
                                                                            max_len=self.year_model.model.config.max_position_embeddings - 2)
-                            res = self.year_model.validate_model(input_ids=data['input_ids'],
+                            res = self.year_model.validate_model(input_ids=data['input_ids'].to(self.device),
                                                                    year_bucket=data['year_bucket'],k=self.args.top_k)
                             
                             year_pos += res['acc']
@@ -346,8 +347,8 @@ class ModelValidator:
                                                                        max_len=self.meter_model.model.config.max_position_embeddings - 2)
                     if data['input_ids'] != None and  data['metre_ids'] != None:
                         for j in range(min(data['input_ids'].shape[0], data['metre_ids'].shape[0])):
-                            res = self.meter_model.validate_model(input_ids=data["input_ids"][j,:].reshape(1,-1),
-                                        attention_mask=data['attention_mask'][j,:].reshape(1,-1),
+                            res = self.meter_model.validate_model(input_ids=data["input_ids"][j,:].reshape(1,-1).to(self.device),
+                                        attention_mask=data['attention_mask'][j,:].reshape(1,-1).to(self.device),
                                         rhyme=None, 
                                         metre_ids=data["metre_ids"][j,:].reshape(1,-1),
                                         year_bucket=None)

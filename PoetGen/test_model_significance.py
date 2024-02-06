@@ -38,7 +38,7 @@ parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does
 
 
 parser.add_argument("--num_repetitions", default=100, type=int, help="Number of repetitions")
-parser.add_argument("--per_repetitions", default=500, type=int, help="Number of samples")
+parser.add_argument("--per_repetitions", default=250, type=int, help="Number of samples")
 parser.add_argument("--result_file", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'results_new', "model_significance_test.txt")), type=str, help="Where to store the result of significance test")
 
 parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
@@ -133,12 +133,12 @@ improved_tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(arg
 
 dataset = CorpusDatasetPytorch(data_dir=args.data_path_poet)
 
-def decoder_helper(type, rhyme, year, meter, tokenizer: PreTrainedTokenizerBase, model: PoetModelBase, input_type:str):
+def decoder_helper(type, index, tokenizer: PreTrainedTokenizerBase, model: PoetModelBase, input_type:str):
     if type == "BASIC":
         if input_type == 'METER_VERSE':
-            start = f"# {rhyme} # {year}\n{meter}"
+            start = f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])}\n{dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]}"
         else:
-            start = f"# {rhyme} # {year} # {meter}"
+            start = f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])} # {dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]}"
         tokenized = tokenizer.encode(start, return_tensors='pt', truncation=True)
         out = model.model.generate(tokenized.to(device), 
                                         max_length=512,
@@ -149,11 +149,20 @@ def decoder_helper(type, rhyme, year, meter, tokenizer: PreTrainedTokenizerBase,
                                         pad_token_id= tokenizer.pad_token_id)
         return tokenizer.decode(out.cpu()[0], skip_special_tokens=True)
     if type=="FORCED":
+        start_forced = {'RHYME': dataset.test_pytorch_dataset_body.data[index]['rhyme'],
+                            'YEAR': TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])}
         if input_type == 'METER_VERSE':
-            start_forced = f"# {rhyme} # {year}\n{meter} #"
+            for ch, id in zip(dataset.test_pytorch_dataset_body.data[index]['rhyme'], dataset.test_pytorch_dataset_body.data[index]['metre_ids']):
+                    if ch == 'A':
+                        start_forced['METER_0'] = id
+                    elif ch == 'B':
+                        start_forced['METER_1'] = id
+                    elif ch == 'C':
+                        start_forced['METER_2'] = id
         else:
-            start_forced = f"# {rhyme} # {year} # {meter}"
-        return model.generate_forced(start_forced, tokenizer, verse_len=len(rhyme), sample=True, device=device, format=input_type)
+            start_forced['STROPHE_METER'] = dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]
+        return model.generate_forced(start_forced, tokenizer, verse_len=len(dataset.test_pytorch_dataset_body.data[index]['rhyme']), 
+                                     sample=True, device=device, format=input_type)
     
 def do_eval(generated_strophe):
     res_rhyme = 0
@@ -237,14 +246,12 @@ def do_epoch():
     
     for i in range(args.per_repetitions):
         # Get generated Strophe
-        rhyme = dataset.test_pytorch_dataset_body[samples[i]]['rhyme']
-        meter = dataset.test_pytorch_dataset_body[samples[i]]['metre_ids'][0]
-        year = dataset.test_pytorch_dataset_body[samples[i]]['year']
+
         if random.random() < 0.5:
-            base_decode:str = decoder_helper(args.base_generate, rhyme, year, meter, base_tokenizer, base_model, args.base_input_type)
+            base_decode:str = decoder_helper(args.base_generate, samples[i], base_tokenizer, base_model, args.base_input_type)
             rhyme_one, meter_one, year_one = do_eval(base_decode)
         else:
-            improved_decode:str = decoder_helper(args.improved_generate, rhyme, year, meter, improved_tokenizer, improved_model, args.improved_input_type) 
+            improved_decode:str = decoder_helper(args.improved_generate, samples[i], improved_tokenizer, improved_model, args.improved_input_type) 
             rhyme_one, meter_one, year_one = do_eval(improved_decode)
             
         
