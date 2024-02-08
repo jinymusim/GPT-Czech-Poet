@@ -231,9 +231,9 @@ def do_eval(generated_strophe):
                         attention_mask=data['attention_mask'][j,:].reshape(1,-1).to(device),
                         rhyme=None, 
                         metre_ids=data["metre_ids"][j,:].reshape(1,-1),
-                        year_bucket=None)['acc']/min(data['input_ids'].shape[0], data['metre_ids'].shape[0])
+                        year_bucket=None)['acc']
         
-    return res_rhyme, res_meter, res_year       
+    return res_rhyme, res_meter, res_year, min(data['input_ids'].shape[0], data['metre_ids'].shape[0])
     
     
     
@@ -243,25 +243,27 @@ def do_epoch():
     rhyme_res = 0
     meter_res = 0
     year_res = 0
+    meter_divisor = 0
     
     for i in range(args.per_repetitions):
         # Get generated Strophe
 
         if random.random() < 0.5:
             base_decode:str = decoder_helper(args.base_generate, samples[i], base_tokenizer, base_model, args.base_input_type)
-            rhyme_one, meter_one, year_one = do_eval(base_decode)
+            rhyme_one, meter_one, year_one, div_one = do_eval(base_decode)
         else:
             improved_decode:str = decoder_helper(args.improved_generate, samples[i], improved_tokenizer, improved_model, args.improved_input_type) 
-            rhyme_one, meter_one, year_one = do_eval(improved_decode)
+            rhyme_one, meter_one, year_one, div_one = do_eval(improved_decode)
             
         
         rhyme_res += rhyme_one
         meter_res += meter_one
         year_res += year_one
+        meter_divisor += div_one
         
         
         
-    return rhyme_res/args.per_repetitions, meter_res/args.per_repetitions, year_res/args.per_repetitions
+    return rhyme_res/args.per_repetitions, meter_res/meter_divisor, year_res/args.per_repetitions
 
 
 uniform_list_rhyme, uniform_list_meter, uniform_list_year = [], [], []

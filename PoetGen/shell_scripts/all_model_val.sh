@@ -129,10 +129,10 @@ qsub -N ModelValidation -q gpu -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb
 
 # E8E32
 
-qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v MODEL=./CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-all-e8e32_LM shell_scripts/all_model_val_helper.sh
-qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v MODEL=./CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e8e32_LM shell_scripts/all_model_val_helper.sh
-qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v MODEL=./CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-all-e8e32_LM shell_scripts/all_model_val_helper.sh
-qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v MODEL=./CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-all-e8e32_LM shell_scripts/all_model_val_helper.sh
+qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=48:00:00 -v MODEL=./CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-all-e8e32_LM shell_scripts/all_model_val_helper.sh
+qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=48:00:00 -v MODEL=./CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e8e32_LM shell_scripts/all_model_val_helper.sh
+qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=48:00:00 -v MODEL=./CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-all-e8e32_LM shell_scripts/all_model_val_helper.sh
+qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=48:00:00 -v MODEL=./CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-all-e8e32_LM shell_scripts/all_model_val_helper.sh
 
 
 # RNN
