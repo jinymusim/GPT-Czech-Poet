@@ -232,7 +232,7 @@ def do_eval(generated_strophe):
                         rhyme=None, 
                         metre_ids=data["metre_ids"][j,:].reshape(1,-1),
                         year_bucket=None)['acc']
-        div_meter += min(data['input_ids'].shape[0], data['metre_ids'].shape[0])
+        div_meter += len(PRESENT_METERS)
         
     return res_rhyme, res_meter, res_year, div_meter
     
