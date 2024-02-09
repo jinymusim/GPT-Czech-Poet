@@ -141,7 +141,7 @@ def decoder_helper(type, index, tokenizer: PreTrainedTokenizerBase, model: PoetM
             start = f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])} # {dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]}"
         tokenized = tokenizer.encode(start, return_tensors='pt', truncation=True)
         out = model.model.generate(tokenized.to(device), 
-                                        max_length=512,
+                                        max_length=256,
                                         do_sample=True,
                                         top_k=50,
                                         eos_token_id = tokenizer.eos_token_id,
@@ -161,13 +161,13 @@ def decoder_helper(type, index, tokenizer: PreTrainedTokenizerBase, model: PoetM
                         start_forced['METER_2'] = id
         else:
             start_forced['STROPHE_METER'] = dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]
-        return model.generate_forced(start_forced, tokenizer, verse_len=len(dataset.test_pytorch_dataset_body.data[index]['rhyme']), 
-                                     sample=True, device=device, format=input_type)
+        return model.generate_forced(start_forced, tokenizer, sample=True, format=input_type, device=device )
     
 def do_eval(generated_strophe):
     res_rhyme = 0
     res_meter = 0
     res_year = 0
+    div_meter = 0
     STROPHE_METER = 'J'
     PRESENT_METERS = []
     for line in generated_strophe.splitlines():
@@ -209,7 +209,7 @@ def do_eval(generated_strophe):
         if len(line_analysis.keys()) == 0:
             continue
         
-        
+        div_meter +=1
         if "METER" in line_analysis.keys():
             PRESENT_METERS.append(line_analysis["METER"])
         else:
@@ -233,7 +233,7 @@ def do_eval(generated_strophe):
                         metre_ids=data["metre_ids"][j,:].reshape(1,-1),
                         year_bucket=None)['acc']
         
-    return res_rhyme, res_meter, res_year, min(data['input_ids'].shape[0], data['metre_ids'].shape[0])
+    return res_rhyme, res_meter, res_year, div_meter
     
     
     

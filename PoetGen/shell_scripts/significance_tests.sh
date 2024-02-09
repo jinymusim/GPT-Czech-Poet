@@ -12,7 +12,7 @@ qsub -N TestSignif -q gpu_dgx -l select=1:ncpus=1:ngpus=1:mem=40gb:gpu_mem=12gb:
 qsub -N TestSignif -q gpu_dgx -l select=1:ncpus=1:ngpus=1:mem=40gb:gpu_mem=12gb:scratch_local=32gb -l walltime=72:00:00 -v 'BASE=./CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e8e32_LM, IMPROVED=./CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e8e32_LM, BASEGEN=BASIC, IMPROVEDGEN=FORCED, BASEINPUT=METER_VERSE, IMPROVEDINPUT=METER_VERSE'  shell_scripts/significance_test_helper.sh
 qsub -N TestSignif -q gpu_dgx -l select=1:ncpus=1:ngpus=1:mem=40gb:gpu_mem=12gb:scratch_local=32gb -l walltime=72:00:00 -v 'BASE=./CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-all-e8e32_LM, IMPROVED=./CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-all-e8e32_LM, BASEGEN=BASIC, IMPROVEDGEN=FORCED, BASEINPUT=METER_VERSE, IMPROVEDINPUT=METER_VERSE'  shell_scripts/significance_test_helper.sh
 
-# Signif Test for ToEkenizer
+# Signif Test for Tokenizer
 
 qsub -N TestSignif -q gpu_dgx -l select=1:ncpus=1:ngpus=1:mem=40gb:gpu_mem=12gb:scratch_local=32gb -l walltime=72:00:00 -v 'BASE=./CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-all-e8e32_LM, IMPROVED=./CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-all-e8e32_LM, BASEGEN=FORCED, IMPROVEDGEN=FORCED, BASEINPUT=METER_VERSE, IMPROVEDINPUT=METER_VERSE'  shell_scripts/significance_test_helper.sh
 qsub -N TestSignif -q gpu_dgx -l select=1:ncpus=1:ngpus=1:mem=40gb:gpu_mem=12gb:scratch_local=32gb -l walltime=72:00:00 -v 'BASE=./CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-all-e8e32_LM, IMPROVED=./CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e8e32_LM, BASEGEN=FORCED, IMPROVEDGEN=FORCED, BASEINPUT=METER_VERSE, IMPROVEDINPUT=METER_VERSE'  shell_scripts/significance_test_helper.sh
