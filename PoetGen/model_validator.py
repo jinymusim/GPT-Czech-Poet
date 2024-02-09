@@ -316,9 +316,6 @@ class ModelValidator:
                         continue
                     
                     
-                    metre_all +=1
-                    metre_top_k_all +=1
-                    metre_label_all +=1
                     if self.meter_model != None and "METER" in line_analysis.keys():
                         PRESENT_METERS.append(line_analysis["METER"])
                     elif self.meter_model != None:

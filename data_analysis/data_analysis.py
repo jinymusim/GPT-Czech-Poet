@@ -108,3 +108,12 @@ with open(FILENAME, 'r') as file:
     # Display RHYME OUR tok Basic to Forced Generation
     display_comparision(comparision_header= rows[15][1],
                         rhyme_data=np.asarray( list(map(float,rows[15][2:])) ), rhyme_base=0.4776, rhyme_improved=0.4843)
+    # Display RHYME OUR tok Basic to Forced Generation
+    display_comparision(comparision_header= rows[16][1],
+                        rhyme_data=np.asarray( list(map(float,rows[16][2:])) ), rhyme_base=0.6909, rhyme_improved=0.6925)
+    # Display RHYME BASIC Input to METER\_VERSE Input
+    display_comparision(comparision_header= rows[17][1],
+                        rhyme_data=np.asarray( list(map(float,rows[17][2:])) ), rhyme_base=0.4073, rhyme_improved=0.4956)
+    # Display RHYME BASE Tok to OUR Tok
+    display_comparision(comparision_header= rows[18][1],
+                        rhyme_data=np.asarray( list(map(float,rows[18][2:])) ), rhyme_base=0.5206, rhyme_improved=0.4843)
