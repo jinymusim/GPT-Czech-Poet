@@ -209,7 +209,7 @@ def do_eval(generated_strophe):
         if len(line_analysis.keys()) == 0:
             continue
         
-        div_meter +=1
+        
         if "METER" in line_analysis.keys():
             PRESENT_METERS.append(line_analysis["METER"])
         else:
@@ -232,6 +232,7 @@ def do_eval(generated_strophe):
                         rhyme=None, 
                         metre_ids=data["metre_ids"][j,:].reshape(1,-1),
                         year_bucket=None)['acc']
+        div_meter += min(data['input_ids'].shape[0], data['metre_ids'].shape[0])
         
     return res_rhyme, res_meter, res_year, div_meter
     

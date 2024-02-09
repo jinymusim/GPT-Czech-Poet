@@ -94,3 +94,17 @@ with open(FILENAME, 'r') as file:
     # Display METER Roberta Raw Unweighted to Roberta Raw Weighted
     display_comparision(comparision_header= rows[9][1],
                         meter_data=np.asarray( list(map(float,rows[9][2:])) ), meter_base=0.8973, meter_improved=0.8928)
+    # Display RHYME and METER Meter_verse input base and pretarined
+    display_comparision(comparision_header= rows[10][1],
+                        rhyme_data=np.asarray( list(map(float,rows[10][2:])) ), rhyme_base=0.4706, rhyme_improved=0.4977, 
+                        meter_data=np.asarray( list(map(float,rows[11][2:])) ), meter_base=0.9461, meter_improved=0.9483)
+    # Display RHYME and METER BASIC input base and pretarined
+    display_comparision(comparision_header= rows[12][1],
+                        rhyme_data=np.asarray( list(map(float,rows[12][2:])) ), rhyme_base=0.4073, rhyme_improved=0.3355, 
+                        meter_data=np.asarray( list(map(float,rows[13][2:])) ), meter_base=0.9400, meter_improved=0.9436)
+    # Display RHYME BASE tok Basic to Forced Generation
+    display_comparision(comparision_header= rows[14][1],
+                        rhyme_data=np.asarray( list(map(float,rows[14][2:])) ), rhyme_base=0.5051, rhyme_improved=0.5206)
+    # Display RHYME OUR tok Basic to Forced Generation
+    display_comparision(comparision_header= rows[15][1],
+                        rhyme_data=np.asarray( list(map(float,rows[15][2:])) ), rhyme_base=0.4776, rhyme_improved=0.4843)

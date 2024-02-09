@@ -357,6 +357,10 @@ class ModelValidator:
                             metre_top_k_pos += res['top_k']
                             metre_label_pos += res['predicted_label']
                         
+                        metre_all += min(data['input_ids'].shape[0], data['metre_ids'].shape[0])
+                        metre_top_k_all += min(data['input_ids'].shape[0], data['metre_ids'].shape[0])
+                        metre_label_all += min(data['input_ids'].shape[0], data['metre_ids'].shape[0])
+                        
                 
                     
                     
