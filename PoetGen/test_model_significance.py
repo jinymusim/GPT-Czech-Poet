@@ -13,11 +13,11 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--base_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'backup_LMS', 'CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-all-e4e16_LM' )),  type=str, help="Path to Model")
-parser.add_argument("--improved_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'backup_LMS', 'CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e4e16_LM')),  type=str, help="Path to Model")
+parser.add_argument("--base_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'backup_LMS', 'CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-all-e8e32_LM' )),  type=str, help="Path to Model")
+parser.add_argument("--improved_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'backup_LMS', 'CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-all-e8e32_LM')),  type=str, help="Path to Model")
 
 parser.add_argument("--base_generate", default='BASIC', type=str, choices=['BASIC', 'FORCED'], help='Generation type done')
-parser.add_argument("--improved_generate", default='BASIC', type=str, choices=['BASIC', 'FORCED'], help='Generation type done')
+parser.add_argument("--improved_generate", default='FORCED', type=str, choices=['BASIC', 'FORCED'], help='Generation type done')
 
 parser.add_argument("--base_input_type", default='METER_VERSE', type=str, choices=['BASIC', 'VERSE_PAR', 'METER_VERSE'], help='Input Format type ')
 parser.add_argument("--improved_input_type", default='METER_VERSE', type=str, choices=['BASIC', 'VERSE_PAR', 'METER_VERSE'], help='Input Format type ')
@@ -109,22 +109,22 @@ if args.validator_tokenizer_model_meter:
         validator_tokenizer_meter.sep_token_id = Tokens.SEP_ID
         
 # Load Year tokenizer
-validator_tokenizer_year: PreTrainedTokenizerBase = None
-if args.validator_tokenizer_model_year:
-    try:
-        validator_tokenizer_year = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_year)
-    except:
-        validator_tokenizer_year: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_year)
-        validator_tokenizer_year.eos_token = Tokens.EOS
-        validator_tokenizer_year.eos_token_id = Tokens.EOS_ID
-        validator_tokenizer_year.pad_token = Tokens.PAD
-        validator_tokenizer_year.pad_token_id = Tokens.PAD_ID
-        validator_tokenizer_year.unk_token = Tokens.UNK
-        validator_tokenizer_year.unk_token_id = Tokens.UNK_ID
-        validator_tokenizer_year.cls_token = Tokens.CLS
-        validator_tokenizer_year.cls_token_id = Tokens.CLS_ID
-        validator_tokenizer_year.sep_token = Tokens.SEP
-        validator_tokenizer_year.sep_token_id = Tokens.SEP_ID
+#validator_tokenizer_year: PreTrainedTokenizerBase = None
+#if args.validator_tokenizer_model_year:
+#    try:
+#        validator_tokenizer_year = AutoTokenizer.from_pretrained(args.validator_tokenizer_model_year)
+#    except:
+#        validator_tokenizer_year: PreTrainedTokenizerBase = PreTrainedTokenizerFast(tokenizer_file=args.validator_tokenizer_model_year)
+#        validator_tokenizer_year.eos_token = Tokens.EOS
+#        validator_tokenizer_year.eos_token_id = Tokens.EOS_ID
+#        validator_tokenizer_year.pad_token = Tokens.PAD
+#        validator_tokenizer_year.pad_token_id = Tokens.PAD_ID
+#        validator_tokenizer_year.unk_token = Tokens.UNK
+#        validator_tokenizer_year.unk_token_id = Tokens.UNK_ID
+#        validator_tokenizer_year.cls_token = Tokens.CLS
+#        validator_tokenizer_year.cls_token_id = Tokens.CLS_ID
+#        validator_tokenizer_year.sep_token = Tokens.SEP
+#        validator_tokenizer_year.sep_token_id = Tokens.SEP_ID
  
 # Load LM tokenizers       
 base_tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.base_model_path_full)
@@ -149,11 +149,11 @@ def decoder_helper(type, index, tokenizer: PreTrainedTokenizerBase, model: PoetM
         return tokenizer.decode(out.cpu()[0], skip_special_tokens=True)
     if type=="FORCED":
         if input_type == "METER_VERSE":
-                start_forced = f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])}"
-                for id in dataset.test_pytorch_dataset_body.data[index]['metre_ids']:
+            start_forced = f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])}"
+            for id in dataset.test_pytorch_dataset_body.data[index]['metre_ids']:
                     start_forced = start_forced + f"\n{id} #"
         else:
-                start_forced =  f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])} # {dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]}"
+            start_forced =  f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])} # {dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]}"
         return model.generate_forced(start_forced, tokenizer, sample=True, format=input_type, device=device )
     
 def do_eval(generated_strophe):
@@ -184,16 +184,18 @@ def do_eval(generated_strophe):
                 
             
             #Validate for Year
-            if "YEAR" in values.keys():
-                data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[generated_strophe], "year": values["YEAR"]}],tokenizer=validator_tokenizer_year,
-                                                               is_syllable=False, syllables=args.val_syllables_year,
-                                                               max_len=512)
-                res_year = year_model.validate_model(input_ids=data['input_ids'].to(device),
-                                                       year_bucket=data['year_bucket'] ,k=2)['acc']
+            #if "YEAR" in values.keys():
+            #    data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[generated_strophe], "year": values["YEAR"]}],tokenizer=validator_tokenizer_year,
+            #                                                   is_syllable=False, syllables=args.val_syllables_year,
+            #                                                   max_len=512)
+            #    res_year = year_model.validate_model(input_ids=data['input_ids'].to(device),
+            #                                           year_bucket=data['year_bucket'] ,k=2)['acc']
                 
                 
             if 'STROPHE_METER' in values.keys():
                 STROPHE_METER = values['STROPHE_METER']
+            
+            continue
                     
                 
         # Else validate for individual verse
@@ -225,7 +227,7 @@ def do_eval(generated_strophe):
                         rhyme=None, 
                         metre_ids=data["metre_ids"][j,:].reshape(1,-1),
                         year_bucket=None)['acc']
-        div_meter += len(PRESENT_METERS)
+        div_meter = len(PRESENT_METERS)
         
     return res_rhyme, res_meter, res_year, div_meter
     
