@@ -4,11 +4,10 @@ import torch
 import random
 
 from tqdm import tqdm
-from functools import partial
 from transformers import AutoTokenizer, PreTrainedTokenizerBase, PreTrainedTokenizerFast
 
-from utils.validators import YearValidator, RhymeValidator, MeterValidator, ValidatorInterface
-from utils.poet_utils import StropheParams, Tokens, TextManipulation, TextAnalysis
+from utils.validators import  ValidatorInterface
+from utils.poet_utils import  Tokens, TextManipulation, TextAnalysis
 from utils.base_poet_models import PoetModelBase
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 
@@ -149,18 +148,12 @@ def decoder_helper(type, index, tokenizer: PreTrainedTokenizerBase, model: PoetM
                                         pad_token_id= tokenizer.pad_token_id)
         return tokenizer.decode(out.cpu()[0], skip_special_tokens=True)
     if type=="FORCED":
-        start_forced = {'RHYME': dataset.test_pytorch_dataset_body.data[index]['rhyme'],
-                            'YEAR': TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])}
-        if input_type == 'METER_VERSE':
-            for ch, id in zip(dataset.test_pytorch_dataset_body.data[index]['rhyme'], dataset.test_pytorch_dataset_body.data[index]['metre_ids']):
-                    if ch == 'A':
-                        start_forced['METER_0'] = id
-                    elif ch == 'B':
-                        start_forced['METER_1'] = id
-                    elif ch == 'C':
-                        start_forced['METER_2'] = id
+        if input_type == "METER_VERSE":
+                start_forced = f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])}"
+                for id in dataset.test_pytorch_dataset_body.data[index]['metre_ids']:
+                    start_forced = start_forced + f"\n{id} #"
         else:
-            start_forced['STROPHE_METER'] = dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]
+                start_forced =  f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])} # {dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]}"
         return model.generate_forced(start_forced, tokenizer, sample=True, format=input_type, device=device )
     
 def do_eval(generated_strophe):

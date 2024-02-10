@@ -194,19 +194,14 @@ class ModelValidator:
             else:
                 FORMAT = "VERSE_PAR"
                 
-            
-            start_forced = {'RHYME': self.validation_data[index]['rhyme'],
-                            'YEAR': TextManipulation._year_bucketor(self.validation_data[index]['year'])}
-            if self.model_rel_name.startswith('CZ') or self.model_rel_name.startswith('ALT') or self.model_rel_name.startswith('EN') or self.model_rel_name.startswith('ENALT'):
-                for ch, id in zip(self.validation_data[index]['rhyme'], self.validation_data[index]['metre_ids']):
-                    if ch == 'A':
-                        start_forced['METER_0'] = id
-                    elif ch == 'B':
-                        start_forced['METER_1'] = id
-                    elif ch == 'C':
-                        start_forced['METER_2'] = id
+            if FORMAT == "METER_VERSE":
+                start_forced = f"# {self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])}"
+                for id in self.validation_data[index]['metre_ids']:
+                    start_forced = start_forced + f"\n{id} #"
+            elif FORMAT == 'OLD':
+                start_forced = f"{self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])} # {self.validation_data[index]['metre_ids'][0]}"
             else:
-                start_forced['STROPHE_METER'] = self.validation_data[index]['metre_ids'][0]
+                start_forced =  f"# {self.validation_data[index]['rhyme']} # {TextManipulation._year_bucketor(self.validation_data[index]['year'])} # {self.validation_data[index]['metre_ids'][0]}"
             
             return self.model.generate_forced(start_forced, self.tokenizer, sample=self.args.sample, format=FORMAT, device=self.device)
             
