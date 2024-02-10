@@ -104,16 +104,24 @@ with open(FILENAME, 'r') as file:
                         meter_data=np.asarray( list(map(float,rows[13][2:])) ), meter_base=0.9400, meter_improved=0.9436)
     # Display RHYME BASE tok Basic to Forced Generation
     display_comparision(comparision_header= rows[14][1],
-                        rhyme_data=np.asarray( list(map(float,rows[14][2:])) ), rhyme_base=0.5051, rhyme_improved=0.5206)
-    # Display RHYME OUR tok Basic to Forced Generation
-    display_comparision(comparision_header= rows[15][1],
-                        rhyme_data=np.asarray( list(map(float,rows[15][2:])) ), rhyme_base=0.4776, rhyme_improved=0.4843)
+                        rhyme_data=np.asarray( list(map(float,rows[14][2:])) ), rhyme_base=0.5051, rhyme_improved=0.5206,
+                        meter_data=np.asarray( list(map(float,rows[15][2:])) ), meter_base=0.9520, meter_improved=0.9092)
     # Display RHYME OUR tok Basic to Forced Generation
     display_comparision(comparision_header= rows[16][1],
-                        rhyme_data=np.asarray( list(map(float,rows[16][2:])) ), rhyme_base=0.6909, rhyme_improved=0.6925)
-    # Display RHYME BASIC Input to METER\_VERSE Input
-    display_comparision(comparision_header= rows[17][1],
-                        rhyme_data=np.asarray( list(map(float,rows[17][2:])) ), rhyme_base=0.4073, rhyme_improved=0.4956)
-    # Display RHYME BASE Tok to OUR Tok
+                        rhyme_data=np.asarray( list(map(float,rows[16][2:])) ), rhyme_base=0.4776, rhyme_improved=0.4843,
+                        meter_data=np.asarray( list(map(float,rows[17][2:])) ), meter_base=0.9533, meter_improved=0.9114)
+    # Display RHYME SYLLABLE tok Basic to Forced Generation
     display_comparision(comparision_header= rows[18][1],
-                        rhyme_data=np.asarray( list(map(float,rows[18][2:])) ), rhyme_base=0.5206, rhyme_improved=0.4843)
+                        rhyme_data=np.asarray( list(map(float,rows[18][2:])) ), rhyme_base=0.6909, rhyme_improved=0.6925)
+    # Display RHYME BASIC Input to METER\_VERSE Input
+    display_comparision(comparision_header= rows[19][1],
+                        rhyme_data=np.asarray( list(map(float,rows[19][2:])) ), rhyme_base=0.4073, rhyme_improved=0.4956)
+    # Display RHYME BASE Tok to OUR Tok
+    display_comparision(comparision_header= rows[20][1],
+                        rhyme_data=np.asarray( list(map(float,rows[20][2:])) ), rhyme_base=0.5206, rhyme_improved=0.4843)
+    # Display RHYME UNICODE Tok Basic to Forced Gen 
+    display_comparision(comparision_header= rows[21][1],
+                        rhyme_data=np.asarray( list(map(float,rows[21][2:])) ), rhyme_base=0.6357, rhyme_improved=0.8128)
+    # Display RHYME BASE Tok to SYLLABLE Tok
+    display_comparision(comparision_header= rows[22][1],
+                        rhyme_data=np.asarray( list(map(float,rows[22][2:])) ), rhyme_base=0.5206, rhyme_improved=0.6925)

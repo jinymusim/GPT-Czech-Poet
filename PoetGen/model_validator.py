@@ -411,7 +411,7 @@ class ModelValidator:
     def full_validate(self):
         """Validate both generation types
         """
-        self.args.sample = True
+
         self.validate_decoding("BASIC")
         self.validate_decoding("FORCED")
         
@@ -443,6 +443,7 @@ parser.add_argument("--validator_tokenizer_model_year", default='ufal/robeczech-
 parser.add_argument("--val_syllables_year", default=False, type=bool, help="Does validator use syllables")
 
 parser.add_argument("--top_k", default=2, type=int, help="Top k number")
+parser.add_argument("--sample", default=True, type=bool, help="If to Sample")
 
 
 
