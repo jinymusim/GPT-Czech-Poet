@@ -590,3 +590,91 @@ class SyllableMaker:
             mask = mask[0:-1]
 
         return mask.split("/")
+
+class VersologicalMaker:
+    """Static class with methods for separating string to list of Versological Units (V K)
+
+    Returns:
+        list: List of Units
+    """
+    
+
+    @staticmethod
+    def verse_segmnent(text : str) -> list[list[str]]:
+        words = re.findall(r"[aábcčdďeéěfghiíjklmnňoópqrřsštťuúůvwxyýzžAÁBCČDĎEÉĚFGHIÍJKLMNŇOÓPQRŘSŠTŤUÚŮVWXYÝZŽäöüÄÜÖ]+", text)
+        vers_units : list[list[str]] = []
+
+        i = 0
+        while i < len(words):
+            word = words[i]
+
+            letter_counter = 0
+            _syllable = []
+            # Get syllables: mask the word and split the mask
+            for syllable_mask in VersologicalMaker.__split_mask(VersologicalMaker.__create_word_mask(word)):
+                word_syllable = ""
+                for character in syllable_mask:
+                    word_syllable += word[letter_counter]
+                    letter_counter += 1
+                _syllable.append(word_syllable)
+
+            i += 1
+            
+            vers_units.append(_syllable)
+
+        return list(filter(lambda x: len(x) > 0, vers_units))
+
+
+    @staticmethod
+    def __create_word_mask(word : str) -> str:
+        word = word.lower()
+
+        vocals = r"[aeiyouáéěíýóůúäöü]"
+        consonants = r"[bcčdďfghjklmnňpqrřsštťvwxzž]"
+
+        replacements = [
+            #double letters
+    		('ch', 'c0'),
+    		('rr', 'r0'),
+            ('ll', 'l0'),
+    		('nn', 'n0'),
+    		('th', 't0'),
+    
+            # now all vocals
+    		(vocals, 'V'),
+
+            # r,l that act like vocals in syllables
+    		(r'([^V])([rl])(0*[^0Vrl]|$)', r'\1V\3'),
+
+
+    		(consonants, 'K')
+    	]
+
+        for (original, replacement) in replacements:
+            word = re.sub(original, replacement, word)
+
+        return word
+
+
+    @staticmethod
+    def __split_mask(mask : str) -> list[str]:
+        replacements = [
+    		# vocal at the beginning
+            (r'(^(K0*)+)', r'\1/'),
+
+    		# dividing the middle of the word
+    		(r'((V0*)+(K0*)+)', r'\1/'),
+            (r'/((V0*)+)$', r'/\1'),
+
+    		# add the last consonant to the previous syllable
+    		#(r'/(K0*)$', r'\1/')
+    	]
+
+        for (original, replacement) in replacements:
+            mask = re.sub(original, replacement, mask)
+
+        if len(mask) > 0 and mask[-1] == "/":
+            mask = mask[0:-1]
+
+        return mask.split("/")
+

@@ -3,7 +3,7 @@ import json
 import numpy as np
 import torch
 
-from utils.poet_utils import StropheParams, SyllableMaker, TextAnalysis, TextManipulation
+from utils.poet_utils import StropheParams,  TextAnalysis, TextManipulation, SyllableMaker, VersologicalMaker
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizerBase, PreTrainedModel
 #TODO: Maybe replace year of book being written for year Author was born
@@ -115,6 +115,7 @@ class CorpusDatasetPytorch:
             self.test_data = []
             
             self.custom_size = 1
+
          
          
         def gen_files(self):
@@ -169,7 +170,20 @@ class CorpusDatasetPytorch:
                 str: Verse line as sequence of syllables
             """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
-            return "  ".join([" ".join(syl) for syl in  SyllableMaker.syllabify(raw_text)]) + ending
+            return "  ".join([" ".join(syl) for syl in  (SyllableMaker.syllabify(raw_text) )]) + ending
+        
+        @staticmethod
+        def _verse_marks_line(raw_text):
+            """Construct verse as sequence of syllables
+
+            Args:
+                raw_text (str): raw verse line
+
+            Returns:
+                str: Verse line as sequence of syllables
+            """
+            ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
+            return "  ".join([" ".join(syl) for syl in  (VersologicalMaker.verse_segmnent(raw_text) )]) + ending
         
         def _construct_line(self, raw_text, metre):
             """Construct individual content line
@@ -181,8 +195,9 @@ class CorpusDatasetPytorch:
                 str: Processed verse line with line parameters
             """
             syllables = SyllableMaker.syllabify(raw_text)
+            verse_marks = VersologicalMaker.verse_segmnent(raw_text)
             num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{ ''.join(syllables[-1][-2:])} # " if self.prompt_ending else ""
+            verse_end = f"{ ''.join(verse_marks[-1][-2:])} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
             return metre_txt + num_str + verse_end  + raw_text
         
@@ -212,8 +227,9 @@ class CorpusDatasetPytorch:
             """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             syllables = SyllableMaker.syllabify(raw_text)
+            verse_marks = VersologicalMaker.verse_segmnent(raw_text)
             num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{''.join(syllables[-1][-2:])} # " if self.prompt_ending else ""
+            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
             return  metre_txt+ num_str + verse_end + "  ".join([" ".join(syl) for syl in syllables]) + ending
                      
@@ -356,8 +372,9 @@ class CorpusDatasetPytorch:
                 str: Processed verse line with line parameters
             """
             syllables = SyllableMaker.syllabify(raw_text)
+            verse_marks = VersologicalMaker.verse_segmnent(raw_text)
             num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{''.join(syllables[-1][-2:])} # " if self.prompt_ending else ""
+            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
             return  metre_txt + num_str + verse_end  + raw_text
         
@@ -372,8 +389,9 @@ class CorpusDatasetPytorch:
             """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             syllables = SyllableMaker.syllabify(raw_text)
+            verse_marks = VersologicalMaker.verse_segmnent(raw_text)
             num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{''.join(syllables[-1][-2:])} # " if self.prompt_ending else ""
+            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
             return metre_txt + num_str + verse_end + "  ".join([" ".join(syl) for syl in syllables]) + ending
             
