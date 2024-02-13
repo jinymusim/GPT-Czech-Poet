@@ -15,7 +15,7 @@ if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
     
 # Load basic data
-train_data = CorpusDatasetPytorch(AutoTokenizer.from_pretrained("gpt2"), data_dir=args.data_path)
+train_data = CorpusDatasetPytorch( data_dir=args.data_path)
 
 # Store for syllables
 sylables = set()

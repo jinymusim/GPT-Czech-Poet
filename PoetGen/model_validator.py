@@ -320,7 +320,7 @@ class ModelValidator:
                         
                     
                     end_all += 1
-                    if "END" in line_analysis.keys() and "TRUE_END" in line_analysis.keys() and line_analysis["END"] == line_analysis["TRUE_END"]:
+                    if "END" in line_analysis.keys() and  TextManipulation._remove_all_nonchar(line).strip().endswith(line_analysis["END"]):
                         end_pos +=1
                     
                     sylab_all +=1

@@ -182,7 +182,7 @@ class CorpusDatasetPytorch:
             """
             syllables = SyllableMaker.syllabify(raw_text)
             num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{syllables[-1][-1]} # " if self.prompt_ending else ""
+            verse_end = f"{ ''.join(syllables[-1][-2:])} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
             return metre_txt + num_str + verse_end  + raw_text
         
@@ -213,7 +213,7 @@ class CorpusDatasetPytorch:
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             syllables = SyllableMaker.syllabify(raw_text)
             num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{syllables[-1][-1]} # " if self.prompt_ending else ""
+            verse_end = f"{''.join(syllables[-1][-2:])} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
             return  metre_txt+ num_str + verse_end + "  ".join([" ".join(syl) for syl in syllables]) + ending
                      
@@ -357,7 +357,7 @@ class CorpusDatasetPytorch:
             """
             syllables = SyllableMaker.syllabify(raw_text)
             num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{syllables[-1][-1]} # " if self.prompt_ending else ""
+            verse_end = f"{''.join(syllables[-1][-2:])} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
             return  metre_txt + num_str + verse_end  + raw_text
         
@@ -373,7 +373,7 @@ class CorpusDatasetPytorch:
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             syllables = SyllableMaker.syllabify(raw_text)
             num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{syllables[-1][-1]} # " if self.prompt_ending else ""
+            verse_end = f"{''.join(syllables[-1][-2:])} # " if self.prompt_ending else ""
             metre_txt = f"{metre} # "
             return metre_txt + num_str + verse_end + "  ".join([" ".join(syl) for syl in syllables]) + ending
             
