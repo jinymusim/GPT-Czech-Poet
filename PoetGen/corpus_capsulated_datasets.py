@@ -546,7 +546,7 @@ class CorpusDatasetPytorch:
         
         verse_end = None
         if "verse_end" in batch[0].keys():       
-            verse_end = torch.tensor(np.asarray([CorpusDatasetPytorch.TextDataset._ending_vector(text["verse_end"]) for text in batch], dtype=np.int32), dtype=torch.float32)
+            verse_end = torch.tensor(np.asarray([CorpusDatasetPytorch.VersesDataset._ending_vector(text["verse_end"]) for text in batch], dtype=np.int32), dtype=torch.float32)
         
         year = None
         if "year" in batch[0].keys():      
