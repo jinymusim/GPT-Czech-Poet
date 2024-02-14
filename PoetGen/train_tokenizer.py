@@ -27,7 +27,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # TheBloke/Llama-2-7B-fp16 4096
 # spital/gpt2-small-czech-cs 1024
 parser.add_argument("--default_tokenizer", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
-parser.add_argument("--tokenizer_type", default="VerseMarks", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "Unicode", "VerseMarks"], help="What type of tokenize to train")
+parser.add_argument("--tokenizer_type", default="BPE", type=str, choices=["BPE", "Unigram", "WordLevel", "WordPiece", "Unicode", "VerseMarks"], help="What type of tokenize to train")
 
 parser.add_argument("--tokenizer_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"utils","tokenizers")),  type=str, help="Path to Model")
 parser.add_argument("--raw_data", default=False,  type=bool, help="If to use raw data")
@@ -94,27 +94,27 @@ def main(args):
         raise ValueError("Unknown tokenize type")
     
 
+    SEG_TYPE = 'BASE'
+    if args.syllables:
+        SEG_TYPE = "SYLLABLE"
+    
+    if args.tokenizer_type == 'VerseMarks':
+        SEG_TYPE ="VERSEMARK"
+
     # Create or load data
-    train_data = CorpusDatasetPytorch(data_dir=args.data_path, lower_case=args.lower_case)
+    train_data = CorpusDatasetPytorch(SEGMENT_TYPE= SEG_TYPE ,data_dir=args.data_path, lower_case=args.lower_case)
     # Train on raw or processed data
     if args.raw_data:
         tokenizer.train_from_iterator(train_data.raw_dataset.get_body(),trainer=trainer)
     else:
         # Train on syllable or normal processed data
-        if args.syllables:
-            tokenizer.train_from_iterator([text['input_ids'][1] for text in train_data.pytorch_dataset_body.data]  \
-                                          + [text['input_ids'][1] for text in train_data.val_pytorch_dataset_body.data] \
-                                          + [text['input_ids'][1] for text in train_data.test_pytorch_dataset_body.data] \
-                                          + [text['input_ids'][1] for text in train_data.pytorch_dataset_text.data]  \
-                                          + [text['input_ids'][1] for text in train_data.val_pytorch_dataset_text.data] \
-                                          + [text['input_ids'][1] for text in train_data.test_pytorch_dataset_text.data] , trainer=trainer)
-        else:      
-            tokenizer.train_from_iterator([text['input_ids'][0] for text in train_data.pytorch_dataset_body.data] \
-                                          + [text['input_ids'][0] for text in train_data.val_pytorch_dataset_body.data] \
-                                          + [text['input_ids'][0] for text in train_data.test_pytorch_dataset_body.data] \
-                                          + [text['input_ids'][0] for text in train_data.pytorch_dataset_text.data] \
-                                          + [text['input_ids'][0] for text in train_data.val_pytorch_dataset_text.data] \
-                                          + [text['input_ids'][0] for text in train_data.test_pytorch_dataset_text.data]  , trainer=trainer)
+        tokenizer.train_from_iterator([text['input_ids'] for text in train_data.train_strophes.data]  \
+                                          + [text['input_ids'] for text in train_data.val_strophes.data] \
+                                          + [text['input_ids'] for text in train_data.test_strophes.data] \
+                                          + [text['input_ids'] for text in train_data.train_verses.data]  \
+                                          + [text['input_ids'] for text in train_data.val_verses.data] \
+                                          + [text['input_ids'] for text in train_data.test_verses.data] , trainer=trainer)
+
         
     # Store tokenizer        
     if not os.path.exists(os.path.join(args.tokenizer_path ,args.tokenizer_type)):
@@ -127,9 +127,9 @@ def main(args):
         tokenizer.save(os.path.join(args.tokenizer_path, args.tokenizer_type, f"{'class_' if args.class_token else ''}versemarks_tokenizer.json"))
         
     # Simple tokenizer test With some basic needs for Strophe generation
-    print(train_data.pytorch_dataset_body.data[0]['input_ids'][0])
-    print(tokenizer.encode(train_data.pytorch_dataset_body.data[0]['input_ids'][0]).ids)
-    print(tokenizer.decode(tokenizer.encode(train_data.pytorch_dataset_body.data[0]['input_ids'][0]).ids))
+    print(train_data.train_strophes.data[0]['input_ids'])
+    print(tokenizer.encode(train_data.train_strophes.data[0]['input_ids']).ids)
+    print(tokenizer.decode(tokenizer.encode(train_data.train_strophes.data[0]['input_ids']).ids))
     
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)

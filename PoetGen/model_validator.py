@@ -127,8 +127,8 @@ class ModelValidator:
             self.tokenizer.unk_token = Tokens.UNK
             self.tokenizer.unk_token_id = Tokens.UNK_ID
             
-        self.dataset = CorpusDatasetPytorch(data_dir=args.data_path_poet)
-        self.validation_data = self.dataset.test_pytorch_dataset_body.data
+        self.dataset = CorpusDatasetPytorch('BASE',data_dir=args.data_path_poet)
+        self.validation_data = self.dataset.test_strophes.data
         
         # Store the Validation arguments  
         self.epochs = args.num_runs
@@ -264,8 +264,8 @@ class ModelValidator:
                         
                         # Validate for Rhyme schema
                         if self.rhyme_model != None and "RHYME" in values.keys():
-                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], 'rhyme' : values["RHYME"]}],tokenizer=self.validator_tokenizer_rhyme,
-                                                                           is_syllable=False, syllables=self.args.val_syllables_rhyme,
+                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :decoded_cont, 'rhyme' : values["RHYME"]}],tokenizer=self.validator_tokenizer_rhyme,
+                                                                           make_syllables=self.args.val_syllables_rhyme,
                                                                            max_len=self.rhyme_model.model.config.max_position_embeddings - 2)
                             res = self.rhyme_model.validate_model(input_ids=data['input_ids'].to(self.device),
                                                                    rhyme=data['rhyme'], k=self.args.top_k)
@@ -279,8 +279,8 @@ class ModelValidator:
                         
                         #Validate for Year
                         if self.year_model != None and "YEAR" in values.keys():
-                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[decoded_cont], "year": values["YEAR"]}],tokenizer=self.validator_tokenizer_year,
-                                                                           is_syllable=False, syllables=self.args.val_syllables_year,
+                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :decoded_cont, "year": values["YEAR"]}],tokenizer=self.validator_tokenizer_year,
+                                                                           make_syllables=self.args.val_syllables_year,
                                                                            max_len=self.year_model.model.config.max_position_embeddings - 2)
                             res = self.year_model.validate_model(input_ids=data['input_ids'].to(self.device),
                                                                    year_bucket=data['year_bucket'],k=self.args.top_k)
@@ -330,12 +330,12 @@ class ModelValidator:
                 # Validate for Metrum
                 if self.meter_model != None:
                     if self.args.train_with_context:
-                        data = CorpusDatasetPytorch.collate_meter_context([{"input_ids" :[decoded_cont], "metre_ids": PRESENT_METERS}],tokenizer=self.validator_tokenizer_meter,
-                                                                       is_syllable=False, syllables=self.args.val_syllables_meter,
+                        data = CorpusDatasetPytorch.collate_meter_context([{"input_ids" :decoded_cont, "metre_ids": PRESENT_METERS}],tokenizer=self.validator_tokenizer_meter,
+                                                                       make_syllables=self.args.val_syllables_meter,
                                                                        max_len=self.meter_model.model.config.max_position_embeddings - 2)
                     else:
-                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :[decoded_cont], "metre_ids": PRESENT_METERS}],tokenizer=self.validator_tokenizer_meter,
-                                                                       is_syllable=False, syllables=self.args.val_syllables_meter,
+                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :decoded_cont, "metre_ids": PRESENT_METERS}],tokenizer=self.validator_tokenizer_meter,
+                                                                       make_syllables=self.args.val_syllables_meter,
                                                                        max_len=self.meter_model.model.config.max_position_embeddings - 2)
                     if data['input_ids'] != None and  data['metre_ids'] != None:
                         for j in range(min(data['input_ids'].shape[0], data['metre_ids'].shape[0])):
@@ -422,7 +422,7 @@ parser.add_argument("--data_path_poet",  default=os.path.abspath(os.path.join(os
 parser.add_argument("--num_samples", default=10, type=int, help="Number of samples to test the tokenizer on")
 parser.add_argument("--num_runs", default=2, type=int, help="Number of runs on datasets")
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "New-Processed-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-New-Processed-BPE-NormalText-gpt-cz-poetry-all-e8e32_LM")),  type=str, help="Path to Model")
 
 parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_BPE_validator_1706752010848')),  type=str, help="Path to Model")
 parser.add_argument("--validator_tokenizer_model_rhyme", default='distilroberta-base', type=str, help="Validator tokenizer")

@@ -135,6 +135,12 @@ qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=
 qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=48:00:00 -v MODEL=./CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-all-e8e32_LM shell_scripts/all_model_val_helper.sh
 
 
+# Diff ENDS
+
+qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=48:00:00 -v MODEL=./CZ-Base-Tokenizer-2-SYLLABLE-END-gpt-cz-poetry-base-e4e16_LM shell_scripts/all_model_val_helper.sh
+qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=48:00:00 -v MODEL=./CZ-Base-Tokenizer-VERSE-MARK-END-gpt-cz-poetry-base-e4e16_LM shell_scripts/all_model_val_helper.sh
+
+
 # RNN
 
 #qsub -N ModelValidation -q default -l select=1:ncpus=1:mem=36gb:scratch_local=20gb -l walltime=128:00:00 -v MODEL=./RNN-Base-Tokenizer-NormalText-gpt-cz-poetry-base-e4e8_LM shell_scripts/all_model_val_helper.sh

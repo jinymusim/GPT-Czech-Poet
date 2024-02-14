@@ -105,7 +105,7 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   overwrite_output_dir= True,
                                   save_strategy  = IntervalStrategy.EPOCH,
                                   save_total_limit=1,
-                                  warmup_steps = len(dataset.pytorch_dataset_text)//args.batch_size_LM,
+                                  warmup_steps = len(dataset.train_verses)//args.batch_size_LM,
                                   do_eval = True,
                                   evaluation_strategy=IntervalStrategy.EPOCH,
                                   logging_steps = 500,
@@ -128,8 +128,8 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
     
         trainer = Trainer(model = model,
                            args = training_args,
-                           train_dataset= dataset.pytorch_dataset_text,
-                           eval_dataset = dataset.val_pytorch_dataset_text,
+                           train_dataset= dataset.train_verses,
+                           eval_dataset = dataset.val_verses,
                            data_collator=collate_fnc,
                            callbacks=[EarlyStoppingCallback(early_stopping_patience=2)]).train()
     
@@ -140,7 +140,7 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   overwrite_output_dir= True,
                                   save_strategy  = IntervalStrategy.EPOCH,
                                   save_total_limit=1,
-                                  warmup_steps = len(dataset.pytorch_dataset_body)//args.batch_size_poet,
+                                  warmup_steps = len(dataset.train_strophes)//args.batch_size_poet,
                                   do_eval = True,
                                   evaluation_strategy=IntervalStrategy.EPOCH,
                                   logging_steps = 500,
@@ -161,8 +161,8 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
     
         trainer = Trainer(model = model,
                            args = training_args,
-                           train_dataset= dataset.pytorch_dataset_body,
-                           eval_dataset= dataset.val_pytorch_dataset_body,
+                           train_dataset= dataset.train_strophes,
+                           eval_dataset= dataset.val_strophes,
                            callbacks=[EarlyStoppingCallback(early_stopping_patience=2)],
                            data_collator=collate_fnc).train()
 
@@ -249,10 +249,10 @@ def main(args: argparse.Namespace):
                           surrogate_model=AutoModelForCausalLM.from_pretrained(args.default_hf_model,output_hidden_states=True).to(device), surrogate_model_device=device, max_len=args.max_len)
     else:
         collate = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer,max_len=args.max_len, 
-                      max_context=args.context_max_len, mask_rate=args.input_mask_rate, syllables=args.syllables, format=args.model_input_format)
+                      max_context=args.context_max_len,  format=args.model_input_format)
     
 
-    train_data = CorpusDatasetPytorch(data_dir=args.data_path, prompt_ending=args.prompt_ending, 
+    train_data = CorpusDatasetPytorch(SEGMENT_TYPE='BASE', data_dir=args.data_path, prompt_ending=args.prompt_ending, 
                                       prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
                                       verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate, test_data_rate=args.test_data_rate)
     
@@ -265,8 +265,8 @@ def main(args: argparse.Namespace):
         tokenizer.save_pretrained(f"{args.model_path}_LM")
         
     else:
-        train_data.pytorch_dataset_body.change_custom_size(args.sizes_to_test)
-        train_data.pytorch_dataset_text.change_custom_size(args.sizes_to_test)
+        train_data.train_strophes.change_custom_size(args.sizes_to_test)
+        train_data.train_verses.change_custom_size(args.sizes_to_test)
         # Size compensation
         args.epochs_LM = int(args.epochs_LM/args.sizes_to_test)
         args.epochs_poet =  int(args.epochs_poet/args.sizes_to_test)

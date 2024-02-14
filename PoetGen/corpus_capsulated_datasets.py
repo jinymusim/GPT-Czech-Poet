@@ -40,7 +40,7 @@ class CorpusDatasetPytorch:
                 str: individual verse line
             """
             for step,file in enumerate(self.gen_files()):
-                if step % 500 == 0:
+                if step % 100 == 0:
                     print(f"Processing file {step}")
                 datum = json.load(file)
                 for data_line in datum:
@@ -55,7 +55,7 @@ class CorpusDatasetPytorch:
                 str: 1 strophe of poetry
             """
             for step,file in enumerate(self.gen_files()):
-                if step % 500 == 0:
+                if step % 100 == 0:
                     print(f"Processing file {step}")
                 datum = json.load(file)
                 for data_line in datum:
@@ -72,7 +72,7 @@ class CorpusDatasetPytorch:
                 str: 1 whole poem
             """
             for step,file in enumerate(self.gen_files()):
-                if step % 500 == 0:
+                if step % 100 == 0:
                     print(f"Processing file {step}")
                 datum = json.load(file)
                 for data_line in datum:
@@ -84,36 +84,46 @@ class CorpusDatasetPytorch:
                         body.append("\n")
                     yield "\n".join(body).lower() if self.lower_case else "\n".join(body)
     
-    class TextDataset(Dataset):
+    class VersesDataset(Dataset):
         """Dataset of preprocessed verse lines 
 
         Args:
             Dataset (_type_): Dataset is child of torch class for better integration with torch and huggingface
         """
         
-        def __init__(self, data_file_paths, prompt_length=True, prompt_ending=True, lower_case=True, val_data_rate: float = 0.05, test_data_rate: float = 0.05):
-            """Construct the class our given data files path and store variables
+        def __init__(self, data_file_paths, dataset_parameters, segment_type, dataset_part):
+            """Create Specific dataset part
 
             Args:
-                data_file_paths (_type_):  list of paths to data files
-                prompt_length (bool, optional): If to prompt the syllable count. Defaults to True.
-                prompt_ending (bool, optional): If to prompt verse ending. Defaults to True.
-                lower_case (bool, optional): If the string should be in lowercase. Defaults to True.
-                val_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.05.
-                test_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.05.
+                data_file_paths (_type_): filenames
+                dataset_parameters (_type_): dataset parames to use for structure
+                segment_type (_type_): segmentation to do on the dataset
+                dataset_part (_type_): part of dataset to be done ('train', 'val', 'test')
             """
             self._data_file_paths = data_file_paths
-            self.prompt_length = prompt_length
-            self.prompt_ending = prompt_ending
-            self.lower_case = lower_case
-            
-            self.val_data_rate = val_data_rate
-            self.test_data_rate = test_data_rate
-            
+            self.params = dataset_parameters
+
+            self.seg_type = segment_type
+
+            self.dataset_part = dataset_part
+            self.relevant_indexes = []
+            if dataset_part == 'train':
+                self.relevant_indexes = self.params['train_indexes']
+            elif dataset_part == 'val':
+                self.relevant_indexes = self.params['val_indexes']
+            elif dataset_part == 'test':
+                self.relevant_indexes = self.params['test_indexes']
+
             self.data = []
-            self.validation_data = []
-            self.test_data = []
-            
+
+            self.line_constructor = None
+            if segment_type == 'BASE':
+                self.line_constructor = self._construct_line
+            elif segment_type == 'SYLLABLE':
+                self.line_constructor = self._construct_syllable_line
+            elif segment_type == 'VERSEMARK':
+                self.line_constructor = self._construct_verse_marks_line
+        
             self.custom_size = 1
 
          
@@ -185,6 +195,7 @@ class CorpusDatasetPytorch:
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             return "  ".join([" ".join(syl) for syl in  (VersologicalMaker.verse_segmnent(raw_text) )]) + ending
         
+        
         def _construct_line(self, raw_text, metre):
             """Construct individual content line
 
@@ -196,25 +207,10 @@ class CorpusDatasetPytorch:
             """
             syllables = SyllableMaker.syllabify(raw_text)
             verse_marks = VersologicalMaker.verse_segmnent(raw_text)
-            num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{ ''.join(verse_marks[-1][-2:])} # " if self.prompt_ending else ""
+            num_str = f"{sum(map(len, syllables))} # " if self.params['prompt_len'] else ""
+            verse_end = f"{ ''.join(verse_marks[-1][-2:])} # " if self.params['prompt_end'] else ""
             metre_txt = f"{metre} # "
             return metre_txt + num_str + verse_end  + raw_text
-        
-        def _introduce_phonetics(self, raw_text:str, phonetics):
-            """Construct phonetic line by replaced words with their phonemes
-
-            Args:
-                raw_text (str): Verse line
-                phonetics (_type_): Phonetics dict
-
-            Returns:
-                str: Phonetic verse
-            """
-            phonetic_text = raw_text
-            for word in phonetics['words']:
-                phonetic_text = phonetic_text.replace(f'{word["token_lc"]}', f'{word["phoebe"]}') if self.lower_case else phonetic_text.replace(f'{word["token"]}', f'{word["phoebe"]}')
-            return phonetic_text
         
         def _construct_syllable_line(self, raw_text, metre):
             """Construct individual content line as sequence of syllables
@@ -227,56 +223,56 @@ class CorpusDatasetPytorch:
             """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             syllables = SyllableMaker.syllabify(raw_text)
-            verse_marks = VersologicalMaker.verse_segmnent(raw_text)
-            num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.prompt_ending else ""
+            #verse_marks = VersologicalMaker.verse_segmnent(raw_text)
+            num_str = f"{sum(map(len, syllables))} # " if self.params['prompt_len'] else ""
+            verse_end = f"{''.join(syllables[-1][-2:])} # " if self.params['prompt_end'] else ""
             metre_txt = f"{metre} # "
             return  metre_txt+ num_str + verse_end + "  ".join([" ".join(syl) for syl in syllables]) + ending
+        
+        def _construct_verse_marks_line(self, raw_text, metre):
+            """Construct individual content line as sequence of syllables
+
+            Args:
+                raw_text (str): raw verse line
+
+            Returns:
+                str: Processed verse line as sequence of syllables with line parameters
+            """
+            ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
+            #syllables = SyllableMaker.syllabify(raw_text)
+            verse_marks = VersologicalMaker.verse_segmnent(raw_text)
+            num_str = f"{sum(map(len, verse_marks))} # " if self.params['prompt_len'] else ""
+            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.params['prompt_end'] else ""
+            metre_txt = f"{metre} # "
+            return  metre_txt+ num_str + verse_end + "  ".join([" ".join(syl) for syl in verse_marks]) + ending
                      
             
         def data_text_line_gen(self):
             """Preprocess and process data for usage
             """
+            i = 0
             for step,file in enumerate(self.gen_files()):
-                if step % 500 == 0:
+                if step % 100 == 0:
                     print(f"Processing file {step}")
                 datum = json.load(file)
                 for data_line in datum:
                     for part_line in data_line['body']:
-                        for text_line in part_line:
-                            metre = StropheParams.METER_TRANSLATE.get(text_line["metre"][0]["type"], "N")
+                        if i in self.relevant_indexes:
+                            for text_line in part_line:
+                                metre = StropheParams.METER_TRANSLATE.get(text_line["metre"][0]["type"], "N")
+                                scanned_text = TextManipulation._remove_most_nonchar(text_line['text'], self.params['lower_case'])
                             
-                            scanned_text = TextManipulation._remove_most_nonchar(text_line['text'], self.lower_case)
-                            
-                            text_line_scanned = self._construct_line(scanned_text, metre)
-                            syllable_line = self._construct_syllable_line(scanned_text, metre)
-                            #phonetic_text = self._introduce_phonetics(scanned_text, text_line)
-                            
-                            num_vowels, verse_end = self._vowels_and_endings(scanned_text)
-                            
-                            # Based on result of random chose proper set. Because data are large enough, will result in wanted split.
-                            rand_split = np.random.rand()
-                            if rand_split > self.val_data_rate + self.test_data_rate: 
+                                constructed_line = self.line_constructor(scanned_text, metre)
+
+                                num_vowels, verse_end = self._vowels_and_endings(scanned_text)
+                        
                                 self.data.append({
-                                "input_ids" : [text_line_scanned,syllable_line],
+                                "input_ids" : constructed_line,
                                 "nums": [num_vowels],
                                 "verse_end": verse_end,
                                 "metre": metre
                                      })
-                            elif rand_split < self.test_data_rate:
-                                self.test_data.append({
-                                "input_ids" : [text_line_scanned,syllable_line],
-                                "nums": [num_vowels],
-                                "verse_end": verse_end,
-                                "metre": metre
-                                     })
-                            else:
-                                self.validation_data.append({
-                                "input_ids" : [text_line_scanned,syllable_line],
-                                "nums": [num_vowels],
-                                "verse_end": verse_end,
-                                "metre": metre
-                                     })
+                        i+=1
                             
             
         def __len__(self):
@@ -315,40 +311,43 @@ class CorpusDatasetPytorch:
                 
             np.random.shuffle(self.data)
         
-    class BodyDataset(Dataset):
+    class StrophesDataset(Dataset):
         """Dataset of preprocessed strophe
 
         Args:
             Dataset (_type_): Dataset is child of torch class for better integration with torch and huggingface
         """
-        def __init__(self, data_file_paths,
-                     prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate: float = 0.05, test_data_rate: float = 0.05):
+        def __init__(self, data_file_paths, dataset_parameters, segment_type, dataset_part):
             """Construct the class our given data files path and store variables
 
             Args:
                 data_file_paths (_type_): list of paths to data files
-                prompt_length (bool, optional): If to prompt the syllable count. Defaults to True.
-                prompt_ending (bool, optional): If to prompt verse ending. Defaults to True.
-                prompt_verse (bool, optional): If to prompt rhyme schema . Defaults to True.
-                verse_len (list, optional): Considered length of strophe. Defaults to [4,6].
-                lower_case (bool, optional): If the string should be in lowercase. Defaults to True.
-                val_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.05.
-                test_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.05.
+
             """
             self._data_file_paths = data_file_paths
-            self.prompt_length = prompt_length
-            self.prompt_ending = prompt_ending
-            self.prompt_verse = prompt_verse
-            self.verse_len = verse_len
-            self.lower_case = lower_case
-            
-            self.val_data_rate = val_data_rate
-            self.test_data_rate = test_data_rate
-            
+            self.params = dataset_parameters
+
+            self.seg_type = segment_type
+
+            self.dataset_part = dataset_part
+            self.relevant_indexes = []
+            if dataset_part == 'train':
+                self.relevant_indexes = self.params['train_indexes']
+            elif dataset_part == 'val':
+                self.relevant_indexes = self.params['val_indexes']
+            elif dataset_part == 'test':
+                self.relevant_indexes = self.params['test_indexes']
+
             self.data = []
-            self.validation_data = []
-            self.test_data = []
-            
+
+            self.line_constructor = None
+            if segment_type == 'BASE':
+                self.line_constructor = self._construct_line
+            elif segment_type == 'SYLLABLE':
+                self.line_constructor = self._construct_syllable_line
+            elif segment_type == 'VERSEMARK':
+                self.line_constructor = self._construct_verse_marks_line
+        
             self.custom_size = 1
         
         def gen_files(self):
@@ -373,8 +372,8 @@ class CorpusDatasetPytorch:
             """
             syllables = SyllableMaker.syllabify(raw_text)
             verse_marks = VersologicalMaker.verse_segmnent(raw_text)
-            num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.prompt_ending else ""
+            num_str = f"{sum(map(len, syllables))} # " if self.params['prompt_len'] else ""
+            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.params['prompt_end'] else ""
             metre_txt = f"{metre} # "
             return  metre_txt + num_str + verse_end  + raw_text
         
@@ -389,88 +388,75 @@ class CorpusDatasetPytorch:
             """
             ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
             syllables = SyllableMaker.syllabify(raw_text)
-            verse_marks = VersologicalMaker.verse_segmnent(raw_text)
-            num_str = f"{sum(map(len, syllables))} # " if self.prompt_length else ""
-            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.prompt_ending else ""
+            #verse_marks = VersologicalMaker.verse_segmnent(raw_text)
+            num_str = f"{sum(map(len, syllables))} # " if self.params['prompt_len'] else ""
+            verse_end = f"{''.join(syllables[-1][-2:])} # " if self.params['prompt_end'] else ""
             metre_txt = f"{metre} # "
             return metre_txt + num_str + verse_end + "  ".join([" ".join(syl) for syl in syllables]) + ending
+        
+        def _construct_verse_marks_line(self, raw_text, metre):
+            """Construct individual content line as sequence of verse marks
+
+            Args:
+                raw_text (str): raw verse line
+
+            Returns:
+                str: Processed verse line as sequence of verse marks with line parameters
+            """
+            ending = raw_text[-1] if raw_text[-1] in [',','.','!','?'] else ''
+            #syllables = SyllableMaker.syllabify(raw_text)
+            verse_marks = VersologicalMaker.verse_segmnent(raw_text)
+            num_str = f"{sum(map(len, verse_marks))} # " if self.params['prompt_len'] else ""
+            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.params['prompt_end'] else ""
+            metre_txt = f"{metre} # "
+            return metre_txt + num_str + verse_end + "  ".join([" ".join(syl) for syl in verse_marks]) + ending
             
             
                                                            
         def data_body_gen(self):
             """Preprocess and process data for usage
             """
+            i=0
             for step,file in enumerate(self.gen_files()):
-                if step % 500 == 0:
+                if step % 100 == 0:
                     print(f"Processing file {step}")
                 datum = json.load(file)
                 
                 for data_line in datum:
+
                     publish_year_text = TextManipulation._year_bucketor(data_line["biblio"]["year"])
                     publish_year_true = data_line["biblio"]["year"] if TextAnalysis._is_year(data_line["biblio"]["year"]) else 'NaN'
-                    context = ["NO CONTEXT"]
 
-                    for part_line in data_line['body']:                                                        
-                        body = []
-                        body_syllabs = []
-                        rhyme= []
-                        metres = []
-                        i = 0
-                        for text_line in part_line:
-                            
-                            # In rare cases multiple, but from searching only 1 metre per line
-                            metre = StropheParams.METER_TRANSLATE.get(text_line["metre"][0]["type"], "J")
-                            metres +=  [metre]
-                            
-                            rhyme.append(text_line["rhyme"])  
-                            
-                            scanned_text = TextManipulation._remove_most_nonchar(text_line["text"], self.lower_case)
-
-                            body.append(self._construct_line(scanned_text,metre))
-                            body_syllabs.append(self._construct_syllable_line(scanned_text,metre))
-                            
-                            i+=1
-                            
-                            if i in self.verse_len:
-                                
-                                rhyme_str = TextManipulation._rhyme_string(rhyme)
-                                
-                                text = f"# {rhyme_str} # {publish_year_text}\n" + "\n".join(body) + "\n"
-                                syllable_text = f"# {rhyme_str} # {publish_year_text}\n" + "\n".join(body_syllabs) + "\n"
-                                context_text= "\n".join(context)
-                                rand_split = np.random.rand()
-                                if rand_split > self.val_data_rate + self.test_data_rate:
+                    for part_line in data_line['body']:    
+                        if i in self.relevant_indexes:                                                    
+                            body = []
+                            rhyme= []
+                            metres = []
+                            j = 0
+                            for text_line in part_line:
+                                # In rare cases multiple, but from searching only 1 metre per line
+                                metre = StropheParams.METER_TRANSLATE.get(text_line["metre"][0]["type"], "J")
+                                metres +=  [metre]
+                                rhyme.append(text_line["rhyme"])  
+                                scanned_text = TextManipulation._remove_most_nonchar(text_line["text"], self.params['lower_case'])
+                                body.append(self.line_constructor(scanned_text,metre))
+                                j+=1
+                                if j in self.params['verse_lenght']:
+                                    rhyme_str = TextManipulation._rhyme_string(rhyme)
+                                    constructed_strophe = f"# {rhyme_str} # {publish_year_text}\n" + "\n".join(body) + "\n"
                                     self.data.append({
-                                    "input_ids" : [text,syllable_text],
-                                    "context_ids" : context_text,
-                                    "year": publish_year_true,
-                                    "rhyme":  rhyme_str,
-                                    "metre_ids" : metres.copy()
-                                     })
-                                elif rand_split < self.test_data_rate:
-                                    self.test_data.append({
-                                    "input_ids" : [text,syllable_text],
-                                    "context_ids" : context_text,
-                                    "year": publish_year_true,
-                                    "rhyme":  rhyme_str,
-                                    "metre_ids" : metres.copy()
-                                     })
-                                else:
-                                    self.validation_data.append({
-                                    "input_ids" : [text,syllable_text],
-                                    "context_ids" : context_text,
-                                    "year": publish_year_true,
-                                    "rhyme":  rhyme_str,
-                                    "metre_ids" : metres.copy()
-                                     })
-                                
-                                if i == max(self.verse_len):
-                                    body = []
-                                    body_syllabs = []
-                                    rhyme = []
-                                    metres = []
-                                    i=0
-                                
+                                        "input_ids" : constructed_strophe,
+                                        "context_ids" : "NO CONTEXT",
+                                        "year": publish_year_true,
+                                        "rhyme":  rhyme_str,
+                                        "metre_ids" : metres.copy()
+                                        })
+                                    if j == max(self.params['verse_lenght']):
+                                        body = []
+                                        rhyme = []
+                                        metres = []
+                                        j=0
+                        i +=1                     
         
         def __len__(self):
             """Return length of training data
@@ -503,82 +489,9 @@ class CorpusDatasetPytorch:
             
             np.random.shuffle(self.data)
         
-    def get_filenames(self):
-        """Get paths of data files
-
-        Returns:
-            list: Paths of data files
-        """
-        data_filenames = os.listdir(self.data_dir)
-        data_by_files = []
-        for filename in data_filenames:
-            file_path = os.path.join(self.data_dir, filename)
-            data_by_files.append(file_path)
-        return data_by_files
-        
-    def load_raw_(self):
-        """Load Raw dataset with raw string data
-        """
-        filenames = self.get_filenames()
-            
-        self.raw_dataset = CorpusDatasetPytorch.RawDataset(filenames, self.lower_case)
-    
-    def load_json_filenames(self, prompt_length, prompt_ending, prompt_verse, verse_len=[4,6], val_data_rate=0.05, test_data_rate=0.05):
-        """Load Verse and Strophe datasets
-
-        Args:
-            prompt_length (bool, optional): If to prompt the syllable count. Defaults to True.
-            prompt_ending (bool, optional): If to prompt verse ending. Defaults to True.
-            prompt_verse (bool, optional): If to prompt rhyme schema . Defaults to True.
-            verse_len (list, optional): Considered length of strophe. Defaults to [4,6].
-            val_data_rate (float, optional): If the string should be in lowercase. Defaults to 0.1.
-        """
-        filenames = self.get_filenames()
-        
-        self.pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset(filenames, prompt_ending=prompt_ending, 
-                                                    prompt_length=prompt_length, prompt_verse=prompt_verse, 
-                                                    verse_len=verse_len, lower_case=self.lower_case, 
-                                                    val_data_rate=val_data_rate, test_data_rate=test_data_rate)
-        self.pytorch_dataset_body.data_body_gen()
-         
-        
-        self.pytorch_dataset_text = CorpusDatasetPytorch.TextDataset(filenames, prompt_ending=prompt_ending, 
-                                                    prompt_length=prompt_length, lower_case=self.lower_case,
-                                                    val_data_rate=val_data_rate, test_data_rate=test_data_rate)
-        
-        self.pytorch_dataset_text.data_text_line_gen()
-        
-        self.val_pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset([])
-        self.val_pytorch_dataset_text = CorpusDatasetPytorch.TextDataset([])
-        
-        self.val_pytorch_dataset_body.data = self.pytorch_dataset_body.validation_data
-        self.val_pytorch_dataset_text.data = self.pytorch_dataset_text.validation_data
-        
-        self.pytorch_dataset_text.validation_data = []
-        self.pytorch_dataset_body.validation_data = []
-        
-        self.test_pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset([])
-        self.test_pytorch_dataset_text = CorpusDatasetPytorch.TextDataset([])
-        
-        self.test_pytorch_dataset_body.data = self.pytorch_dataset_body.test_data
-        self.test_pytorch_dataset_text.data = self.pytorch_dataset_text.test_data
-        
-        self.pytorch_dataset_text.test_data = []
-        self.pytorch_dataset_body.test_data = []
-        
-    def create_empty(self):
-        """Create empty holder for possible load of processed data from file
-        """
-        self.pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset([])
-        self.pytorch_dataset_text = CorpusDatasetPytorch.TextDataset([])
-        self.val_pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset([])
-        self.val_pytorch_dataset_text = CorpusDatasetPytorch.TextDataset([])
-        self.test_pytorch_dataset_body = CorpusDatasetPytorch.BodyDataset([])
-        self.test_pytorch_dataset_text = CorpusDatasetPytorch.TextDataset([])
-        
-        
+       
     @staticmethod
-    def collate(batch, tokenizer: PreTrainedTokenizerBase ,max_len = 1024, max_context = 1024 ,mask_rate = 0.0, syllables: bool = False, format: str = 'METER_VERSE'):
+    def collate(batch, tokenizer: PreTrainedTokenizerBase ,max_len = 1024, max_context = 1024, format: str = 'METER_VERSE'):
         """Process data for usage in LM
 
         Args:
@@ -587,17 +500,15 @@ class CorpusDatasetPytorch:
             max_len (int, optional): Maximum length of tokenization. Defaults to 1024.
             max_context (int, optional): Maximum length of tokenization of context. Defaults to 1024.
             mask_rate (float, optional): Rate in with to mask data. Defaults to 0.0.
-            syllables (bool, optional): If to use sequence of syllables as input text. Defaults to False.
 
         Returns:
             dict: tokenized and processed to tensors data
         """
-        index = 1 if syllables else 0
         
         tokenizer.model_max_length = max_len
-        if batch[0]['input_ids'][0].startswith("#"):
+        if batch[0]['input_ids'].startswith("#"):
             
-            data = [text['input_ids'][index] for text in batch]
+            data = [text['input_ids'] for text in batch]
             if format == "BASIC":
                 data =  ["\n".join
                          (
@@ -613,14 +524,14 @@ class CorpusDatasetPytorch:
                         ) + tokenizer.eos_token for j, datum in enumerate(data) 
                          ]
             else:
-                data = [text['input_ids'][index] + tokenizer.eos_token for text in batch]
+                data = [text['input_ids'] + tokenizer.eos_token for text in batch]
                  
             tokenized = tokenizer(data,return_tensors='pt', truncation=True, padding=True)
             input_ids = tokenized['input_ids']
             attention = tokenized["attention_mask"]
         
         else:
-            tokenized = tokenizer([text['input_ids'][index] + tokenizer.eos_token for text in batch],return_tensors='pt', truncation=True, padding=True)
+            tokenized = tokenizer([text['input_ids'] + tokenizer.eos_token for text in batch],return_tensors='pt', truncation=True, padding=True)
             input_ids = tokenized['input_ids']
             attention = tokenized["attention_mask"]
     
@@ -681,7 +592,7 @@ class CorpusDatasetPytorch:
             dict: tokenized and processed to tensors data
         """
         tokenizer.model_max_length = max_len
-        tokenized = tokenizer([text['input_ids'][0] + tokenizer.eos_token for text in batch], return_tensors='pt', truncation=True, padding=True)
+        tokenized = tokenizer([text['input_ids'] + tokenizer.eos_token for text in batch], return_tensors='pt', truncation=True, padding=True)
         input_ids = tokenized['input_ids']
         attention = tokenized["attention_mask"]
         
@@ -700,25 +611,35 @@ class CorpusDatasetPytorch:
          }
         
     @staticmethod
-    def collate_validator(batch, tokenizer: PreTrainedTokenizerBase,syllables:bool, is_syllable:bool = False,max_len = 512):
-        """Process data for use in LM for metre,rhyme and year prediction
+    def collate_validator(batch, tokenizer: PreTrainedTokenizerBase, make_syllables:bool = False, make_verse_marks:bool = False, max_len = 512):
+        """Collate for Validator Training
 
         Args:
             batch (_type_): Batch with selected data points
             tokenizer (PreTrainedTokenizerBase): tokenizer to tokenize input text   
-            syllables (bool): If to use sequence of syllables as input text
-            is_syllable (bool, optional): Signal if the preprocessed inputs contain syllable data. Defaults to False.
+            make_syllables (bool): Make syllables to use in model (If data is not syllabic). Defaults to False
+            make_verse_marks(bool): Make Verse Marks to use in model (If data is not verse marks). Defaults to False
             max_len (int, optional): Maximum length of tokenization. Defaults to 512.
 
         Returns:
             dict: tokenized and processed to tensors data
         """
-        index = 1 if syllables and is_syllable else 0
+        
+        if make_syllables and make_verse_marks:
+            raise RuntimeError("Can't both make syllables and make verse marks. Unset one to False")
+        
+        reform = None
+        if make_syllables:
+            reform = SyllableMaker.syllabify
+        
+        if make_verse_marks:
+            reform = VersologicalMaker.verse_segmnent
+        
         tokenizer.model_max_length = max_len
         data_ids = ["\n".join(
             ["  ".join(
-                   [" ".join(syl) for syl in SyllableMaker.syllabify(line.split('#')[-1])]
-                ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable and line) else line.split('#')[-1] for line in text['input_ids'][index].splitlines()[1:]] 
+                   [" ".join(syl) for syl in reform(line.split('#')[-1])]
+                ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if ( (make_syllables or make_verse_marks) and line) else line.split('#')[-1] for line in text['input_ids'].splitlines()[1:]] 
             ) for text in batch ]
         
         
@@ -745,28 +666,39 @@ class CorpusDatasetPytorch:
             'year':year}
     
     @staticmethod
-    def collate_meter(batch, tokenizer: PreTrainedTokenizerBase, syllables:bool, is_syllable:bool = False, max_len = 512):
+    def collate_meter(batch, tokenizer: PreTrainedTokenizerBase, make_syllables:bool = False, make_verse_marks:bool = False, max_len = 512):
         """Collate for Isolated Meter Training
 
         Args:
             batch (_type_): Batch with selected data points
             tokenizer (PreTrainedTokenizerBase): tokenizer to tokenize input text   
-            syllables (bool): If to use sequence of syllables as input text
-            is_syllable (bool, optional): Signal if the preprocessed inputs contain syllable data. Defaults to False.
+            make_syllables (bool): Make syllables to use in model (If data is not syllabic). Defaults to False
+            make_verse_marks(bool): Make Verse Marks to use in model (If data is not verse marks). Defaults to False
             max_len (int, optional): Maximum length of tokenization. Defaults to 512.
 
         Returns:
             dict: tokenized and processed to tensors data
         """
-        index = 1 if syllables and is_syllable else 0
+        
         tokenizer.model_max_length = max_len
         data_ids = []
         metre = []
+        
+        if make_syllables and make_verse_marks:
+            raise RuntimeError("Can't both make syllables and make verse marks. Unset one to False")
+        
+        reform = None
+        if make_syllables:
+            reform = SyllableMaker.syllabify
+        
+        if make_verse_marks:
+            reform = VersologicalMaker.verse_segmnent
+          
         for datum in batch:
             data_ids += [
                     "  ".join(
-                    [" ".join(syl) for syl in SyllableMaker.syllabify(line.split('#')[-1])]
-                ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable and line) else line.split('#')[-1] for line in datum['input_ids'][index].splitlines()[1:]
+                    [" ".join(syl) for syl in reform(line.split('#')[-1])]
+                ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if ( (make_syllables or make_verse_marks) and line) else line.split('#')[-1] for line in datum['input_ids'].splitlines()[1:]
                 ]
             if "metre_ids" in datum.keys():
                 metre += [TextAnalysis._metre_vector(one_metre) for one_metre in datum['metre_ids']]
@@ -788,29 +720,39 @@ class CorpusDatasetPytorch:
             "year": None}
         
     @staticmethod
-    def collate_meter_context(batch, tokenizer: PreTrainedTokenizerBase, syllables:bool, is_syllable:bool = False, max_len = 512):
+    def collate_meter_context(batch, tokenizer: PreTrainedTokenizerBase, make_syllables:bool = False, make_verse_marks:bool = False, max_len = 512):
         """Collate for Context Meter Training
 
         Args:
             batch (_type_): Batch with selected data points
             tokenizer (PreTrainedTokenizerBase): tokenizer to tokenize input text   
-            syllables (bool): If to use sequence of syllables as input text
-            is_syllable (bool, optional): Signal if the preprocessed inputs contain syllable data. Defaults to False.
+            make_syllables (bool): Make syllables to use in model (If data is not syllabic). Defaults to False
+            make_verse_marks(bool): Make Verse Marks to use in model (If data is not verse marks). Defaults to False
             max_len (int, optional): Maximum length of tokenization. Defaults to 512.
 
         Returns:
             dict: tokenized and processed to tensors data
         """
-        index = 1 if syllables and is_syllable else 0
+        
         tokenizer.model_max_length = max_len
         data_ids = []
+        
+        if make_syllables and make_verse_marks:
+            raise RuntimeError("Can't both make syllables and make verse marks. Unset one to False")
+        
+        reform = None
+        if make_syllables:
+            reform = SyllableMaker.syllabify
+        
+        if make_verse_marks:
+            reform = VersologicalMaker.verse_segmnent
         
         metre = []
         for datum in batch:
             base_datums = [
                     "  ".join(
-                    [" ".join(syl) for syl in SyllableMaker.syllabify(line.split('#')[-1])]
-                ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (syllables and not is_syllable and line) else line.split('#')[-1] for line in datum['input_ids'][index].splitlines()[1:]
+                    [" ".join(syl) for syl in reform(line.split('#')[-1])]
+                ) + (line[-1] if line[-1] in [',','.','!','?'] else '') if (( make_syllables or make_verse_marks ) and line) else line.split('#')[-1] for line in datum['input_ids'].splitlines()[1:]
                 ]
             i = 0
             for i in range(len(base_datums)):
@@ -835,44 +777,177 @@ class CorpusDatasetPytorch:
             "metre_ids": metre_ids,
             "year_bucket": None,
             "year": None}
-        
-        
     
+
+    def get_filenames(self):
+        """Get paths of data files
+
+        Returns:
+            list: Paths of data files
+        """
+        data_filenames = os.listdir(self.data_dir)
+        data_by_files = []
+        for filename in data_filenames:
+            file_path = os.path.join(self.data_dir, filename)
+            data_by_files.append(file_path)
+        return data_by_files
         
-    def __init__(self, data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir='./', 
-                 prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate=0.05, test_data_rate=0.05):
-        """Construct the Dataloader and create Datasets
+    def load_raw_(self):
+        """Load Raw dataset with raw string data
+        """
+        filenames = self.get_filenames()
+            
+        self.raw_dataset = CorpusDatasetPytorch.RawDataset(filenames, self.dataset_parameters['lower_case'])
+    
+    def load_json_filenames(self, dataset_parameters, segmentation_type):
+        """Load and process datasets
 
         Args:
-            data_dir (str, optional): Path to data. Defaults to "PoetGen\corpusCzechVerse-master\ccv".
-            cache_dir (str, optional): Path where to store processed data. Defaults to './'.
-            prompt_length (bool, optional): If to prompt the syllable count. Defaults to True.
-            prompt_ending (bool, optional): If to prompt verse ending. Defaults to True.
-            prompt_verse (bool, optional): If to prompt rhyme schema. Defaults to True.
-            verse_len (list, optional): Considered length of strophe. Defaults to [4,6].
-            lower_case (bool, optional): If the string should be in lowercase. Defaults to True.
-            val_data_rate (float, optional): Amount of data to be left for validation. Defaults to 0.1.
+            dataset_parameters (_type_): Dataset parameters
+            segmentation_type (_type_): Segementation to be done
         """
-        self.lower_case = lower_case
+        
+        filenames = self.get_filenames()
+
+        # Parse Train Data
+        
+        self.train_strophes = CorpusDatasetPytorch.StrophesDataset(filenames,dataset_parameters, segment_type= segmentation_type, dataset_part='train')
+        self.train_strophes.data_body_gen()
+         
+        self.train_verses = CorpusDatasetPytorch.VersesDataset(filenames,dataset_parameters, segment_type= segmentation_type, dataset_part='train')
+        self.train_verses.data_text_line_gen()
+
+        # Parse Val Data
+        
+        self.val_strophes = CorpusDatasetPytorch.StrophesDataset(filenames,dataset_parameters, segment_type= segmentation_type, dataset_part='val')
+        self.val_strophes.data_body_gen()
+
+        self.val_verses = CorpusDatasetPytorch.VersesDataset(filenames,dataset_parameters, segment_type= segmentation_type, dataset_part='val')
+        self.val_verses.data_text_line_gen()
+        
+        # Parse Test Data
+        
+        self.test_strophes = CorpusDatasetPytorch.StrophesDataset(filenames,dataset_parameters, segment_type= segmentation_type, dataset_part='test')
+        self.test_strophes.data_body_gen()
+
+        self.test_verses = CorpusDatasetPytorch.VersesDataset(filenames,dataset_parameters, segment_type= segmentation_type, dataset_part='test')
+        self.test_verses.data_text_line_gen()
+        
+        sub_dir = os.path.join(dataset_parameters['cache_dir'], segmentation_type)
+
+        json.dump(self.train_strophes.data, open( os.path.join(sub_dir, "TRAIN_STOPHES.json"), 'w+'), indent = 6)
+        json.dump(self.train_verses.data, open( os.path.join(sub_dir, "TRAIN_VERSES.json"), 'w+'), indent = 6)
+
+        json.dump(self.val_strophes.data, open( os.path.join(sub_dir, "VAL_STOPHES.json"), 'w+'), indent = 6)
+        json.dump(self.val_verses.data, open( os.path.join(sub_dir, "VAL_VERSES.json"), 'w+'), indent = 6)
+
+        json.dump(self.test_strophes.data, open( os.path.join(sub_dir, "TEST_STOPHES.json"), 'w+'), indent = 6)
+        json.dump(self.test_verses.data, open( os.path.join(sub_dir, "TEST_VERSES.json"), 'w+'), indent = 6)
+              
+        
+    def create_config(self, cache_directory, 
+                      prompt_length, prompt_ending ,prompt_verse,
+                      verse_lenghts,lower_case,
+                      validation_data_rate,test_data_rate):
+        
+        dataset_params = {'prompt_len' : prompt_length,
+                          'prompt_end' : prompt_ending,
+                          'prompt_verse' : prompt_verse,
+                          'verse_lenght': [verse_lenghts] if not type(verse_lenghts) is list else verse_lenghts,
+                          'lower_case': lower_case,
+                          'train_indexes':[],
+                          'val_indexes': [],
+                          'test_indexes': [],
+                          'cache_dir' : cache_directory}
+        os.makedirs(cache_directory, exist_ok=True )
+        os.makedirs(os.path.join(cache_directory, 'BASE'), exist_ok=True )
+        os.makedirs(os.path.join(cache_directory, 'SYLLABLE'), exist_ok=True )
+        os.makedirs(os.path.join(cache_directory, 'VERSEMARK'), exist_ok=True )
+
+        i = 0
+        for filename in self.get_filenames():
+            file = open(filename, 'r')
+            datum = json.load(file)
+            for poem in datum:
+                for strophe in poem['body']:
+                    rand_split = np.random.rand()
+                    if rand_split > validation_data_rate + test_data_rate:
+                        dataset_params['train_indexes'].append(i)
+                    elif rand_split < validation_data_rate:
+                        dataset_params['val_indexes'].append(i)
+                    else:
+                        dataset_params['test_indexes'].append(i)
+                    i+=1
+
+        json.dump(dataset_params, open(os.path.join(os.path.dirname(__file__), 'config.json'), 'w+'), indent=6)
+
+        return dataset_params
+    
+    def check_file_existence(self, dataset_parameters, segmentation_type):
+        sub_dir = os.path.join(dataset_parameters['cache_dir'], segmentation_type)
+        return  os.path.exists(os.path.join(sub_dir, 'TRAIN_STOPHES.json')) and os.path.exists(os.path.join(sub_dir, 'TRAIN_VERSES.json'))  and \
+                os.path.exists(os.path.join(sub_dir, 'VAL_STOPHES.json')) and os.path.exists(os.path.join(sub_dir, 'VAL_VERSES.json')) and \
+                os.path.exists(os.path.join(sub_dir, 'TEST_STOPHES.json')) and os.path.exists(os.path.join(sub_dir, 'TEST_VERSES.json'))
+    
+    def load_cached(self, dataset_parameters, segmentation_type):
+        self.train_strophes = CorpusDatasetPytorch.StrophesDataset([], dataset_parameters =dataset_parameters, segment_type =segmentation_type, dataset_part='train' )
+        self.train_verses = CorpusDatasetPytorch.VersesDataset([], dataset_parameters =dataset_parameters, segment_type =segmentation_type, dataset_part='train'  )
+
+        self.val_strophes = CorpusDatasetPytorch.StrophesDataset([], dataset_parameters =dataset_parameters, segment_type =segmentation_type, dataset_part='val'  )
+        self.val_verses = CorpusDatasetPytorch.VersesDataset([], dataset_parameters =dataset_parameters, segment_type =segmentation_type, dataset_part='val'  )
+
+        self.test_strophes = CorpusDatasetPytorch.StrophesDataset([], dataset_parameters =dataset_parameters, segment_type =segmentation_type, dataset_part='test'  )
+        self.test_verses = CorpusDatasetPytorch.VersesDataset([], dataset_parameters =dataset_parameters, segment_type =segmentation_type, dataset_part='test'  )
+
+        sub_dir = os.path.join(dataset_parameters['cache_dir'], segmentation_type)
+
+        self.train_strophes.data =json.load( open( os.path.join(sub_dir, "TRAIN_STOPHES.json"), 'r'))
+        self.train_verses.data =json.load( open( os.path.join(sub_dir, "TRAIN_VERSES.json"), 'r'))
+
+        self.val_strophes.data =json.load( open( os.path.join(sub_dir, "VAL_STOPHES.json"), 'r'))
+        self.val_verses.data =json.load( open( os.path.join(sub_dir, "VAL_VERSES.json"), 'r'))
+
+        self.test_strophes.data =json.load( open( os.path.join(sub_dir, "TEST_STOPHES.json"), 'r'))
+        self.test_verses.data =json.load( open( os.path.join(sub_dir, "TEST_VERSES.json"), 'r'))
+
+        
+    def __init__(self, SEGMENT_TYPE, data_dir = "PoetGen\corpusCzechVerse-master\ccv", cache_dir=os.path.join(os.path.dirname(__file__), 'ProcessedData'), 
+                 prompt_length=True, prompt_ending=True, prompt_verse=True, verse_len=[4,6], lower_case=True, val_data_rate=0.05, test_data_rate=0.05):
+        """Create Dataset with specified segementatiom
+
+        Args:
+            SEGMENT_TYPE (_type_): Segmentation type. Choose from BASE, SYLLABLE, VERSEMARK
+            data_dir (str, optional): path to uprocessed data. Defaults to "PoetGen\corpusCzechVerse-master\ccv".
+            cache_dir (_type_, optional): where to store processed data. Defaults to os.path.join(os.path.dirname(__file__), 'ProcessedData').
+            prompt_length (bool, optional): if to prompt length. Defaults to True.
+            prompt_ending (bool, optional): if to prompt ending. Defaults to True.
+            prompt_verse (bool, optional): if to prompt verses. Defaults to True.
+            verse_len (list, optional): chosen strophe lengths. Defaults to [4,6].
+            lower_case (bool, optional): if to use lowercase. Defaults to True.
+            val_data_rate (float, optional): size of validation data. Defaults to 0.05.
+            test_data_rate (float, optional): size of test data. Defaults to 0.05.
+        """
+        
         self.data_dir = data_dir
-        if  os.path.isfile(os.path.join(cache_dir, "body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "text_poet_data.json")) \
-            and os.path.isfile(os.path.join(cache_dir, "val_body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "val_text_poet_data.json")) \
-            and os.path.isfile(os.path.join(cache_dir, "test_body_poet_data.json")) and os.path.isfile(os.path.join(cache_dir, "test_text_poet_data.json")) :
-            self.create_empty()
-            self.pytorch_dataset_body.data =list(json.load( open( os.path.join(cache_dir, "body_poet_data.json"), 'r')))
-            self.pytorch_dataset_text.data =list(json.load( open( os.path.join(cache_dir, "text_poet_data.json"), 'r')))
-            self.val_pytorch_dataset_body.data = list(json.load( open( os.path.join(cache_dir, "val_body_poet_data.json"), 'r')))
-            self.val_pytorch_dataset_text.data = list(json.load( open( os.path.join(cache_dir, "val_text_poet_data.json"), 'r')))
-            self.test_pytorch_dataset_body.data = list(json.load( open( os.path.join(cache_dir, "test_body_poet_data.json"), 'r')))
-            self.test_pytorch_dataset_text.data = list(json.load( open( os.path.join(cache_dir, "test_text_poet_data.json"), 'r')))
+        self.SEGMENT_TYPE =SEGMENT_TYPE
+        if os.path.isfile( os.path.join(os.path.dirname(__file__), 'config.json')):
+            self.dataset_parameters =  json.load(open(os.path.join(os.path.dirname(__file__), 'config.json'), 'r'))
         else:
-            self.load_json_filenames(prompt_length, prompt_ending, prompt_verse, verse_len=verse_len, val_data_rate=val_data_rate, test_data_rate=test_data_rate)
-            json.dump(self.pytorch_dataset_body.data, open( os.path.join(cache_dir, "body_poet_data.json"), 'w+'), indent = 6)
-            json.dump(self.pytorch_dataset_text.data, open( os.path.join(cache_dir, "text_poet_data.json"), 'w+'), indent = 6)
-            json.dump(self.val_pytorch_dataset_body.data, open( os.path.join(cache_dir, "val_body_poet_data.json"), 'w+'), indent = 6)
-            json.dump(self.val_pytorch_dataset_text.data, open( os.path.join(cache_dir, "val_text_poet_data.json"), 'w+'), indent = 6)
-            json.dump(self.test_pytorch_dataset_body.data, open( os.path.join(cache_dir, "test_body_poet_data.json"), 'w+'), indent = 6)
-            json.dump(self.test_pytorch_dataset_text.data, open( os.path.join(cache_dir, "test_text_poet_data.json"), 'w+'), indent = 6)
+            self.dataset_parameters = self.create_config(cache_directory = cache_dir, 
+                               prompt_length = prompt_length,
+                               prompt_ending = prompt_ending,
+                               prompt_verse = prompt_verse,
+                               verse_lenghts = verse_len,
+                               lower_case = lower_case,
+                               validation_data_rate = val_data_rate,
+                               test_data_rate = test_data_rate)
+
+        if  self.check_file_existence(self.dataset_parameters, self.SEGMENT_TYPE):
+            self.load_cached(self.dataset_parameters, self.SEGMENT_TYPE)
+            
+        else:
+            self.load_json_filenames(self.dataset_parameters, self.SEGMENT_TYPE)
+            
             
         self.load_raw_()
         

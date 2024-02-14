@@ -149,24 +149,24 @@ for rhyme in StropheParams.RHYME[:10]:
                         # Validate for Strophe Parameters
                         if TextAnalysis._is_param_line(line):
 
-                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[generated_poem]}],tokenizer=validator_tokenizer_rhyme,
-                                                                               is_syllable=False, syllables=args.val_syllables_rhyme,
+                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :generated_poem}],tokenizer=validator_tokenizer_rhyme,
+                                                                               make_syllables=args.val_syllables_rhyme,
                                                                                max_len=rhyme_model.model.config.max_position_embeddings - 2)
                             rhyme_pred =StropheParams.RHYME[np.argmax(rhyme_model.predict_state(input_ids=data['input_ids'].to(device)).detach().flatten().cpu().numpy())]
 
-                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[generated_poem]}],tokenizer=validator_tokenizer_year,
-                                                                               is_syllable=False, syllables=args.val_syllables_year,
+                            data = CorpusDatasetPytorch.collate_validator([{"input_ids" :generated_poem}],tokenizer=validator_tokenizer_year,
+                                                                               make_syllables=args.val_syllables_year,
                                                                                max_len=year_model.model.config.max_position_embeddings - 2)
                             year_pred = round(year_model.predict_state(input_ids=data['input_ids'].to(device)).detach().flatten().cpu().numpy()[0])
                             continue
                         
                     if args.meter_with_context:
-                        data = CorpusDatasetPytorch.collate_meter_context([{"input_ids" :[generated_poem]}],tokenizer=validator_tokenizer_meter,
-                                                    is_syllable=False, syllables=args.val_syllables_meter,
+                        data = CorpusDatasetPytorch.collate_meter_context([{"input_ids" :generated_poem}],tokenizer=validator_tokenizer_meter,
+                                                    make_syllables=args.val_syllables_meter,
                                                     max_len=meter_model.model.config.max_position_embeddings - 2)
                     else:
-                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :[generated_poem]}],tokenizer=validator_tokenizer_meter,
-                                                    is_syllable=False, syllables=args.val_syllables_meter,
+                        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :generated_poem}],tokenizer=validator_tokenizer_meter,
+                                                    make_syllables=args.val_syllables_meter,
                                                     max_len=meter_model.model.config.max_position_embeddings - 2)
                     for j in range(data['input_ids'].shape[0]):
                         meters.append(

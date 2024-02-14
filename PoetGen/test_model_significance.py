@@ -130,14 +130,14 @@ if args.validator_tokenizer_model_meter:
 base_tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.base_model_path_full)
 improved_tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.improved_model_path_full)
 
-dataset = CorpusDatasetPytorch(data_dir=args.data_path_poet)
+dataset = CorpusDatasetPytorch('BASE', data_dir=args.data_path_poet)
 
 def decoder_helper(type, index, tokenizer: PreTrainedTokenizerBase, model: PoetModelBase, input_type:str):
     if type == "BASIC":
         if input_type == 'METER_VERSE':
-            start = f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])}\n{dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]}"
+            start = f"# {dataset.test_strophes.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_strophes.data[index]['year'])}\n{dataset.test_strophes.data[index]['metre_ids'][0]}"
         else:
-            start = f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])} # {dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]}"
+            start = f"# {dataset.test_strophes.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_strophes.data[index]['year'])} # {dataset.test_strophes.data[index]['metre_ids'][0]}"
         tokenized = tokenizer.encode(start, return_tensors='pt', truncation=True)
         out = model.model.generate(tokenized.to(device), 
                                         max_length=256,
@@ -149,11 +149,11 @@ def decoder_helper(type, index, tokenizer: PreTrainedTokenizerBase, model: PoetM
         return tokenizer.decode(out.cpu()[0], skip_special_tokens=True)
     if type=="FORCED":
         if input_type == "METER_VERSE":
-            start_forced = f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])}"
-            for id in dataset.test_pytorch_dataset_body.data[index]['metre_ids']:
+            start_forced = f"# {dataset.test_strophes.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_strophes.data[index]['year'])}"
+            for id in dataset.test_strophes.data[index]['metre_ids']:
                     start_forced = start_forced + f"\n{id} #"
         else:
-            start_forced =  f"# {dataset.test_pytorch_dataset_body.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_pytorch_dataset_body.data[index]['year'])} # {dataset.test_pytorch_dataset_body.data[index]['metre_ids'][0]}"
+            start_forced =  f"# {dataset.test_strophes.data[index]['rhyme']} # {TextManipulation._year_bucketor(dataset.test_strophes.data[index]['year'])} # {dataset.test_strophes.data[index]['metre_ids'][0]}"
         return model.generate_forced(start_forced, tokenizer, sample=True, format=input_type, device=device )
     
 def do_eval(generated_strophe):
@@ -176,8 +176,8 @@ def do_eval(generated_strophe):
             
             # Validate for Rhyme schema
             if "RHYME" in values.keys():
-                data = CorpusDatasetPytorch.collate_validator([{"input_ids" :[generated_strophe], 'rhyme' : values["RHYME"]}],tokenizer=validator_tokenizer_rhyme,
-                                                               is_syllable=False, syllables=args.val_syllables_rhyme,
+                data = CorpusDatasetPytorch.collate_validator([{"input_ids" :generated_strophe, 'rhyme' : values["RHYME"]}],tokenizer=validator_tokenizer_rhyme,
+                                                               make_syllables=args.val_syllables_rhyme,
                                                                max_len=512)
                 res_rhyme = rhyme_model.validate_model(input_ids=data['input_ids'].to(device),
                                                         rhyme=data['rhyme'], k=2)['acc']
@@ -213,12 +213,12 @@ def do_eval(generated_strophe):
             
     # Validate for Metrum
     if args.meter_with_context:
-        data = CorpusDatasetPytorch.collate_meter_context([{"input_ids" :[generated_strophe], "metre_ids": PRESENT_METERS}],tokenizer=validator_tokenizer_meter,
-                                                       is_syllable=False, syllables=args.val_syllables_meter,
+        data = CorpusDatasetPytorch.collate_meter_context([{"input_ids" :generated_strophe, "metre_ids": PRESENT_METERS}],tokenizer=validator_tokenizer_meter,
+                                                       make_syllables=args.val_syllables_meter,
                                                        max_len=512)
     else:
-        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :[generated_strophe], "metre_ids": PRESENT_METERS}],tokenizer=validator_tokenizer_meter,
-                                                       is_syllable=False, syllables=args.val_syllables_meter,
+        data = CorpusDatasetPytorch.collate_meter([{"input_ids" :generated_strophe, "metre_ids": PRESENT_METERS}],tokenizer=validator_tokenizer_meter,
+                                                       make_syllables=args.val_syllables_meter,
                                                        max_len=512)
     if data['input_ids'] != None and data['metre_ids'] != None:
         for j in range(min(data['input_ids'].shape[0], data['metre_ids'].shape[0])):
@@ -234,7 +234,7 @@ def do_eval(generated_strophe):
     
     
 def do_epoch():
-    samples = random.choices(list(range(len(dataset.test_pytorch_dataset_body.data))), k=args.per_repetitions)
+    samples = random.choices(list(range(len(dataset.test_strophes.data))), k=args.per_repetitions)
     
     rhyme_res = 0
     meter_res = 0
