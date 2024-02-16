@@ -257,6 +257,14 @@ class TextManipulation:
         
         return TextManipulation.__post_process_rhyme(rhyme_str)
 
+    _SHORTIFY_DICT = {"á": "a", "é": "e", "í":"i", 
+                      "ů":"u", "ú":"u", "ó": "o", "ý": "y"}
+    @staticmethod
+    def _shortify(text: str):
+        for key, value in TextManipulation._SHORTIFY_DICT.items():
+            text = text.replace(key, value)
+        return text
+
 class TextAnalysis:
     """Static class with methods of analysis of strings
 
@@ -482,6 +490,31 @@ class TextAnalysis:
         small_analysis = TextAnalysis._first_line_analysis(line_striped)
         return  "RHYME" in small_analysis.keys() or "YEAR" in small_analysis.keys()
 
+    _CONSONANTS = ['b', 'c', 'č', 'd', 'ď', 'f', 'g', 'h', 'j', 'k', 
+                   'l', 'm', 'n', 'ň', 'p', 'r', 'ř', 's', 'š', 't', 
+                   'ť', 'v', 'z', 'ž']
+    @staticmethod
+    def is_consonant(char:str):
+        return char in TextAnalysis._CONSONANTS
+    
+    _VOWELS = ['a', 'e', 'i', 'u', 'o', 'y', 'á', 
+               "é", "í", "ú", "ů", "ó" ,"ý" ]
+    @staticmethod
+    def is_vowel(char:str):
+        return char in TextAnalysis._VOWELS
+    
+    
+    
+    @staticmethod
+    def _end_matches(verse:str, end:str):
+        end_short = TextAnalysis._shortify(end)
+        verse_clean = TextManipulation._remove_all_nonchar(verse)
+        if len(end_short)  > len(verse_clean):
+            return False
+        verse_end = TextAnalysis._shortify(verse_clean[-len(end_short):])
+        return end_short == verse_end
+    
+                
 class SyllableMaker:
     """Static class with methods for separating string to list of Syllables
 

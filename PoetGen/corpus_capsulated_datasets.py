@@ -206,9 +206,12 @@ class CorpusDatasetPytorch:
                 str: Processed verse line with line parameters
             """
             syllables = SyllableMaker.syllabify(raw_text)
-            verse_marks = VersologicalMaker.verse_segmnent(raw_text)
+            verse_marks = VersologicalMaker.verse_segmnent(''.join(syllables[-1]))
             num_str = f"{sum(map(len, syllables))} # " if self.params['prompt_len'] else ""
-            verse_end = f"{ ''.join(verse_marks[-1][-2:])} # " if self.params['prompt_end'] else ""
+            if len(syllables[-1]) == 1 and TextAnalysis.is_consonant(verse_marks[-1][-1][-1]):
+                verse_end = f"{ TextManipulation._shortify(''.join(verse_marks[-1][-1:])) } # " if self.params['prompt_end'] else ""
+            else:
+                verse_end = f"{ TextManipulation._shortify(''.join(verse_marks[-1][-2:])) } # " if self.params['prompt_end'] else ""
             metre_txt = f"{metre} # "
             return metre_txt + num_str + verse_end  + raw_text
         
@@ -225,7 +228,7 @@ class CorpusDatasetPytorch:
             syllables = SyllableMaker.syllabify(raw_text)
             #verse_marks = VersologicalMaker.verse_segmnent(raw_text)
             num_str = f"{sum(map(len, syllables))} # " if self.params['prompt_len'] else ""
-            verse_end = f"{''.join(syllables[-1][-2:])} # " if self.params['prompt_end'] else ""
+            verse_end = f"{ TextManipulation._shortify(''.join(syllables[-1][-2:])) } # " if self.params['prompt_end'] else ""
             metre_txt = f"{metre} # "
             return  metre_txt+ num_str + verse_end + "  ".join([" ".join(syl) for syl in syllables]) + ending
         
@@ -242,7 +245,7 @@ class CorpusDatasetPytorch:
             #syllables = SyllableMaker.syllabify(raw_text)
             verse_marks = VersologicalMaker.verse_segmnent(raw_text)
             num_str = f"{sum(map(len, verse_marks))} # " if self.params['prompt_len'] else ""
-            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.params['prompt_end'] else ""
+            verse_end = f"{ TextManipulation._shortify(''.join(verse_marks[-1][-2:])) } # " if self.params['prompt_end'] else ""
             metre_txt = f"{metre} # "
             return  metre_txt+ num_str + verse_end + "  ".join([" ".join(syl) for syl in verse_marks]) + ending
                      
@@ -371,9 +374,12 @@ class CorpusDatasetPytorch:
                 str: Processed verse line with line parameters
             """
             syllables = SyllableMaker.syllabify(raw_text)
-            verse_marks = VersologicalMaker.verse_segmnent(raw_text)
+            verse_marks = VersologicalMaker.verse_segmnent(''.join(syllables[-1]))
             num_str = f"{sum(map(len, syllables))} # " if self.params['prompt_len'] else ""
-            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.params['prompt_end'] else ""
+            if len(syllables[-1]) == 1 and TextAnalysis.is_consonant(verse_marks[-1][-1][-1]):
+                verse_end = f"{ TextManipulation._shortify(''.join(verse_marks[-1][-1:])) } # " if self.params['prompt_end'] else ""
+            else:
+                verse_end = f"{ TextManipulation._shortify(''.join(verse_marks[-1][-2:])) } # " if self.params['prompt_end'] else ""
             metre_txt = f"{metre} # "
             return  metre_txt + num_str + verse_end  + raw_text
         
@@ -390,7 +396,7 @@ class CorpusDatasetPytorch:
             syllables = SyllableMaker.syllabify(raw_text)
             #verse_marks = VersologicalMaker.verse_segmnent(raw_text)
             num_str = f"{sum(map(len, syllables))} # " if self.params['prompt_len'] else ""
-            verse_end = f"{''.join(syllables[-1][-2:])} # " if self.params['prompt_end'] else ""
+            verse_end = f"{ TextManipulation._shortify(''.join(syllables[-1][-2:])) } # " if self.params['prompt_end'] else ""
             metre_txt = f"{metre} # "
             return metre_txt + num_str + verse_end + "  ".join([" ".join(syl) for syl in syllables]) + ending
         
@@ -407,7 +413,7 @@ class CorpusDatasetPytorch:
             #syllables = SyllableMaker.syllabify(raw_text)
             verse_marks = VersologicalMaker.verse_segmnent(raw_text)
             num_str = f"{sum(map(len, verse_marks))} # " if self.params['prompt_len'] else ""
-            verse_end = f"{''.join(verse_marks[-1][-2:])} # " if self.params['prompt_end'] else ""
+            verse_end = f"{ TextManipulation._shortify(''.join(verse_marks[-1][-2:])) } # " if self.params['prompt_end'] else ""
             metre_txt = f"{metre} # "
             return metre_txt + num_str + verse_end + "  ".join([" ".join(syl) for syl in verse_marks]) + ending
             

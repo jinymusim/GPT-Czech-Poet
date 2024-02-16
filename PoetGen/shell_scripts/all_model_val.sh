@@ -118,6 +118,8 @@ qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=
 
 qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v MODEL=./CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-all-e0e24_LM shell_scripts/all_model_val_helper.sh
 
+qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v MODEL=./CZ-VerseMarks-BPE-NormalText-gpt-cz-poetry-all-e0e24_LM shell_scripts/all_model_val_helper.sh
+
 # Format + Pretarin
 
 qsub -N ModelValidation -q gpu_dgx -l select=1:ncpus=4:ngpus=1:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=24:00:00 -v MODEL=./gpt-cz-poetry-basic-format-e4e16_LM shell_scripts/all_model_val_helper.sh
