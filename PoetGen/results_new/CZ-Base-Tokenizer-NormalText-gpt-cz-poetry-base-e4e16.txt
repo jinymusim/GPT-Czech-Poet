@@ -42,3 +42,47 @@ Year top 2 presence: 0.6517 +- nan
 Year label presence: 0.3300 +- nan
 Year predict distance: 0.8661 +- nan
 
+ ===== BASIC Decoding Validation: Epochs: 1, Runs per epoch: 1000, SAMPLING: True =====
+Num Sylabs Accuracy: 0.9104 +- nan
+Endings Accuracy: 0.9589 +- nan
+Unique Syllable Ratio: 0.8547 +- 0.0700
+
+Rhyme model: distilroberta-base_BPE_validator_1706752010848, Syllable False
+Rhyme Accuracy: 0.8680 +- nan
+Rhyme top 2 presence: 0.8890 +- nan
+Rhyme label presence: 0.8673 +- nan
+Rhyme Levenshtein distance: 3.1970 +- nan
+
+Metre model: Context_distilroberta-base_BPE_validator_1706752010848, Syllable False
+Metre Accuracy: 0.9460 +- nan
+Metre top 2 presence: 0.9661 +- nan
+Metre label presence: 0.9459 +- nan
+
+Year model: ufal-robeczech-base_BPE_validator_1706753939607, Syllable False
+Year Accuracy: 0.3950 +- nan
+Year top 2 presence: 0.6500 +- nan
+Year label presence: 0.3252 +- nan
+Year predict distance: 0.8660 +- nan
+
+ ===== FORCED Decoding Validation: Epochs: 1, Runs per epoch: 1000, SAMPLING: True =====
+Num Sylabs Accuracy: 0.9147 +- nan
+Endings Accuracy: 0.9510 +- nan
+Unique Syllable Ratio: 0.8577 +- 0.0736
+
+Rhyme model: distilroberta-base_BPE_validator_1706752010848, Syllable False
+Rhyme Accuracy: 0.8610 +- nan
+Rhyme top 2 presence: 0.8800 +- nan
+Rhyme label presence: 0.8616 +- nan
+Rhyme Levenshtein distance: 3.0072 +- nan
+
+Metre model: Context_distilroberta-base_BPE_validator_1706752010848, Syllable False
+Metre Accuracy: 0.9288 +- nan
+Metre top 2 presence: 0.9501 +- nan
+Metre label presence: 0.9290 +- nan
+
+Year model: ufal-robeczech-base_BPE_validator_1706753939607, Syllable False
+Year Accuracy: 0.4020 +- nan
+Year top 2 presence: 0.6380 +- nan
+Year label presence: 0.3238 +- nan
+Year predict distance: 0.8520 +- nan
+
