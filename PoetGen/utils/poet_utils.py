@@ -507,11 +507,11 @@ class TextAnalysis:
     
     @staticmethod
     def _end_matches(verse:str, end:str):
-        end_short = TextAnalysis._shortify(end)
+        end_short = TextManipulation._shortify(end)
         verse_clean = TextManipulation._remove_all_nonchar(verse)
         if len(end_short)  > len(verse_clean):
             return False
-        verse_end = TextAnalysis._shortify(verse_clean[-len(end_short):])
+        verse_end = TextManipulation._shortify(verse_clean[-len(end_short):])
         return end_short == verse_end
     
                 
