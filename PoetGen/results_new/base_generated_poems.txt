@@ -1,0 +1,1056 @@
+REQUESTED: ABAB, 1900, J, GENERATED USING: BASIC
+
+# ABAB # 1900
+J # 8 # ětě # vše kvete, kvete na světě,
+D # 8 # ěle # a duše chví se mi v těle,
+J # 8 # ětě # že na tom pustém nad světě
+D # 8 # ělé # mé sny jsou přece jen stmělé,
+
+PREDICTED: ABAB, 1907, ['J', 'D', 'J', 'D']
+
+
+REQUESTED: ABAB, 1900, J, GENERATED USING: FORCED
+
+# ABAB # 1900
+J # 11 # yne # však v mlze, tmách, kdy obloha nám kyne,
+J # 10 # avy # kde lesy šumí v zvonů záplavy,
+J # 11 # yne # náš malý národ  jaktěživo  zhyne,
+J # 10 # avy # jak ptáče raněné kams z šumavy!
+PREDICTED: ABAB, 1895, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: ABAB, 1900, T, GENERATED USING: BASIC
+
+# ABAB # 1900
+T # 8 # ítě # jak zřel amor, malé dítě,
+T # 7 # sen # tiše dřímat těžký sen,
+T # 8 # tě # na prahu již čekal  na tě 
+T # 7 # ven # ne, on z jizby vyšel ven.
+
+PREDICTED: XAXA, 1901, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: ABAB, 1900, T, GENERATED USING: FORCED
+
+# ABAB # 1900
+T # 8 # íní # a jen v tichu těchto síní
+T # 7 # tmí # se to šedé mračno tmí,
+T # 8 # íní # a jen tichá noc tu stíní
+T # 7 # tmí # teskné stíny vše to tmí.
+PREDICTED: ABAB, 1903, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: ABAB, 1900, D, GENERATED USING: BASIC
+
+# ABAB # 1900
+D # 10 # ota # co v tmách zhyň teskněná jistota,
+D # 11 # emi # ať poletí do dálek a k té zemi
+D # 10 # ota # mdlou písní mou náhle jak tesknota
+D # 11 # mi # vzpomínky plaché zas v duši zní mi.
+
+PREDICTED: ABAB, 1931, ['N', 'N', 'N', 'N']
+
+
+REQUESTED: ABAB, 1900, D, GENERATED USING: FORCED
+
+# ABAB # 1900
+D # 10 # íže # na to své staré dřevo tak líže,
+D # 8 # oči # dívá se za mnou a oči,
+D # 10 # íže # má hlava hlavou se k němu víže,
+D # 8 # oči # hledí, jsou upřeny oči.
+PREDICTED: ABAB, 1907, ['X', 'D', 'X', 'D']
+
+
+REQUESTED: ABAB, 1860, J, GENERATED USING: BASIC
+
+# ABAB # 1860
+J # 12 # ily # však žel, že tyto zvuky na mne činily,
+J # 12 # ení # žeť pouhé, liché jest jen ono loučení 
+J # 12 # íli # jen když jsem v sladké tuše mohl na chvíli
+J # 12 # ení # jen tušit, čím v mé mladé, mladé toužení
+
+PREDICTED: ABAB, 1907, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: ABAB, 1860, J, GENERATED USING: FORCED
+
+# ABAB # 1860
+J # 8 # ostí # tys rozhřešila radostí,
+J # 7 # ání # žes byla k milování,
+J # 8 # ostí # však běda, kdo se sprostí
+J # 7 # ání # toho snad na zpomínání?
+PREDICTED: ABAB, 1871, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: ABAB, 1860, T, GENERATED USING: BASIC
+
+# ABAB # 1860
+T # 8 # ala # z hloubí duše vybíhala
+T # 8 # ivý # jako lvice lstivý, divý,
+T # 8 # ala # by jej z lože vykopala,
+T # 8 # ivý # by jej v náruč pojal živý7
+
+PREDICTED: ABAB, 1876, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: ABAB, 1860, T, GENERATED USING: FORCED
+
+# ABAB # 1860
+T # 8 # ejme # teď se práce dokonejme,
+T # 7 # dál # vždyť jsme jednou, jednou dál,
+T # 8 # ejme # na cestu se namáhejme,
+T # 7 # dál # a co možná ještě dál.
+PREDICTED: ABAB, 1890, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: ABAB, 1860, D, GENERATED USING: BASIC
+
+# ABAB # 1860
+D # 11 # ěsta # jak to tu hezoučké, veselé města,
+D # 10 # sad # jak to tu rozkošné, zelený sad!
+D # 11 # esta # jaká jen dovede zkřížit se cesta
+D # 10 # sad # přes mechy, stromy, kvetoucí sad!
+
+PREDICTED: ABAB, 1921, ['D', 'D', 'D', 'D']
+
+
+REQUESTED: ABAB, 1860, D, GENERATED USING: FORCED
+
+# ABAB # 1860
+D # 10 # svět # tam v dáli, tam  tam celý šírý svět 
+D # 8 # esy # ty vaše nivy i lesy,
+D # 10 # svět # jsou vám až k podivu celý ten svět,
+D # 8 # esy # a vám tam, nebe a lesy!
+PREDICTED: ABAB, 1893, ['D', 'D', 'D', 'D']
+
+
+REQUESTED: XXXX, 1900, J, GENERATED USING: BASIC
+
+# XXXX # 1900
+J # 9 # oje # a v smíchu počne písně svoje,
+J # 8 # ení # že v celém městě mlčení.
+J # 9 # odí # a básník o svém smutku brodí
+J # 8 # inem # se tím tak hořkým virgilovem...
+
+PREDICTED: XXXX, 1886, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: XXXX, 1900, J, GENERATED USING: FORCED
+
+# XXXX # 1900
+J # 10 # avě # a na tvář padala mu laskavě
+J # 10 # ostných # z těch drahých ruky, darů milostných,
+J # 10 # oucnost # a slibovala s výše horoucnost
+J # 10 # inil # po dlouhém boji s sebou učinil
+PREDICTED: XXXX, 1900, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: XXXX, 1900, T, GENERATED USING: BASIC
+
+# XXXX # 1900
+T # 8 # ále # z venku ostře, dutě, zdále
+T # 8 # iny # jako blízké ostružiny,
+T # 7 # tak # duněl to a chraptil tak.
+T # 8 # esty # tož v tom šeru vedle cesty
+
+PREDICTED: XXXX, 1908, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: XXXX, 1900, T, GENERATED USING: FORCED
+
+# XXXX # 1900
+T # 8 # áře # od oltáře u polštáře
+T # 8 # eděl # svatý prokop vzhůru hleděl
+T # 8 # rdlo # na to hasnoucí své hrdlo,
+T # 8 # mu # které v chvíli té se hnulo mu.
+PREDICTED: XXXX, 1906, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: XXXX, 1900, D, GENERATED USING: BASIC
+
+# XXXX # 1900
+D # 5 # ubna # zahřměte, bubna,
+D # 5 # ýzni # zahřměte, v trýzni
+D # 5 # usté # ze skály pusté
+D # 5 # ěti # porážeti
+
+PREDICTED: XXXX, 1882, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: XXXX, 1900, D, GENERATED USING: FORCED
+
+# XXXX # 1900
+D # 11 # eny # na prsou tvých, ó dítě mé, tkví ženy.
+D # 10 # ouhy # v očích zří na ně veliké touhy,
+D # 11 # esku # slza již nevtryje do jeho lesku,
+D # 10 # tvář # s výčitkou hledí mu v zamlklou tvář.
+PREDICTED: XXXX, 1903, ['N', 'N', 'D', 'D']
+
+
+REQUESTED: XXXX, 1860, J, GENERATED USING: BASIC
+
+# XXXX # 1860
+J # 11 # adě # po cestách jeho, po kvetoucím sadě,
+J # 11 # eho # jak by se bodlo něco v ruce jeho.
+J # 11 # ásy # když v stínu jejím, za měsíční vlády
+J # 11 # atřil # jak bledou vlnku šalomoun ji spatřil,
+
+PREDICTED: XXXX, 1891, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: XXXX, 1860, J, GENERATED USING: FORCED
+
+# XXXX # 1860
+J # 9 # áni # a tu ji našli lehcí páni,
+J # 8 # anu # jež měla v srdci aranu,
+J # 9 # íny # a ta mu odňala hned s hlíny
+J # 8 # eným # šat nachem červán zeleným,
+PREDICTED: XXXX, 1882, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: XXXX, 1860, T, GENERATED USING: BASIC
+
+# XXXX # 1860
+T # 7 # ika # v spolku panstva kritika. 
+T # 4 # osti # proč? leč dosti!
+T # 8 # ěstí # že nás baví stálé štěstí,
+T # 7 # ali # naši známí říkali,
+
+PREDICTED: XXXX, 1894, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: XXXX, 1860, T, GENERATED USING: FORCED
+
+# XXXX # 1860
+T # 10 # ati # v duchu počal se tam radovati.
+T # 10 # ádal # zpomínal, na časy zašlé hádal,
+T # 10 # se # kde a jak kdy děvy navštívily se
+T # 10 # íly # v duchu velebně ty jaré síly.
+PREDICTED: XXXX, 1883, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: XXXX, 1860, D, GENERATED USING: BASIC
+
+# XXXX # 1860
+D # 6 # ubu # v posvátném záblubu
+D # 6 # ýli # roď se jak motýli,
+D # 6 # osti # roď se jak sytosti
+D # 4 # ráj # v neznámý ráj!
+
+PREDICTED: XXXX, 1909, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: XXXX, 1860, D, GENERATED USING: FORCED
+
+# XXXX # 1860
+D # 6 # ezni # na sadě na princezni
+J # 5 # ole # v zeleném kole
+J # 6 # ody # ze zlata přírody
+J # 4 # květ # vyrostiž květ.
+PREDICTED: XXXX, 1917, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: XAXA, 1900, J, GENERATED USING: BASIC
+
+# XAXA # 1900
+J # 11 # até # jak ve snění když o lásce čtu svaté,
+J # 10 # tměl # tys jako v bouři žití se mnou tměl
+J # 11 # mně # tak ve snách když v mé oči pohlíds ke mně,
+J # 10 # chvil # já cítil, jak z tvých očí tkaných chvil
+
+PREDICTED: XXXX, 1905, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: XAXA, 1900, J, GENERATED USING: FORCED
+
+# XAXA # 1900
+J # 8 # ěti # a při tom bylo viděti
+J # 7 # ízké # v té jeho jizbě nízké
+J # 8 # ovně # jak matka, jež tam na rovně
+J # 7 # ízké # děťátko chová blízké.
+PREDICTED: XAXA, 1898, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: XAXA, 1900, T, GENERATED USING: BASIC
+
+# XAXA # 1900
+T # 6 # ouze # vzpomínal pak dlouze
+T # 5 # zas # na dědinu zas,
+T # 6 # adě # která v panské radě
+T # 5 # hlas # měla velký hlas
+
+PREDICTED: XAXA, 1903, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: XAXA, 1900, T, GENERATED USING: FORCED
+
+# XAXA # 1900
+T # 8 # íru # u vás, u vás, u všechmíru
+T # 6 # odíš # že se šťastně zrodíš,
+T # 8 # astí # nad sebouli vládce slastí,
+T # 6 # odíš # zhyneš, v hrobě shodíš.
+PREDICTED: XAXA, 1888, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: XAXA, 1900, D, GENERATED USING: BASIC
+
+# XAXA # 1900
+D # 8 # atiď # a když si vzpomenu, satiď
+J # 10 # olí # a když se na něco usměj holí,
+D # 9 # ybnost # jak je to směšná pak pochybnost,
+J # 10 # oli # jak je to směšný, zbytečný v tomto
+
+PREDICTED: XXXX, 1933, ['D', 'D', 'N', 'N']
+
+
+REQUESTED: XAXA, 1900, D, GENERATED USING: FORCED
+
+# XAXA # 1900
+D # 8 # ený # jak v dáli na sever vzdálený,
+D # 6 # isíc # na věžích  na tisíc,
+D # 8 # ajů # na pláních zelených krajů
+D # 6 # isíc # plání hor  na tisíc.
+PREDICTED: XAXA, 1913, ['D', 'D', 'D', 'D']
+
+
+REQUESTED: XAXA, 1860, J, GENERATED USING: BASIC
+
+# XAXA # 1860
+J # 8 # ino # buď s bohem, drahá květino, 
+J # 7 # ací # tvá duše se mi vrací
+J # 8 # zas # když srdce k srdci, k srdci zas,
+J # 7 # ácí # a mysl se mi ztrácí.
+
+PREDICTED: XAXA, 1886, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: XAXA, 1860, J, GENERATED USING: FORCED
+
+# XAXA # 1860
+J # 8 # ohou # a mněli, že tu u nohou
+J # 7 # ěti # chceš v máji přeletěti 
+J # 8 # etí # tu náhle  ha slyš zakletí 
+J # 7 # ěti # že pomyslí si děti! 
+PREDICTED: XAAA, 1890, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: XAXA, 1860, T, GENERATED USING: BASIC
+
+# XAXA # 1860
+T # 12 # ali # a že jsme se tedy dlouho nemívali,
+T # 11 # iná # v hospodě nás čeká bitce jediná 
+T # 12 # olku # nu, vždyť víte, že už máme svoji holku!
+T # 11 # ina # a když pak jí vypad košík z korina,
+
+PREDICTED: XAXA, 1937, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: XAXA, 1860, T, GENERATED USING: FORCED
+
+# XAXA # 1860
+T # 8 # ejší # což je tomu nejmilejší,
+T # 8 # očí # když se láska do mne stočí,
+T # 8 # enu # když já  ach!  žádnou ženu
+T # 8 # očí # z objetí mi nevytočí!
+PREDICTED: XAXA, 1876, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: XAXA, 1860, D, GENERATED USING: BASIC
+
+# XAXA # 1860
+D # 6 # ičko # zbuď se má matičko!
+D # 6 # ilý # zbuď se, hochu milý!
+D # 6 # ěje # už tě to koštěje
+D # 6 # ili # na rakev ranili.
+
+PREDICTED: XAXA, 1874, ['J', 'T', 'D', 'D']
+
+
+REQUESTED: XAXA, 1860, D, GENERATED USING: FORCED
+
+# XAXA # 1860
+D # 6 # ina # zelená pěšina
+D # 5 # uhu # s květným luhu,
+D # 6 # se # pod jabloní pne se
+D # 5 # uhu # srdečko k druhu.
+PREDICTED: XAXA, 1896, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: AABB, 1900, J, GENERATED USING: BASIC
+
+# AABB # 1900
+J # 12 # ěti # my ženu, děti dvě, my máme poupěti
+J # 10 # etí # a k vůli ní měl náš otec sedm let.
+J # 12 # ali # dvě děti jsme, dvě matky, my se stali,
+J # 10 # ali # a teď jsme oba jednou plakali.
+
+PREDICTED: XXAA, 1890, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: AABB, 1900, J, GENERATED USING: FORCED
+
+# AABB # 1900
+J # 15 # ení # a tak se rozcházeli muži, jimž nebylo dení,
+J # 15 # ení # ti dva, již byli již tak dlouho zahanbeni, mření,
+J # 15 # ýchou # a oni, již tak dlouho zahanbeni za svou pýchou 
+J # 15 # ýchou # se dívali, jak matka s jejich těžce vzhlíží s pýchou
+PREDICTED: AABB, 1935, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: AABB, 1900, T, GENERATED USING: BASIC
+
+# AABB # 1900
+T # 15 # odou # u každého stolu člověk sedí tady pod vodou,
+T # 13 # odou # u každého stolu sedí, vodu s vodou
+T # 7 # áčí # mezi nimi uvláčí,
+T # 7 # ačí # když host k ní se protlačí,
+
+PREDICTED: AABB, 1901, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: AABB, 1900, T, GENERATED USING: FORCED
+
+# AABB # 1900
+T # 10 # atém # s bohem, bratři, v boji bratří svatém
+T # 10 # atém # v bouři plemen v boji krutém, v kletém,
+T # 10 # oří # vyrval z trosek král tu říše zboří,
+T # 10 # oří # na jejížto hrobě stín se zboří
+PREDICTED: AABB, 1896, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: AABB, 1900, D, GENERATED USING: BASIC
+
+# AABB # 1900
+D # 9 # rád # a kdo by nedlel tak prudce rád,
+D # 8 # spat # nežli se vytratí spat?
+J # 4 # víc # nic nechci víc
+J # 4 # víc # než nic a víc,
+
+PREDICTED: AABB, 1912, ['N', 'D', 'N', 'N']
+
+
+REQUESTED: AABB, 1900, D, GENERATED USING: FORCED
+
+# AABB # 1900
+D # 10 # dech # na prsou ucítí, dochází dech,
+D # 10 # dech # horký a horký, jak lípy by dech
+D # 10 # háj # dusil ho, ledem pokryl ho háj,
+D # 10 # háj # z nitra ho zbudil jakoby háj.
+PREDICTED: AABB, 1885, ['D', 'D', 'D', 'D']
+
+
+REQUESTED: AABB, 1860, J, GENERATED USING: BASIC
+
+# AABB # 1860
+J # 9 # áče # aj dítko pláče, robě pláče,
+J # 9 # áče # v světýlko skořepino skáče
+J # 4 # juž # tamo však juž,
+J # 4 # muž # je v nebi muž!
+
+PREDICTED: AABB, 1886, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: AABB, 1860, J, GENERATED USING: FORCED
+
+# AABB # 1860
+J # 9 # edí # v tom najednou si z okna hledí
+J # 9 # edí # a na balkon s ní dolů hledí.
+J # 9 # ěji # a jak tak hledím po naději,
+J # 9 # ěji # máť bolestně se celá chvěji
+PREDICTED: AABB, 1892, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: AABB, 1860, T, GENERATED USING: BASIC
+
+# AABB # 1860
+T # 11 # ový # ale s nimi, kteří měli sandálový
+T # 12 # oví # a kabátce z pružného se našpulují
+T # 7 # enka # ze sobolu, ze šlenka
+T # 7 # énka # plovají si z hrnénka.
+
+PREDICTED: XXAA, 1896, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: AABB, 1860, T, GENERATED USING: FORCED
+
+# AABB # 1860
+T # 8 # udé # a hle, všecky barvy rudé
+T # 8 # udé # urovnají srdce rudé
+T # 8 # etem # a však všedním bitvy letem
+T # 8 # etem # vstává duch můj s krásy letem. 
+PREDICTED: AABB, 1869, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: AABB, 1860, D, GENERATED USING: BASIC
+
+# AABB # 1860
+D # 8 # eky # kolem pak zálabské řeky
+D # 8 # ěky # zašumí zelené vděky,
+D # 9 # utí # a pak přeletí přes ně perutí,
+D # 9 # utí # jak když ji větérka zaťutí.
+
+PREDICTED: AABB, 1885, ['D', 'D', 'D', 'D']
+
+
+REQUESTED: AABB, 1860, D, GENERATED USING: FORCED
+
+# AABB # 1860
+D # 6 # ela # po nich se vracela
+D # 6 # ela # dívka po nich jela
+D # 7 # íla # a ve zpěvu, co síla,
+D # 7 # íla # myslila na víla.
+PREDICTED: AABB, 1887, ['J', 'T', 'J', 'J']
+
+
+REQUESTED: XXXXXX, 1900, J, GENERATED USING: BASIC
+
+# XXXXXX # 1900
+J # 10 # ostí # však v hrudi tvojí velkou milostí,
+J # 10 # ami # jak kdyby nebes královna,
+J # 10 # ější # jak hvězda štěstí, stále silnější
+J # 10 # avým # se srdcem velkým, bystrým, čekáním
+J # 10 # tvé # a neunavně pátrá v srdce tvé,
+J # 10 # ělů # a duše plní sny všech andělů.
+
+PREDICTED: XXXXXX, 1885, ['J', 'J', 'J', 'J', 'J', 'J']
+
+
+REQUESTED: XXXXXX, 1900, J, GENERATED USING: FORCED
+
+# XXXXXX # 1900
+J # 11 # ámu # ve středu zmlklého chrámku, chrámu.
+J # 11 # avý # zřel farář vážně, přísně shovívavý,
+J # 11 # íval # žil jako velký pán a v chrámě dlíval
+J # 11 # eho # sám velký amur, otec syna jeho.
+J # 11 # ásy # jak socha seděl, tklivý výraz krásy
+J # 11 # áni # a na tvář jeho, na tu milou skráni,
+PREDICTED: XXXXXX, 1930, ['J', 'J', 'J', 'J', 'J', 'J']
+
+
+REQUESTED: XXXXXX, 1900, T, GENERATED USING: BASIC
+
+# XXXXXX # 1900
+T # 8 # ěstě # ale v druhém břehu města,
+T # 8 # ysi # v městě samém, kdesi
+T # 8 # ami # ve washingtonu, sami,
+T # 7 # aiků # v středu pruských paiků.
+T # 9 # ami # my se našli jednou v jihlami
+T # 8 # ojí # a tak náhle v duši mojí
+
+PREDICTED: None, 1935, ['T', 'T', 'T', 'T', 'T', 'T']
+
+
+REQUESTED: XXXXXX, 1900, T, GENERATED USING: FORCED
+
+# XXXXXX # 1900
+T # 8 # se # doktor volný ohlídne se
+T # 8 # avě # po papíru bílém k hlavě,
+T # 8 # eje # vyhlédne na obraceje,
+T # 8 # ilně # dočet vše, pak zamyslil pilně
+T # 8 # ůzu # promyslil tu lidskou hrůzu,
+T # 8 # ívka # myslil si, že mladá dívka
+PREDICTED: XXXXXX, 1894, ['T', 'T', 'T', 'T', 'T', 'T']
+
+
+REQUESTED: XXXXXX, 1900, D, GENERATED USING: BASIC
+
+# XXXXXX # 1900
+D # 4 # mnich # sedí tu mnich
+D # 5 # ení # v podivném zření,
+D # 11 # ěla # ruka se po ruce pohárem chvěla,
+D # 5 # aly # oči mu vzpjaly,
+D # 5 # aly # rty se mu ptaly
+D # 5 # uce # v modlitbě, muce,
+
+PREDICTED: None, 1910, ['D', 'D', 'D', 'D', 'D', 'D']
+
+
+REQUESTED: XXXXXX, 1900, D, GENERATED USING: FORCED
+
+# XXXXXX # 1900
+D # 11 # íchy # a tak se stalo v dnech těchto, že smíchy
+D # 11 # icho # nad sklizením se mne zdály nést břicho.
+D # 11 # aky # a tehdy, viďte, má drahá, už zraky
+D # 11 # ály # kams v dáli za lesy, v údolí, skály
+D # 10 # eru # maměnku navštěvoval, k severu
+D # 11 # lno # po ní dál nemoh tam, z východu, mlno 
+PREDICTED: XXXXXX, 1930, ['D', 'D', 'D', 'D', 'D', 'D']
+
+
+REQUESTED: XXXXXX, 1860, J, GENERATED USING: BASIC
+
+# XXXXXX # 1860
+J # 11 # atři # na srdce vaše, bratří, sestry, bratři
+J # 11 # íže # a na mé srdce, jež vás vede blíže
+J # 11 # ejme # v ten zlatý přístav, tam vás uvítejme!
+J # 11 # ením # juž čas juž kvapí, bychom rozloučením
+J # 11 # adce # se měli zas s ním, s ním loučili se sladce
+J # 6 # olu # jak v dobách hlaholu.
+
+PREDICTED: XXXXXX, 1890, ['J', 'J', 'J', 'J', 'J', 'J']
+
+
+REQUESTED: XXXXXX, 1860, J, GENERATED USING: FORCED
+
+# XXXXXX # 1860
+J # 11 # ězdy # však marně  nebe jako plaché hvězdy
+J # 11 # oko # mé oko posud bádá v oko, oko
+J # 11 # eště # a srdce ve tmách hledajíc ho ještě.
+J # 11 # asné # tu často při myšlénky té mutné, hlasné
+J # 11 # oudy # juž ozve se mi a napnutělé oudy,
+J # 11 # áje # já vídám opět ztracené ty ráje,
+PREDICTED: XXXXXX, 1871, ['J', 'J', 'J', 'J', 'J', 'J']
+
+
+REQUESTED: XXXXXX, 1860, T, GENERATED USING: BASIC
+
+# XXXXXX # 1860
+T # 10 # ovem # nad královským rozhodnutím, slovem,
+T # 10 # estou # tak povolal k sobě před svou cestou
+T # 10 # ánu # královskou posádku zesne k pánu.
+T # 10 # rnul # a když k sluchu hrdému se hrnul
+T # 10 # ede # hovor náš, tu královna mne vede,
+T # 10 # ější # aby nade mnou byl spanilejší,
+
+PREDICTED: XXXXXX, 1878, ['T', 'T', 'T', 'T', 'T', 'T']
+
+
+REQUESTED: XXXXXX, 1860, T, GENERATED USING: FORCED
+
+# XXXXXX # 1860
+T # 10 # ění # po zření a zhloubání shromáždění
+T # 10 # ane # o mé vůli pomlčeti, pane,
+T # 10 # ěla # pomlčeti jsem o pánu těla,
+T # 10 # íky # jehož odpustil jsi protivníky,
+T # 10 # uvil # k nimž jsem jako k bratru svému mluvil.
+T # 10 # avda # promiňte upřímná mně pravda,
+PREDICTED: XXXXXX, 1913, ['T', 'T', 'T', 'T', 'T', 'T']
+
+
+REQUESTED: XXXXXX, 1860, D, GENERATED USING: BASIC
+
+# XXXXXX # 1860
+D # 6 # eře # ve vonném kadeře,
+D # 6 # ušky # na hlavě podušky,
+D # 6 # má # tanči jen, lásko má!
+D # 6 # íží # a hlava nahlíží
+D # 6 # ela # s tebou kdy kráčela,
+D # 6 # ody # bez lásky náhody,
+
+PREDICTED: XXXXXX, 1890, ['J', 'J', 'J', 'J', 'J', 'J']
+
+
+REQUESTED: XXXXXX, 1860, D, GENERATED USING: FORCED
+
+# XXXXXX # 1860
+D # 6 # eček # tys můj zvoneček,
+D # 6 # ůček # já tvůj libý potůček,
+D # 6 # inko # tys moje dušinko,
+D # 6 # adí # to už mě nezradí
+D # 3 # jen # proto jen,
+D # 3 # měj # víru měj,
+PREDICTED: None, 1866, ['N', 'N', 'N', 'N', 'N', 'N']
+
+
+REQUESTED: ABBA, 1900, J, GENERATED USING: BASIC
+
+# ABBA # 1900
+J # 11 # ílí # tak rozbouřená, jako dravec šílí,
+J # 11 # eká # tak na muže, jenž na ni čeká, čeká
+J # 11 # eká # a na který se s vášní v smrt jen vzteká
+J # 11 # ýlí # a jak se její tvář s ní k zemi chýlí.
+
+PREDICTED: ABBA, 1893, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: ABBA, 1900, J, GENERATED USING: FORCED
+
+# ABBA # 1900
+J # 13 # íchu # má všecko na nich prázdno, bídu, trpkost, hříchu
+J # 13 # atý # a každý vidí za vsí hřbitov, shnilý, zlatý,
+J # 13 # atý # že vzkypěl v něm vždy kvil nad hrobem vrchovatý,
+J # 13 # íchu # klnouc tulákům, svým dětem... a zas plni smíchu...
+PREDICTED: ABBA, 1908, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: ABBA, 1900, T, GENERATED USING: BASIC
+
+# ABBA # 1900
+T # 10 # elá # i má vlasť. ta naše země celá
+T # 10 # ozí # jesti pouhou tříští, koulem hrozí,
+T # 10 # ozí # z něhož děsných mračen mraky hrozí 
+T # 10 # ělá # i ta naše zem tak osamělá!
+
+PREDICTED: ABBA, 1891, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: ABBA, 1900, T, GENERATED USING: FORCED
+
+# ABBA # 1900
+T # 9 # zpět # co se stalo, nenavrátíš zpět!
+T # 10 # ělá # kam se děla myšlénka ta skvělá,
+T # 10 # ělá # ve tvých rysech že se všecka bělá?
+T # 9 # zpět # co mi zbylo, žes se vrátil zpět?
+PREDICTED: ABBA, 1902, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: ABBA, 1900, D, GENERATED USING: BASIC
+
+# ABBA # 1900
+D # 10 # iný # jen ten, kdo miluje, věčně jiný
+D # 10 # zpět # se srdcem v prázdno se nevrátí zpět,
+D # 9 # let # a za svůj celý a dlouhý let
+D # 10 # iny # a za své dlouhé a mroucí dny,
+
+PREDICTED: ABBA, 1897, ['N', 'N', 'N', 'N']
+
+
+REQUESTED: ABBA, 1900, D, GENERATED USING: FORCED
+
+# ABBA # 1900
+D # 9 # ovat # jak by už měl tě zas milovat
+J # 9 # oní # ten starý kostelík, jenž kloní,
+J # 9 # oní # kdos pod ním hlavu k spánku kloní
+D # 9 # ovat # a chce se v dálném slunci schovat.
+PREDICTED: ABBA, 1922, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: ABBA, 1860, J, GENERATED USING: BASIC
+
+# ABBA # 1860
+J # 7 # átce #  toť přece stojí krátce 
+J # 8 # oucí # co zbylo v duši horoucí,
+J # 8 # oucí # to slza slasti planoucí,
+J # 7 # ádce # co bylo v této hádce. 
+
+PREDICTED: ABBA, 1906, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: ABBA, 1860, J, GENERATED USING: FORCED
+
+# ABBA # 1860
+J # 11 # íte # vždyť v skutku k blahu lidstva dospíváte,
+J # 10 # svět # v pravdě je svět a ve všem váš je svět
+J # 10 # svět # a vaše blaho v jeden bezdný svět 
+J # 11 # íte # přec ještě nebesa si dobýváte?
+PREDICTED: ABBA, 1886, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: ABBA, 1860, T, GENERATED USING: BASIC
+
+# ABBA # 1860
+T # 10 # yne # však co blaha vůkol tobě kyne, 
+T # 9 # otář # že jsi zhledl světa samotář,
+T # 9 # tvář # kde ti kyne vlídná moje tvář,
+T # 10 # ine # kdež tvá lada všecka odpočine.
+
+PREDICTED: ABBA, 1870, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: ABBA, 1860, T, GENERATED USING: FORCED
+
+# ABBA # 1860
+T # 10 # odu # že jsem v lásce, že jsem k svému rodu 
+T # 10 # áře # proniknut byl duchem, duchem tváře
+T # 10 # áře # zřím tě v každém hnutí, v každém tmáře,
+T # 10 # odu # v každém kroku, v každém hnutí rodu!
+PREDICTED: ABBA, 1891, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: ABBA, 1860, D, GENERATED USING: BASIC
+
+# ABBA # 1860
+D # 11 # odu # tu mi je, jako jsi v předešlém chodu,
+D # 10 # ýchal # jakoby sám kdos vůni tvou dýchal,
+D # 10 # íchal # jakobys vůni jen ke rtům míchal,
+D # 11 # odu # až všecky pocity v rozkošném shodu
+
+PREDICTED: ABBA, 1870, ['D', 'D', 'D', 'D']
+
+
+REQUESTED: ABBA, 1860, D, GENERATED USING: FORCED
+
+# ABBA # 1860
+D # 10 # král # já, já  ba já jsem  totě svatý král! 
+D # 8 # očil # král pokynul  z křesla skočil 
+D # 8 # očil # s trůnu v křeslo si přiskočil,
+D # 10 # král # a vyrval víno mu na pospas král.
+PREDICTED: ABBA, 1891, ['N', 'N', 'N', 'N']
+
+
+REQUESTED: AAXX, 1900, J, GENERATED USING: BASIC
+
+# AAXX # 1900
+J # 8 # ici # nu, kdo chce tančit, panici,
+J # 8 # ící # nu, podej ruku kypící
+J # 7 # ěty # nám steré nesou květy 
+J # 8 # ěla # však, kdyby křídla anděla
+
+PREDICTED: AAXX, 1920, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: AAXX, 1900, J, GENERATED USING: FORCED
+
+# AAXX # 1900
+J # 8 # tam # snad někde v dáli, v dálce tam,
+J # 8 # tam # jej čeká hrob a čeká tam,
+J # 9 # azí # a cesta, která v mlhu plazí,
+J # 8 # osti # a všecka marnost, všednosti,
+PREDICTED: AAXX, 1903, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: AAXX, 1900, T, GENERATED USING: BASIC
+
+# AAXX # 1900
+T # 10 # oží # nuže, u nohou ti stojím boží,
+T # 10 # oží # na ramenou svalnaté máš hloží,
+T # 9 # ený # zrak jak žhoucí k nebi upřený.
+T # 10 # ezky # pohleď na mne, dí, ty horské stezky,
+
+PREDICTED: AAXX, 1896, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: AAXX, 1900, T, GENERATED USING: FORCED
+
+# AAXX # 1900
+T # 8 # ání # o tom, jak se pánům brání,
+T # 8 # ání # o tom, jak se k pánům sklání
+T # 7 # ají # s pokorou, že neznají,
+T # 8 # íce # co v tvých očích skrývají, více,
+PREDICTED: AAXX, 1909, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: AAXX, 1900, D, GENERATED USING: BASIC
+
+# AAXX # 1900
+D # 5 # ěky # za mládí věky
+D # 5 # eky # za jeho reky
+X # 3 # dal # život dal!
+D # 5 # se # tak stalo též se,
+
+PREDICTED: AAXX, 1911, ['D', 'D', 'D', 'J']
+
+
+REQUESTED: AAXX, 1900, D, GENERATED USING: FORCED
+
+# AAXX # 1900
+D # 9 # aje # pro koho dozněl v dálce, dozraje,
+D # 9 # aje # pro kohos pro vždycky plakaje
+D # 4 # žal # pro něčí žal,
+D # 9 # ísní # dozněl, dozněl toužebnou písní
+PREDICTED: AAXX, 1909, ['N', 'N', 'N', 'N']
+
+
+REQUESTED: AAXX, 1860, J, GENERATED USING: BASIC
+
+# AAXX # 1860
+J # 8 # můj # pověz, ty milý hochu můj,
+J # 8 # svůj # jaký to s tebou vůz má svůj,
+J # 10 # ení # jaké to vzácné, dlouhé loučení!
+J # 8 # má # jakou to cenu láska má,
+
+PREDICTED: AAXX, 1885, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: AAXX, 1860, J, GENERATED USING: FORCED
+
+# AAXX # 1860
+J # 8 # aví # a před soudce ho pozdraví
+J # 8 # aví # a soudce dí co, holtavý!
+J # 9 # rdý # tuť arciť rozum tak je tvrdý,
+J # 8 # dmou # že prsa tuhnou, prsa dmou
+PREDICTED: AAXX, 1877, ['J', 'J', 'J', 'J']
+
+
+REQUESTED: AAXX, 1860, T, GENERATED USING: BASIC
+
+# AAXX # 1860
+T # 8 # ocí # měsíc lezl z mraků nocí,
+T # 8 # ocí # luna spěla tmavou mocí,
+T # 8 # elo # temno děsným stínem lelo
+T # 8 # álo # a v tom světle, jež tak hřálo,
+
+PREDICTED: AAXX, 1889, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: AAXX, 1860, T, GENERATED USING: FORCED
+
+# AAXX # 1860
+T # 8 # ebe # nad svou vlastí, ty i nebe,
+T # 8 # ebe # nad svou zemí, kolem sebe 
+T # 7 # ovat # musíš k ní se chovat
+T # 8 # ávy # u mne  jenom že tvé slávy
+PREDICTED: AAXX, 1883, ['T', 'T', 'T', 'T']
+
+
+REQUESTED: AAXX, 1860, D, GENERATED USING: BASIC
+
+# AAXX # 1860
+D # 6 # ava # panenská postava
+D # 6 # ava # jestiť to václava,
+D # 7 # vlas # vousuli rudne mu vlas
+D # 6 # ěnu # po líci rozchvěnu,
+
+PREDICTED: AAXX, 1895, ['D', 'D', 'D', 'D']
+
+
+REQUESTED: AAXX, 1860, D, GENERATED USING: FORCED
+
+# AAXX # 1860
+D # 6 # eček # tys zlatý děveček,
+D # 6 # eček # máš pěkný věneček,
+D # 7 # íbá # a dušičku zulíbá!
+D # 6 # ívá # ty se tě kojívá
+PREDICTED: AAXX, 1849, ['N', 'N', 'N', 'N']
+
+
+REQUESTED: AABBCC, 1900, J, GENERATED USING: BASIC
+
+# AABBCC # 1900
+J # 11 # aný # na cestě do moskvy je zadumaný
+J # 11 # any # a scestny, rozvaly a rokle, lany
+J # 11 # omu # se choulí v krypty šerého jen domu,
+J # 11 # omu # jenž s větví starých dávno srostl k tomu
+J # 11 # ána # a posud jím v něm vichrem bije rána,
+J # 11 # ána # jak buší hromy teskných jeho rvána.
+
+PREDICTED: AABBCC, 1905, ['J', 'J', 'J', 'J', 'J', 'J']
+
+
+REQUESTED: AABBCC, 1900, J, GENERATED USING: FORCED
+
+# AABBCC # 1900
+J # 11 # oní # a z lesa vyšla. a květ lilií voní,
+J # 11 # oní # a v oknech mha se v barvách zlatých honí...
+J # 11 # ytu # tu s hvězdou v oku, tam pod mrakem třpytu.
+J # 11 # ytu # a v ruce harfu, píseň s dlaně v krytu,
+J # 11 # etem # ó, tak se s ní teď díváš mladým retem!
+J # 11 # etem # a hle, to dítě s bleskem, bleskem, letem
+PREDICTED: AABBCC, 1897, ['J', 'J', 'J', 'J', 'J', 'J']
+
+
+REQUESTED: AABBCC, 1900, T, GENERATED USING: BASIC
+
+# AABBCC # 1900
+T # 16 # ěti # v tom však běla náhle k němu ustoupila, ruce chvěla jako sněti,
+T # 8 # ětí # když se kmitla na zápětí
+T # 16 # eni # u dveří stál chvíli.  rychle vešli   ještě zaraženi,
+T # 4 # ení # nikdo není. 
+T # 15 # ená # od dveří jej rázem vyštval.  co se stalo?  vzrušená
+T # 7 # ěná # slova jenom prochvěná,
+
+PREDICTED: AABBCC, 1897, ['T', 'T', 'T', 'T', 'T', 'T']
+
+
+REQUESTED: AABBCC, 1900, T, GENERATED USING: FORCED
+
+# AABBCC # 1900
+T # 15 # ělo # jako když tu někde v koutě do půlnoci zaznělo
+T # 15 # ělo # a již se to celým dvorem ke vší tíži zachvělo.
+T # 15 # ely # ředitel šel sednouť k stolu, oči zamhouřiti zřely,
+T # 15 # ely # tenké stíny ženských tváří po jeho se otáčely.
+T # 15 # ěsti # ve všem ticho, v celém domě jenom strojil pověsti,
+T # 15 # ěsti # s kterou jenom bloudil kolem, divné šeptat pověsti.
+PREDICTED: AABBCC, 1907, ['T', 'T', 'T', 'T', 'T', 'T']
+
+
+REQUESTED: AABBCC, 1900, D, GENERATED USING: BASIC
+
+# AABBCC # 1900
+D # 10 # již # dávno co hugo ji pochoval již,
+D # 10 # tíž # jeho však jediná života tíž,
+D # 10 # květ # mladá, on snil jak nejkrásnější květ,
+D # 9 # vzkvet # v jeho že rukou co démant vzkvet.
+D # 10 # ětů # a když teď ze skrýše neznámých světů
+D # 11 # ětů # z úst zní mu jen posměšně plno těch květů,
+
+PREDICTED: AABBCC, 1901, ['D', 'D', 'D', 'D', 'D', 'D']
+
+
+REQUESTED: AABBCC, 1900, D, GENERATED USING: FORCED
+
+# AABBCC # 1900
+D # 8 # oků # za prvních pár set, i roků
+D # 8 # oků # v propastných vlnách vždy soků
+D # 9 # ínů # za tisíc zavalil, do klínů  
+D # 9 # ínů # jak za dnů mladosti rubínů
+D # 9 # erná # to řve v ní nenávist příšerná,
+D # 9 # erná # a v očích se mi blýská jí černá
+PREDICTED: AABBCC, 1927, ['D', 'D', 'D', 'D', 'D', 'D']
+
+
+REQUESTED: AABBCC, 1860, J, GENERATED USING: BASIC
+
+# AABBCC # 1860
+J # 11 # ení # toť jeho poslední juž políbení.
+J # 11 # ění # ta chvíle přišla  a v té sladké snění
+J # 11 # ídla # duch její zřel, že jejího jsou křídla,
+J # 11 # ídla # a ona zmizela jak jeho zřídla
+J # 11 # akem # a bezduší a v dáli pod oblakem
+J # 11 # akem # v ně dívala se milým, jasným zrakem  
+
+PREDICTED: AABBCC, 1892, ['J', 'J', 'J', 'J', 'J', 'J']
+
+
+REQUESTED: AABBCC, 1860, J, GENERATED USING: FORCED
+
+# AABBCC # 1860
+J # 11 # uhu # zde mezi vámi, zde na našem luhu, 
+J # 11 # uhu # náš mladý vavřín, podporován druhu,
+J # 11 # ase # se zaskvěl jako slunce ve zápase
+J # 11 # ase # a po všem našem lidství v novém čase.
+J # 11 # ený # to vše já tobě zjevím. vyvolený
+J # 11 # ený # jsem vlasti svojí k vlasti vyvolený,
+PREDICTED: AABBCC, 1930, ['J', 'J', 'J', 'J', 'J', 'J']
+
+
+REQUESTED: AABBCC, 1860, T, GENERATED USING: BASIC
+
+# AABBCC # 1860
+T # 16 # istě # kdyby tedy kés to bylo, nebo ďábel četl to tak čistě,
+T # 16 # ístě # jako člověk s tebou, kdybys byl kdys na pravém stál místě,
+T # 16 # íhal # na kterémž dle svatých zákonů jsi také pilně číhal,
+T # 16 # íhal # kdyby se to tedy někdo byl byl snad nenamíhal?
+T # 16 # ání # však bys poznal, jaký je to hřích a jaké namahání,
+T # 16 # ání # nebo kdyby bylo na tvé svaté vůli k neuznání
+
+PREDICTED: AABBCC, 1895, ['T', 'T', 'T', 'T', 'T', 'T']
+
+
+REQUESTED: AABBCC, 1860, T, GENERATED USING: FORCED
+
+# AABBCC # 1860
+T # 13 # ící # o vy oblakové lásky běloskvoucí!
+T # 13 # ící # pohledněte v naše oči se slzou spící,
+T # 13 # odí # pohledněte v naše oko, jež se obrodí,
+T # 13 # odí # a hle! i zde nám k potěše, k potěšení rodí.
+T # 13 # ení # hle! i zde nám pro nás celé krásné nebe není,
+T # 13 # ení # vždyť si také vtiskli jsme svou lásku v loučení!
+PREDICTED: XXAABB, 1864, ['T', 'T', 'T', 'T', 'T', 'T']
+
+
+REQUESTED: AABBCC, 1860, D, GENERATED USING: BASIC
+
+# AABBCC # 1860
+D # 11 # ělá # srdce mé plamenná, plamenná, smělá,
+D # 11 # ělá # plamenné srdce, jak rudý květ stkvělá,
+D # 11 # etlo # k smrti se chystá na pusté kmetlo,
+D # 10 # etlo # k světlu po světle v temnotě letlo.
+D # 9 # esa # k lásce a k štěstí, v nebesa,
+D # 10 # esa # ve tmáchli bloudíš na tmavém lesa!
+
+PREDICTED: AABBCC, 1893, ['D', 'D', 'X', 'X', 'X', 'X']
+
+
+REQUESTED: AABBCC, 1860, D, GENERATED USING: FORCED
+
+# AABBCC # 1860
+D # 10 # ouhou # a to se stalo za dobu dlouhou, 
+D # 10 # ouhou # choděra dlouho, nad sebou touhou
+D # 11 # aje # toužebně promlouvá, prozírá kraje,
+D # 11 # aje # a když se vrátil a rozplývá, znaje,
+D # 12 # ýše # vidí, že jaro již k vrcholu do výše
+D # 12 # ýše # s jekotem rozplývá se až u pýše.
+PREDICTED: AABBCC, 1920, ['D', 'N', 'D', 'D', 'D', 'D']
+
+

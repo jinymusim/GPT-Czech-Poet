@@ -95,51 +95,52 @@ with open(FILENAME, 'r') as file:
     #display_comparision(comparision_header= rows[9][1],
     #                    meter_data=np.asarray( list(map(float,rows[9][2:])) ), meter_base=0.8973, meter_improved=0.8928)
         
-    # Display RHYME and METER Meter_verse input base and pretarined
-    #display_comparision(comparision_header= rows[10][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[10][2:])) ), rhyme_base=0.4706, rhyme_improved=0.4977, 
-    #                    meter_data=np.asarray( list(map(float,rows[11][2:])) ), meter_base=0.9461, meter_improved=0.9483)
+    # Display RHYME and METER Verse-Par input base and pretarined
+    display_comparision(comparision_header= rows[10][1],
+                        rhyme_data=np.asarray( list(map(float,rows[10][2:])) ), rhyme_base=0.898, rhyme_improved=0.883, 
+                        meter_data=np.asarray( list(map(float,rows[11][2:])) ), meter_base=0.944, meter_improved=0.946)
     # Display RHYME and METER BASIC input base and pretarined
-    #display_comparision(comparision_header= rows[12][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[12][2:])) ), rhyme_base=0.4073, rhyme_improved=0.3355, 
-    #                    meter_data=np.asarray( list(map(float,rows[13][2:])) ), meter_base=0.9400, meter_improved=0.9436)
+    display_comparision(comparision_header= rows[12][1],
+                        rhyme_data=np.asarray( list(map(float,rows[12][2:])) ), rhyme_base=0.496, rhyme_improved=0.411, 
+                        meter_data=np.asarray( list(map(float,rows[13][2:])) ), meter_base=0.944, meter_improved=0.922)
     # Display RHYME BASE tok Basic to Forced Generation
-    #display_comparision(comparision_header= rows[14][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[14][2:])) ), rhyme_base=0.5051, rhyme_improved=0.5206,
-    #                    meter_data=np.asarray( list(map(float,rows[15][2:])) ), meter_base=0.9520, meter_improved=0.9498)
+    display_comparision(comparision_header= rows[14][1],
+                        rhyme_data=np.asarray( list(map(float,rows[14][2:])) ), rhyme_base=0.865, rhyme_improved=0.869,
+                        meter_data=np.asarray( list(map(float,rows[15][2:])) ), meter_base=0.945, meter_improved=0.938)
     # Display RHYME OUR tok Basic to Forced Generation
-    #display_comparision(comparision_header= rows[16][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[16][2:])) ), rhyme_base=0.4776, rhyme_improved=0.4843,
-    #                    meter_data=np.asarray( list(map(float,rows[17][2:])) ), meter_base=0.9533, meter_improved=0.9502)
+    display_comparision(comparision_header= rows[16][1],
+                        rhyme_data=np.asarray( list(map(float,rows[16][2:])) ), rhyme_base=0.806, rhyme_improved=0.806,
+                        meter_data=np.asarray( list(map(float,rows[17][2:])) ), meter_base=0.946, meter_improved=0.948)
     # Display RHYME SYLLABLE tok Basic to Forced Generation
-    #display_comparision(comparision_header= rows[18][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[18][2:])) ), rhyme_base=0.6909, rhyme_improved=0.6925)
+    display_comparision(comparision_header= rows[18][1],
+                        rhyme_data=np.asarray( list(map(float,rows[18][2:])) ), rhyme_base=0.887, rhyme_improved=0.877)
     # Display RHYME BASIC Input to METER\_VERSE Input
-    #display_comparision(comparision_header= rows[19][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[19][2:])) ), rhyme_base=0.4073, rhyme_improved=0.4956)
+    display_comparision(comparision_header= rows[19][1],
+                        rhyme_data=np.asarray( list(map(float,rows[19][2:])) ), rhyme_base=0.496, rhyme_improved=0.868)
     # Display RHYME BASE Tok to OUR Tok
-    #display_comparision(comparision_header= rows[20][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[20][2:])) ), rhyme_base=0.5206, rhyme_improved=0.4843)
+    display_comparision(comparision_header= rows[20][1],
+                        rhyme_data=np.asarray( list(map(float,rows[20][2:])) ), rhyme_base=0.869, rhyme_improved=0.806)
     # Display RHYME UNICODE Tok Basic to Forced Gen 
-    #display_comparision(comparision_header= rows[21][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[21][2:])) ), rhyme_base=0.6357, rhyme_improved=0.8128)
+    display_comparision(comparision_header= rows[21][1],
+                       rhyme_data=np.asarray( list(map(float,rows[21][2:])) ), rhyme_base=0.738, rhyme_improved=0.940)
     # Display RHYME BASE Tok to SYLLABLE Tok
-    #display_comparision(comparision_header= rows[22][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[22][2:])) ), rhyme_base=0.5206, rhyme_improved=0.6925)
+    display_comparision(comparision_header= rows[22][1],
+                        rhyme_data=np.asarray( list(map(float,rows[22][2:])) ), rhyme_base=0.869, rhyme_improved=0.877)
         
     # Display RHYME, METER BASE Tok Base to BASE tok Secondary
-    #display_comparision(comparision_header= rows[23][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[23][2:])) ), rhyme_base=0.4956, rhyme_improved=0.4992,
-    #                    meter_data=np.asarray( list(map(float,rows[24][2:])) ), meter_base=0.9487, meter_improved=0.9523)
+    display_comparision(comparision_header= rows[23][1],
+                        rhyme_data=np.asarray( list(map(float,rows[23][2:])) ), rhyme_base=0.868, rhyme_improved=0.865,
+                        meter_data=np.asarray( list(map(float,rows[24][2:])) ), meter_base=0.946, meter_improved=0.945)
     # Display RHYME, METER OUR Tok Base to OUR tok Secondary
-    #display_comparision(comparision_header= rows[25][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[25][2:])) ), rhyme_base=0.4828, rhyme_improved=0.4638,
-    #                    meter_data=np.asarray( list(map(float,rows[26][2:])) ), meter_base=0.9519, meter_improved=0.9528)
+    display_comparision(comparision_header= rows[25][1],
+                        rhyme_data=np.asarray( list(map(float,rows[25][2:])) ), rhyme_base=0.815, rhyme_improved=0.806,
+                        meter_data=np.asarray( list(map(float,rows[26][2:])) ), meter_base=0.945, meter_improved=0.946)
     # Display RHYME, METER SYLLABLE Tok Base to SYLLABLE tok Secondary
     display_comparision(comparision_header= rows[27][1],
-                        rhyme_data=np.asarray( list(map(float,rows[27][2:])) ), rhyme_base=0.6661, rhyme_improved=0.6844,
-                        meter_data=np.asarray( list(map(float,rows[28][2:])) ), meter_base=0.9552, meter_improved=0.9495)
+                        rhyme_data=np.asarray( list(map(float,rows[27][2:])) ), rhyme_base=0.902, rhyme_improved=0.887,
+                        meter_data=np.asarray( list(map(float,rows[28][2:])) ), meter_base=0.939, meter_improved=0.946)
+    # Display RHYME, METER SYLLABLE Tok to UNICODE Tok
     display_comparision(comparision_header= rows[29][1],
-                        rhyme_data=np.asarray( list(map(float,rows[29][2:])) ), rhyme_base=0.6925, rhyme_improved=0.8128,
-                        meter_data=np.asarray( list(map(float,rows[30][2:])) ), meter_base=0.9482, meter_improved=0.9410)
+                        rhyme_data=np.asarray( list(map(float,rows[29][2:])) ), rhyme_base=0.877, rhyme_improved=0.940,
+                        meter_data=np.asarray( list(map(float,rows[30][2:])) ), meter_base=0.942, meter_improved=0.940)
     

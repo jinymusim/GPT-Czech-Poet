@@ -13,16 +13,16 @@ from corpus_capsulated_datasets import CorpusDatasetPytorch
 parser = argparse.ArgumentParser()
 
 #parser.add_argument("--model_path_full", default='jinymusim/gpt-czech-poet',  type=str, help="Path to Model")
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'backup_LMS', 'CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-all-e4e16_LM')),  type=str, help="Path to Model")
-parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "unicode_generated_poems.txt")), type=str, help="Where to store the decoding efforts")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'backup_LMS', 'CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-all-e4e16_LM')),  type=str, help="Path to Model")
+parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results_new', "syllable_generated_poems.txt")), type=str, help="Where to store the decoding efforts")
 parser.add_argument("--sample", default=True, type=bool, help="If to sample during generation")
 
-parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_BPE_validator_1704126399565')),  type=str, help="Path to Model")
-parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'Context_ufal-robeczech-base_BPE_validator_1705689955968')),  type=str, help="Path to Model")
-parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'ufal-robeczech-base_BPE_validator_1702393305267')),  type=str, help="Path to Model")
+parser.add_argument("--rhyme_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils', 'validators', 'rhyme', 'distilroberta-base_BPE_validator_1706752010848')),  type=str, help="Path to Model")
+parser.add_argument("--metre_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'meter', 'Context_distilroberta-base_BPE_validator_1706752010848')),  type=str, help="Path to Model")
+parser.add_argument("--year_model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'utils' ,"validators", 'year', 'ufal-robeczech-base_BPE_validator_1706753939607')),  type=str, help="Path to Model")
 
 parser.add_argument("--validator_tokenizer_model_rhyme", default='distilroberta-base', type=str, help="Validator tokenizer")
-parser.add_argument("--validator_tokenizer_model_meter", default='ufal/robeczech-base', type=str, help="Validator tokenizer")
+parser.add_argument("--validator_tokenizer_model_meter", default='distilroberta-base', type=str, help="Validator tokenizer")
 parser.add_argument("--validator_tokenizer_model_year", default='ufal/robeczech-base', type=str, help="Validator tokenizer")
 parser.add_argument("--val_syllables_rhyme", default=False, type=bool, help="Does validator use syllables")
 parser.add_argument("--val_syllables_meter", default=False, type=bool, help="Does validator use syllables")
@@ -131,9 +131,9 @@ def decoder_helper(type, rhyme, year, meter):
         start_forced = f"# {rhyme} # {year}\n{meter} #"
         return model.generate_forced(start_forced, tokenizer, verse_len=len(rhyme), sample=True, device=device)
     
-for rhyme in StropheParams.RHYME[:10]:
-    for year in [1900, 1880, 1920]:
-        for meter in ['J', 'T', 'A', 'D']:
+for rhyme in StropheParams.RHYME[:8]:
+    for year in [1900, 1860]:
+        for meter in ['J', 'T', 'D']:
             for type in ['BASIC', 'FORCED']:
                 for _ in range(args.runs_per_setting):
                     generated_poem:str = decoder_helper(type, rhyme, year, meter)
