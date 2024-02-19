@@ -1,7 +1,7 @@
 
 # Syllable Training, Only Roberta for Unweighted examples
 
-#qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=distilroberta-base, MODEL=distilroberta-base, SYLAB=false, SAM=false, CONTEXT=false'  shell_scripts/all_val_train_helper.sh 
+#qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=distilroberta-base, MODEL=distilroberta-base, INPUT=BASE, CONTEXT=false'  shell_scripts/all_val_train_helper.sh 
 
 #qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=ufal/robeczech-base,  MODEL=ufal/robeczech-base, SYLAB=false, SAM=false, CONTEXT=false'  shell_scripts/all_val_train_helper.sh 
 
