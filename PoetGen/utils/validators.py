@@ -21,7 +21,7 @@ class ValidatorInterface(torch.nn.Module):
         """
         super().__init__(*args, **kwargs)
         
-    def forward(self, input_ids=None, attention_mask=None, *args, **kwargs):
+    def forward(self, input_ids=None, lables=None, attention_mask=None, *args, **kwargs):
         """Compute model output and model loss
 
         Args:
@@ -77,8 +77,8 @@ class RhymeValidator(ValidatorInterface):
                                                                                             6, 6, 6, 6, 6, 6,
                                                                                             7, 7, 1]) )
                                                         
-    def forward(self, input_ids=None, attention_mask=None, rhyme=None, *args, **kwargs):
-        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
+    def forward(self, input_ids=None, labels=None, attention_mask=None, rhyme=None, *args, **kwargs):
+        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
         
         last_hidden = outputs['hidden_states'][-1]
         
@@ -148,8 +148,8 @@ class MeterValidator(ValidatorInterface):
 
         self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.1, weight=torch.tensor([1, 1.5, 2.5, 5, 5, 7, 2.5, 7, 7, 0]))
         
-    def forward(self, input_ids=None, attention_mask=None, metre_ids=None, *args, **kwargs):
-        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
+    def forward(self, input_ids=None,  labels=None, attention_mask=None, metre_ids=None, *args, **kwargs):
+        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
         
         last_hidden = outputs['hidden_states'][-1]
         
@@ -219,8 +219,8 @@ class YearValidator(ValidatorInterface):
         
         self.loss_fnc_val = torch.nn.L1Loss()
         
-    def forward(self, input_ids=None, attention_mask=None, year_bucket=None, year=None, *args, **kwargs):
-        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=input_ids.type(torch.LongTensor))
+    def forward(self, input_ids=None, labels=None, attention_mask=None, year_bucket=None, year=None, *args, **kwargs):
+        outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
         
         last_hidden = outputs['hidden_states'][-1]
         

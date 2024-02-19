@@ -665,6 +665,7 @@ class CorpusDatasetPytorch:
         
         return  {
             "input_ids": input_ids,
+            "labels": input_ids.type(torch.LongTensor),
             "attention_mask": attention,
             "rhyme": rhyme,
             "metre_ids": None,
@@ -719,6 +720,7 @@ class CorpusDatasetPytorch:
             
         return  {
             "input_ids": input_ids,
+            "labels": input_ids.type(torch.LongTensor),
             "attention_mask": attention,
             "rhyme": None,
             "metre_ids": metre_ids,
@@ -778,6 +780,7 @@ class CorpusDatasetPytorch:
             
         return  {
             "input_ids": input_ids,
+            "labels": input_ids.type(torch.LongTensor),
             "attention_mask": attention,
             "rhyme": None,
             "metre_ids": metre_ids,
