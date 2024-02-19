@@ -2,7 +2,7 @@ dill
 torch 
 torchvision 
 torchaudio
-transformers
+transformers==4.34.1
 datasets
 accelerate
 pytorch-optimizer
