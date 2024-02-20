@@ -215,7 +215,7 @@ class YearValidator(ValidatorInterface):
         self.year_val = torch.nn.Linear(self.model_size, 1) # Year Value     
         
 
-        self.loss_fnc_era = torch.nn.CrossEntropyLoss(label_smoothing=0.1, weight=torch.tensor([5, 2.5, 1.5, 1.5, 1, 1, 1.5, 2, 2.5, 0]))
+        self.loss_fnc_era = torch.nn.CrossEntropyLoss(label_smoothing=0.2, weight=torch.tensor([2.5, 1.75, 1.25, 1.25, 1, 1, 1.25, 1.5, 1.75, 0]))
         
         self.loss_fnc_val = torch.nn.L1Loss()
         
