@@ -3,6 +3,7 @@ import torch
 import os
 import argparse
 import time
+import random
 
 from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase, EarlyStoppingCallback, IntervalStrategy
 from functools import partial
@@ -165,7 +166,7 @@ def main(args):
     if args.epochs_rhyme > 0:
         
         training_args =  TrainingArguments(
-                              output_dir=os.path.join( os.path.dirname(__file__), f"rhyme_validator_{time_stamp}"),
+                              output_dir=os.path.join( os.path.dirname(__file__), f"rhyme_validator_{time_stamp}_{random.randint(0,10000)}"),
                               overwrite_output_dir= True,
                               save_strategy  = IntervalStrategy.EPOCH,
                               save_total_limit=2,
@@ -207,7 +208,7 @@ def main(args):
     if args.epochs_metre > 0:
         
         training_args =  TrainingArguments(
-                              output_dir=os.path.join( os.path.dirname(__file__), f"meter_validator_{time_stamp}"),
+                              output_dir=os.path.join( os.path.dirname(__file__), f"meter_validator_{time_stamp}_{random.randint(0,10000)}"),
                               overwrite_output_dir= True,
                               save_strategy  = IntervalStrategy.EPOCH,
                               save_total_limit=2,
@@ -249,7 +250,7 @@ def main(args):
     if args.epochs_year > 0:
         
         training_args =  TrainingArguments(
-                              output_dir=os.path.join( os.path.dirname(__file__), f"year_validator_{time_stamp}"),
+                              output_dir=os.path.join( os.path.dirname(__file__), f"year_validator_{time_stamp}_{random.randint(0,10000)}"),
                               overwrite_output_dir= True,
                               save_strategy  = IntervalStrategy.EPOCH,
                               save_total_limit=2,
