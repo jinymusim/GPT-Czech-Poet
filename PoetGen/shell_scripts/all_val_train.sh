@@ -5,19 +5,19 @@ qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:sc
 
 qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=distilroberta-base, MODEL=distilroberta-base, INPUT=SYLLABLE, CONTEXT=true'  shell_scripts/all_val_train_helper.sh 
 
-qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=distilroberta-base, MODEL=distilroberta-base, INPUT=VERESMARK, CONTEXT=true'  shell_scripts/all_val_train_helper.sh 
+qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=distilroberta-base, MODEL=distilroberta-base, INPUT=VERSEMARK, CONTEXT=true'  shell_scripts/all_val_train_helper.sh 
 
 qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=roberta-base, MODEL=roberta-base, INPUT=BASE, CONTEXT=true'  shell_scripts/all_val_train_helper.sh 
 
 qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=roberta-base, MODEL=roberta-base, INPUT=SYLLABLE, CONTEXT=true'  shell_scripts/all_val_train_helper.sh 
 
-qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=roberta-base, MODEL=roberta-base, INPUT=VERESMARK, CONTEXT=true'  shell_scripts/all_val_train_helper.sh 
+qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=roberta-base, MODEL=roberta-base, INPUT=VERSEMARK, CONTEXT=true'  shell_scripts/all_val_train_helper.sh 
 
 qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=ufal/robeczech-base, MODEL=ufal/robeczech-base, INPUT=BASE, CONTEXT=true'  shell_scripts/all_val_train_helper.sh 
 
 qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=ufal/robeczech-base, MODEL=ufal/robeczech-base, INPUT=SYLLABLE, CONTEXT=true'  shell_scripts/all_val_train_helper.sh 
 
-qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=ufal/robeczech-base, MODEL=ufal/robeczech-base, INPUT=VERESMARK, CONTEXT=true'  shell_scripts/all_val_train_helper.sh 
+qsub -N TrainVal -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=300:00:00 -v 'EPMETER=16, EPRHYME=16, EPYEAR=16, TOK=ufal/robeczech-base, MODEL=ufal/robeczech-base, INPUT=VERSEMARK, CONTEXT=true'  shell_scripts/all_val_train_helper.sh 
 
 
 # RHYME LONG TRAINING DONE 
