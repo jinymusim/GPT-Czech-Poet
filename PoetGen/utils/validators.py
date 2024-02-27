@@ -68,7 +68,7 @@ class RhymeValidator(ValidatorInterface):
         
         self.rhyme_regressor = torch.nn.Linear(self.model_size, len(StropheParams.RHYME)) # Common Rhyme Type
         
-        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.1, weight=torch.tensor([1, 1, 1, 1, 1, 1, 
+        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.0, weight=torch.tensor([1, 1, 1, 1, 1, 1, 
                                                                                             1.25, 1.25, 1.25, 1.5, 1.5, 1.5, 
                                                                                             1.5, 1.5, 1.5, 1.5, 2, 2, 
                                                                                             2.5, 2.5, 2.5, 2.5, 3, 3, 
@@ -146,7 +146,7 @@ class MeterValidator(ValidatorInterface):
         
         self.meter_regressor = torch.nn.Linear(self.model_size, len(StropheParams.METER)) # Meter Type
 
-        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.1, weight=torch.tensor([1, 1.5, 2.5, 5, 5, 7, 2.5, 7, 7, 0]))
+        self.loss_fnc = torch.nn.CrossEntropyLoss(label_smoothing=0.0, weight=torch.tensor([1, 1.5, 2.5, 5, 5, 7, 2.5, 7, 7, 0]))
         
     def forward(self, input_ids=None,  labels=None, attention_mask=None, metre_ids=None, *args, **kwargs):
         outputs = self.model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
@@ -215,7 +215,7 @@ class YearValidator(ValidatorInterface):
         self.year_val = torch.nn.Linear(self.model_size, 1) # Year Value     
         
 
-        self.loss_fnc_era = torch.nn.CrossEntropyLoss(label_smoothing=0.2, weight=torch.tensor([2.5, 1.75, 1.25, 1.25, 1, 1, 1.25, 1.5, 1.75, 0]))
+        self.loss_fnc_era = torch.nn.CrossEntropyLoss(label_smoothing=0.0, weight=torch.tensor([2.5, 1.75, 1.25, 1.25, 1, 1, 1.25, 1.5, 1.75, 0]))
         
         self.loss_fnc_val = torch.nn.L1Loss()
         
