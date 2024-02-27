@@ -7,3 +7,4 @@ datasets
 accelerate
 pytorch-optimizer
 jellyfish
+evaluate
