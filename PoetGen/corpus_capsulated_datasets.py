@@ -33,7 +33,7 @@ class CorpusDatasetPytorch:
             for filename in self._data_file_paths:
                  yield open(filename, 'r') 
                  
-        def get_text(self):
+        def get_verses(self):
             """Get lines of text of poetry
 
             Yields:
@@ -48,7 +48,7 @@ class CorpusDatasetPytorch:
                         for text_line in part_line:
                             yield text_line['text'].lower() if self.lower_case else text_line['text']
                             
-        def get_part(self):
+        def get_strophes(self):
             """Get strophe of poetry
 
             Yields:
@@ -65,7 +65,7 @@ class CorpusDatasetPytorch:
                             part.append(text_line['text'])
                         yield "\n".join(part).lower() if self.lower_case else "\n".join(part)
         
-        def get_body(self):
+        def get_poems(self):
             """Get whole poem
 
             Yields:
@@ -76,7 +76,8 @@ class CorpusDatasetPytorch:
                     print(f"Processing file {step}")
                 datum = json.load(file)
                 for data_line in datum:
-                    body = []
+                    body = [ f"{data_line['biblio']['p_title']}:" ]
+                    
                     for part_line in data_line['body']:
                         
                         for text_line in part_line:

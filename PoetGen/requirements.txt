@@ -8,3 +8,4 @@ accelerate
 pytorch-optimizer
 jellyfish
 evaluate
+bitsandbytes

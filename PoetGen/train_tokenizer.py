@@ -105,7 +105,7 @@ def main(args):
     train_data = CorpusDatasetPytorch(SEGMENT_TYPE= SEG_TYPE ,data_dir=args.data_path, lower_case=args.lower_case)
     # Train on raw or processed data
     if args.raw_data:
-        tokenizer.train_from_iterator(train_data.raw_dataset.get_body(),trainer=trainer)
+        tokenizer.train_from_iterator(train_data.raw_dataset.get_poems(),trainer=trainer)
     else:
         # Train on syllable or normal processed data
         tokenizer.train_from_iterator([text['input_ids'] for text in train_data.train_strophes.data]  \

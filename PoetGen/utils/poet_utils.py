@@ -70,6 +70,11 @@ class StropheParams:
                'o','ó','p','q','r','ř','s','š','t','ť','u',
                'ú','ů','v','w','x','y','ý','z','ž']
     CHARS = VALID_CHARS
+    
+    POEM_TYPES = ['mysticismus', 'dětství', 'bůh', 'láska', 'život', 'umění', 'poezie',
+    'smutek', 'zoufalství', 'deprese', 'smrt', 'náboženství', 'příroda', 'krása', 'stárnutí', 'touha',
+    'cestování', 'sny', 'zrození', 'válka', 'neúspěch', 'nesmrtelnost', 'fantazie']
+    TYPES = POEM_TYPES
 class Tokens:
 # Tokenizers Special Tokens
     EOS = "<|EOS|>"
