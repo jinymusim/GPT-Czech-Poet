@@ -85,4 +85,4 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň: \
     
         file[i]['sumarization'] = sumarization
     
-    json.dump(file, open(poem_file, 'w+'), indent=6)   
+    json.dump(file, open(os.path.join(args.data_path, poem_file), 'w+'), indent=6)   
