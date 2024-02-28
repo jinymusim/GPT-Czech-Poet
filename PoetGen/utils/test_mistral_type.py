@@ -76,12 +76,12 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň: \
 \n{poem}\n=========\nToto je schrnutí předešlé básně:"
         tokenized = tokenizer(input_text, return_tensors='pt').to(device)
         out = model.generate(**tokenized, 
-                    max_new_tokens = 200,
+                    max_new_tokens = 250,
                     top_k=50,
                     eos_token_id = tokenizer.eos_token_id,
                     pad_token_id = tokenizer.pad_token_id )
         out_decoded = tokenizer.decode(out.cpu()[0], skip_special_tokens=True)
-        sumarization = out_decoded[len(input_text):].strip()
+        sumarization =  out_decoded[len(input_text):].strip()
     
         file[i]['sumarization'] = sumarization
     
