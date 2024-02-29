@@ -7,6 +7,7 @@ from poet_utils import StropheParams
 
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
+os.environ['PYTORCH_CUDA_ALLOC_CONF']= 'expandable_segments:True'
 
 parser = argparse.ArgumentParser()
 
@@ -37,11 +38,12 @@ if torch.cuda.is_available():
                                     bnb_4bit_compute_dtype=torch.bfloat16)
 
     tokenizer = AutoTokenizer.from_pretrained(args.model )
-    model = AutoModelForCausalLM.from_pretrained(args.model, quantization_config=four_bits)
+    model = AutoModelForCausalLM.from_pretrained(args.model, quantization_config=four_bits).to(device)
 else:
     tokenizer = AutoTokenizer.from_pretrained(args.model )
     model = AutoModelForCausalLM.from_pretrained(args.model)
 
+model.eval()
 dataset= os.listdir(args.data_path)
 
 for poem_file in dataset:
@@ -65,7 +67,7 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň: \
                     max_new_tokens = 25,
                     top_k=30,
                     eos_token_id = tokenizer.eos_token_id,
-                    pad_token_id = tokenizer.pad_token_id ).cpu()[0]
+                    pad_token_id = tokenizer.pad_token_id ).detach().cpu()[0]
         out_decoded = tokenizer.decode(out, skip_special_tokens=True)
         categories = out_decoded[len(input_text):].split('\n')[0]
         categories = list(map(str.strip, categories.split(',')))
@@ -81,7 +83,7 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň: \
                     max_new_tokens = 200,
                     top_k=30,
                     eos_token_id = tokenizer.eos_token_id,
-                    pad_token_id = tokenizer.pad_token_id ).cpu()[0]
+                    pad_token_id = tokenizer.pad_token_id ).detach().cpu()[0]
         out_decoded = tokenizer.decode(out, skip_special_tokens=True)
         sumarization =  out_decoded[len(input_text):].strip()
     
