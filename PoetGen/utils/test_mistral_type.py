@@ -45,50 +45,50 @@ else:
 
 model.eval()
 dataset= os.listdir(args.data_path)
-
-for poem_file in dataset:
-    if not os.path.isfile(os.path.join(args.data_path, poem_file)):
-        continue
-    
-    file = json.load(open(os.path.join(args.data_path, poem_file) , 'r'))
-    for i, poem_data in enumerate(file):
-        poem_text = []  
-        poem_text.append(poem_data['biblio']['p_title'])
-        for strophe in poem_data['body']:
-                for verse in strophe:
-                    poem_text.append(verse['text'])
-                poem_text.append("\n")
-        poem = "\n".join(poem_text)
-        input_text = f"Toto jsou kategorie: {', '.join(StropheParams.POEM_TYPES)}. \
+with torch.no_grad():
+    for poem_file in dataset:
+        if not os.path.isfile(os.path.join(args.data_path, poem_file)):
+            continue
+        
+        file = json.load(open(os.path.join(args.data_path, poem_file) , 'r'))
+        for i, poem_data in enumerate(file):
+            poem_text = []  
+            poem_text.append(poem_data['biblio']['p_title'])
+            for strophe in poem_data['body']:
+                    for verse in strophe:
+                        poem_text.append(verse['text'])
+                    poem_text.append("\n")
+            poem = "\n".join(poem_text)
+            input_text = f"Toto jsou kategorie: {', '.join(StropheParams.POEM_TYPES)}. \
 Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň: \
 \n{poem}\n=========\nkategorie:"
-        tokenized = tokenizer(input_text, return_tensors='pt').to(device)
-        out = model.generate(**tokenized, 
-                    max_new_tokens = 25,
-                    top_k=30,
-                    eos_token_id = tokenizer.eos_token_id,
-                    pad_token_id = tokenizer.pad_token_id ).detach().cpu()[0]
-        out_decoded = tokenizer.decode(out, skip_special_tokens=True)
-        categories = out_decoded[len(input_text):].split('\n')[0]
-        categories = list(map(str.strip, categories.split(',')))
-        categories = list(filter(lambda x: len(x) > 0, categories))
-        categories = list(filter(lambda x: x in StropheParams.POEM_TYPES, categories))
-    
-        file[i]['categories'] = categories
+            tokenized = tokenizer(input_text, return_tensors='pt').to(device)
+            out = model.generate(**tokenized, 
+                        max_new_tokens = 25,
+                        top_k=30,
+                        eos_token_id = tokenizer.eos_token_id,
+                        pad_token_id = tokenizer.pad_token_id ).detach().cpu()[0]
+            out_decoded = tokenizer.decode(out, skip_special_tokens=True)
+            categories = out_decoded[len(input_text):].split('\n')[0]
+            categories = list(map(str.strip, categories.split(',')))
+            categories = list(filter(lambda x: len(x) > 0, categories))
+            categories = list(filter(lambda x: x in StropheParams.POEM_TYPES, categories))
         
-        input_text = f"Toto je báseň: \
+            file[i]['categories'] = categories
+            
+            input_text = f"Toto je báseň: \
 \n{poem}\n=========\nToto je schrnutí předešlé básně:"
-        tokenized = tokenizer(input_text, return_tensors='pt').to(device)
-        out = model.generate(**tokenized, 
-                    max_new_tokens = 200,
-                    top_k=30,
-                    eos_token_id = tokenizer.eos_token_id,
-                    pad_token_id = tokenizer.pad_token_id ).detach().cpu()[0]
-        out_decoded = tokenizer.decode(out, skip_special_tokens=True)
-        sumarization =  out_decoded[len(input_text):].strip()
-    
-        file[i]['sumarization'] = sumarization
+            tokenized = tokenizer(input_text, return_tensors='pt').to(device)
+            out = model.generate(**tokenized, 
+                        max_new_tokens = 200,
+                        top_k=30,
+                        eos_token_id = tokenizer.eos_token_id,
+                        pad_token_id = tokenizer.pad_token_id ).detach().cpu()[0]
+            out_decoded = tokenizer.decode(out, skip_special_tokens=True)
+            sumarization =  out_decoded[len(input_text):].strip()
         
-        torch.cuda.empty_cache()
-    
-    json.dump(file, open(os.path.join(args.data_path, poem_file), 'w+'), indent=6)   
+            file[i]['sumarization'] = sumarization
+            
+            torch.cuda.empty_cache()
+        
+        json.dump(file, open(os.path.join(args.data_path, poem_file), 'w+'), indent=6)   
