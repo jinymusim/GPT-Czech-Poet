@@ -38,7 +38,7 @@ if torch.cuda.is_available():
                                     bnb_4bit_compute_dtype=torch.bfloat16)
 
     tokenizer = AutoTokenizer.from_pretrained(args.model )
-    model = AutoModelForCausalLM.from_pretrained(args.model, quantization_config=four_bits).to(device)
+    model = AutoModelForCausalLM.from_pretrained(args.model, quantization_config=four_bits)
 else:
     tokenizer = AutoTokenizer.from_pretrained(args.model )
     model = AutoModelForCausalLM.from_pretrained(args.model)
