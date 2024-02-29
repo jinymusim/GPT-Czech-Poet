@@ -29,23 +29,23 @@ if __name__ == '__main__':
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
 device = torch.device('cpu')
-
-if torch.cuda.is_available():
-    device = torch.device('cuda')
-    four_bits =  BitsAndBytesConfig(load_in_4bit=True,
-                                    bnb_4bit_quant_type="nf4",
-                                    bnb_4bit_use_double_quant=True,
-                                    bnb_4bit_compute_dtype=torch.bfloat16)
-
-    tokenizer = AutoTokenizer.from_pretrained(args.model )
-    model = AutoModelForCausalLM.from_pretrained(args.model, quantization_config=four_bits)
-else:
-    tokenizer = AutoTokenizer.from_pretrained(args.model )
-    model = AutoModelForCausalLM.from_pretrained(args.model)
-
-model.eval()
-dataset= os.listdir(args.data_path)
 with torch.no_grad():
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
+        four_bits =  BitsAndBytesConfig(load_in_4bit=True,
+                                        bnb_4bit_quant_type="nf4",
+                                        bnb_4bit_use_double_quant=True,
+                                        bnb_4bit_compute_dtype=torch.bfloat16)
+    
+        tokenizer = AutoTokenizer.from_pretrained(args.model )
+        model = AutoModelForCausalLM.from_pretrained(args.model, quantization_config=four_bits)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(args.model )
+        model = AutoModelForCausalLM.from_pretrained(args.model)
+    
+    model.eval()
+    dataset= os.listdir(args.data_path)
+
     for poem_file in dataset:
         if not os.path.isfile(os.path.join(args.data_path, poem_file)):
             continue
