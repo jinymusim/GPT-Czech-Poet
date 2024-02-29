@@ -53,7 +53,10 @@ with torch.no_grad():
         file = json.load(open(os.path.join(args.data_path, poem_file) , 'r'))
         for i, poem_data in enumerate(file):
             poem_text = []  
-            poem_text.append(poem_data['biblio']['p_title'])
+            if poem_data['biblio']['p_title'] != None:
+                poem_text.append(poem_data['biblio']['p_title'])
+            else:
+                poem_text.append("Neznámý název")
             for strophe in poem_data['body']:
                     for verse in strophe:
                         poem_text.append(verse['text'])
