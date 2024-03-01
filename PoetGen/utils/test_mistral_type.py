@@ -22,14 +22,15 @@ parser = argparse.ArgumentParser()
 # Open-Orca/Mistral-7B-OpenOrca
 
 # mistralai/Mixtral-8x7B-Instruct-v0.1
-parser.add_argument("--model", default='NickyNicky/Mistral-7B-OpenOrca-oasst_top1_2023-08-25-v2', type=str, help='Huggingface model id')
+parser.add_argument("--model", default='mistralai/Mixtral-8x7B-Instruct-v0.1', type=str, help='Huggingface model id')
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
 
 if __name__ == '__main__':
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
-device = torch.device('cpu')
+
 with torch.no_grad():
+    device = torch.device('cpu')
     if torch.cuda.is_available():
         device = torch.device('cuda')
         four_bits =  BitsAndBytesConfig(load_in_4bit=True,
@@ -92,6 +93,5 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň: \
         
             file[i]['sumarization'] = sumarization
             
-            torch.cuda.empty_cache()
         
         json.dump(file, open(os.path.join(args.data_path, poem_file), 'w+'), indent=6)   
