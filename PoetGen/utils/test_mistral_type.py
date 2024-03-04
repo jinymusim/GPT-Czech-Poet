@@ -23,12 +23,13 @@ parser = argparse.ArgumentParser()
 
 # mistralai/Mixtral-8x7B-Instruct-v0.1
 # jarradh/llama2_70b_chat_uncensored
-parser.add_argument("--model", default='jarradh/llama2_70b_chat_uncensored', type=str, help='Huggingface model id')
+parser.add_argument("--model", default='mistralai/Mixtral-8x7B-Instruct-v0.1', type=str, help='Huggingface model id')
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
 
 if __name__ == '__main__':
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
+tokenizer = AutoTokenizer.from_pretrained(args.model)
 
 with torch.no_grad():
     device = torch.device('cpu')
@@ -39,10 +40,9 @@ with torch.no_grad():
                                         bnb_4bit_use_double_quant=True,
                                         bnb_4bit_compute_dtype=torch.bfloat16)
     
-        tokenizer = AutoTokenizer.from_pretrained(args.model )
+        
         model = AutoModelForCausalLM.from_pretrained(args.model, quantization_config=four_bits)
     else:
-        tokenizer = AutoTokenizer.from_pretrained(args.model )
         model = AutoModelForCausalLM.from_pretrained(args.model)
     
     model.eval()
