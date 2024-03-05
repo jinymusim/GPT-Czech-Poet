@@ -2,8 +2,8 @@
 #PBS -q gpu -l select=1:ncpus=1:ngpus=1:mem=24gb:scratch_local=16gb
 #PBS -l walltime=24:00:00
 module add py-pip/21.3.1-gcc-10.2.1-mjt74tn
-/cvmfs/software.metacentrum.cz/spack18/software/linux-debian11-x86_64_v2/gcc-10.2.1/python-3.9.12-rg2lpmkxpcq423gx5gmedbyam7eibwtc/bin/python3.9 -m pip install --upgrade pip
 export TMPDIR=$SCRATCHDIR
+export CMAKE_ARGS="-DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS" 
 cd $SCRATCHDIR
 pip install --target=$SCRATCHDIR torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/requirements.txt
