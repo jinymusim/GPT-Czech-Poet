@@ -32,13 +32,13 @@ if __name__ == '__main__':
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
 
-model_name = 'TheBloke/Llama-2-70B-GGML'
+model_name = 'TheBloke/Llama-2-70B-Chat-GGUF'
 
 with torch.no_grad():
     
     model = Llama.from_pretrained(
         repo_id=model_name,
-        filename="*q5_K_M.bin",
+        filename="*Q5_K_M.gguf",
         verbose=False,
         chat_format="llama-2",
         #n_gpu_layers=-1
@@ -90,7 +90,7 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň a vypiš 
                 
             
             
-            categories = list(map(str.strip, re.findall(r'\s|,|[^,\s]+', categories)))
+            categories = list(map(str.strip, re.findall(r'\w+', categories)))
             categories = list(filter(lambda x: len(x) > 0, categories))
             categories = list(filter(lambda x: x in StropheParams.POEM_TYPES, categories))
         
