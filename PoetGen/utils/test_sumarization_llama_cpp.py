@@ -1,0 +1,128 @@
+import argparse
+import os
+import torch
+import json
+import re
+
+from poet_utils import StropheParams
+
+from llama_cpp import Llama
+
+os.environ['PYTORCH_CUDA_ALLOC_CONF']= 'expandable_segments:True'
+
+parser = argparse.ArgumentParser()
+
+
+#repo_id='TheBloke/Llama-2-70B-Chat-GGUF',
+#filename="*Q5_K_M.gguf",
+
+#repo_id='TheBloke/Llama-2-7B-Chat-GGUF',
+#filename="*Q5_K_M.gguf",
+
+#repo_id='TheBloke/Llama-2-7B-GGUF',
+#filename="*Q5_K_M.gguf",
+
+#repo_id='TheBloke/Llama-2-70B-GGML',
+#filename="*q6_K.bin",
+
+
+parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
+
+if __name__ == '__main__':
+    args = parser.parse_args([] if "__file__" not in globals() else None)
+
+
+model_name = 'TheBloke/Llama-2-70B-GGML'
+
+with torch.no_grad():
+    
+    model = Llama.from_pretrained(
+        repo_id=model_name,
+        filename="*q6_K.bin",
+        verbose=False,
+        chat_format="llama-2",
+        #n_gpu_layers=-1
+    )
+    
+    dataset= os.listdir(args.data_path)
+
+    for poem_file in dataset:
+        if not os.path.isfile(os.path.join(args.data_path, poem_file)):
+            continue
+        
+        file = json.load(open(os.path.join(args.data_path, poem_file) , 'r'))
+        for i, poem_data in enumerate(file):
+            poem_text = []  
+            if poem_data['biblio']['p_title'] != None:
+                poem_text.append(poem_data['biblio']['p_title'])
+            else:
+                poem_text.append("Neznámý název")
+            for strophe in poem_data['body']:
+                    for verse in strophe:
+                        poem_text.append(verse['text'])
+                    poem_text.append("\n")
+            poem = "\n".join(poem_text)
+            input_text = f"Toto jsou kategorie: {', '.join(StropheParams.POEM_TYPES)}. \
+Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň a vypiš pouze je: \
+\n{poem} \nKategorie: "
+            if 'Chat' in model_name:
+                out = model.create_chat_completion(
+                    messages = [
+                        {
+                            "role": "system", 
+                            "content": "Jsi asistent který rozumí básním a umí je kategorizovat."
+                        },
+                        {
+                            "role": "user",
+                            "content": input_text
+                        }
+                    ],
+                    response_format={
+                        "type": "json_object",
+                    },
+                    )
+                categories = out['choices'][0]['message']['content']
+            else:
+                out = model(
+                    f'{input_text}',
+                    )
+                categories = out['choices'][0]['text']
+                
+            
+            
+            categories = list(map(str.strip, re.findall(r'\s|,|[^,\s]+', categories)))
+            categories = list(filter(lambda x: len(x) > 0, categories))
+            categories = list(filter(lambda x: x in StropheParams.POEM_TYPES, categories))
+        
+            file[i]['categories'] = categories
+            
+            input_text = f"Toto je báseň: \
+\n{poem}\n\nNapiš schrnutí předešlé básně: "
+            if 'Chat' in model_name:
+                out = model.create_chat_completion(
+                    messages = [
+                        {
+                            "role": "system", 
+                            "content": "Jsi asistent který rozumí básním a umí je sumarizovat."
+                        },
+                        {
+                            "role": "user",
+                            "content": input_text
+                        }
+                    ],
+                    response_format={
+                        "type": "json_object",
+                    },
+                    )
+                sumarization =  out['choices'][0]['message']['content']
+            else:
+                out = model(
+                    f'{input_text}',
+                    )
+                sumarization =  out['choices'][0]['text']
+            
+        
+            file[i]['sumarization'] = sumarization
+            
+        
+        json.dump(file, open(os.path.join(args.data_path, poem_file), 'w+'), indent=6)   

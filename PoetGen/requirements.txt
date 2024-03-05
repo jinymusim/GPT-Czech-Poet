@@ -9,3 +9,5 @@ pytorch-optimizer
 jellyfish
 evaluate
 bitsandbytes
+huggingface-hub
+llama-cpp-python -C cmake.args="-DLLAMA_BLAS=ON;-DLLAMA_BLAS_VENDOR=OpenBLAS"
