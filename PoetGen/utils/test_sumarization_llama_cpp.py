@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser()
 #filename="*Q5_K_M.gguf",
 
 #repo_id='TheBloke/Llama-2-70B-GGML',
-#filename="*q6_K.bin",
+#filename="*q5_K_M.bin", 
 
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
@@ -38,7 +38,7 @@ with torch.no_grad():
     
     model = Llama.from_pretrained(
         repo_id=model_name,
-        filename="*q6_K.bin",
+        filename="*q5_K_M.bin",
         verbose=False,
         chat_format="llama-2",
         #n_gpu_layers=-1
