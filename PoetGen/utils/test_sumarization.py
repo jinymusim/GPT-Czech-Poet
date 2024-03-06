@@ -79,7 +79,7 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň: \
                         pad_token_id = tokenizer.pad_token_id ).detach().cpu()[0]
             out_decoded = tokenizer.decode(out, skip_special_tokens=True)
             
-            categories = list(map(str.strip, re.findall(r'\w+', categories)))
+            categories = list(map(str.strip, re.findall(r'\w+', out_decoded)))
             categories = list(filter(lambda x: len(x) > 0, categories))
             categories = list(filter(lambda x: x in StropheParams.POEM_TYPES, categories))
         
