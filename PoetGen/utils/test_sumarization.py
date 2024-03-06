@@ -2,6 +2,8 @@ import argparse
 import os
 import torch
 import json
+import re
+from tqdm import tqdm
 
 from poet_utils import StropheParams
 
@@ -49,7 +51,7 @@ with torch.no_grad():
     model.eval()
     dataset= os.listdir(args.data_path)
 
-    for poem_file in dataset:
+    for poem_file in tqdm(dataset):
         if not os.path.isfile(os.path.join(args.data_path, poem_file)):
             continue
         
@@ -70,13 +72,13 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň: \
 \n{poem}\n=========\nkategorie:"
             tokenized = tokenizer(input_text, return_tensors='pt').to(device)
             out = model.generate(**tokenized, 
-                        max_new_tokens = 25,
-                        top_k=30,
+                        do_sample=True,
+                        top_k=50,
                         eos_token_id = tokenizer.eos_token_id,
                         pad_token_id = tokenizer.pad_token_id ).detach().cpu()[0]
             out_decoded = tokenizer.decode(out, skip_special_tokens=True)
-            categories = out_decoded[len(input_text):].split('\n')[0]
-            categories = list(map(str.strip, categories.split(',')))
+            
+            categories = list(map(str.strip, re.findall(r'\w+', categories)))
             categories = list(filter(lambda x: len(x) > 0, categories))
             categories = list(filter(lambda x: x in StropheParams.POEM_TYPES, categories))
         
@@ -86,11 +88,12 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň: \
 \n{poem}\n=========\nToto je schrnutí předešlé básně:"
             tokenized = tokenizer(input_text, return_tensors='pt').to(device)
             out = model.generate(**tokenized, 
-                        max_new_tokens = 200,
-                        top_k=30,
+                        do_sample=True,
+                        top_k=50,
                         eos_token_id = tokenizer.eos_token_id,
                         pad_token_id = tokenizer.pad_token_id ).detach().cpu()[0]
             out_decoded = tokenizer.decode(out, skip_special_tokens=True)
+            
             sumarization =  out_decoded[len(input_text):].strip()
         
             file[i]['sumarization'] = sumarization
