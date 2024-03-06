@@ -9,8 +9,6 @@ from poet_utils import StropheParams
 
 from llama_cpp import Llama
 
-os.environ['PYTORCH_CUDA_ALLOC_CONF']= 'expandable_segments:True'
-
 parser = argparse.ArgumentParser()
 
 
@@ -24,7 +22,7 @@ parser = argparse.ArgumentParser()
 #filename="*Q5_K_M.gguf",
 
 #repo_id='TheBloke/Mixtral-8x7B-v0.1-GGUF',
-#filename="*Q5_K_M.gguf", 
+#filename="*Q4_K_M.gguf", 
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
 
@@ -32,14 +30,14 @@ if __name__ == '__main__':
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
 
-model_name = 'TheBloke/Llama-2-70B-Chat-GGUF'
+model_name = 'TheBloke/Mixtral-8x7B-v0.1-GGUF'
 
 with torch.no_grad():
     
     model = Llama.from_pretrained(
         repo_id=model_name,
-        filename="*Q5_K_M.gguf",
-        verbose=False,
+        filename="*Q4_K_M.gguf",
+        verbose=True,
         chat_format="llama-2",
         n_gpu_layers=-1
     )
