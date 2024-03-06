@@ -3,6 +3,7 @@ import os
 import torch
 import json
 import re
+from tqdm import tqdm
 
 from poet_utils import StropheParams
 
@@ -45,7 +46,7 @@ with torch.no_grad():
     
     dataset= os.listdir(args.data_path)
 
-    for poem_file in dataset:
+    for poem_file in tqdm(dataset):
         if not os.path.isfile(os.path.join(args.data_path, poem_file)):
             continue
         
