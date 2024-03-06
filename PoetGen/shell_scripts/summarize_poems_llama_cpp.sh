@@ -1,5 +1,6 @@
 #!/bin/bash
 module add python/3.10.4-gcc-8.3.0-ovkjwzd
+python3 -m ensurepip --upgrade
 export TMPDIR=$SCRATCHDIR
 export CMAKE_ARGS="-DLLAMA_CUBLAS=on"
 export FORCE_CMAKE=1
