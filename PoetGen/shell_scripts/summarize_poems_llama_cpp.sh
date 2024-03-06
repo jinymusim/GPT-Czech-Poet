@@ -9,4 +9,4 @@ CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install --target=$SCRATCHDIR  llama-cpp-pytho
 pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/requirements.txt
 export PYTHONPATH="${PYTHONPATH}:${TMPDIR}"
 cd /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/utils
-sudo python3 test_sumarization_llama_cpp.py
+python3 test_sumarization_llama_cpp.py
