@@ -23,7 +23,8 @@ parser = argparse.ArgumentParser()
 
 # mistralai/Mixtral-8x7B-Instruct-v0.1
 # jarradh/llama2_70b_chat_uncensored
-parser.add_argument("--model", default='mistralai/Mixtral-8x7B-Instruct-v0.1', type=str, help='Huggingface model id')
+# mistralai/Mixtral-8x7B-v0.1
+parser.add_argument("--model", default='mistralai/Mixtral-8x7B-v0.1', type=str, help='Huggingface model id')
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
 
 if __name__ == '__main__':
