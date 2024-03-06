@@ -22,9 +22,8 @@ parser = argparse.ArgumentParser()
 #repo_id='TheBloke/Llama-2-7B-GGUF',
 #filename="*Q5_K_M.gguf",
 
-#repo_id='TheBloke/Llama-2-70B-GGML',
-#filename="*q5_K_M.bin", 
-
+#repo_id='TheBloke/Mixtral-8x7B-v0.1-GGUF',
+#filename="*Q5_K_M.gguf", 
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
 
@@ -32,7 +31,7 @@ if __name__ == '__main__':
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
 
-model_name = 'TheBloke/Llama-2-70B-Chat-GGUF'
+model_name = 'TheBloke/Mixtral-8x7B-v0.1-GGUF'
 
 with torch.no_grad():
     
