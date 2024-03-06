@@ -32,7 +32,7 @@ if __name__ == '__main__':
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
 
-model_name = 'TheBloke/Mixtral-8x7B-v0.1-GGUF'
+model_name = 'TheBloke/Llama-2-70B-Chat-GGUF'
 
 with torch.no_grad():
     
