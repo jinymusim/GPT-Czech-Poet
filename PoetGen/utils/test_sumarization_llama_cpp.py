@@ -41,7 +41,7 @@ with torch.no_grad():
         filename="*Q5_K_M.gguf",
         verbose=False,
         chat_format="llama-2",
-        #n_gpu_layers=-1
+        n_gpu_layers=-1
     )
     
     dataset= os.listdir(args.data_path)
