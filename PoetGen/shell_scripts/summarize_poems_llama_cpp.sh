@@ -5,6 +5,7 @@ export TMPDIR=$SCRATCHDIR
 export CMAKE_ARGS="-DLLAMA_CUBLAS=on"
 export FORCE_CMAKE=1
 cd $SCRATCHDIR
+export PATH="${PATH}:/storage/brno12-cerit/home/chudobm/.local/bin"
 python3 -m pip install --upgrade pip
 pip install --target=$SCRATCHDIR --force-reinstall torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 pip install --target=$SCRATCHDIR --upgrade --force-reinstall llama-cpp-python --no-cache-dir
