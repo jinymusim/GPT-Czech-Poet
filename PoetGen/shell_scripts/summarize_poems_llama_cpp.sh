@@ -9,4 +9,4 @@ pip install --target=$SCRATCHDIR --upgrade --force-reinstall llama-cpp-python --
 pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/requirements.txt
 export PYTHONPATH="${PYTHONPATH}:${TMPDIR}"
 cd /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/utils
-python3 test_sumarization_llama_cpp.py
+sudo python3 test_sumarization_llama_cpp.py
