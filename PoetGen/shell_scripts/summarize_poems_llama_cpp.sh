@@ -4,8 +4,9 @@ export TMPDIR=$SCRATCHDIR
 export CMAKE_ARGS="-DLLAMA_CUBLAS=on"
 export FORCE_CMAKE=1
 cd $SCRATCHDIR
-pip install --target=$SCRATCHDIR torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir
+/cvmfs/software.metacentrum.cz/spack18/software/linux-debian11-x86_64_v2/gcc-10.2.1/python-3.9.12-rg2lpmkxpcq423gx5gmedbyam7eibwtc/bin/python3.9 -m pip install --upgrade pip
+pip install --target=$SCRATCHDIR --force-reinstall torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install --target=$SCRATCHDIR --upgrade --force-reinstall llama-cpp-python --no-cache-dir
 pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/requirements.txt
 export PYTHONPATH="${PYTHONPATH}:${TMPDIR}"
 cd /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/utils
