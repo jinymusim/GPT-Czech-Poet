@@ -73,6 +73,7 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň: \
             tokenized = tokenizer(input_text, return_tensors='pt').to(device)
             out = model.generate(**tokenized, 
                         do_sample=True,
+                        max_new_tokens= 100,
                         top_k=50,
                         eos_token_id = tokenizer.eos_token_id,
                         pad_token_id = tokenizer.pad_token_id ).detach().cpu()[0]
@@ -89,6 +90,7 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň: \
             tokenized = tokenizer(input_text, return_tensors='pt').to(device)
             out = model.generate(**tokenized, 
                         do_sample=True,
+                        max_new_tokens= 500,
                         top_k=50,
                         eos_token_id = tokenizer.eos_token_id,
                         pad_token_id = tokenizer.pad_token_id ).detach().cpu()[0]
