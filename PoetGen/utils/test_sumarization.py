@@ -4,6 +4,7 @@ import torch
 import json
 import re
 from tqdm import tqdm
+import random
 
 from poet_utils import StropheParams
 
@@ -49,13 +50,16 @@ with torch.no_grad():
         model = AutoModelForCausalLM.from_pretrained(args.model)
     
     model.eval()
-    dataset= os.listdir(args.data_path)
+    dataset= random.shuffle(os.listdir(args.data_path))
 
     for poem_file in tqdm(dataset):
         if not os.path.isfile(os.path.join(args.data_path, poem_file)):
             continue
         
         file = json.load(open(os.path.join(args.data_path, poem_file) , 'r'))
+        if 'categories' in file[0].keys():
+            continue
+        
         for i, poem_data in enumerate(file):
             poem_text = []  
             if poem_data['biblio']['p_title'] != None:
