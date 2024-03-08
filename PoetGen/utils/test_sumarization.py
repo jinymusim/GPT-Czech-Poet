@@ -50,7 +50,8 @@ with torch.no_grad():
         model = AutoModelForCausalLM.from_pretrained(args.model)
     
     model.eval()
-    dataset= random.shuffle(os.listdir(args.data_path))
+    dataset= os.listdir(args.data_path)
+    random.shuffle(dataset)
 
     for poem_file in tqdm(dataset):
         if not os.path.isfile(os.path.join(args.data_path, poem_file)):
