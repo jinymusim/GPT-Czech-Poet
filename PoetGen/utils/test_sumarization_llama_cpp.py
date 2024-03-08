@@ -3,6 +3,7 @@ import os
 import torch
 import json
 import re
+import random
 from tqdm import tqdm
 
 from poet_utils import StropheParams
@@ -39,16 +40,22 @@ with torch.no_grad():
         filename="*Q5_K_M.gguf",
         verbose=True,
         chat_format="llama-2",
-        n_gpu_layers=-1
+        n_gpu_layers=-1,
+        n_ctx=16000
     )
     
     dataset= os.listdir(args.data_path)
+    random.shuffle(dataset)
 
     for poem_file in tqdm(dataset):
         if not os.path.isfile(os.path.join(args.data_path, poem_file)):
             continue
         
         file = json.load(open(os.path.join(args.data_path, poem_file) , 'r'))
+        
+        if 'sumarization' in file[0].keys():
+            continue
+         
         for i, poem_data in enumerate(file):
             poem_text = []  
             if poem_data['biblio']['p_title'] != None:
