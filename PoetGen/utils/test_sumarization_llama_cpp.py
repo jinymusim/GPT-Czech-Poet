@@ -41,7 +41,7 @@ with torch.no_grad():
         verbose=True,
         chat_format="llama-2",
         n_gpu_layers=-1,
-        n_ctx=16000
+        n_ctx=30000
     )
     
     dataset= os.listdir(args.data_path)
