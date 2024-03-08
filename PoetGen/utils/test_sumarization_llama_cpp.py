@@ -25,6 +25,8 @@ parser = argparse.ArgumentParser()
 #repo_id='TheBloke/Mixtral-8x7B-v0.1-GGUF',
 #filename="*Q5_K_M.gguf", 
 
+#TheBloke/Yarn-Llama-2-13B-128K-GGUF
+
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
 
 if __name__ == '__main__':
@@ -57,77 +59,81 @@ with torch.no_grad():
             continue
          
         for i, poem_data in enumerate(file):
-            poem_text = []  
-            if poem_data['biblio']['p_title'] != None:
-                poem_text.append(poem_data['biblio']['p_title'])
-            else:
-                poem_text.append("Neznámý název")
-            for strophe in poem_data['body']:
-                    for verse in strophe:
-                        poem_text.append(verse['text'])
-                    poem_text.append("\n")
-            poem = "\n".join(poem_text)
-            input_text = f"Toto jsou kategorie: {', '.join(StropheParams.POEM_TYPES)}. \
+            try:
+                poem_text = []  
+                if poem_data['biblio']['p_title'] != None:
+                    poem_text.append(poem_data['biblio']['p_title'])
+                else:
+                    poem_text.append("Neznámý název")
+                for strophe in poem_data['body']:
+                        for verse in strophe:
+                            poem_text.append(verse['text'])
+                        poem_text.append("\n")
+                poem = "\n".join(poem_text)
+                input_text = f"Toto jsou kategorie: {', '.join(StropheParams.POEM_TYPES)}. \
 Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň a vypiš pouze je: \
 \n{poem} \nKategorie: "
-            if 'Chat' in model_name:
-                out = model.create_chat_completion(
-                    messages = [
-                        {
-                            "role": "system", 
-                            "content": "Jsi asistent který rozumí básním a umí je kategorizovat."
+                if 'Chat' in model_name:
+                    out = model.create_chat_completion(
+                        messages = [
+                            {
+                                "role": "system", 
+                                "content": "Jsi asistent který rozumí básním a umí je kategorizovat."
+                            },
+                            {
+                                "role": "user",
+                                "content": input_text
+                            }
+                        ],
+                        response_format={
+                            "type": "json_object",
                         },
-                        {
-                            "role": "user",
-                            "content": input_text
-                        }
-                    ],
-                    response_format={
-                        "type": "json_object",
-                    },
-                    )
-                categories = out['choices'][0]['message']['content']
-            else:
-                out = model(
-                    f'{input_text}',
-                    )
-                categories = out['choices'][0]['text']
+                        )
+                    categories = out['choices'][0]['message']['content']
+                else:
+                    out = model(
+                        f'{input_text}',
+                        )
+                    categories = out['choices'][0]['text']
                 
             
             
-            categories = list(map(str.strip, re.findall(r'\w+', categories)))
-            categories = list(filter(lambda x: len(x) > 0, categories))
-            categories = list(filter(lambda x: x in StropheParams.POEM_TYPES, categories))
-        
-            file[i]['categories'] = categories
+                categories = list(map(str.strip, re.findall(r'\w+', categories)))
+                categories = list(filter(lambda x: len(x) > 0, categories))
+                categories = list(filter(lambda x: x in StropheParams.POEM_TYPES, categories))
+
+                file[i]['categories'] = categories
             
-            input_text = f"Toto je báseň: \
+                input_text = f"Toto je báseň: \
 \n{poem}\n\nNapiš schrnutí předešlé básně: "
-            if 'Chat' in model_name:
-                out = model.create_chat_completion(
-                    messages = [
-                        {
-                            "role": "system", 
-                            "content": "Jsi asistent který rozumí básním a umí je sumarizovat."
+                if 'Chat' in model_name:
+                    out = model.create_chat_completion(
+                        messages = [
+                            {
+                                "role": "system", 
+                                "content": "Jsi asistent který rozumí básním a umí je sumarizovat."
+                            },
+                            {
+                                "role": "user",
+                                "content": input_text
+                            }
+                        ],
+                        response_format={
+                            "type": "json_object",
                         },
-                        {
-                            "role": "user",
-                            "content": input_text
-                        }
-                    ],
-                    response_format={
-                        "type": "json_object",
-                    },
-                    )
-                sumarization =  out['choices'][0]['message']['content']
-            else:
-                out = model(
-                    f'{input_text}',
-                    )
-                sumarization =  out['choices'][0]['text']
-            
-        
-            file[i]['sumarization'] = sumarization
+                        )
+                    sumarization =  out['choices'][0]['message']['content']
+                else:
+                    out = model(
+                        f'{input_text}',
+                        )
+                    sumarization =  out['choices'][0]['text']
+
+
+                file[i]['sumarization'] = sumarization
+            except:
+                print("Context too large")
+                pass
             
         
         json.dump(file, open(os.path.join(args.data_path, poem_file), 'w+'), indent=6)   
