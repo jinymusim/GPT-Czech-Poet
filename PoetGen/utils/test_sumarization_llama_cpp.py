@@ -26,6 +26,7 @@ parser = argparse.ArgumentParser()
 #filename="*Q5_K_M.gguf", 
 
 #TheBloke/Yarn-Llama-2-13B-128K-GGUF
+#TheBloke/Yarn-Mistral-7B-128k-GGUF
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
 
@@ -55,7 +56,7 @@ with torch.no_grad():
         
         file = json.load(open(os.path.join(args.data_path, poem_file) , 'r'))
         
-        if 'sumarization' in file[0].keys():
+        if 'sumarization' in file[0].keys() and len(file[0]['categories']) > 0 and  len(re.findall(r'\w+', file[0]['sumarization'])) > 0:
             continue
          
         for i, poem_data in enumerate(file):
@@ -93,6 +94,7 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň a vypiš 
                 else:
                     out = model(
                         f'{input_text}',
+                        max_tokens=2000
                         )
                     categories = out['choices'][0]['text']
                 
@@ -126,14 +128,14 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň a vypiš 
                 else:
                     out = model(
                         f'{input_text}',
+                        max_tokens=2000
                         )
                     sumarization =  out['choices'][0]['text']
 
 
                 file[i]['sumarization'] = sumarization
-            except:
-                print("Context too large")
-                pass
+            except Exception as e:  
+                print("Context too large: ", repr(e))
             
         
         json.dump(file, open(os.path.join(args.data_path, poem_file), 'w+'), indent=6)   
