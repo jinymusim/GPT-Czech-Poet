@@ -25,6 +25,10 @@ parser = argparse.ArgumentParser()
 #repo_id='TheBloke/Mixtral-8x7B-v0.1-GGUF',
 #filename="*Q5_K_M.gguf", 
 
+#repo_id='TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF',
+#filename="*Q5_K_M.gguf", 
+
+
 #TheBloke/Yarn-Llama-2-13B-128K-GGUF
 #TheBloke/Yarn-Mistral-7B-128k-GGUF
 
@@ -34,7 +38,7 @@ if __name__ == '__main__':
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
 
-model_name = 'TheBloke/Mixtral-8x7B-v0.1-GGUF'
+model_name = 'TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF'
 
 with torch.no_grad():
     
@@ -44,7 +48,7 @@ with torch.no_grad():
         verbose=True,
         chat_format="llama-2",
         n_gpu_layers=-1,
-        n_ctx=30000
+        n_ctx=6000
     )
     
     dataset= os.listdir(args.data_path)
@@ -71,10 +75,10 @@ with torch.no_grad():
                             poem_text.append(verse['text'])
                         poem_text.append("\n")
                 poem = "\n".join(poem_text)
-                input_text = f"Toto jsou kategorie: {', '.join(StropheParams.POEM_TYPES)}. \
-Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň a vypiš pouze je: \
-\n{poem} \nKategorie: "
-                if 'Chat' in model_name:
+                input_text = f"Categories: {', '.join(StropheParams.POEM_TYPES)}. \
+Poem: \
+\n{poem} \nBest Category:"
+                if 'Chat' in model_name or 'Instruct' in model_name:
                     out = model.create_chat_completion(
                         messages = [
                             {
@@ -94,7 +98,7 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň a vypiš 
                 else:
                     out = model(
                         f'{input_text}',
-                        max_tokens=2000
+                        max_tokens=250
                         )
                     categories = out['choices'][0]['text']
                 
@@ -106,9 +110,9 @@ Vyber z těchto kategorií ty, které nejlépe vystihují tuto báseň a vypiš 
 
                 file[i]['categories'] = categories
             
-                input_text = f"Toto je báseň: \
-\n{poem}\n\nNapiš schrnutí předešlé básně: "
-                if 'Chat' in model_name:
+                input_text = f"Poem: \
+\n{poem}\n\nPoem summarization: "
+                if 'Chat' in model_name or 'Instruct' in model_name in model_name:
                     out = model.create_chat_completion(
                         messages = [
                             {
