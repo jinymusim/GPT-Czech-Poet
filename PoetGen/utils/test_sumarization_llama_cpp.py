@@ -33,10 +33,13 @@ parser = argparse.ArgumentParser()
 #TheBloke/Yarn-Mistral-7B-128k-GGUF
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
+parser.add_argument("--result_data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new-summary")), type=str, help="Path to Data")
 
 if __name__ == '__main__':
     args = parser.parse_args([] if "__file__" not in globals() else None)
 
+
+os.makedirs(args.result_data_path, exist_ok=True)
 
 model_name = 'TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF'
 
@@ -55,13 +58,11 @@ with torch.no_grad():
     random.shuffle(dataset)
 
     for poem_file in tqdm(dataset):
-        if not os.path.isfile(os.path.join(args.data_path, poem_file)):
+        if not os.path.isfile(os.path.join(args.data_path, poem_file)) or os.path.exists(os.path.join(args.result_data_path, poem_file)):
             continue
         
         file = json.load(open(os.path.join(args.data_path, poem_file) , 'r'))
         
-        if 'sumarization' in file[0].keys() and len(file[0]['categories']) > 0 and  len(re.findall(r'\w+', file[0]['sumarization'])) > 0:
-            continue
          
         for i, poem_data in enumerate(file):
             try:
@@ -75,15 +76,13 @@ with torch.no_grad():
                             poem_text.append(verse['text'])
                         poem_text.append("\n")
                 poem = "\n".join(poem_text)
-                input_text = f"Categories: {', '.join(StropheParams.POEM_TYPES)}. \
-Poem: \
-\n{poem} \nBest Category:"
+                input_text = f"Categories: {', '.join(StropheParams.POEM_TYPES)}. Poem:\n{poem}\nBest Category:"
                 if 'Chat' in model_name or 'Instruct' in model_name:
                     out = model.create_chat_completion(
                         messages = [
                             {
                                 "role": "system", 
-                                "content": "Jsi asistent který rozumí básním a umí je kategorizovat."
+                                "content": "You are a assistent that is proficient in poem categorization."
                             },
                             {
                                 "role": "user",
@@ -110,14 +109,13 @@ Poem: \
 
                 file[i]['categories'] = categories
             
-                input_text = f"Poem: \
-\n{poem}\n\nPoem summarization: "
+                input_text = f"Poem:\n{poem}\nPoem summarization: "
                 if 'Chat' in model_name or 'Instruct' in model_name in model_name:
                     out = model.create_chat_completion(
                         messages = [
                             {
                                 "role": "system", 
-                                "content": "Jsi asistent který rozumí básním a umí je sumarizovat."
+                                "content": "You are a assistent that is proficient in poem summarization."
                             },
                             {
                                 "role": "user",
@@ -142,4 +140,4 @@ Poem: \
                 print("Context too large: ", repr(e))
             
         
-        json.dump(file, open(os.path.join(args.data_path, poem_file), 'w+'), indent=6)   
+        json.dump(file, open(os.path.join(args.result_data_path, poem_file), 'w+'), indent=6)   
