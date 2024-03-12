@@ -66,17 +66,21 @@ with torch.no_grad():
          
         for i, poem_data in enumerate(file):
             try:
-                poem_text = []  
+                poem_text = [] 
+                autor = 'Unknown' 
                 if poem_data['biblio']['p_title'] != None:
                     poem_text.append(poem_data['biblio']['p_title'])
                 else:
-                    poem_text.append("Neznámý název")
+                    poem_text.append("NO TITLE")
+                    
+                if  "p_author" in poem_data.keys() and 'identity' in poem_data['p_author'].keys():
+                    autor = poem_data['p_author']['identity']
                 for strophe in poem_data['body']:
                         for verse in strophe:
                             poem_text.append(verse['text'])
                         poem_text.append("\n")
                 poem = "\n".join(poem_text)
-                input_text = f"Categories: {', '.join(StropheParams.POEM_TYPES)}. Poem:\n{poem}\nBest Category:"
+                input_text = f"Categories: {', '.join(StropheParams.POEM_TYPES)}. Author: {autor}\nPoem:\n{poem}\nBest Category:"
                 if 'Chat' in model_name or 'Instruct' in model_name:
                     out = model.create_chat_completion(
                         messages = [
@@ -109,7 +113,7 @@ with torch.no_grad():
 
                 file[i]['categories'] = categories
             
-                input_text = f"Poem:\n{poem}\nPoem summarization: "
+                input_text = f"Author: {autor}\nPoem:\n{poem}\nPoem summarization: "
                 if 'Chat' in model_name or 'Instruct' in model_name in model_name:
                     out = model.create_chat_completion(
                         messages = [
