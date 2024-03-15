@@ -21,7 +21,7 @@ parser.add_argument("--reference_model", default='simecek/cswikimistral_0.1', ty
 
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results_new', "model_perplexity.txt")), type=str, help="Where to store the decoding efforts")
 
-parser.add_argument("--num_runs", default=1_000, type=int, help="Number of runs per setting")
+parser.add_argument("--num_runs", default=10_000, type=int, help="Number of runs per setting")
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
