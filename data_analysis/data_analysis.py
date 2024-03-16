@@ -23,8 +23,8 @@ def display_comparision(comparision_header: str, rhyme_data: np.ndarray = None, 
             plt.axvline(x=value, color= SLICED_CMAP[i], ls='--', label= f'{p_value} %')
         if rhyme_base != None and rhyme_improved != None:
             percentiles = stats.percentileofscore(rhyme_data, [rhyme_base, rhyme_improved])
-            plt.axvline(x=rhyme_base, color='r' , ls='--', label=f'BASE: {percentiles[0]} %')
-            plt.axvline(x=rhyme_improved, color='black' , ls='--', label=f'IMPROVED: {percentiles[1]} %')
+            plt.axvline(x=rhyme_base, color='r' , ls=':', label=f'BASE: {percentiles[0]} %', linewidth=5)
+            plt.axvline(x=rhyme_improved, color='black' , ls=':', label=f'IMPROVED: {percentiles[1]} %', linewidth=5)
         plt.legend()
         plt.show()
         plt.figure()
@@ -37,8 +37,8 @@ def display_comparision(comparision_header: str, rhyme_data: np.ndarray = None, 
             plt.axvline(x=value, color= SLICED_CMAP[i], ls='--', label= f'{p_value} %')
         if meter_base != None and meter_improved != None:
             percentiles = stats.percentileofscore(meter_data, [meter_base, meter_improved])
-            plt.axvline(x=meter_base, color='r' , ls='--', label=f'BASE: {percentiles[0]} %')
-            plt.axvline(x=meter_improved, color='black' , ls='--', label=f'IMPROVED: {percentiles[1]} %')
+            plt.axvline(x=meter_base, color='r' , ls=':', label=f'BASE: {percentiles[0]} %', linewidth=5)
+            plt.axvline(x=meter_improved, color='black' , ls=':', label=f'IMPROVED: {percentiles[1]} %', linewidth=5)
         plt.legend()
         plt.show()
         plt.figure()
@@ -51,8 +51,8 @@ def display_comparision(comparision_header: str, rhyme_data: np.ndarray = None, 
             plt.axvline(x=value, color= SLICED_CMAP[i], ls='--', label= f'{p_value} %')
         if year_base != None and year_improved != None:
             percentiles = stats.percentileofscore(year_data, [year_base, year_improved])
-            plt.axvline(x=year_base, color='r' , ls='--', label=f'BASE: {percentiles[0]} %')
-            plt.axvline(x=year_improved, color='black' , ls='--', label=f'IMPROVED: {percentiles[1]} %')
+            plt.axvline(x=year_base, color='r' , ls=':', label=f'BASE: {percentiles[0]} %', linewidth=5)
+            plt.axvline(x=year_improved, color='black' , ls=':', label=f'IMPROVED: {percentiles[1]} %', linewidth=5)
         plt.legend()
         plt.show()
         plt.figure()
@@ -65,35 +65,35 @@ with open(FILENAME, 'r') as file:
     for row in spamreader:
         rows.append(row)
     # Display RHYME Distil RAW to Disil Syllable 
-    #display_comparision(comparision_header= rows[0][1], 
-    #                    rhyme_data=np.asarray( list(map(float,rows[0][2:])) ), rhyme_base=0.9682, rhyme_improved=0.9689)
+    display_comparision(comparision_header= rows[0][1], 
+                        rhyme_data=np.asarray( list(map(float,rows[0][2:])) ), rhyme_base=0.9682, rhyme_improved=0.9689)
     # Display RHYME RobeCzech RAW to RobeCzech Syllable 
-    #display_comparision(comparision_header= rows[1][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[1][2:])) ), rhyme_base=0.4806, rhyme_improved=0.9468)
+    display_comparision(comparision_header= rows[1][1],
+                        rhyme_data=np.asarray( list(map(float,rows[1][2:])) ), rhyme_base=0.4806, rhyme_improved=0.9468)
     # Display RHYME RobeCzech SYLLABLE to Disil Syllable 
-    #display_comparision(comparision_header= rows[2][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[2][2:])) ), rhyme_base=0.9468, rhyme_improved=0.9689)
+    display_comparision(comparision_header= rows[2][1],
+                        rhyme_data=np.asarray( list(map(float,rows[2][2:])) ), rhyme_base=0.9468, rhyme_improved=0.9689)
     # Display YEAR RobeCzech SYLLABLE to RobeCzech Raw 
-    #display_comparision(comparision_header= rows[3][1],
-    #                    year_data=np.asarray( list(map(float,rows[3][2:])) ), year_base=0.4255, year_improved=0.4745)
+    display_comparision(comparision_header= rows[3][1],
+                        year_data=np.asarray( list(map(float,rows[3][2:])) ), year_base=0.4255, year_improved=0.4745)
     # Display YEAR Roberta Raw to RobeCzech Raw 
-    #display_comparision(comparision_header= rows[4][1],
-    #                    year_data=np.asarray( list(map(float,rows[4][2:])) ), year_base=0.4315, year_improved=0.4745)
+    display_comparision(comparision_header= rows[4][1],
+                        year_data=np.asarray( list(map(float,rows[4][2:])) ), year_base=0.4315, year_improved=0.4745)
     # Display RHYME Roberta Raw Unweighted to Roberta Raw Weighted
-    #display_comparision(comparision_header= rows[5][1],
-    #                    rhyme_data=np.asarray( list(map(float,rows[5][2:])) ), rhyme_base=0.9678, rhyme_improved=0.9693)
+    display_comparision(comparision_header= rows[5][1],
+                        rhyme_data=np.asarray( list(map(float,rows[5][2:])) ), rhyme_base=0.9678, rhyme_improved=0.9693)
     # Display METER Distil RAW to Disil Syllable 
-    #display_comparision(comparision_header= rows[6][1],
-    #                    meter_data=np.asarray( list(map(float,rows[6][2:])) ), meter_base=0.8987, meter_improved=0.8952)
+    display_comparision(comparision_header= rows[6][1],
+                        meter_data=np.asarray( list(map(float,rows[6][2:])) ), meter_base=0.8987, meter_improved=0.8952)
     # Display METER Distil Syllable to Disil Syllable Context
-    #display_comparision(comparision_header= rows[7][1],
-    #                    meter_data=np.asarray( list(map(float,rows[7][2:])) ), meter_base=0.8952, meter_improved=0.9494)
+    display_comparision(comparision_header= rows[7][1],
+                        meter_data=np.asarray( list(map(float,rows[7][2:])) ), meter_base=0.8952, meter_improved=0.9494)
     # Display METER Roberta Syllable Context to Disil Syllable Context
-    #display_comparision(comparision_header= rows[8][1],
-    #                    meter_data=np.asarray( list(map(float,rows[8][2:])) ), meter_base=0.9434, meter_improved=0.9494)
+    display_comparision(comparision_header= rows[8][1],
+                        meter_data=np.asarray( list(map(float,rows[8][2:])) ), meter_base=0.9434, meter_improved=0.9494)
     # Display METER Roberta Raw Unweighted to Roberta Raw Weighted
-    #display_comparision(comparision_header= rows[9][1],
-    #                    meter_data=np.asarray( list(map(float,rows[9][2:])) ), meter_base=0.8973, meter_improved=0.8928)
+    display_comparision(comparision_header= rows[9][1],
+                        meter_data=np.asarray( list(map(float,rows[9][2:])) ), meter_base=0.8973, meter_improved=0.8928)
         
     # Display RHYME and METER Verse-Par input base and pretarined
     display_comparision(comparision_header= rows[10][1],
