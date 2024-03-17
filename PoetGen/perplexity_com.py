@@ -66,9 +66,9 @@ with torch.no_grad():
     dataset = CorpusDatasetPytorch('BASE', data_dir=args.data_path)
 
     sampled_data = random.choices(dataset.test_strophes, k=args.num_runs)
-    ground = [remove_params(datum['input_ids']) for datum in sampled_data]
-    generated_basic = [remove_params(decoder_helper("BASIC", datum['rhyme'], datum['year'], datum['metre_ids'][0])) for datum in sampled_data]
-    generated_forced = [remove_params(decoder_helper("FORCED", datum['rhyme'], datum['year'], datum['metre_ids'][0])) for datum in sampled_data]
+    ground = list(filter(lambda x: x, [remove_params(datum['input_ids']) for datum in sampled_data])) 
+    generated_basic =  list(filter(lambda x: x, [remove_params(decoder_helper("BASIC", datum['rhyme'], datum['year'], datum['metre_ids'][0])) for datum in sampled_data]))
+    generated_forced =  list(filter(lambda x: x, [remove_params(decoder_helper("FORCED", datum['rhyme'], datum['year'], datum['metre_ids'][0])) for datum in sampled_data]))
 
     perplexity = evaluate.load("perplexity", module_type="metric")
 
