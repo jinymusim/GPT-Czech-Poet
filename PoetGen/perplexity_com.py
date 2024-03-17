@@ -17,6 +17,7 @@ parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os
 parser.add_argument("--sample", default=True, type=bool, help="If to sample during generation")
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv")), type=str, help="Path to Data")
 parser.add_argument("--reference_model", default='lchaloupsky/czech-gpt2-oscar', type=str, help="Model to measure perplexity")
+#parser.add_argument("--reference_model", default='BUT-FIT/csmpt7b', type=str, help="Model to measure perplexity")
 #parser.add_argument("--reference_model", default='simecek/cswikimistral_0.1', type=str, help="Model to measure perplexity")
 
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results_new', "model_perplexity.txt")), type=str, help="Where to store the decoding efforts")
