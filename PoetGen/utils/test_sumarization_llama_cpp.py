@@ -33,7 +33,7 @@ parser = argparse.ArgumentParser()
 #TheBloke/Yarn-Mistral-7B-128k-GGUF
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
-parser.add_argument("--result_data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new-summary-short")), type=str, help="Path to Data")
+parser.add_argument("--result_data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new-summary-one-sentence")), type=str, help="Path to Data")
 
 if __name__ == '__main__':
     args = parser.parse_args([] if "__file__" not in globals() else None)
@@ -113,13 +113,13 @@ with torch.no_grad():
 
                 file[i]['categories'] = categories
             
-                input_text = f"Author: {autor}\nPoem:\n{poem}\nShort summary: "
+                input_text = f"Author: {autor}\nPoem:\n{poem}\One  sentence summary: "
                 if 'Chat' in model_name or 'Instruct' in model_name in model_name:
                     out = model.create_chat_completion(
                         messages = [
                             {
                                 "role": "system", 
-                                "content": "You are a assistent that is proficient in poem analysis, interpretation and summarization and provides it in two sentences."
+                                "content": "You are a assistent that is proficient in poem analysis, interpretation and summarization and provides it in one sentence."
                             },
                             {
                                 "role": "user",
