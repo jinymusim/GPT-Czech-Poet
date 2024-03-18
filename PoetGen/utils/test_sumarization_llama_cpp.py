@@ -85,7 +85,7 @@ with torch.no_grad():
                     out = model.create_chat_completion(
                         messages = [
                             {
-                                "role": "system", 
+                                "role": "assistant", 
                                 "content": "You are a assistent that is proficient in poem categorization and picks the most representing category from list provided by the user."
                             },
                             {
@@ -118,7 +118,7 @@ with torch.no_grad():
                     out = model.create_chat_completion(
                         messages = [
                             {
-                                "role": "system", 
+                                "role": "assistant", 
                                 "content": "You are a assistent that is proficient in poem analysis, interpretation and summarization and provides it in one sentence."
                             },
                             {
