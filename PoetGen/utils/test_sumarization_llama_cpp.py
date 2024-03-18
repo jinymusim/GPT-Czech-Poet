@@ -113,13 +113,13 @@ with torch.no_grad():
 
                 file[i]['categories'] = categories
             
-                input_text = f"Author: {autor}\nPoem:\n{poem}\nOne sentence summary: "
+                input_text = f"Author: {autor}\nPoem:\n{poem}\n1 Sentence summary:  "
                 if 'Chat' in model_name or 'Instruct' in model_name in model_name:
                     out = model.create_chat_completion(
                         messages = [
                             {
                                 "role": "system", 
-                                "content": "You are a assistent that is expert in poem analysis, interpretation and summarization."
+                                "content": "You are a assistent that is expert in poem interpretation."
                             },
                             {
                                 "role": "user",
