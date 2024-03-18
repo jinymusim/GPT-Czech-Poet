@@ -86,7 +86,7 @@ with torch.no_grad():
                         messages = [
                             {
                                 "role": "system", 
-                                "content": "You are a assistent that is expert in poem categorization and picks the most representing category from list provided by the user."
+                                "content": "You are a assistent that is proficient in poem categorization and picks the most representing category from list provided by the user."
                             },
                             {
                                 "role": "user",
@@ -113,13 +113,13 @@ with torch.no_grad():
 
                 file[i]['categories'] = categories
             
-                input_text = f"Author: {autor}\nPoem:\n{poem}\n1 Sentence summary:  "
+                input_text = f"Author: {autor}\nPoem:\n{poem}\nSentence summary:"
                 if 'Chat' in model_name or 'Instruct' in model_name in model_name:
                     out = model.create_chat_completion(
                         messages = [
                             {
                                 "role": "system", 
-                                "content": "You are a assistent that is expert in poem interpretation."
+                                "content": "You are a assistent that is proficient in poem analysis, interpretation and summarization and provides it in one sentence."
                             },
                             {
                                 "role": "user",
@@ -134,7 +134,7 @@ with torch.no_grad():
                 else:
                     out = model(
                         f'{input_text}',
-                        max_tokens=2000
+                        max_tokens=250
                         )
                     sumarization =  out['choices'][0]['text']
 
