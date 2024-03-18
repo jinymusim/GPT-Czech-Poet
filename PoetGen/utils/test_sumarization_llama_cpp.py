@@ -33,7 +33,7 @@ parser = argparse.ArgumentParser()
 #TheBloke/Yarn-Mistral-7B-128k-GGUF
 
 parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
-parser.add_argument("--result_data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new-summary")), type=str, help="Path to Data")
+parser.add_argument("--result_data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__),'..', "corpusCzechVerse", "ccv-new-summary-short")), type=str, help="Path to Data")
 
 if __name__ == '__main__':
     args = parser.parse_args([] if "__file__" not in globals() else None)
@@ -80,13 +80,13 @@ with torch.no_grad():
                             poem_text.append(verse['text'])
                         poem_text.append("\n")
                 poem = "\n".join(poem_text)
-                input_text = f"Categories: {', '.join(StropheParams.POEM_TYPES)}. Author: {autor}\nPoem:\n{poem}\nBest Category:"
+                input_text = f"Author: {autor}\nPoem:\n{poem}\nCategories: {', '.join(StropheParams.POEM_TYPES)}. Best Category:"
                 if 'Chat' in model_name or 'Instruct' in model_name:
                     out = model.create_chat_completion(
                         messages = [
                             {
                                 "role": "system", 
-                                "content": "You are a assistent that is proficient in poem categorization."
+                                "content": "You are a assistent that is proficient in poem categorization and picks the most representing category from list provided by the user."
                             },
                             {
                                 "role": "user",
@@ -119,7 +119,7 @@ with torch.no_grad():
                         messages = [
                             {
                                 "role": "system", 
-                                "content": "You are a assistent that is proficient in poem summarization."
+                                "content": "You are a assistent that is proficient in poem analysis, interpretation and summarization and provides it in two sentences."
                             },
                             {
                                 "role": "user",
@@ -139,7 +139,7 @@ with torch.no_grad():
                     sumarization =  out['choices'][0]['text']
 
 
-                file[i]['sumarization'] = sumarization
+                file[i]['summarization'] = sumarization
             except Exception as e:  
                 print("Context too large: ", repr(e))
             
