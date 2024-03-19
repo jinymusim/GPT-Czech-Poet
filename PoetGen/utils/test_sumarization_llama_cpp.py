@@ -86,16 +86,13 @@ with torch.no_grad():
                         messages = [
                             {
                                 "role": "assistant", 
-                                "content": "You are a assistent that is proficient in poem categorization and picks the most representing category from list provided by the user."
+                                "content": "You are a assistent that is proficient in poem categorization and picks the most representing category from list provided by the user and displays it in plain text."
                             },
                             {
                                 "role": "user",
                                 "content": input_text
                             }
                         ],
-                        response_format={
-                            "type": "json_object",
-                        },
                         stop=["\n", '\t']
                         )
                     categories = out['choices'][0]['message']['content']
@@ -120,17 +117,14 @@ with torch.no_grad():
                         messages = [
                             {
                                 "role": "assistant", 
-                                "content": "You are a assistent that is proficient in poem analysis and provides it in ONE sentence."
+                                "content": "You are a assistent that is proficient in poem analysis and provides it in ONE sentence in plain text."
                             },
                             {
                                 "role": "user",
                                 "content": input_text
                             }
                         ],
-                        response_format={
-                            "type": "json_object",
-                        },
-                        stop=["\n", '\t']
+                        stop=["\n", '\t\t']
                         )
                     sumarization =  out['choices'][0]['message']['content']
                 else:
