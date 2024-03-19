@@ -47,7 +47,7 @@ with torch.no_grad():
     
     model = Llama.from_pretrained(
         repo_id=model_name,
-        filename="*Q5_K_M.gguf",
+        filename="*.Q6_K.gguf",
         verbose=True,
         chat_format="llama-2",
         n_gpu_layers=-1,
@@ -113,13 +113,13 @@ with torch.no_grad():
 
                 file[i]['categories'] = categories
             
-                input_text = f"Author: {autor}\nPoem:\n{poem}\nOne sentence analysis:"
+                input_text = f"Author: {autor}\nPoem:\n{poem}\nSingle sentence poem analysis:"
                 if 'Chat' in model_name or 'Instruct' in model_name in model_name:
                     out = model.create_chat_completion(
                         messages = [
                             {
                                 "role": "assistant", 
-                                "content": "You are a assistent that is proficient in poem analysis, interpretation and summarization and provides it in one sentence."
+                                "content": "You are a assistent that is proficient in poem analysis and provides it in ONE sentence."
                             },
                             {
                                 "role": "user",
