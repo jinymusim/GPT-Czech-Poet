@@ -96,6 +96,7 @@ with torch.no_grad():
                         response_format={
                             "type": "json_object",
                         },
+                        stop=["\n", '\t']
                         )
                     categories = out['choices'][0]['message']['content']
                 else:
@@ -129,6 +130,7 @@ with torch.no_grad():
                         response_format={
                             "type": "json_object",
                         },
+                        stop=["\n", '\t']
                         )
                     sumarization =  out['choices'][0]['message']['content']
                 else:
