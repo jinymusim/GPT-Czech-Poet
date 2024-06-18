@@ -89,6 +89,9 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
     
     # Verse Training
     if args.epochs_poet !=0:
+        if torch.cuda.is_available():
+            torch.distributed.init_process_group(backend="nccl")
+            
         training_args = TrainingArguments(
                                   output_dir=args.model_path + "TEMP",
                                   overwrite_output_dir= True,
@@ -234,4 +237,5 @@ def main(args: argparse.Namespace):
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
+    print("Cuda is available: ", torch.cuda.is_available())
     main(args)
