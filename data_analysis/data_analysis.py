@@ -137,10 +137,12 @@ with open(FILENAME, 'r') as file:
                         meter_data=np.asarray( list(map(float,rows[26][2:])) ), meter_base=0.945, meter_improved=0.946)
     # Display RHYME, METER SYLLABLE Tok Base to SYLLABLE tok Secondary
     display_comparision(comparision_header= rows[27][1],
-                        rhyme_data=np.asarray( list(map(float,rows[27][2:])) ), rhyme_base=0.902, rhyme_improved=0.887,
+                        rhyme_data=np.asarray( list(map(float,rows[27][2:])) ), rhyme_base=0.877, rhyme_improved=0.887,
                         meter_data=np.asarray( list(map(float,rows[28][2:])) ), meter_base=0.939, meter_improved=0.946)
     # Display RHYME, METER SYLLABLE Tok to UNICODE Tok
     display_comparision(comparision_header= rows[29][1],
                         rhyme_data=np.asarray( list(map(float,rows[29][2:])) ), rhyme_base=0.877, rhyme_improved=0.940,
                         meter_data=np.asarray( list(map(float,rows[30][2:])) ), meter_base=0.942, meter_improved=0.940)
+    display_comparision(comparision_header= rows[31][1],
+                        rhyme_data=np.asarray( list(map(float,rows[31][2:])) ), rhyme_base=0.857, rhyme_improved=0.887,)
     

@@ -95,6 +95,15 @@ class Tokens:
         UNK : 2,
         CLS : 3,
     }
+    
+    AUTHOR = "<|AUTHOR|>"
+    TITLE = "<|TITLE|>"
+    YEAR = "<|YEAR|>"
+    STROPHE_START = "<|STROPHE_START|>"
+    STROPHE_END = "<|STROPHE_END|>"
+    
+    METER = "<|METER|>"
+    RHYME = "<|RHYME|>"
 
 
 

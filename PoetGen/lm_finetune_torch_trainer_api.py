@@ -20,10 +20,8 @@ from utils.poet_utils import Tokens, parse_boolean
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_LM", default=48, type=int, help="Batch size.")
-parser.add_argument("--epochs_LM", default=0, type=int, help="Number of epochs to run.")
-parser.add_argument("--batch_size_poet", default=32, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=0, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--batch_size_poet", default=4, type=int, help="Batch size.")
+parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.0, type=float, help="Rate of input masking")
@@ -66,22 +64,15 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # model.base_model.h.append(torch.nn.Linear(1,768))
 # model.base_model.h.insert(7,torch.nn.Linear(768,768))
 
-#parser.add_argument("--default_hf_model", default="lchaloupsky/czech-gpt2-oscar", type=str, help="Default Model from HF to use")
-parser.add_argument("--default_hf_model", default='lchaloupsky/czech-gpt2-oscar', type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default='BUT-FIT/CSTinyLlama-1.2B', type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Unicode", "unicode_tokenizer.json")), type=str, help="Tokenizer to use")
-parser.add_argument("--tokenizer", default='lchaloupsky/czech-gpt2-oscar', type=str, help="Tokenizer to use")
+parser.add_argument("--tokenizer", default='BUT-FIT/CSTinyLlama-1.2B', type=str, help="Tokenizer to use")
 #parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Tokenizer to use")
 parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil', 'small'], help="What type of Model is to be constructed")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Test-Model")),  type=str, help="Path to Model")
-parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len", default=2048, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1, type=int, help="Max length of context for tokenizer")
-parser.add_argument("--verse_len", default=[4,6], type=list, help="Lengths of verses")
-
-
-parser.add_argument("--prompt_rhyme", default=True, type=bool, help="Rhyme is prompted into training data")
-parser.add_argument("--prompt_length", default=True, type=bool, help="Verse length is prompted into training data")
-parser.add_argument("--prompt_ending", default=True, type=bool, help="Ending of Verse is prompted into training data")
 
 parser.add_argument("--syllables", default=False, type=bool, help="If inputs should be parsed by syllables")
 parser.add_argument("--lower_case", default=True, type=bool, help="If to lower case data")
@@ -91,47 +82,10 @@ parser.add_argument("--mirror_imbed", default=True, type=bool, help="If to mirro
 parser.add_argument("--val_data_rate", default=0.05, type=float, help="Rate of validation data")
 parser.add_argument("--test_data_rate", default=0.05, type=float, help="Rate of test data")
 
-parser.add_argument("--model_input_format",  default="METER_VERSE", type=str, choices=["BASIC", "VERSE_PAR", 'METER_VERSE'], help="Input format to use for model")
-
 parser.add_argument("--size_test", default=False, type=parse_boolean, help='If to conduct size test on data')
 parser.add_argument("--sizes_to_test", default=1, type=float, help='Size to test on')
 
 def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,dataset: CorpusDatasetPytorch, collate_fnc, args: argparse.Namespace):
-    
-    # Text Line Training
-    if args.epochs_LM !=0:
-        training_args = TrainingArguments(
-                                  output_dir=args.model_path + "TEMP",
-                                  overwrite_output_dir= True,
-                                  save_strategy  = IntervalStrategy.EPOCH,
-                                  save_total_limit=1,
-                                  warmup_steps = len(dataset.train_verses)//args.batch_size_LM,
-                                  do_eval = True,
-                                  evaluation_strategy=IntervalStrategy.EPOCH,
-                                  logging_steps = 500,
-                                  weight_decay = 0.0,
-                                  num_train_epochs = args.epochs_LM,
-                                  learning_rate = args.learning_rate,
-                                  fp16 = True if torch.cuda.is_available() else False,
-                                  optim='adamw_torch',
-                                  ddp_backend = "nccl",
-                                  lr_scheduler_type="cosine",
-                                  logging_dir = './logs',
-                                  metric_for_best_model='eval_loss',
-                                  per_device_train_batch_size = args.batch_size_LM,
-                                  per_device_eval_batch_size = args.batch_size_LM,
-                                  group_by_length = True,
-                                  length_column_name ='nums',
-                                  load_best_model_at_end=True,
-                                  greater_is_better=False)
-    
-    
-        trainer = Trainer(model = model,
-                           args = training_args,
-                           train_dataset= dataset.train_verses,
-                           eval_dataset = dataset.val_verses,
-                           data_collator=collate_fnc,
-                           callbacks=[EarlyStoppingCallback(early_stopping_patience=2)]).train()
     
     # Verse Training
     if args.epochs_poet !=0:
@@ -227,13 +181,14 @@ def create_model_and_tokenizer(args: argparse.Namespace):
     from accelerate import FullyShardedDataParallelPlugin
     from torch.distributed.fsdp.fully_sharded_data_parallel import FullOptimStateDictConfig, FullStateDictConfig
 
-    fsdp_plugin = FullyShardedDataParallelPlugin(
-        state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
-        optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
-        )
-
-    accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
-    model = accelerator.prepare(model)
+    if torch.cuda.is_available():
+        fsdp_plugin = FullyShardedDataParallelPlugin(
+            state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
+            optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
+            )
+    
+        accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
+        model = accelerator.prepare(model)
     
     return model, tokenizer
 
@@ -249,12 +204,12 @@ def main(args: argparse.Namespace):
                           surrogate_model=AutoModelForCausalLM.from_pretrained(args.default_hf_model,output_hidden_states=True).to(device), surrogate_model_device=device, max_len=args.max_len)
     else:
         collate = partial(CorpusDatasetPytorch.collate, tokenizer=tokenizer,max_len=args.max_len, 
-                      max_context=args.context_max_len,  format=args.model_input_format)
+                      max_context=args.context_max_len)
     
 
-    train_data = CorpusDatasetPytorch(SEGMENT_TYPE='BASE', data_dir=args.data_path, prompt_ending=args.prompt_ending, 
-                                      prompt_length=args.prompt_length, prompt_verse=args.prompt_rhyme,
-                                      verse_len=args.verse_len, lower_case=args.lower_case, val_data_rate=args.val_data_rate, test_data_rate=args.test_data_rate)
+    train_data = CorpusDatasetPytorch(SEGMENT_TYPE='BASE', data_dir=args.data_path, 
+                                    lower_case=args.lower_case,
+                                    val_data_rate=args.val_data_rate, test_data_rate=args.test_data_rate)
     
     
     if not args.size_test:
@@ -266,9 +221,8 @@ def main(args: argparse.Namespace):
         
     else:
         train_data.train_strophes.change_custom_size(args.sizes_to_test)
-        train_data.train_verses.change_custom_size(args.sizes_to_test)
+        
         # Size compensation
-        args.epochs_LM = int(args.epochs_LM/args.sizes_to_test)
         args.epochs_poet =  int(args.epochs_poet/args.sizes_to_test)
         train_model(model, tokenizer, train_data, collate, args)
         
