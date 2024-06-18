@@ -222,7 +222,10 @@ class ModelManipulation:
         if hasattr(poet_model.model, "transformer"):
             new_decoder.weight = poet_model.model.transformer.wte.weight
         else:
-            new_decoder.weight = poet_model.model.base_model.embeddings.weight
+            if hasattr(poet_model.model, "embeddings"):
+                new_decoder.weight = poet_model.model.base_model.embeddings.weight
+            elif hasattr(poet_model.model, "embed_tokens"):
+                new_decoder.weight = poet_model.model.base_model.embed_tokens.weight
         if hasattr(poet_model.model, "lm_head"):
             poet_model.model.lm_head = new_decoder
         else:

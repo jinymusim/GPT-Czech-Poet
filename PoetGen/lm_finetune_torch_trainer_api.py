@@ -96,7 +96,7 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   save_total_limit=1,
                                   warmup_steps = len(dataset.train_strophes)//args.batch_size_poet,
                                   do_eval = True,
-                                  evaluation_strategy=IntervalStrategy.EPOCH,
+                                  eval_strategy=IntervalStrategy.EPOCH,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_poet,
@@ -109,7 +109,6 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   metric_for_best_model='eval_loss',
                                   per_device_train_batch_size = args.batch_size_poet,
                                   per_device_eval_batch_size = args.batch_size_poet,
-                                  group_by_length = True,
                                   load_best_model_at_end=True,
                                   greater_is_better=False)
     
