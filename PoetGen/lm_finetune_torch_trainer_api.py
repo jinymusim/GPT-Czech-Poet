@@ -97,7 +97,7 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   save_total_limit=1,
                                   warmup_steps = len(dataset.train_strophes)//args.batch_size_poet,
                                   do_eval = True,
-                                  eval_strategy=IntervalStrategy.EPOCH,
+                                  evaluation_strategy =IntervalStrategy.EPOCH,
                                   logging_steps = 500,
                                   weight_decay = 0.0,
                                   num_train_epochs = args.epochs_poet,
