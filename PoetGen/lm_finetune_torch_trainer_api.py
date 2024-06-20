@@ -20,7 +20,7 @@ from utils.poet_utils import Tokens, parse_boolean
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_poet", default=2, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=4, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
@@ -71,7 +71,7 @@ parser.add_argument("--tokenizer", default='BUT-FIT/CSTinyLlama-1.2B', type=str,
 #parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Tokenizer to use")
 parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil', 'small'], help="What type of Model is to be constructed")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Test-Model")),  type=str, help="Path to Model")
-parser.add_argument("--max_len", default=2048, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1, type=int, help="Max length of context for tokenizer")
 
 parser.add_argument("--syllables", default=False, type=bool, help="If inputs should be parsed by syllables")
