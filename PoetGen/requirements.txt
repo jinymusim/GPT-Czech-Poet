@@ -1,10 +1,10 @@
 dill
-torch 
-torchvision 
-torchaudio
+torch==2.1.2
+torchvision==0.16.2
+torchaudio==2.1.2
 transformers==4.34.1
 datasets
-accelerate
+accelerate==0.28.0
 jellyfish
 evaluate
 bitsandbytes

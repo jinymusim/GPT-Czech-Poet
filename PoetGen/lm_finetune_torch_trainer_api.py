@@ -182,14 +182,13 @@ def create_model_and_tokenizer(args: argparse.Namespace):
     from accelerate import FullyShardedDataParallelPlugin
     from torch.distributed.fsdp.fully_sharded_data_parallel import FullOptimStateDictConfig, FullStateDictConfig
 
-    if torch.cuda.is_available():
-        fsdp_plugin = FullyShardedDataParallelPlugin(
-            state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
-            optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
+    fsdp_plugin = FullyShardedDataParallelPlugin(
+        state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
+        optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
             )
     
-        accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
-        model = accelerator.prepare(model)
+    accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
+    model = accelerator.prepare(model)
     
     return model, tokenizer
 
