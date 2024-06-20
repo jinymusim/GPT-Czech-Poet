@@ -64,14 +64,14 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # model.base_model.h.append(torch.nn.Linear(1,768))
 # model.base_model.h.insert(7,torch.nn.Linear(768,768))
 
-parser.add_argument("--default_hf_model", default='BUT-FIT/Czech-GPT-2-XL-133k', type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default='BUT-FIT/CSTinyLlama-1.2B', type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Unicode", "unicode_tokenizer.json")), type=str, help="Tokenizer to use")
-parser.add_argument("--tokenizer", default='BUT-FIT/Czech-GPT-2-XL-133k', type=str, help="Tokenizer to use")
+parser.add_argument("--tokenizer", default='BUT-FIT/CSTinyLlama-1.2B', type=str, help="Tokenizer to use")
 #parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Tokenizer to use")
 parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil', 'small'], help="What type of Model is to be constructed")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Test-Model")),  type=str, help="Path to Model")
-parser.add_argument("--max_len", default=1024, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len", default=2048, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1, type=int, help="Max length of context for tokenizer")
 
 parser.add_argument("--syllables", default=False, type=bool, help="If inputs should be parsed by syllables")
