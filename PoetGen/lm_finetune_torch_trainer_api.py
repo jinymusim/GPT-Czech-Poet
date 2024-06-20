@@ -20,9 +20,9 @@ from utils.poet_utils import Tokens, parse_boolean
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--batch_size_poet", default=4, type=int, help="Batch size.")
+parser.add_argument("--batch_size_poet", default=8, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
-parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.0, type=float, help="Rate of input masking")
 
