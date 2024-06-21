@@ -9,9 +9,9 @@ from utils.poet_utils import Tokens
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-New-Syllable-BPE-NormalText-gpt-cz-poetry-base-e4e16_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-Base-Tokenizer-NormalText-TinyLama-cz-poetry-base-e16_LM")),  type=str, help="Path to Model")
 # bigscience/bloom-560m
-parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Original", "base_tokenizer.json")), type=str, help="Default Model from HF to use")
+parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "test_poet_model.txt")), type=str, help="Where to store the decoding efforts")
 parser.add_argument("--sample", default=True, type=bool, help="If to sample during generation")
 
@@ -37,7 +37,7 @@ if "_LM" in args.model_path_full:
 else:
     model: PoetModelInterface= (torch.load(args.model_path_full, map_location=torch.device('cpu')))
 # Free model generation
-tokenized_poet_start = tokenizer.encode("#", return_tensors='pt')
+tokenized_poet_start = tokenizer.encode("<", return_tensors='pt')
 
 if args.sample:
     out = model.model.generate(tokenized_poet_start, 
@@ -67,12 +67,8 @@ if os.path.split(args.model_path_full)[1].startswith('gpt'):
     FORMAT="BASIC"
 if os.path.split(args.model_path_full)[1].startswith('NEW') or os.path.split(args.model_path_full)[1].startswith('BASE'):
     FORMAT='VERSE_PAR'
-out_forced = model.generate_forced("#", tokenizer, sample=args.sample, format=FORMAT)
-# Print the result of generation
-print("### Forced Decoding! ###\n", out_forced)
 # Store both types of generation as well as the name of used LM
 _, base_filename = os.path.split(args.model_path_full)
 with open(args.result_file, 'a', encoding="utf-8") as file:
     print(f"--- Model {base_filename} ---", file=file)
     print("### Basic Decoding! ###\n", decoded_cont, file=file)
-    print("### Forced Decoding! ###\n", out_forced, file=file)
