@@ -109,7 +109,6 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   lr_scheduler_type="cosine",
                                   logging_dir = './logs',
                                   metric_for_best_model='eval_loss',
-                                  gradient_checkpointing = True,
                                   auto_find_batch_size = True,
                                   load_best_model_at_end=True,
                                   greater_is_better=False)
