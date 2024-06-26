@@ -106,7 +106,8 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   bf16_full_eval = True if torch.cuda.is_available() else False,
                                   optim='adamw_torch',
                                   ddp_backend = "nccl",
-                                  lr_scheduler_type="cosine",
+                                  lr_scheduler_type="cosine_with_restarts",
+                                  warmup_ratio=0.1,
                                   logging_dir = './logs',
                                   metric_for_best_model='eval_loss',
                                   auto_find_batch_size = True,
@@ -117,7 +118,7 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                            args = training_args,
                            train_dataset= dataset.train_strophes,
                            eval_dataset= dataset.val_strophes,
-                           callbacks=[EarlyStoppingCallback(early_stopping_patience=2)],
+                           callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
                            data_collator=collate_fnc).train()
 
 
