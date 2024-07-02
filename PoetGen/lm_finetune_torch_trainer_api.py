@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_poet", default=4, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
-parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.0, type=float, help="Rate of input masking")
 
@@ -99,7 +99,7 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   do_eval = True,
                                   evaluation_strategy =IntervalStrategy.EPOCH,
                                   logging_steps = 500,
-                                  weight_decay = 0.0,
+                                  weight_decay = 0.001,
                                   num_train_epochs = args.epochs_poet,
                                   learning_rate = args.learning_rate,
                                   fp16 = True if torch.cuda.is_available() else False,
@@ -107,7 +107,7 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   optim='adamw_torch',
                                   ddp_backend = "nccl",
                                   lr_scheduler_type="cosine_with_restarts",
-                                  warmup_ratio=0.1,
+                                  warmup_ratio=0.2,
                                   logging_dir = './logs',
                                   metric_for_best_model='eval_loss',
                                   auto_find_batch_size = True,
