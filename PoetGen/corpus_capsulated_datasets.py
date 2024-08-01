@@ -225,7 +225,11 @@ class CorpusDatasetPytorch:
 
                             for text_line in part_line:
                                 # In rare cases multiple, but from searching only 1 metre per line
-                                metres.append(StropheParams.METER_TRANSLATE.get(text_line["metre"][0]["type"], "J"))
+                                try:
+                                    metres.append(StropheParams.METER_TRANSLATE.get(text_line["metre"][0]["type"], "J"))
+                                except:
+                                    metres.append(StropheParams.METER_TRANSLATE.get(list(text_line["metre"][0].keys())[0], "J"))
+                                
                                 rhyme.append(text_line["rhyme"])  
                                 scanned_text = TextManipulation._remove_most_nonchar(text_line["text"], self.params['lower_case'])
                                 body.append(self.line_constructor(scanned_text))
