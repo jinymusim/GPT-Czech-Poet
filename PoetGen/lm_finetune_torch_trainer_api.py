@@ -118,7 +118,7 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                            args = training_args,
                            train_dataset= dataset.train_strophes,
                            eval_dataset= dataset.val_strophes,
-                           callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
+                           #callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
                            data_collator=collate_fnc).train()
 
 
