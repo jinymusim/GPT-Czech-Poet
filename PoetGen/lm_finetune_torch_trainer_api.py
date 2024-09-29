@@ -2,6 +2,7 @@
 import torch
 import os
 import argparse
+import torch.distributed as dist
 
 
 from accelerate import Accelerator
@@ -87,7 +88,6 @@ parser.add_argument("--size_test", default=False, type=parse_boolean, help='If t
 parser.add_argument("--sizes_to_test", default=1, type=float, help='Size to test on')
 
 def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,dataset: CorpusDatasetPytorch, collate_fnc, args: argparse.Namespace):
-    
     # Verse Training
     if args.epochs_poet !=0:
             
@@ -107,7 +107,7 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   fp16 = True if torch.cuda.is_available() else False,
                                   #fp16_full_eval  = True if torch.cuda.is_available() else False,
                                   optim='adamw_torch',
-                                  ddp_backend = "ccl",
+                                  ddp_backend = "nccl",
                                   fsdp='full_shard',
                                   lr_scheduler_type="cosine_with_restarts",
                                   warmup_ratio=0.5,
@@ -239,4 +239,6 @@ def main(args: argparse.Namespace):
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
     print("Cuda is available: ", torch.cuda.is_available())
+    if torch.cuda.is_available() and torch.cuda.device_count() > 1:
+        dist.init_process_group(backend='nccl')
     main(args)
