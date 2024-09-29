@@ -108,12 +108,12 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   #fp16_full_eval  = True if torch.cuda.is_available() else False,
                                   optim='adamw_torch',
                                   lr_scheduler_type="cosine_with_restarts",
-                                  warmup_ratio=0.5,
+                                  warmup_ratio=0.1,
+                                  disable_tqdm=False,
                                   logging_dir = './logs',
                                   metric_for_best_model='eval_loss',
                                   auto_find_batch_size = True,
                                   #load_best_model_at_end=True,
-                                  use_liger_kernel=True,
                                   greater_is_better=False)
     
         trainer = Trainer(model = model,
