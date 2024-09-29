@@ -9,8 +9,7 @@ from utils.poet_utils import Tokens
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-Base-Tokenizer-NormalText-TinyLama-cz-poetry-base-e16_LM")),  type=str, help="Path to Model")
-# bigscience/bloom-560m
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-Base-Tokenizer-NewText-NoStop-TinyLama-cz-poetry-base-e8_LM")),  type=str, help="Path to Model")
 parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "test_poet_model.txt")), type=str, help="Where to store the decoding efforts")
 parser.add_argument("--sample", default=True, type=bool, help="If to sample during generation")

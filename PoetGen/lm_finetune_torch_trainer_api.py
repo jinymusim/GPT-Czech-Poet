@@ -46,6 +46,7 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # gpt2 1024 EN Model
 # stabilityai/StableBeluga-7B 4096 Large
 # RWKV/rwkv-4-169m-pile 1024 RNN
+# unsloth/Llama-3.2-1B-Instruct 4096
 
 # Introduce Layered Model, Best done by modifiing 
 # self.h = nn.ModuleList([GPT2Block(config) for _ in range(config.num_hidden_layers)])
@@ -64,14 +65,14 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # model.base_model.h.append(torch.nn.Linear(1,768))
 # model.base_model.h.insert(7,torch.nn.Linear(768,768))
 
-parser.add_argument("--default_hf_model", default='BUT-FIT/CSTinyLlama-1.2B', type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default='unsloth/Llama-3.2-1B-Instruct', type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Unicode", "unicode_tokenizer.json")), type=str, help="Tokenizer to use")
-parser.add_argument("--tokenizer", default='BUT-FIT/CSTinyLlama-1.2B', type=str, help="Tokenizer to use")
+parser.add_argument("--tokenizer", default='unsloth/Llama-3.2-1B-Instruct', type=str, help="Tokenizer to use")
 #parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Tokenizer to use")
 parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil', 'small'], help="What type of Model is to be constructed")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Test-Model")),  type=str, help="Path to Model")
-parser.add_argument("--max_len", default=2048, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len", default=4096, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1, type=int, help="Max length of context for tokenizer")
 
 parser.add_argument("--syllables", default=False, type=bool, help="If inputs should be parsed by syllables")
@@ -96,28 +97,31 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   save_strategy  = IntervalStrategy.EPOCH,
                                   save_total_limit=1,
                                   warmup_steps = len(dataset.train_strophes)//args.batch_size_poet,
-                                  do_eval = True,
-                                  evaluation_strategy =IntervalStrategy.EPOCH,
+                                  #do_eval = True,
+                                  #evaluation_strategy =IntervalStrategy.EPOCH,
                                   logging_steps = 500,
-                                  weight_decay = 0.0001,
+                                  #weight_decay = 0.0001,
+                                  torch_empty_cache_steps=1,
                                   num_train_epochs = args.epochs_poet,
                                   learning_rate = args.learning_rate,
                                   fp16 = True if torch.cuda.is_available() else False,
-                                  fp16_full_eval  = True if torch.cuda.is_available() else False,
+                                  #fp16_full_eval  = True if torch.cuda.is_available() else False,
                                   optim='adamw_torch',
-                                  ddp_backend = "nccl",
+                                  #ddp_backend = "nccl",
+                                  fsdp='full_shard',
                                   lr_scheduler_type="cosine_with_restarts",
                                   warmup_ratio=0.5,
                                   logging_dir = './logs',
                                   metric_for_best_model='eval_loss',
                                   auto_find_batch_size = True,
-                                  load_best_model_at_end=True,
+                                  #load_best_model_at_end=True,
+                                  use_liger_kernel=True,
                                   greater_is_better=False)
     
         trainer = Trainer(model = model,
                            args = training_args,
                            train_dataset= dataset.train_strophes,
-                           eval_dataset= dataset.val_strophes,
+                           #eval_dataset= dataset.val_strophes,
                            #callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
                            data_collator=collate_fnc).train()
 

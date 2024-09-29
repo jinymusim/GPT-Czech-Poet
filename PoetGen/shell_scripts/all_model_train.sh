@@ -25,7 +25,7 @@
 
 # EPOCH 16
 
-qsub -N CZBaseTokenizerNormalTextTinyLlamaBaseTasksE8 -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=80gb:gpu_mem=30gb:scratch_local=64gb -l walltime=96:00:00 -v 'EPOCHSPOET=8,  TOKENIZER=BUT-FIT/CSTinyLlama-1.2B,  MODELTYPE=base,  MODEL=./CZ-Base-Tokenizer-NormalText-TinyLama-cz-poetry-base-e8, HFMODEL=BUT-FIT/CSTinyLlama-1.2B'  shell_scripts/all_model_train_helper.sh 
+qsub -N CZBaseTokenizerNormalTextTinyLlamaBaseTasksE32 -q gpu_dgx -l select=1:ncpus=4:ngpus=4:mem=80gb:gpu_mem=30gb:scratch_local=64gb -l walltime=256:00:00 -v 'EPOCHSPOET=32,  TOKENIZER=jinymusim/TinyLlama-Czech-Poet,  MODELTYPE=base,  MODEL=./CZ-Base-Tokenizer-NormalText-TinyLama-cz-poetry-base-e32, HFMODEL=jinymusim/TinyLlama-Czech-Poet'  shell_scripts/all_model_train_helper.sh 
 #qsub -N CZBaseTokenizerNormalTextGPTAllTasksE16 -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=40gb:gpu_mem=30gb:scratch_local=64gb -l walltime=48:00:00 -v 'EPOCHSLM=4,  EPOCHSPOET=16, TOKENIZER=lchaloupsky/czech-gpt2-oscar,  MODELTYPE=all,  MODEL=./CZ-Base-Tokenizer-NormalText-gpt-cz-poetry-all-e16, HFMODEL=lchaloupsky/czech-gpt2-oscar'  shell_scripts/all_model_train_helper.sh 
 
 qsub -N CZUnicodeTokenizerNormalTextTinyLlamaBaseTasksE8 -q gpu_dgx -l select=1:ncpus=4:ngpus=2:mem=80gb:gpu_mem=30gb:scratch_local=64gb -l walltime=96:00:00 -v 'EPOCHSPOET=8,  TOKENIZER=./utils/tokenizers/Unicode/unicode_tokenizer.json,  MODELTYPE=base,  MODEL=./CZ-Unicode-Tokenizer-NormalText-TinyLama-cz-poetry-base-e8, HFMODEL=BUT-FIT/CSTinyLlama-1.2B' shell_scripts/all_model_train_helper.sh 

@@ -1152,3 +1152,199 @@ T # 10 # vu # milostného nábožného stavu
 T # 9 # dy # k poslednímu seřadění škody
 T # 9 # dy # podajíc se s láskou národy
 T # 10 # vu # odřeklo se mužně zeměpávu
+--- Model CZ-New-Processed-BPE-NormalText-TinyLama-cz-poetry-base-e16_LM ---
+### Basic Decoding! ###
+ <AUTHOR „ A V NEIViterovi!
+<|YEAR|> 1940
+<|STROPHE_END
+<|STROPHE_START
+<|METER|> T
+<|RHYME|> XAAX
+aš # ach, ty náš náš!
+azor # má ho to je lhář!
+achio # achó! bachok! cochó!
+ažor # ječrd! dichberdezor!
+ar # garge z dirgar,
+akrok # jakkeu, jakok, ohó, rohó, noh, jakgo, bombo, ohó!, ohó, ohó, háf 
+oazor # reorgoóžor.
+<|STROPHE_END
+<|STROPHE_START|>
+<|METER|> X
+<|RHYME|> AXXA
+ech # jerdu, rubens, dhanbers, than, fhangerich, heu, wyrú, chend, chenb!
+op # dochdo a nochó ups iorganop,
+esah # ponmw w gadrgu dhanbo geyrgu dhanbog w jund f
+--- Model CZ-Base-Tokenizer-NormalText-TinyLama-cz-poetry-base-e32_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> z Wojkowicz, Jan
+<|TITLE|> VIDÍM JI, VIDÍM CELIČKOU...
+<|YEAR|> 1920
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> AABBAA
+ečku # vidím ji v šeru, v šeře. ční, svítí v svět,
+ečku # jak velký svícen v černém koutku.
+ivych # a všude vůkol v jejích svíčkách proměnlivých
+ych # plá ve stříbrné záři ztajených tužeb mých,
+ečku # až po jich krajích v kouři, mráčků ve smečkách
+ečku # se jako zlatá příze vine, chvěje v kopečku!
+<|STROPHE_END|>
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> AA
+esk # tak v oči mé, v svůj zrak, ach, v oči mé tak záští blýskotá bludic blesk 
+elesk # oh, jak bych viděl jasněji než den, jenž
+--- Model CZ-Base-Tokenizer-NormalText-TinyLama-cz-poetry-base-e32_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Leubner, František
+<|TITLE|> XXX. Buď, kde jsi, příjemná buď, neb trp jen, co máš
+<|YEAR|> 1900
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABAB
+anim # kdes na dně ve propastech a zmlklým pláním,
+ěs # kde jen ti kyne věčný klid,
+anim # kdes na dně propastí a pod hvězdnatým spaním,
+ěs # kde bezcitně ňader pustý děs.
+<|STROPHE_END|>
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> AXA
+any # z tvých darů  v bídě své jsem žebrák ušlapaný,
+idu # když s tebou žiji v lidu 
+any # mé žaly jen ti k smíchu jsou, bys proklínal hany,
+<|STROPHE_END|>
+
+--- Model CZ-Base-Tokenizer-NormalText-TinyLama-cz-poetry-base-e32_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Klášterský, Antonín
+<|TITLE|> VÁNOČNÍ RUBA’JJÁTY.
+<|YEAR|> 1940
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> AAXA
+imi # jak s rolničkami a zvonky jde ó, snimi
+imi # sníh na cestě k nebi, a přec jsou jiní, kdo s nimi
+atky # zas přijdou v příští Vánoce, by shlédli jeho statky,
+imi # kde sám je pánbou? bůh sám ať pomůže jim.
+<|STROPHE_END|>
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> AAXA
+aji # ó, vánoční sny!... v tom žití, které tlejí,
+aji # se přece jednou vzkřísí!  v tom ráji
+itru # co po tom? jen ať bůh, kdo mřel a k nebi vzlít s jitrem,
+aji # si oddechne a oči pomžikají!
+<|STROPHE_END|
+--- Model CZ-Base-Tokenizer-NormalText-TinyLama-cz-poetry-base-e32_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Pfleger Moravský, Gustav
+<|TITLE|> XXXI.
+<|YEAR|> 1880
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABXAB
+ěny # tu vzplály náhle blesky změny,
+oje # jež sved osud s tebou ve boje 
+uhy # a v temné mraky hnal tě tuhý
+eny # boj žití s osudem přemožený
+oje # a k hrobům uvrhnul tě stoje.
+<|STROPHE_END|>
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABXAB
+avil # by pěvec v duši tě pozdravil
+eny # a vroucí slzou vlažil steny,
+am # jež vzdechů žalostných slyšel sám.
+avil # tu bouř a běs mu v sluch sestavil
+eny # ty zpěvy lásky zatraceny!...
+<|STROPHE_END|>
+
+--- Model CZ-Base-Tokenizer-NormalText-TinyLama-cz-poetry-base-e32_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Heyduk, Adolf
+<|TITLE|> CHEBŠTÍ VRAHOVÉ.
+<|YEAR|> 1900
+<|STROPHE_START|>
+<|METER|> T
+<|RHYME|> AABB
+edy # rozkazuji rychle tedy
+edy # veďte jej na špalek tedy,
+uše # ať zví, kdo vzdornější duše,
+uše # nežli ta, již zovem ruše!
+<|STROPHE_END|>
+<|STROPHE_START|>
+<|METER|> T
+<|RHYME|> AABB
+ebi # ej, těch lotrů víc se leká v nebi,
+ebi # dřív než se nadít bylo v lebi
+ista # bojí se jich, ne chebu víc,
+ysta # tábor na ně baštu chystá.
+<|STROPHE_END|>
+
+--- Model CZ-Base-Tokenizer-NormalText-TinyLama-cz-poetry-base-e32_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Dvořák, Xaver
+<|TITLE|> NAŠE BUĎ!
+<|YEAR|> 1940
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABAB
+yše # jak mládí, nad něž neznám tě výše,
+ěla # ty naše máti krásná, skvělá,
+yše # jež z prsů synů život dýše,
+ela # když klesnou pouta docela!
+<|STROPHE_END|>
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABAB
+idlo # ó praho, Praho má, je tvoje jméno
+ině # snad velebeno víc v cizině,
+idlo # tvé jmeno mocně světem lélo,
+inně # tvé jmeno září svatě!
+<|STROPHE_END|>
+
+--- Model CZ-Base-Tokenizer-NewText-TinyLama-cz-poetry-base-e16_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Sova, Antonín
+<|TITLE|> BALADA O SENTIMENTÁLNÍ LÁSCE
+<|YEAR|> 1920
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABAB
+ečna # v ní láska na rozhraní slunečna
+ici # a hvězdných hlubin zářící,
+ěčna # a jako sestra nekonečnosti věčná
+ici # svou drží stráž nad měsíci.
+<|STROPHE_END|>
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABAB
+api # psi touhou jehelní se skrčí,
+yši # přitemnělé vody slyší,
+api # srny, jež se v sítích hrabou, kvapí
+iši # od květin v květů říši.
+<|STROPHE_END|>
+
+--- Model CZ-Base-Tokenizer-NewText-NoStop-TinyLama-cz-poetry-base-e8_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Neruda, Jan
+<|TITLE|> LETNÍ VZPOMÍNKY (III)
+<|YEAR|> 1960
+<|STROPHE_START|>
+<|METER|> A
+<|RHYME|> XAXA
+eoči # a mně je vás líto jak oči 
+asu # neb mám jen trnout okolo pasu,
+uše # jak chtěla by na mně ty duše 
+asu # a do ucha pošeptala hlasu
+<|STROPHE_END|>
+<|STROPHE_START|>
+<|METER|> A
+<|RHYME|> XAXA
+ašel # a zas jsem do polí zašel
+olu # a lítal jsem po dolu,
+aně # a že jsem tam k houšti maně
+olu # sáh svobodněji k bolu,
+<|STROPHE_END|>
+
