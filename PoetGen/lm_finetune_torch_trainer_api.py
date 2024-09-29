@@ -107,7 +107,7 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   fp16 = True if torch.cuda.is_available() else False,
                                   #fp16_full_eval  = True if torch.cuda.is_available() else False,
                                   optim='adamw_torch',
-                                  #ddp_backend = "nccl",
+                                  ddp_backend = "ccl",
                                   fsdp='full_shard',
                                   lr_scheduler_type="cosine_with_restarts",
                                   warmup_ratio=0.5,
