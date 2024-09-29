@@ -238,7 +238,9 @@ def main(args: argparse.Namespace):
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '12355'
     print("Cuda is available: ", torch.cuda.is_available())
     if torch.cuda.is_available() and torch.cuda.device_count() > 1:
-        dist.init_process_group(backend='nccl')
+        dist.init_process_group(backend='nccl', rank=0, world_size=torch.cuda.device_count())
     main(args)
