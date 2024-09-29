@@ -107,8 +107,6 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   fp16 = True if torch.cuda.is_available() else False,
                                   #fp16_full_eval  = True if torch.cuda.is_available() else False,
                                   optim='adamw_torch',
-                                  ddp_backend = "nccl",
-                                  fsdp='full_shard',
                                   lr_scheduler_type="cosine_with_restarts",
                                   warmup_ratio=0.5,
                                   logging_dir = './logs',
@@ -241,6 +239,4 @@ if __name__ == "__main__":
     os.environ['MASTER_ADDR'] = 'localhost'
     os.environ['MASTER_PORT'] = '12355'
     print("Cuda is available: ", torch.cuda.is_available())
-    if torch.cuda.is_available() and torch.cuda.device_count() > 1:
-        dist.init_process_group(backend='nccl', rank=0, world_size=torch.cuda.device_count())
     main(args)
