@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_poet", default=4, type=int, help="Batch size.")
 parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
-parser.add_argument("--learning_rate", default=5e-5, type=float, help="Learning Rate for Finetuning")
+parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.0, type=float, help="Rate of input masking")
 
@@ -73,7 +73,7 @@ parser.add_argument("--tokenizer", default='unsloth/Llama-3.2-1B-Instruct', type
 #parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Tokenizer to use")
 parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil', 'small'], help="What type of Model is to be constructed")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Test-Model")),  type=str, help="Path to Model")
-parser.add_argument("--max_len", default=4096, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len", default=2048, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1, type=int, help="Max length of context for tokenizer")
 
 parser.add_argument("--syllables", default=False, type=bool, help="If inputs should be parsed by syllables")
@@ -95,24 +95,23 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   output_dir=args.model_path + "TEMP",
                                   overwrite_output_dir= True,
                                   save_strategy  = IntervalStrategy.EPOCH,
-                                  save_total_limit=1,
+                                  save_total_limit=2,
                                   warmup_steps = len(dataset.train_strophes)//args.batch_size_poet,
+                                  per_device_train_batch_size=args.batch_size_poet,
                                   #do_eval = True,
                                   #evaluation_strategy =IntervalStrategy.EPOCH,
                                   logging_steps = 500,
-                                  #weight_decay = 0.0001,
                                   torch_empty_cache_steps=1,
                                   num_train_epochs = args.epochs_poet,
                                   learning_rate = args.learning_rate,
                                   fp16 = True if torch.cuda.is_available() else False,
                                   #fp16_full_eval  = True if torch.cuda.is_available() else False,
                                   optim='adamw_torch',
-                                  lr_scheduler_type="cosine_with_restarts",
+                                  lr_scheduler_type="constant_with_warmup",
                                   warmup_ratio=0.1,
                                   disable_tqdm=False,
                                   logging_dir = './logs',
                                   metric_for_best_model='eval_loss',
-                                  auto_find_batch_size = True,
                                   #load_best_model_at_end=True,
                                   greater_is_better=False)
     
