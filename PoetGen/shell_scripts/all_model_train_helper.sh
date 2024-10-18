@@ -1,5 +1,5 @@
 #!/bin/bash
-module add python/3.10.4-gcc-8.3.0-ovkjwzd
+module add py-pip/21.3.1-gcc-10.2.1-mjt74tn
 export TMPDIR=$SCRATCHDIR 
 cd $SCRATCHDIR
 pip install --target=$SCRATCHDIR torch torchvision torchaudio
