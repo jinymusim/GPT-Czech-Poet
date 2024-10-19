@@ -2,8 +2,17 @@ import os
 import json
 import numpy as np
 import torch
+import random
 
-from utils.poet_utils import StropheParams,  TextAnalysis, TextManipulation, SyllableMaker, VersologicalMaker, Tokens
+from utils.poet_utils import (
+    StropheParams,  
+    TextAnalysis, 
+    TextManipulation, 
+    SyllableMaker, 
+    VersologicalMaker, 
+    Tokens, 
+    DEFAULT_STROPHE
+)
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizerBase, PreTrainedModel
 class CorpusDatasetPytorch:
@@ -310,6 +319,69 @@ class CorpusDatasetPytorch:
             
             np.random.shuffle(self.data)
         
+    class DPODataset(StrophesDataset):
+        def data_body_gen(self):
+            """Preprocess and process data for usage
+            """
+            i=0
+            for step,file in enumerate(self.gen_files()):
+                if step % 100 == 0:
+                    print(f"Processing file {step}")
+                    
+                datum = json.load(file)
+                # Check if file in proper indexes
+                previous_poem_strophes = [DEFAULT_STROPHE]
+                if i in self.relevant_indexes:
+                    
+                    for data_line in datum:
+
+                        publish_year_text = TextManipulation._year_bucketor(data_line["biblio"]["year"])
+                        author = data_line["p_author"]["name"] if "p_author" in data_line.keys() else (data_line["b_author"]["name"] if "b_author" in data_line.keys() else "Unknown")
+
+                        poem_header = self._create_header(author, data_line["biblio"]["p_title"], publish_year_text)
+                        
+                        category = str(data_line["categories"]) if "categories" in data_line.keys() else ""
+                        category_header = self._create_category(category.strip())
+                        
+                        summary = data_line["summarization"] if "summarization" in data_line.keys() else data_line.get("sumarization", "")
+                        summary_header = self._create_summary(summary.strip())    
+                        
+                        previous_strophe = ""
+                        
+                        poem_strophes = []
+
+                        for part_line in data_line['body']:                                                     
+                            body = []
+                            rhyme= []
+                            metres = []
+
+                            for text_line in part_line:
+                                # In rare cases multiple, but from searching only 1 metre per line
+                                try:
+                                    metres.append(StropheParams.METER_TRANSLATE.get(text_line["metre"][0]["type"], "J"))
+                                except:
+                                    metres.append(StropheParams.METER_TRANSLATE.get(list(text_line["metre"][0].keys())[0], "J"))
+                                
+                                rhyme.append(text_line["rhyme"])  
+                                scanned_text = TextManipulation._remove_most_nonchar(text_line["text"], self.params['lower_case'])
+                                body.append(self.line_constructor(scanned_text))
+
+                            rhyme_str = TextManipulation._rhyme_string(rhyme)
+                            meter = max(set(metres), key=metres.count)
+                            current_strophe = self._format_strophe(meter, rhyme_str, body)
+                            poem_strophes.append(current_strophe)
+                            
+                            random.shuffle(previous_poem_strophes)
+                            self.data.append({
+                                    "prompt" : poem_header + category_header + summary_header,
+                                    "chosen" :  previous_strophe + current_strophe,
+                                    "rejected" : "".join(previous_poem_strophes[:2]),
+                                    })     
+
+                            previous_strophe = current_strophe
+                            
+                        previous_poem_strophes = poem_strophes
+                i+=1            
        
     @staticmethod
     def collate(batch, tokenizer: PreTrainedTokenizerBase ,max_len = 1024, max_context = 1024, format: str = 'METER_VERSE'):
@@ -612,12 +684,18 @@ class CorpusDatasetPytorch:
         
         self.train_strophes = CorpusDatasetPytorch.StrophesDataset(filenames,dataset_parameters, segment_type= segmentation_type, dataset_part='train')
         self.train_strophes.data_body_gen()
+        
+        self.dpo_train_strophes = CorpusDatasetPytorch.DPODataset(filenames,dataset_parameters, segment_type= segmentation_type, dataset_part='train')
+        self.dpo_train_strophes.data_body_gen()
          
 
         # Parse Val Data
         
         self.val_strophes = CorpusDatasetPytorch.StrophesDataset(filenames,dataset_parameters, segment_type= segmentation_type, dataset_part='val')
         self.val_strophes.data_body_gen()
+        
+        self.dpo_val_strophes = CorpusDatasetPytorch.DPODataset(filenames,dataset_parameters, segment_type= segmentation_type, dataset_part='val')
+        self.dpo_val_strophes.data_body_gen()
 
         
         # Parse Test Data
@@ -629,8 +707,10 @@ class CorpusDatasetPytorch:
         sub_dir = os.path.join(dataset_parameters['cache_dir'], segmentation_type)
 
         json.dump(self.train_strophes.data, open( os.path.join(sub_dir, "TRAIN_STOPHES.json"), 'w+'), indent = 6)
+        json.dump(self.dpo_train_strophes.data, open(os.path.join(sub_dir, "DPO_TRAIN_STOPHES.json"), 'w+'), indent = 6)
 
         json.dump(self.val_strophes.data, open( os.path.join(sub_dir, "VAL_STOPHES.json"), 'w+'), indent = 6)
+        json.dump(self.dpo_val_strophes.data, open(os.path.join(sub_dir, "DPO_VAL_STOPHES.json"), 'w+'), indent = 6)
 
         json.dump(self.test_strophes.data, open( os.path.join(sub_dir, "TEST_STOPHES.json"), 'w+'), indent = 6)
               
@@ -668,21 +748,27 @@ class CorpusDatasetPytorch:
     def check_file_existence(self, dataset_parameters, segmentation_type):
         sub_dir = os.path.join(dataset_parameters['cache_dir'], segmentation_type)
         return  os.path.exists(os.path.join(sub_dir, 'TRAIN_STOPHES.json')) and  \
+                os.path.exists(os.path.join(sub_dir, 'DPO_TRAIN_STOPHES.json')) and  \
                 os.path.exists(os.path.join(sub_dir, 'VAL_STOPHES.json')) and  \
+                os.path.exists(os.path.join(sub_dir, 'DPO_VAL_STOPHES.json')) and  \
                 os.path.exists(os.path.join(sub_dir, 'TEST_STOPHES.json'))
     
     def load_cached(self, dataset_parameters, segmentation_type):
         self.train_strophes = CorpusDatasetPytorch.StrophesDataset([], dataset_parameters =dataset_parameters, segment_type =segmentation_type, dataset_part='train' )
+        self.dpo_train_strophes = CorpusDatasetPytorch.DPODataset([], dataset_parameters =dataset_parameters, segment_type =segmentation_type, dataset_part='train'  )
 
         self.val_strophes = CorpusDatasetPytorch.StrophesDataset([], dataset_parameters =dataset_parameters, segment_type =segmentation_type, dataset_part='val'  )
+        self.dpo_val_strophes = CorpusDatasetPytorch.DPODataset([], dataset_parameters =dataset_parameters, segment_type =segmentation_type, dataset_part='val'  )
 
         self.test_strophes = CorpusDatasetPytorch.StrophesDataset([], dataset_parameters =dataset_parameters, segment_type =segmentation_type, dataset_part='test'  )
 
         sub_dir = os.path.join(dataset_parameters['cache_dir'], segmentation_type)
 
         self.train_strophes.data =json.load( open( os.path.join(sub_dir, "TRAIN_STOPHES.json"), 'r'))
+        self.dpo_train_strophes.data =json.load( open( os.path.join(sub_dir, "DPO_TRAIN_STOPHES.json"), 'r'))
 
         self.val_strophes.data =json.load( open( os.path.join(sub_dir, "VAL_STOPHES.json"), 'r'))
+        self.dpo_val_strophes.data =json.load( open( os.path.join(sub_dir, "DPO_VAL_STOPHES.json"), 'r'))
 
         self.test_strophes.data =json.load( open( os.path.join(sub_dir, "TEST_STOPHES.json"), 'r'))
 

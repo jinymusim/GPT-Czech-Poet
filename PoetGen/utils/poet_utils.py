@@ -108,6 +108,16 @@ class Tokens:
     RHYME = "<|RHYME|>"
 
 
+DEFAULT_STROPHE="""
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABAB
+a kdo by nedlel tak prudce rád,
+nežli se vytratí spat?
+nic nechci víc
+než nic a víc,
+<|STROPHE_END|>
+"""
 
 import re
 import numpy as np

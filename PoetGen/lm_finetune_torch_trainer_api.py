@@ -2,15 +2,36 @@
 import torch
 import os
 import argparse
-import torch.distributed as dist
+from datasets import Dataset
 
-
-from accelerate import Accelerator
-from transformers import  AutoTokenizer, TrainingArguments, Trainer, PreTrainedTokenizerFast, PreTrainedTokenizerBase, AutoModelForCausalLM, EarlyStoppingCallback, IntervalStrategy
+from trl import (
+    DPOConfig, DPOTrainer
+)
+from transformers import  (
+    AutoTokenizer, 
+    AutoModelForCausalLM, 
+    PreTrainedTokenizerFast, 
+    PreTrainedTokenizerBase, 
+    TrainingArguments,
+    Trainer,
+    
+    EarlyStoppingCallback,
+    IntervalStrategy
+)
 from functools import partial
 
 # Project Packages
-from utils.base_poet_models import PoetModelBase, PoetModelSecondaryTasks, PoetModelHalfBase, PoetModelVerseEnd, PoetModelContextInput, PoetModelContextYear, PoetModelAllTasks, DistilModel, PoetModelSmall
+from utils.base_poet_models import (
+    PoetModelBase,
+    PoetModelSecondaryTasks,
+    PoetModelHalfBase,
+    PoetModelVerseEnd,
+    PoetModelContextInput,
+    PoetModelContextYear,
+    PoetModelAllTasks,
+    DistilModel,
+    PoetModelSmall
+)
 
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
@@ -22,7 +43,7 @@ from utils.poet_utils import Tokens, parse_boolean
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_poet", default=8, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=16, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--epochs_poet", default=4, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.0, type=float, help="Rate of input masking")
@@ -87,41 +108,56 @@ parser.add_argument("--test_data_rate", default=0.05, type=float, help="Rate of 
 parser.add_argument("--size_test", default=False, type=parse_boolean, help='If to conduct size test on data')
 parser.add_argument("--sizes_to_test", default=1, type=float, help='Size to test on')
 
+parser.add_argument("--dpo", default=True, type=bool, help="If to use DPO training")
+parser.add_argument("--dpo_epochs", default=2, type=int, help="Number of epochs for DPO training")
+
+
 def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,dataset: CorpusDatasetPytorch, collate_fnc, args: argparse.Namespace):
     # Verse Training
     if args.epochs_poet !=0:
-            
+        
         training_args = TrainingArguments(
-                                  output_dir=args.model_path + "TEMP",
-                                  overwrite_output_dir= True,
-                                  save_strategy  = IntervalStrategy.EPOCH,
-                                  save_safetensors=False,
-                                  save_total_limit=1,
-                                  warmup_steps = len(dataset.train_strophes)//args.batch_size_poet,
-                                  auto_find_batch_size = True,
-                                  #do_eval = True,
-                                  #evaluation_strategy =IntervalStrategy.EPOCH,
-                                  logging_steps = 500,
-                                  num_train_epochs = args.epochs_poet,
-                                  learning_rate = args.learning_rate,
-                                  fp16 = True if torch.cuda.is_available() else False,
-                                  #fp16_full_eval  = True if torch.cuda.is_available() else False,
-                                  optim='adamw_torch',
-                                  lr_scheduler_type="constant_with_warmup",
-                                  warmup_ratio=0.1,
-                                  disable_tqdm=True,
-                                  logging_dir = './logs',
-                                  #metric_for_best_model='eval_loss',
-                                  #load_best_model_at_end=True,
-                                  #greater_is_better=False
-                                )
+            output_dir=args.model_path + "TEMP",
+            overwrite_output_dir= True,
+            save_strategy  = IntervalStrategy.EPOCH,
+            save_safetensors=False,
+            save_total_limit=1,
+            auto_find_batch_size = True if torch.cuda.is_available() else False,
+            logging_steps = 500,
+            num_train_epochs = args.epochs_poet,
+            bf16 = True if torch.cuda.is_available() else False,
+            logging_dir = './logs',
+        )
     
-        trainer = Trainer(model = model,
-                           args = training_args,
-                           train_dataset= dataset.train_strophes,
-                           #eval_dataset= dataset.val_strophes,
-                           #callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
-                           data_collator=collate_fnc).train()
+        trainer = Trainer(
+            model = model,
+            args = training_args,
+            train_dataset= dataset.train_strophes,
+            data_collator=collate_fnc
+        ).train()
+        
+    if args.dpo and args.dpo_epochs !=0:
+
+        training_args = DPOConfig(
+                output_dir=args.model_path + "TEMP",
+                overwrite_output_dir= True,
+                save_strategy= IntervalStrategy.EPOCH,
+                save_safetensors=False,
+                save_total_limit=1,
+                auto_find_batch_size = True if torch.cuda.is_available() else False,
+                logging_steps = 500,
+                num_train_epochs = args.dpo_epochs,
+                use_liger_kernel = True if torch.cuda.is_available() else False,
+                bf16 = True if torch.cuda.is_available() else False,
+                logging_dir = './logs',
+            )
+    
+        trainer = DPOTrainer(
+                model = model.model,
+                args = training_args,
+                train_dataset= Dataset.from_list(dataset.dpo_train_strophes.data),
+                tokenizer=tokenizer
+            ).train()
 
 
 def create_model_and_tokenizer(args: argparse.Namespace):
@@ -137,7 +173,9 @@ def create_model_and_tokenizer(args: argparse.Namespace):
         tuple: tuple of model and tokenizer
     """
     if args.use_default_model:
-        if args.model_type == "base":         
+        tokenizer = None
+        if args.model_type == "base":  
+                
             model = PoetModelBase(args.default_hf_model)
         elif args.model_type == "secondary_tasks":
             model = PoetModelSecondaryTasks(args.default_hf_model)
@@ -158,7 +196,8 @@ def create_model_and_tokenizer(args: argparse.Namespace):
         else:
             raise TypeError("Given model type doesn't exists")
         
-        try:    
+        try:   
+             
             tokenizer: PreTrainedTokenizerBase =  AutoTokenizer.from_pretrained(args.tokenizer)
             if tokenizer.pad_token == None:
                 tokenizer.pad_token = tokenizer.eos_token
@@ -179,18 +218,7 @@ def create_model_and_tokenizer(args: argparse.Namespace):
     else:
         tokenizer = AutoTokenizer.from_pretrained(args.model_path)
         model = torch.load(args.model_path, map_location=torch.device('cpu'))
-    
-    # Parallel Plugin
-    from accelerate import FullyShardedDataParallelPlugin
-    from torch.distributed.fsdp.fully_sharded_data_parallel import FullOptimStateDictConfig, FullStateDictConfig
 
-    fsdp_plugin = FullyShardedDataParallelPlugin(
-        state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
-        optim_state_dict_config=FullOptimStateDictConfig(offload_to_cpu=True, rank0_only=False),
-            )
-    
-    accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
-    model = accelerator.prepare(model)
     
     return model, tokenizer
 
@@ -236,7 +264,5 @@ def main(args: argparse.Namespace):
 
 if __name__ == "__main__":
     args = parser.parse_args([] if "__file__" not in globals() else None)
-    os.environ['MASTER_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = '12355'
     print("Cuda is available: ", torch.cuda.is_available())
     main(args)
