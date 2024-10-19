@@ -27,7 +27,7 @@ parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning 
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.0, type=float, help="Rate of input masking")
 
-parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv-new")), type=str, help="Path to Data")
+parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path.dirname(__file__), "corpusCzechVerse", "ccv-new-summary-one-sentence")), type=str, help="Path to Data")
 
 #TODO: Join syllabification by better symbol (maybe extra space arround) DONE
 #TODO: Make meter validator with context
@@ -66,10 +66,10 @@ parser.add_argument("--data_path",  default=os.path.abspath(os.path.join(os.path
 # model.base_model.h.append(torch.nn.Linear(1,768))
 # model.base_model.h.insert(7,torch.nn.Linear(768,768))
 
-parser.add_argument("--default_hf_model", default='unsloth/Llama-3.2-1B-Instruct', type=str, help="Default Model from HF to use")
+parser.add_argument("--default_hf_model", default='unsloth/Llama-3.2-1B', type=str, help="Default Model from HF to use")
 parser.add_argument("--use_default_model",  default=True, type=bool, help="Use Default Model")
 #parser.add_argument("--tokenizer", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "Unicode", "unicode_tokenizer.json")), type=str, help="Tokenizer to use")
-parser.add_argument("--tokenizer", default='unsloth/Llama-3.2-1B-Instruct', type=str, help="Tokenizer to use")
+parser.add_argument("--tokenizer", default='unsloth/Llama-3.2-1B', type=str, help="Tokenizer to use")
 #parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Tokenizer to use")
 parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil', 'small'], help="What type of Model is to be constructed")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Test-Model")),  type=str, help="Path to Model")
@@ -95,7 +95,8 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                                   output_dir=args.model_path + "TEMP",
                                   overwrite_output_dir= True,
                                   save_strategy  = IntervalStrategy.EPOCH,
-                                  save_total_limit=2,
+                                  save_safetensors=False,
+                                  save_total_limit=1,
                                   warmup_steps = len(dataset.train_strophes)//args.batch_size_poet,
                                   auto_find_batch_size = True,
                                   #do_eval = True,

@@ -97,6 +97,8 @@ class Tokens:
     }
     
     AUTHOR = "<|AUTHOR|>"
+    CATEGORY = "<|CATEGORY|>"
+    SUMMARY = "<|SUMMARY|>"
     TITLE = "<|TITLE|>"
     YEAR = "<|YEAR|>"
     STROPHE_START = "<|STROPHE_START|>"

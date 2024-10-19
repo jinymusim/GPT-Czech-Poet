@@ -195,6 +195,28 @@ class CorpusDatasetPytorch:
             """
             return f"{Tokens.AUTHOR} {author}\n{Tokens.TITLE} {title}\n{Tokens.YEAR} {year}\n"
         
+        def _create_summary(self, summary):
+            """Create summary for strophe
+
+            Args:
+                summary (str): summary of the strophe
+
+            Returns:
+                str: summary of the strophe
+            """
+            return f"{Tokens.SUMMARY} {summary}\n"
+        
+        def _create_category(self, category):
+            """Create category for strophe
+
+            Args:
+                category (str): category of the strophe
+
+            Returns:
+                str: category of the strophe
+            """
+            return f"{Tokens.CATEGORY} {category}\n"
+        
         def _format_strophe(self, meter:str, rhyme: str, verses: list):
             return f"{Tokens.STROPHE_START}\n{Tokens.METER} {meter}\n{Tokens.RHYME} {rhyme}\n" + "\n".join(verses) + f"\n{Tokens.STROPHE_END}\n"
                                                            
@@ -216,6 +238,14 @@ class CorpusDatasetPytorch:
                         author = data_line["p_author"]["name"] if "p_author" in data_line.keys() else (data_line["b_author"]["name"] if "b_author" in data_line.keys() else "Unknown")
 
                         poem_header = self._create_header(author, data_line["biblio"]["p_title"], publish_year_text)
+                        
+                        category = str(data_line["categories"]) if "categories" in data_line.keys() else ""
+                        category_header = self._create_category(category.strip())
+                        
+                        summary = data_line["summarization"] if "summarization" in data_line.keys() else data_line.get("sumarization", "")
+                        summary_header = self._create_summary(summary.strip())
+                        
+                        
                         previous_strophe = ""
 
                         for part_line in data_line['body']:                                                     
@@ -237,7 +267,7 @@ class CorpusDatasetPytorch:
                             rhyme_str = TextManipulation._rhyme_string(rhyme)
                             meter = max(set(metres), key=metres.count)
                             current_strophe = self._format_strophe(meter, rhyme_str, body)
-                            constructed_strophe = poem_header + previous_strophe + current_strophe  
+                            constructed_strophe = poem_header + category_header + summary_header + previous_strophe + current_strophe  
                             self.data.append({
                                     "input_ids" : constructed_strophe,
                                     "context_ids" : "None",
