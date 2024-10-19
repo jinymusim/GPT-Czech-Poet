@@ -122,7 +122,7 @@ class CorpusDatasetPytorch:
 
             self.data = []
 
-            self.line_constructor = None
+            self.line_constructor = self._construct_line
             if segment_type == 'BASE':
                 self.line_constructor = self._construct_line
             elif segment_type == 'SYLLABLE':
@@ -320,17 +320,19 @@ class CorpusDatasetPytorch:
             np.random.shuffle(self.data)
         
     class DPODataset(StrophesDataset):
+        
         def data_body_gen(self):
             """Preprocess and process data for usage
             """
             i=0
+            previous_poem_strophes = [DEFAULT_STROPHE]
             for step,file in enumerate(self.gen_files()):
                 if step % 100 == 0:
                     print(f"Processing file {step}")
                     
                 datum = json.load(file)
                 # Check if file in proper indexes
-                previous_poem_strophes = [DEFAULT_STROPHE]
+                
                 if i in self.relevant_indexes:
                     
                     for data_line in datum:

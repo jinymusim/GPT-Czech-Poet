@@ -112,10 +112,10 @@ DEFAULT_STROPHE="""
 <|STROPHE_START|>
 <|METER|> J
 <|RHYME|> ABAB
-a kdo by nedlel tak prudce rád,
-nežli se vytratí spat?
-nic nechci víc
-než nic a víc,
+rád # a kdo by nedlel tak prudce rád,
+spat # nežli se vytratí spat?
+víc # nic nechci víc
+víc # než nic a víc,
 <|STROPHE_END|>
 """
 
