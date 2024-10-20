@@ -15,5 +15,8 @@ jellyfish
 evaluate
 bitsandbytes
 liger-kernel
+wheel
+packaging
+ninja
 #huggingface-hub
 #llama-cpp-python #-C cmake.args="-DLLAMA_BLAS=ON;-DLLAMA_BLAS_VENDOR=OpenBLAS"
