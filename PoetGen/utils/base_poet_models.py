@@ -285,7 +285,6 @@ class PoetModelBase(PoetModelFunctionalInterface):
         self.model = AutoModelForCausalLM.from_pretrained(
             pretrainedModel, 
             output_hidden_states=True,
-            attn_implementation="flash_attention_2" if torch.cuda.is_available() else "eager",
             torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
             device_map="auto"
         )

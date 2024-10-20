@@ -4,7 +4,6 @@ export TMPDIR=$SCRATCHDIR
 cd $SCRATCHDIR
 pip install --target=$SCRATCHDIR torch torchvision torchaudio
 pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/requirements.txt
-pip install --target=$SCRATCHDIR flash-attn --no-build-isolation
 export PYTHONPATH="${PYTHONPATH}:${TMPDIR}"
 cd /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen
 python3 lm_finetune_torch_trainer_api.py  --epochs_poet=$EPOCHSPOET --tokenizer="$TOKENIZER" --model_type="$MODELTYPE" --model_path="$MODEL" --default_hf_model="$HFMODEL"
