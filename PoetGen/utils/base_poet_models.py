@@ -287,7 +287,6 @@ class PoetModelBase(PoetModelFunctionalInterface):
             output_hidden_states=True,
             attn_implementation="flash_attention_2" if torch.cuda.is_available() else "eager",
             torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
-            device_map="auto"
         )
             
         model_config = self.model.config
