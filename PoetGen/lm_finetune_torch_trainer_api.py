@@ -151,6 +151,9 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                 bf16 = True if torch.cuda.is_available() else False,
                 logging_dir = './logs',
             )
+        
+        # Move model to CPU, done to avoid CUDA memory error
+        model = model.cpu()
     
         trainer = DPOTrainer(
                 model = model.model,
