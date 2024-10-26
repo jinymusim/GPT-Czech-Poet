@@ -43,7 +43,7 @@ from utils.poet_utils import Tokens, parse_boolean
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_poet", default=8, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=4, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--epochs_poet", default=0, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.0, type=float, help="Rate of input masking")
@@ -134,11 +134,12 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
             args = training_args,
             train_dataset= dataset.train_strophes,
             data_collator=collate_fnc
-        ).train()
+        )
+        trainer.train()
         
     if args.dpo and args.dpo_epochs !=0:
 
-        training_args = DPOConfig(
+        dpo_training_args = DPOConfig(
                 output_dir=args.model_path + "TEMP",
                 overwrite_output_dir= True,
                 save_strategy= IntervalStrategy.EPOCH,
@@ -146,6 +147,9 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                 save_total_limit=1,
                 auto_find_batch_size = True if torch.cuda.is_available() else False,
                 logging_steps = 500,
+                max_length = args.max_len,
+                max_prompt_length = args.max_len,
+                remove_unused_columns=False,
                 num_train_epochs = args.dpo_epochs,
                 use_liger_kernel = True if torch.cuda.is_available() else False,
                 bf16 = True if torch.cuda.is_available() else False,
@@ -154,13 +158,15 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
         
         # Move model to CPU, done to avoid CUDA memory error
         model = model.cpu()
+        train_dataset = Dataset.from_list(dataset.dpo_train_strophes.data)
     
-        trainer = DPOTrainer(
+        dpo_trainer = DPOTrainer(
                 model = model.model,
-                args = training_args,
-                train_dataset= Dataset.from_list(dataset.dpo_train_strophes.data),
+                args = dpo_training_args,
+                train_dataset=train_dataset,
                 tokenizer=tokenizer
-            ).train()
+            )
+        dpo_trainer.train()
 
 
 def create_model_and_tokenizer(args: argparse.Namespace):
