@@ -94,7 +94,7 @@ parser.add_argument("--tokenizer", default='unsloth/Llama-3.2-1B', type=str, hel
 #parser.add_argument("--tokenizer", default=os.path.join(os.path.dirname(__file__), 'backup_LMS','CZ-Unicode-Tokenizer-NormalText-gpt-cz-poetry-base-e4e16_LM' ), type=str, help="Tokenizer to use")
 parser.add_argument("--model_type",  default="base", type=str, choices=["base", "secondary_tasks", "half", "verse", "context", "year", "all", 'distil', 'small'], help="What type of Model is to be constructed")
 parser.add_argument("--model_path", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "Test-Model")),  type=str, help="Path to Model")
-parser.add_argument("--max_len", default=4096, type=int, help="Max length for tokenizer")
+parser.add_argument("--max_len", default=8192, type=int, help="Max length for tokenizer")
 parser.add_argument("--context_max_len", default=1, type=int, help="Max length of context for tokenizer")
 
 parser.add_argument("--syllables", default=False, type=bool, help="If inputs should be parsed by syllables")
@@ -164,7 +164,7 @@ def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,d
                 model = model.model,
                 args = dpo_training_args,
                 train_dataset=train_dataset,
-                tokenizer=tokenizer
+                processing_class=tokenizer
             )
         dpo_trainer.train()
 
