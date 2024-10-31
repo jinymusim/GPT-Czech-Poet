@@ -7,7 +7,7 @@ pip install --target=$SCRATCHDIR -r /storage/brno2/home/chudobm/tf_shorts/Tensor
 export PYTHONPATH="${PYTHONPATH}:${TMPDIR}"
 git clone https://github.com/huggingface/trl.git
 cd trl/
-pip install --target=$SCRATCHDIR -e -U .
+pip install --target=$SCRATCHDIR -e .
 pip install --target=$SCRATCHDIR flash-attn --no-build-isolation -U
 cd /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen
 python3 lm_finetune_torch_trainer_api.py  --epochs_poet=$EPOCHSPOET --tokenizer="$TOKENIZER" --model_type="$MODELTYPE" --model_path="$MODEL" --default_hf_model="$HFMODEL"
