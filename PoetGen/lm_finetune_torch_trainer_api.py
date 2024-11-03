@@ -108,7 +108,7 @@ parser.add_argument("--test_data_rate", default=0.05, type=float, help="Rate of 
 parser.add_argument("--size_test", default=False, type=parse_boolean, help='If to conduct size test on data')
 parser.add_argument("--sizes_to_test", default=1, type=float, help='Size to test on')
 
-parser.add_argument("--dpo", default=True, type=bool, help="If to use DPO training")
+parser.add_argument("--dpo", default=False, type=bool, help="If to use DPO training")
 parser.add_argument("--dpo_epochs", default=2, type=int, help="Number of epochs for DPO training")
 
 

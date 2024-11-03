@@ -9,6 +9,7 @@ transformers
 #transformers==4.34.1
 datasets
 accelerate
+trl
 #accelerate==0.28.0
 jellyfish
 evaluate
