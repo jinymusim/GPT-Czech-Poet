@@ -33,6 +33,11 @@ from utils.base_poet_models import (
     PoetModelSmall
 )
 
+from peft import (
+    LoraConfig, 
+    get_peft_model
+)
+
 
 from corpus_capsulated_datasets import CorpusDatasetPytorch
 from utils.poet_model_utils import ModelManipulation, PoetModelInterface
@@ -43,7 +48,7 @@ from utils.poet_utils import Tokens, parse_boolean
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--batch_size_poet", default=8, type=int, help="Batch size.")
-parser.add_argument("--epochs_poet", default=0, type=int, help="Number of epochs for poet gen")
+parser.add_argument("--epochs_poet", default=1, type=int, help="Number of epochs for poet gen")
 parser.add_argument("--learning_rate", default=1e-5, type=float, help="Learning Rate for Finetuning")
 parser.add_argument("--train_masked", default=False, type=bool, help="Train for consistency secondary training")
 parser.add_argument("--input_mask_rate", default=0.0, type=float, help="Rate of input masking")
@@ -111,30 +116,41 @@ parser.add_argument("--sizes_to_test", default=1, type=float, help='Size to test
 parser.add_argument("--dpo", default=False, type=bool, help="If to use DPO training")
 parser.add_argument("--dpo_epochs", default=2, type=int, help="Number of epochs for DPO training")
 
+parser.add_argument("--lora", default=True, type=bool, help="If to use LORA training")
+
 
 def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,dataset: CorpusDatasetPytorch, collate_fnc, args: argparse.Namespace):
     # Verse Training
     if args.epochs_poet !=0:
         
+        if args.lora:
+            lora_training_args = LoraConfig(
+                task_type="CAUSAL_LM"
+            )
+            model.model = get_peft_model(model.model, lora_training_args, mixed=True)
+        
+        
         training_args = TrainingArguments(
-            output_dir=args.model_path + "TEMP",
-            overwrite_output_dir= True,
-            save_strategy  = IntervalStrategy.EPOCH,
-            save_safetensors=False,
-            save_total_limit=1,
-            auto_find_batch_size = True if torch.cuda.is_available() else False,
-            logging_steps = 500,
-            num_train_epochs = args.epochs_poet,
-            bf16 = True if torch.cuda.is_available() else False,
-            logging_dir = './logs',
-        )
+                output_dir=args.model_path + "TEMP",
+                overwrite_output_dir= True,
+                save_strategy  = IntervalStrategy.EPOCH,
+                learning_rate=args.learning_rate,
+                save_safetensors=False,
+                save_total_limit=1,
+                auto_find_batch_size = True if torch.cuda.is_available() else False,
+                logging_steps = 500,
+                num_train_epochs = args.epochs_poet,
+                bf16 = True if torch.cuda.is_available() else False,
+                logging_dir = './logs',
+            )
     
         trainer = Trainer(
-            model = model,
-            args = training_args,
-            train_dataset= dataset.train_strophes,
-            data_collator=collate_fnc
-        )
+                model = model,
+                args = training_args,
+                train_dataset= dataset.train_strophes,
+                data_collator=collate_fnc
+            )
+            
         trainer.train()
         
     if args.dpo and args.dpo_epochs !=0:

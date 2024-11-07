@@ -9,7 +9,7 @@ from utils.poet_utils import Tokens
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "CZ-Base-Tokenizer-NewText-NoStop-TinyLama-cz-poetry-base-e8_LM")),  type=str, help="Path to Model")
+parser.add_argument("--model_path_full", default=os.path.abspath(os.path.join(os.path.dirname(__file__),'backup_LMS', "LLama3-cz-e4_LM")),  type=str, help="Path to Model")
 parser.add_argument("--backup_tokenizer_model", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "utils", "tokenizers", "BPE", "new_processed_tokenizer.json")), type=str, help="Default Model from HF to use")
 parser.add_argument("--result_file", default= os.path.abspath(os.path.join(os.path.dirname(__file__),'results', "test_poet_model.txt")), type=str, help="Where to store the decoding efforts")
 parser.add_argument("--sample", default=True, type=bool, help="If to sample during generation")
@@ -35,12 +35,22 @@ if "_LM" in args.model_path_full:
     model: PoetModelInterface= PoetModelBase(args.model_path_full)
 else:
     model: PoetModelInterface= (torch.load(args.model_path_full, map_location=torch.device('cpu')))
+
+promtpt = """<|AUTHOR|> Chudoba, Michal
+<|TITLE|> O CERNu
+<|YEAR|> 2000
+<|CATEGORY|> [Science]
+<|SUMMARY|> In poem "O CERNu" the author celebrates science done in CERN.
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABAB
+"""
 # Free model generation
-tokenized_poet_start = tokenizer.encode("<", return_tensors='pt')
+tokenized_poet_start = tokenizer.encode(promtpt, return_tensors='pt')
 
 if args.sample:
     out = model.model.generate(tokenized_poet_start, 
-                                        max_length=256,
+                                        max_length=1024,
                                         do_sample=True,
                                         top_k=50,
                                         eos_token_id = tokenizer.eos_token_id,

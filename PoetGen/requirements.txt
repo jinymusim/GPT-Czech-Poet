@@ -10,6 +10,7 @@ transformers
 datasets
 accelerate
 trl
+peft
 #accelerate==0.28.0
 jellyfish
 evaluate

@@ -1348,3 +1348,153 @@ aně # a že jsem tam k houšti maně
 olu # sáh svobodněji k bolu,
 <|STROPHE_END|>
 
+--- Model LLama3-cz-e4_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Heyduk, Adolf
+<|TITLE|> ZPĚV DRUHÝ.
+<|YEAR|> 1900
+<|CATEGORY|> []
+<|SUMMARY|> In Adolf Heyduk's "ZPĚV DRUHÝ," the second part of his epic poem "Milota z Dědic," the protagonist, Milota, grapples with guilt and despair after betraying his king and country, experiencing hallucinations and supernatural encounters that reflect his inner turmoil and haunted conscience.
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABABABCC
+obu # zrak zelený však vidí vše jdu v hrobu,
+ev # tam z hrobových já vstávám živých zjev,
+obu # a v ruce čelo, v kšticích kruhy z kobu,
+ev # rve s těly kosti svými moje krev...
+obu # tak milota vždy cítil blízkost hrobu
+ěv # a divných vidin spáchaného hněv
+echu # a zdálo se, že slyšel
+--- Model LLama3-cz-e4_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Chudoba, Michal
+<|TITLE|> O CERNu
+<|YEAR|> 2000
+<|CATEGORY|> [Věda, Sci-fi]
+<|SUMMARY|> In poem "O CERNu" the author Michal Chudoba describes the work of CERN in a poetic way.
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> AABBCCDCDEEFFGG
+eru # tam v švýcarských hor pod ním na severu
+eru # se v hloubi vlní částky chladném peru,
+oněť # tam věčností z nich musí na ně bóněť
+oněť # svět celý, neobsáhlý, zapletit v ně! 
+ěmu # z těch stínů, jež jde přímo za ním k němu,
+ěmu # se zjevem hrůzným vyjívat chce k děmu
+ava # stroj vědy obrovský. jak věčná záplava
+emu # se za ním kmitá šíř a šíře, lemu 
+ěrna # jichž mračná stáda
+--- Model LLama3-cz-e4_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Chudoba, Michal
+<|TITLE|> O CERNu
+<|YEAR|> 2000
+<|CATEGORY|> [Věda, Sci-fi]
+<|SUMMARY|> In poem "O CERNu" the author Michal Chudoba describes the science done in CERN using the Large Hadron Collider. The poem is a tribute to the scientists working in the field of particle physics.
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> AAXX
+ic # a na to přec  ba věru pěkně sic,
+isic # že v každém jiskru vzníci na tisíc
+en # lze mnohou leckde kletou chásku jen
+on # s ní v jeden velký smysl ukládal on.
+<|STROPHE_END|>
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABAB
+ichen # jen nevíme, zdaž on nejsi ztichen.
+en # zle, pane, konsulové čekají jen,
+ichen # že k posledním snad útvarem to ztichen,
+en # jak k ohni, kde se kouřil včera jen!
+<|STROPHE_END|>
+
+--- Model LLama3-cz-e4_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Chudoba, Michal
+<|TITLE|> O CERNu
+<|YEAR|> 2000
+<|CATEGORY|> [Věda, Sci-fi, CERN]
+<|SUMMARY|> In poem "O CERNu" the author Michal Chudoba describes the work in CERN using the Large Hadron Collider.
+<|STROPHE_START|>
+<|METER|> N
+<|RHYME|> XABBACDDEFXEFFG
+ikl # tak mluví svět a jak by to křikl
+ygra # jak na oheň rce bengálygra
+uje # hle v černém kotle věčný zhasuje!
+uje # však po tmavách světlo ukazuje,
+itla # neb věhlasná věda mu v noc šlehla, sviťtila kmitlá,
+ilil # jak světlo ducha, jenž věčně duchem žilil.
+uj # jen světlo. světlo v oheň slávu svůj
+atuj # chci zříti. pomni, dvanáct tisíc, pamatuj!
+ev # co chvátal osud,  chvilka byla slepic, krev
+ev # je v mozek vyvrhl, i srdce sev
+al # a v duši zlámal, odkud by duši vzal? 
+uch # tak žije svět, jak žárem dusný vzduch,
+ekrev # a duší svět, jež divou sekrev
+uch # vždy větru žene a jí drtí chladný vzduch.
+ak # ó svítí! co vidím?  světlo zniknouti  zniknout  zniknout však?
+ach #  již vše jest v černě, prach   
+<|STROPHE_END|>
+
+--- Model LLama3-cz-e4_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Chudoba, Michal
+<|TITLE|> O CERNu
+<|YEAR|> 2000
+<|CATEGORY|> [Věda, Sci-fi, CERN]
+<|SUMMARY|> In poem "O CERNu" the author Michal Chudoba describes the work in CERN.
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABAB
+
+aldu # pochodeň v ruce, v myšlénkách moudrá aldu
+iž # ve sladké touze stihnout krok svých vrat 
+aldu # když zřetelně za vlnami šerem beraldu
+iž # již koberce se zdvíhaly a stávaly již.
+<|STROPHE_END|>
+
+--- Model LLama3-cz-e4_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Chudoba, Michal
+<|TITLE|> O CERNu
+<|YEAR|> 2000
+<|CATEGORY|> []
+<|SUMMARY|> In poem "O CERNu" the author Michal Chudoba describes the work in CERN.
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABAB
+aci # jak hrobu kámen se tu síní kácí,
+evšim # kde v závod žne se se zrnem je všem.
+aci # zde práce, práce a tu prací prací,
+evim # však nikde oddechu tu nevím.
+<|STROPHE_END|>
+
+--- Model LLama3-cz-e4_LM ---
+### Basic Decoding! ###
+ <|AUTHOR|> Chudoba, Michal
+<|TITLE|> O CERNu
+<|YEAR|> 2000
+<|CATEGORY|> [Science]
+<|SUMMARY|> In poem "O CERNu" the author celebrates science done in CERN.
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABAB
+erně # zvlášť k whenryšta! věda se tam v černě
+ěku # věčně zblouznivě na dob věků
+urně # dnes módou hřmí neb jinde poeturně
+ěku # se odbývá máš při člověku,
+<|STROPHE_END|>
+<|STROPHE_START|>
+<|METER|> J
+<|RHYME|> ABABCBCBC
+aci # v tom slavné stádu, v této dráčské práci!
+ouva # kde genij zloba proti sobě v zápasovou válku vzpouva,
+aci # jak na pleskot střel se stádo zpácí
+ouva # pod pád svých vůdců, zloba i hněv zhouby na ně krvavou vrtkou trouvá,
+ada # i na hrdla jim mečů svůdná puká rána, v kterou se vkrádá
+ouva # olověná smrt jim a krev vřavou do očí jim vzbourá,
+ada # však oni v průvodu se stále blížit, kácet se, věrně hádá
+uva # a vzpruží se, sčítav mrtvoly, na mrtvolu, hle, druh druhu dluhá,
+ouva # co slavný šot, jim na zdraví řinčí kohout, až je slyšet, kam zvuk houva.
+<|STROPHE_END|>
+
