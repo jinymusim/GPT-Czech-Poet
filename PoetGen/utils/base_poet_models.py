@@ -304,7 +304,7 @@ class PoetModelBase(PoetModelFunctionalInterface):
         return ModelOutput(loss= outputs.loss, model_output=outputs) # {"model_output" : outputs,"loss" : outputs.loss}
     
     def save_LM(self, LM_path):
-        self.model.save_pretrained(LM_path, safe_serialization=False)
+        self.model.save_pretrained(LM_path, save_peft_format=True)
         
         
 class PoetModelAllTasks(PoetModelFunctionalInterface):
