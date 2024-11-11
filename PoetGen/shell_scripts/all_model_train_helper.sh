@@ -6,7 +6,8 @@ python3 -m venv TRAIN_VENV
 source TRAIN_VENV/bin/activate
 pip install  torch torchvision torchaudio -U
 pip install -r /storage/brno2/home/chudobm/tf_shorts/Tensorflow-Shorts/PoetGen/requirements.txt -U
-pip install git+https://github.com/huggingface/transformers -U
+pip install git+https://github.com/huggingface/transformers.git -U
+pip install accelerate
 git clone https://github.com/huggingface/trl.git
 cd trl/
 pip install -e .
