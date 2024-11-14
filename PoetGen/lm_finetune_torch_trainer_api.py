@@ -116,7 +116,7 @@ parser.add_argument("--sizes_to_test", default=1, type=float, help='Size to test
 parser.add_argument("--dpo", default=False, type=bool, help="If to use DPO training")
 parser.add_argument("--dpo_epochs", default=2, type=int, help="Number of epochs for DPO training")
 
-parser.add_argument("--lora", default=True, type=bool, help="If to use LORA training")
+parser.add_argument("--lora", default=False, type=bool, help="If to use LORA training")
 
 
 def train_model(model: PoetModelInterface, tokenizer: PreTrainedTokenizerBase ,dataset: CorpusDatasetPytorch, collate_fnc, args: argparse.Namespace):
